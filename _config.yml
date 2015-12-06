@@ -1,13 +1,13 @@
 # Site settings
-title: Butane Jekyll Theme
+title: Onur Şentüre
 description: >
-    This is an example of the Butane Jekyll Theme created by Alex Carpenter
-author: Alex Carpenter
-email: youemail@gmail.com
+    Selam! Ben Onur Şentüre. Nebuu, Beatografi ve birçok yenilikçi projenin öncülüğünü yapmakta olan Orkestra'nın kurucu ortağı ve ürün tasarımcısıyım. Aynı zamanda Etiya'da da tasarım uzmanı olarak 2 yıldır çalışmaktayım. Bu blog aracılığıyla özgür bir formatta deneyimlerimi paylaşmayı planlıyorum.
+author: Onur Şentüre
+email: onur@orkestrayazilim.com
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "http://onursenture.github.com" # the base hostname & protocol for your site
-twitter_username: hybrid_alex
-github_username:  alexcarpenter
+twitter_username: w00f
+github_username:  onursenture
 
 # Build settings
 include: [_pages]
