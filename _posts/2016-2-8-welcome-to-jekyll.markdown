@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Merhaba!"
-date:   2015-11-29 13:07:56 -0500
+date:   2016-2-8 13:07:56
 categories: jekyll update
 ---
 Yazılmakta...
