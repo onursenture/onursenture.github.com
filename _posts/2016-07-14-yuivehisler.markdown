@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Yui ve Hisler"
-date:   2016-07-14 20:12:00
+date:   2016-07-14 18:12:00
 categories: hayat
 ---
 Hayat hastayken zor, evet. Şimdi onu bi' 20 ile filan çarpıyoruz. Çarptık mı? Evladının hasta olması işte 20 ile çarpılmış hastalık ruh halinden bile daha kötü.
