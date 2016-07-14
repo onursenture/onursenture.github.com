@@ -4,7 +4,7 @@ title:  "Yui ve Hisler"
 date:   2016-07-14 15:12:00
 categories: hayat
 ---
-![Yui ile Bir Akşamüstü](http://onursenture.com/images/14temmuz.png)
+![Yui ile Bir Akşamüstü]({{ site.baseurl }}/images/14temmuz.png)
 
 Hayat hastayken zor, evet. Şimdi onu bi' 20 ile filan çarpıyoruz. Çarptık mı? Evladının hasta olması işte 20 ile çarpılmış hastalık ruh halinden bile daha kötü.
 
