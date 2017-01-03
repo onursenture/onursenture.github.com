@@ -1,4 +1,10 @@
 <footer class="c-page__footer">
-    <p><a href="mailto:{{ site.email }}">{{ site.email }}</a></p>
+    <p><a class="giflink-to-be" data-src="images/1.gif" href="mailto:{{ site.email }}">{{ site.email }}</a></p>
     <p>Let's hang out {% if site.twitter_username %}<a href="https://twitter.com/{{ site.twitter_username }}">Twitter</a><span class="u-seperate"></span>{% endif %}{% if site.dribbble_username %}<a href="https://dribbble.com/{{ site.dribbble_username }}">Dribbble</a>{% endif %}</p>
 </footer>
+<script>
+window.onload = function() {
+    var elements = document.querySelectorAll( '.giflink-to-be' );
+    GifLinks( elements );
+}
+</script>
