@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="39px" height="178px" viewBox="0 0 39 178" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="50px" height="96px" viewBox="0 0 50 96" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <!-- Generator: Sketch 41 (35326) - http://www.bohemiancoding.com/sketch -->
     <title>Group</title>
     <desc>Created with Sketch.</desc>
-    <defs></defs>
+    <defs>
+        <rect id="path-1" x="21" y="0" width="8" height="90"></rect>
+        <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="1.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.607843137   0 0 0 0 0.396078431   0 0 0 0 0.396078431  0 0 0 0.1 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Desktop-HD" transform="translate(-799.000000, -404.000000)" stroke-width="1.5">
-            <g id="Group" transform="translate(800.000000, 406.000000)">
-                <path d="M18.1568,14.8692 L36.3151,24.3825 L36.3151,9.5133 L18.1568,0 C12.1114,3.1614 6.0501,6.3416 0,9.5122 L0,24.3814 L18.1568,14.8692 Z" id="Shape" stroke="#FFEFEF" transform="translate(18.157550, 12.191250) rotate(-180.000000) translate(-18.157550, -12.191250) "></path>
-                <path d="M18.1568,44.8692 L36.3151,54.3825 L36.3151,39.5133 L18.1568,30 C12.1114,33.1614 6.0501,36.3416 0,39.5122 L0,54.3814 L18.1568,44.8692 Z" id="Shape" stroke="#FCE5E5" transform="translate(18.157550, 42.191250) rotate(-180.000000) translate(-18.157550, -42.191250) "></path>
-                <path d="M18.1568,74.8692 L36.3151,84.3825 L36.3151,69.5133 L18.1568,60 C12.1114,63.1614 6.0501,66.3416 0,69.5122 L0,84.3814 L18.1568,74.8692 Z" id="Shape" stroke="#FCDEDE" transform="translate(18.157550, 72.191250) rotate(-180.000000) translate(-18.157550, -72.191250) "></path>
-                <path d="M18.1568,104.8692 L36.3151,114.3825 L36.3151,99.5133 L18.1568,90 C12.1114,93.1614 6.0501,96.3416 0,99.5122 L0,114.3814 L18.1568,104.8692 Z" id="Shape" stroke="#FEDADA" transform="translate(18.157550, 102.191250) rotate(-180.000000) translate(-18.157550, -102.191250) "></path>
-                <path d="M18.1568,134.8692 L36.3151,144.3825 L36.3151,129.5133 L18.1568,120 C12.1114,123.1614 6.0501,126.3416 0,129.5122 L0,144.3814 L18.1568,134.8692 Z" id="Shape" stroke="#FED3D3" transform="translate(18.157550, 132.191250) rotate(-180.000000) translate(-18.157550, -132.191250) "></path>
-                <path d="M18.1568,164.8692 L36.3151,174.3825 L36.3151,159.5133 L18.1568,150 C12.1114,153.1614 6.0501,156.3416 0,159.5122 L0,174.3814 L18.1568,164.8692 Z" id="Shape" stroke="#FCC6C6" transform="translate(18.157550, 162.191250) rotate(-180.000000) translate(-18.157550, -162.191250) "></path>
+        <g id="Desktop-HD" transform="translate(-886.000000, -459.000000)">
+            <g id="Group" transform="translate(886.000000, 460.000000)">
+                <rect id="Rectangle-path" fill="#FEDADA" x="0.3" y="57.8" width="49.5" height="8"></rect>
+                <g id="Rectangle-path">
+                    <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                    <use fill="#FCC6C6" fill-rule="evenodd" xlink:href="#path-1"></use>
+                </g>
             </g>
         </g>
     </g>
