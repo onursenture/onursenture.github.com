@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="50px" height="96px" viewBox="0 0 50 96" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="176px" height="96px" viewBox="0 0 176 96" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <!-- Generator: Sketch 41 (35326) - http://www.bohemiancoding.com/sketch -->
     <title>Group</title>
     <desc>Created with Sketch.</desc>
@@ -19,6 +19,10 @@
                     <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
                     <use fill="#FCC6C6" fill-rule="evenodd" xlink:href="#path-1"></use>
                 </g>
+                <text id="we-are-legion" font-family="TrajanPro-Regular, Trajan Pro" font-size="14" font-weight="normal">
+                    <tspan x="65" y="66" fill="#FEDADA">we are </tspan>
+                    <tspan x="121.224" y="66" font-family="TrajanPro-Bold, Trajan Pro" font-weight="bold" fill="#FCC6C6">legion</tspan>
+                </text>
             </g>
         </g>
     </g>
