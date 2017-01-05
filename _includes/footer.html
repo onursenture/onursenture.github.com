@@ -2,6 +2,7 @@
     <p><a class="giflink-to-be" data-src="images/1.gif" href="mailto:{{ site.email }}"><del>{{ site.email }}</del></a></p>
     <p>Let's hang out {% if site.twitter_username %}<a href="https://twitter.com/{{ site.twitter_username }}">Twitter</a><span class="u-seperate"></span>{% endif %}{% if site.dribbble_username %}<a href="https://dribbble.com/{{ site.dribbble_username }}">Dribbble</a>{% endif %}</p>
 </footer>
+<script async type="text/javascript" src="js/GifLinks.min.js"></script>
 <script>
 window.onload = function() {
     var elements = document.querySelectorAll( '.giflink-to-be' );
