@@ -4,7 +4,7 @@ title: "Ebe Cemile"
 date: 2017-06-05 21:00:00		
 categories: excerpt
 ---
-*This text is an excerpt about my mother from the book named "Kayıp Şehir Kaymaz". It's originally written in Turkish by Aykut Ercan.*
+*This text is an excerpt about my lovely mother from the book named "Kayıp Şehir Kaymaz". It's originally written in Turkish by Aykut Ercan.*
 
 >"Başarı deyince aklımıza farklı şeyler gelir. Toplumun gözünde başarı; iyi bir maddi gelir getiren kariyer, büyük bir ev, lüks bir arabadır. Aslında bunlar başarılı olmanın tanımı olamaz. Başarı nedir bilir misiniz? Yoklukta olmayanı var edebilmektir. Hastalara şifa dağıtabilmektedir. Bebeklerin dünyaya gelmesine yardımcı olabilmektir. İşte Kaymaz’ın bir başka sahip olduğu değer de Cemile Kandemir Şentüre’dir. Kaymaz’ın tabiriyle Ebe Cemile’dir. Cemile annemizdir.
 
