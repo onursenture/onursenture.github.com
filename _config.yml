@@ -9,6 +9,7 @@ url: "https://onursenture.github.com" # the base hostname & protocol for your si
 enforce_ssl: onursenture.github.com
 twitter_username: w00f
 dribbble_username:  onursenture
+life_events: false
 
 # Build settings
 include: [_pages]

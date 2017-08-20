@@ -2,6 +2,24 @@
 layout: page
 title: Home
 ---
+{% if site.life_events %}
+<section class="c-archives">
+  <h2 class="c-archives__year">Life Events</h2>
+  <ul class="c-archives__list">
+    <li class="c-archives__item">
+      <h3><a href="#">hello ulan</a></h3>
+      <p>tarih ulan</p>
+    </li>
+    <li class="c-archives__item">
+      <h3><a href="#">hello ulan</a></h3>
+      <p>tarih ulan</p>
+    </li>
+    <li class="c-archives__item">
+      <h3><a href="#">hello ulan</a></h3>
+      <p>tarih ulan</p>
+    </li>
+</section>
+{% endif %}
 <section class="c-archives">
 {% for post in site.posts  %}
     {% capture this_year %}{{ post.date | date: "%Y" }}{% endcapture %}
