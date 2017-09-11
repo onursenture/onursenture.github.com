@@ -1,6 +1,6 @@
 <footer class="c-page__footer">
     <p><a class="giflink-to-be" data-src="{{ "/" | prepend: site.baseurl }}images/1.gif" href="mailto:{{ site.email }}"><del>{{ site.email }}</del></a></p>
-    <p>Let's hang out {% if site.twitter_username %}<a href="https://twitter.com/{{ site.twitter_username }}">Twitter</a><span class="u-seperate"></span>{% endif %}{% if site.dribbble_username %}<a href="https://dribbble.com/{{ site.dribbble_username }}">Dribbble</a>{% endif %}</p>
+    <p>Let's hang out {% if site.twitter_username %}<a href="https://twitter.com/{{ site.twitter_username }}">Twitter</a><span class="u-seperate"></span>{% endif %}{% if site.dribbble_username %}<a href="https://dribbble.com/{{ site.dribbble_username }}">Dribbble</a>{% endif %}{% if site.pgpkey %}<span class="u-seperate"></span><a target="_blank" href="{{ site.pgpkey }}">PGP Key</a>{% endif %}</p>
 </footer>
 <script async type="text/javascript" src="https://onursenture.com/js/GifLinks.min.js"></script>
 <script>

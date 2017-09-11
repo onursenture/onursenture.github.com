@@ -9,6 +9,7 @@ url: "https://onursenture.github.com" # the base hostname & protocol for your si
 enforce_ssl: onursenture.github.com
 twitter_username: w00f
 dribbble_username:  onursenture
+pgpkey: https://keybase.io/w00f/pgp_keys.asc?fingerprint=e0c5785931e02c221b9197707dab311a9f850574
 life_events: false
 
 # Build settings
