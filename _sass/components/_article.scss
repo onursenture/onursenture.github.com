@@ -62,6 +62,11 @@
         @include fs--body;
     }
 
+    ul,
+    ol {
+        margin-left: 2.1rem;
+    }
+
     strong {
         color: $c-base__02;
         font-weight: 400;
