@@ -12,3 +12,7 @@ I couldn’t afford FIFA 19 this year. Normally it should be less than 100 TL at
 This is a serious issue. Seriousness level: 100/100
 
 I have no other problems in my life. I tried so many other things but I couldn't find an alternative activity for boring Ankara nights. 
+
+---
+
+Update (24 December): I bought it finally because it was allocating my brain's CPU usage at least 50%.
