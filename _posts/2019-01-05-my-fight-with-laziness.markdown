@@ -33,5 +33,6 @@ I got too many things that I needed to do, but I couldn't do them because of my 
 - **Categorize and Reorder this list. 😅**
 
 Note #1: List is growing so reordering and categorizing might help to prioritize tasks. 
+Note #2: Some tasks needs progress bar. Considering to implement one. Ughh laziness...
 
 Last update: *6 January 2018 00.19*
