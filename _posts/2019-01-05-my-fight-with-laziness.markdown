@@ -35,6 +35,7 @@ I got too many things that I needed to do, but I couldn't do them because of my 
 - Design and upload at least 25 icons to TheNounProject
 - Clean Pocket app
 - Add design projects to Behance
+- Migrate old and good blog posts from Medium, Quora and other old blogs to OnurSenture.com
 - **Categorize and Reorder this list. 😅**
 
 Note #1: List is growing so reordering and categorizing might help to prioritize tasks. 
