@@ -33,6 +33,7 @@ I got too many things that I needed to do, but I couldn't do them because of my 
 - Add more icons to PrimeIcons pack
 - Try to sell something on CreativeMarket, ThemeForest, etc.
 - Design and upload at least 25 icons to TheNounProject
+- Clean Pocket app
 - **Categorize and Reorder this list. 😅**
 
 Note #1: List is growing so reordering and categorizing might help to prioritize tasks. 
