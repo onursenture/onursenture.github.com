@@ -9,7 +9,7 @@ I got too many things that I needed to do, but I couldn't do them because of my 
 
 - Sell unused electronics
 - Withdraw all crypto money
-- Read The Tipping Point
+- Read The Tipping Point and The Lean Startup
 - Delete Facebook account
 - Go to gym for 4 weeks consecutively
 - Finish The Last of Us
@@ -20,5 +20,9 @@ I got too many things that I needed to do, but I couldn't do them because of my 
 - Watch The Godfather Trilogy, Goodfellas, Scarface
 - Watch 2001: A Space Odyssey
 - Change home's decoration
+- Learn to use Wacom Tablet
+- **Reorder this list. 😅**
+
+Note #1: List is growing so reordering might help to prioritize tasks. 
 
 Last update: *5 January 2018 23.54*
