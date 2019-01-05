@@ -21,8 +21,17 @@ I got too many things that I needed to do, but I couldn't do them because of my 
 - Watch 2001: A Space Odyssey
 - Change home's decoration
 - Learn to use Wacom Tablet
-- **Reorder this list. 😅**
+- Redesign Beatografi and re-launch
+- Extend OnurSenture.com with projects
+- Design a new Instagram series with more than 21 images
+- Change PrimeFaces.org main slider image
+- Change hero images of PrimeNG, PrimeReact, PrimeFaces and PrimeVue
+- Prepare a Dribbble post for PrimeVue logo
+- Design the side project for PrimeTek interns
+- Update resume and Linkedin profile
+- Change the design of OnurSenture.com
+- **Categorize and Reorder this list. 😅**
 
-Note #1: List is growing so reordering might help to prioritize tasks. 
+Note #1: List is growing so reordering and categorizing might help to prioritize tasks. 
 
-Last update: *5 January 2018 23.54*
+Last update: *6 January 2018 00.19*
