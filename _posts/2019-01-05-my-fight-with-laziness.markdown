@@ -14,5 +14,7 @@ I got too many things that I needed to do, but I couldn't do them because of my 
 - Go to gym for 4 weeks consecutively
 - Finish The Last of Us
 - Finish Metal Gear Solid V: The Phantom Pain
+- Prepare Dribbble invitation artwork
+- Start DailyUI again
 
 Last update: *5 January 2018 20.21*
