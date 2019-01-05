@@ -36,6 +36,7 @@ I got too many things that I needed to do, but I couldn't do them because of my 
 - Clean Pocket app
 - Add design projects to Behance
 - Migrate old and good blog posts from Medium, Quora and other old blogs to OnurSenture.com
+- Add PrimeNG and PrimeReact anchors to the theme images on "Premium Themes And Layouts" at PrimeFaces.org
 - **Categorize and Reorder this list. 😅**
 
 Note #1: List is growing so reordering and categorizing might help to prioritize tasks. 
