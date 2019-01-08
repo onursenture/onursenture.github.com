@@ -1,13 +1,13 @@
 ---
 layout: post		
-title: "My Fight with Laziness"		
+title: "The List"		
 date: 2019-01-05 01:00:00		
 categories: life
 ---
 
 I got too many things that I needed to do, but I couldn't do them because of my annoying laziness. So I decided to list them here for public pressure. Also, I will add notes about their progress. This post is intended to continue till all these little things are done... 
 
-- Sell unused electronics
+- <div class="progress"><div style="width:25%">Sell unused electronics</div></div>
 - Withdraw all crypto money
 - Read The Tipping Point and The Lean Startup
 - Delete Facebook account
