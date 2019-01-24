@@ -7,7 +7,7 @@ categories: life
 
 I got too many things that I needed to do, but I couldn't do them because of my annoying laziness. So I decided to list them here for public pressure. Also, I will add notes about their progress. This post is intended to continue till all these little things are done... 
 
-- <div class="progress"><div style="width:25%">Sell unused electronics</div></div>
+- Sell unused electronics: Start with Jaybird
 - Withdraw all crypto money
     - 23 Jan: I tried to withdraw but I couldn't.
 - Read The Tipping Point and The Lean Startup
@@ -45,4 +45,4 @@ Note #1: List is growing so reordering and categorizing might help to prioritize
 
 Note #2: Some tasks needs progress bar. Considering to implement one. Ughh laziness...
 
-Last update: *6 January 2018 00.19*
+Last update: *24 January 2018 21.35*
