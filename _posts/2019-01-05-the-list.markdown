@@ -5,44 +5,55 @@ date: 2019-01-05 01:00:00
 categories: life
 ---
 
-I got too many things that I needed to do, but I couldn't do them because of my annoying laziness. So I decided to list them here for public pressure. Also, I will add notes about their progress. This post is intended to continue till all these little things are done... 
+I got too many things that I want to do, but I couldn't because of my annoying laziness. So I decided to list them here for public pressure. Also, I will add notes about their progress. This post is intended to continue till all these little things are done... 
 
-- Sell unused electronics: Start with Jaybird
-- Withdraw all crypto money
-    - 23 Jan: I tried to withdraw but I couldn't.
-- Read The Tipping Point and The Lean Startup
-- Delete Facebook account
-- Go to gym for 4 weeks consecutively
-- Finish The Last of Us
-- Finish Metal Gear Solid V: The Phantom Pain
+## Work: PrimeTek
+- Prepare a Dribbble post for PrimeVue logo
+- Add PrimeNG and PrimeReact anchors to the theme images on "Premium Themes And Layouts" at PrimeFaces.org
+- Add more icons to PrimeIcons pack
+- Change hero images of PrimeNG, PrimeReact, PrimeFaces and PrimeVue
+- Change PrimeFaces.org main slider image
+- Design the side project for PrimeTek interns
+
+## Work: Orkestra
+- Redesign Beatografi and re-launch
+
+## Work: Personal
 - Prepare Dribbble invitation artwork
 - Start DailyUI again
-- Finish at least one book with Kindle
-- Watch The Godfather Trilogy, Goodfellas, Scarface
-- Watch 2001: A Space Odyssey
-- Change home's decoration
-- Learn to use Wacom Tablet
-- Redesign Beatografi and re-launch
-- Extend OnurSenture.com with projects
-- Design a new Instagram series with more than 21 images
-- Change PrimeFaces.org main slider image
-- Change hero images of PrimeNG, PrimeReact, PrimeFaces and PrimeVue
-- Prepare a Dribbble post for PrimeVue logo
-- Design the side project for PrimeTek interns
 - Update resume and Linkedin profile
-- Change the design of OnurSenture.com
-- Add more icons to PrimeIcons pack
+- Migrate old and good blog posts from Medium, Quora and other old blogs to OnurSenture.com
 - Try to sell something on CreativeMarket, ThemeForest, etc.
 - Design and upload at least 25 icons to TheNounProject
-- Clean Pocket app
+- Change the design of OnurSenture.com
+- Extend OnurSenture.com with projects
+- Design a new Instagram series with more than 21 images
 - Add design projects to Behance
-- Migrate old and good blog posts from Medium, Quora and other old blogs to OnurSenture.com
-- Add PrimeNG and PrimeReact anchors to the theme images on "Premium Themes And Layouts" at PrimeFaces.org
+- Learn to use Wacom Tablet
+
+## Personal
+- Withdraw all crypto money
+    - 23 Jan: I tried to withdraw but I couldn't.
+- Delete Facebook account
+- Change home's decoration
+- Go to gym for 4 weeks consecutively
+- Sell unused electronics: Start with Jaybird
+- Clean Pocket app
 - Repair PSP
-- **Categorize and Reorder this list. 😅**
 
-Note #1: List is growing so reordering and categorizing might help to prioritize tasks.
+## Games
+- Finish The Last of Us
+- Finish Metal Gear Solid V: The Phantom Pain
 
-Note #2: Some tasks needs progress bar. Considering to implement one. Ughh laziness...
+## Books
+- Read The Tipping Point
+- Read The Lean Startup
+- Finish at least one book with Kindle
 
-Last update: *24 January 2018 21.35*
+## Movies
+- Watch The Godfather Trilogy
+- Watch Goodfellas
+- Watch Scarface
+- Watch 2001: A Space Odyssey
+
+Last update: *25 January 2018 10.51*
