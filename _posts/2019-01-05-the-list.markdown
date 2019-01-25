@@ -8,7 +8,7 @@ categories: life
 I got too many things that I want to do, but I couldn't because of my annoying laziness. So I decided to list them here for public pressure. Also, I will add notes about their progress. This post is intended to continue till all these little things are done... 
 
 ## Work: PrimeTek
-- Prepare a Dribbble post for PrimeVue logo
+- ~~Prepare a Dribbble post for PrimeVue logo~~
 - Add PrimeNG and PrimeReact anchors to the theme images on "Premium Themes And Layouts" at PrimeFaces.org
 - Add more icons to PrimeIcons pack
 - Change hero images of PrimeNG, PrimeReact, PrimeFaces and PrimeVue
