@@ -12,7 +12,7 @@ I got too many things that I want to do, but I couldn't because of my annoying l
 - Add PrimeNG and PrimeReact anchors to the theme images on "Premium Themes And Layouts" at PrimeFaces.org
 - Add more icons to PrimeIcons pack
     - [Open Issues](https://github.com/primefaces/primeicons/issues): 23
-- Change hero images of PrimeNG, PrimeReact, PrimeFaces and PrimeVue
+- Change hero images of PrimeNG, [~~PrimeReact~~](https://github.com/primefaces/primereact/commit/c8b756e4281cfaf8448553d7410a1fefd1099e7e), PrimeFaces and PrimeVue
 - Change PrimeFaces.org main slider image
 - Design the side project for PrimeTek interns
 
@@ -38,8 +38,8 @@ I got too many things that I want to do, but I couldn't because of my annoying l
     - 25 Jan: Tried harder... I called my bank 4 times. They couldn't resolve the issue. Maybe it's time to migrate to another bank.
     - 28 Jan: I'll try with GarantiBank next month.
 - Delete Facebook account
-    - Remaining connected apps: **3**
-    - 28 Jan: Waiting answers from Spotify, CreativeMarket and Designed.org
+    - Remaining connected apps: **2**
+    - 28 Jan: Waiting answers from ~~Spotify~~, CreativeMarket and Designed.org
 - Change home's decoration
 - Go to gym for 4 weeks consecutively
 - Sell unused electronics: Start with Jaybird
@@ -62,4 +62,4 @@ I got too many things that I want to do, but I couldn't because of my annoying l
 - Watch Scarface
 - Watch 2001: A Space Odyssey
 
-Last update: *28 January 2018 15.07*
+Last update: *28 January 2018 17.06*
