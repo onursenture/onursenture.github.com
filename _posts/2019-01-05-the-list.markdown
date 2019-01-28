@@ -11,6 +11,7 @@ I got too many things that I want to do, but I couldn't because of my annoying l
 - ~~Prepare a Dribbble post for PrimeVue logo~~
 - Add PrimeNG and PrimeReact anchors to the theme images on "Premium Themes And Layouts" at PrimeFaces.org
 - Add more icons to PrimeIcons pack
+    - [Open Issues](https://github.com/primefaces/primeicons/issues): 23
 - Change hero images of PrimeNG, PrimeReact, PrimeFaces and PrimeVue
 - Change PrimeFaces.org main slider image
 - Design the side project for PrimeTek interns
@@ -36,7 +37,7 @@ I got too many things that I want to do, but I couldn't because of my annoying l
     - 23 Jan: I tried to withdraw but I couldn't.
     - 25 Jan: Tried harder... I called my bank 4 times. They couldn't resolve the issue. Maybe it's time to migrate to another bank.
 - Delete Facebook account
-    - Remaining connected apps: **25**
+    - Remaining connected apps: **21**
 - Change home's decoration
 - Go to gym for 4 weeks consecutively
 - Sell unused electronics: Start with Jaybird
@@ -59,4 +60,4 @@ I got too many things that I want to do, but I couldn't because of my annoying l
 - Watch Scarface
 - Watch 2001: A Space Odyssey
 
-Last update: *28 January 2018 11.58*
+Last update: *28 January 2018 12.25*
