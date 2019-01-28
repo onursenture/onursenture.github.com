@@ -12,7 +12,7 @@ I got too many things that I want to do, but I couldn't because of my annoying l
 - Add PrimeNG and PrimeReact anchors to the theme images on "Premium Themes And Layouts" at PrimeFaces.org
 - Add more icons to PrimeIcons pack
     - [Open Issues](https://github.com/primefaces/primeicons/issues): 23
-- Change hero images of PrimeNG, [~~PrimeReact~~](https://github.com/primefaces/primereact/commit/c8b756e4281cfaf8448553d7410a1fefd1099e7e), PrimeFaces and PrimeVue
+- ~~Change hero images of [PrimeNG](https://github.com/primefaces/primeng/commit/ff9f8a2442da44f8ba00447b174f0d34e1c10e89) and [PrimeReact](https://github.com/primefaces/primereact/commit/c8b756e4281cfaf8448553d7410a1fefd1099e7e)~~
 - Change PrimeFaces.org main slider image
 - Design the side project for PrimeTek interns
 
