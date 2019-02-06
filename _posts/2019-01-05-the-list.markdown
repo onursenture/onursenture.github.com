@@ -19,7 +19,7 @@ I got too many things that I want to do, but I couldn't because of my annoying l
     - ~~Typography~~
     - ~~Color Palette~~
     - ~~Buttons~~
-    - Input forms
+    - ~~Input forms~~
     - Data
     - Panels
     - Overlays
@@ -89,4 +89,4 @@ I got too many things that I want to do, but I couldn't because of my annoying l
 - Watch Scarface
 - Watch 2001: A Space Odyssey
 
-Last update: *6 February 2018 15.52*
+Last update: *6 February 2018 22.20*
