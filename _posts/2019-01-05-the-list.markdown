@@ -16,7 +16,7 @@ I got too many things that I want to do, but I couldn't because of my annoying l
 - Design the side project for PrimeTek interns
 - Design new theme: Prestige
     - ~~Theme:~~ ~~Branding~~, ~~Typography~~, ~~Color Palette~~, ~~Buttons~~, ~~Input forms~~, ~~Data~~, ~~Panels~~, ~~Overlays~~, ~~Menus~~, ~~Messages~~, ~~Misc~~
-    - Dashboard: Statistics Boxes, Profile, List-view: Global Sales, Graph, Tasks, Contacts, Contact, Timeline, Chat, Weather, More Statistics Boxes, Map
+    - Dashboard: ~~Statistics Boxes~~, Profile, List-view: Global Sales, Graph, Tasks, Contacts, Contact, Timeline, Chat, Weather, More Statistics Boxes, Map
     - Template Pages: Landing, Login, 404, Error Occured, Access Denied
     - Release artworks
 
@@ -85,4 +85,4 @@ I got too many things that I want to do, but I couldn't because of my annoying l
     - Current Episode: S05E01
     - Note 1: "Goodbye, Toby" was so good. Wow. 10/10.
 
-Last update: *13 February 2018 13.20*
+Last update: *13 February 2018 14.12*
