@@ -16,7 +16,8 @@ I got too many things that I want to do, but I couldn't because of my annoying l
 - Design the side project for PrimeTek interns
 - Prepare sales page for Sapphire
 - Design new theme: Prestige
-    - Redesign dashboard mobile view
+    - ~~Redesign dashboard mobile view~~~
+    - Last touch to dashboard design
     - Release artworks
 - Design new theme: Mirage
 
@@ -88,4 +89,4 @@ I got too many things that I want to do, but I couldn't because of my annoying l
     - Current Episode: S05E10
     - Note 1: "Goodbye, Toby" was so good. Wow. 10/10.
 
-Last update: *17 March 2019 14.20*
+Last update: *17 March 2019 19.45*
