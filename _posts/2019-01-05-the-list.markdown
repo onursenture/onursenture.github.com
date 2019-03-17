@@ -14,17 +14,17 @@ I got too many things that I want to do, but I couldn't because of my annoying l
 - ~~Change hero images of [PrimeNG](https://github.com/primefaces/primeng/commit/ff9f8a2442da44f8ba00447b174f0d34e1c10e89) and [PrimeReact](https://github.com/primefaces/primereact/commit/c8b756e4281cfaf8448553d7410a1fefd1099e7e)~~
 - Change PrimeFaces.org main slider image
 - Design the side project for PrimeTek interns
+- Prepare sales page for Sapphire
 - Design new theme: Prestige
-    - ~~Theme:~~ ~~Branding~~, ~~Typography~~, ~~Color Palette~~, ~~Buttons~~, ~~Input forms~~, ~~Data~~, ~~Panels~~, ~~Overlays~~, ~~Menus~~, ~~Messages~~, ~~Misc~~
-    - Dashboard: ~~Statistics Boxes~~, ~~Profile~~, ~~Graph~~, ~~Tasks~~, ~~Team Members~~, ~~Resolution Center~~, ~~Timeline~~, ~~Chat~~, ~~Weather~~, More Statistics Boxes, ~~Map~~
-    - ~~Template Pages~~: ~~Landing~~, ~~Login~~, ~~404~~, ~~Error Occured~~, ~~Access Denied~~
+    - Redesign dashboard mobile view
     - Release artworks
+- Design new theme: Mirage
 
 ## Work: Orkestra
-- Redesign Beatografi and re-launch
 - ~~Design 2 new cards for Nebuu~~
 - ~~Check old artworks of Nebuu~~
 - ~~Redesign 5 old cards of Nebuu:~~ ~~Türk Dizileri~~, ~~Taklit~~, ~~Osmanlı~~, ~~İstanbul~~, ~~2014 Geyikleri~~
+- Design new login screens
 
 ## Work: Personal
 - [~~Prepare Dribbble invitation artwork~~](https://dribbble.com/shots/5922276-2x-Dribbble-Invites)
@@ -34,7 +34,6 @@ I got too many things that I want to do, but I couldn't because of my annoying l
     - "[How we failed](https://onursenture.com/2014/03/how-we-failed)?" moved from Medium.
 - Try to sell something on CreativeMarket, ThemeForest, etc.
 - Design and upload at least 25 icons to TheNounProject
-- Change the design of OnurSenture.com
 - Extend OnurSenture.com with projects
 - Add design projects to Behance
 - Learn to use Wacom Tablet
@@ -56,7 +55,7 @@ I got too many things that I want to do, but I couldn't because of my annoying l
     - Week 2: ❌, ❌, ❌
     - Week 3: ❌, ❌, ❌
     - Week 4: ❌, ❌, ❌
-- Sell unused electronics: Start with Jaybird
+- ~~Sell unused electronics: Start with Jaybird~~
     - ~~Jaybird listed on LetGo, waiting for sale~~
 - Clean Pocket app
     - Remaining articles: **131**
@@ -81,11 +80,12 @@ I got too many things that I want to do, but I couldn't because of my annoying l
 - Watch The Godfather Trilogy
 - ~~Watch Goodfellas~~
 - ~~Watch Casino~~
+- ~~Watch Heat~~
 - Watch Scarface
 - Watch 2001: A Space Odyssey
 - Watch Il buono, il brutto, il cattivo
 - Watch all episodes of The Office
-    - Current Episode: S05E03
+    - Current Episode: S05E10
     - Note 1: "Goodbye, Toby" was so good. Wow. 10/10.
 
-Last update: *19 February 2018 12.07*
+Last update: *17 March 2019 14.20*
