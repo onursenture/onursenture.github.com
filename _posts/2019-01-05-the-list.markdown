@@ -10,11 +10,11 @@ I got too many things that I want to do, but I couldn't because of my annoying l
 ## Work: PrimeTek
 - [~~Prepare a Dribbble post for PrimeVue logo~~](https://dribbble.com/shots/5906210-PrimeVue-Logo)
 - Add more icons to PrimeIcons pack
-    - [Open Issues](https://github.com/primefaces/primeicons/issues): 29
+    - [Open Issues](https://github.com/primefaces/primeicons/issues): 38
 - ~~Change hero images of [PrimeNG](https://github.com/primefaces/primeng/commit/ff9f8a2442da44f8ba00447b174f0d34e1c10e89) and [PrimeReact](https://github.com/primefaces/primereact/commit/c8b756e4281cfaf8448553d7410a1fefd1099e7e)~~
 - Change PrimeFaces.org main slider image
 - Design the side project for PrimeTek interns
-- Prepare sales page for Sapphire
+- ~~Prepare sales page for Sapphire and Sapphire for PrimeNG~~
 - Design new theme: Prestige
     - ~~Redesign dashboard mobile view~~~
     - Last touch to dashboard design
@@ -25,7 +25,7 @@ I got too many things that I want to do, but I couldn't because of my annoying l
 - ~~Design 2 new cards for Nebuu~~
 - ~~Check old artworks of Nebuu~~
 - ~~Redesign 5 old cards of Nebuu:~~ ~~Türk Dizileri~~, ~~Taklit~~, ~~Osmanlı~~, ~~İstanbul~~, ~~2014 Geyikleri~~
-- Design new login screens
+- ~~Design new login screens~~
 
 ## Work: Personal
 - [~~Prepare Dribbble invitation artwork~~](https://dribbble.com/shots/5922276-2x-Dribbble-Invites)
@@ -46,10 +46,6 @@ I got too many things that I want to do, but I couldn't because of my annoying l
     - ~~25 Jan: Tried harder... I called my bank 4 times. They couldn't resolve the issue. Maybe it's time to migrate to another bank.~~
     - ~~28 Jan: I'll try with GarantiBank next month.~~
     - ~~4 Feb: Finally...~~ 
-- Delete Facebook account
-    - ~~Remaining connected apps: **0**~~
-    - ~~28 Jan: Waiting answers from Spotify, CreativeMarket and Designed.org (They didn't replied, so I'll ignore them from now on)~~
-    - 4 Feb: Deactivation phase is started. Deletion date: 18 Feb
 - ~~Change home's decoration~~
 - Go to gym for 4 weeks consecutively
     - Week 1: ❌, ❌, ❌
@@ -89,4 +85,4 @@ I got too many things that I want to do, but I couldn't because of my annoying l
     - Current Episode: S05E10
     - Note 1: "Goodbye, Toby" was so good. Wow. 10/10.
 
-Last update: *17 March 2019 19.45*
+Last update: *26 April 2019 15.11*
