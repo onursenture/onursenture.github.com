@@ -4,9 +4,10 @@ title: "PrimeVue 1.0.0-beta.1 Released"
 date: 2019-05-27 20:59:00		
 categories: video
 ---
-[PrimeVue](https://www.primefaces.org/primevue) is the new member of the Prime Family of Open Source UI components and shares the same DNA with PrimeFaces, PrimeNG and PrimeReact.
 
-Video contains <strong>30 minutes</strong> {x8} of making a social media / blog artwork for PrimeVue release.
+Today, first release of PrimeVue is released. [PrimeVue](https://www.primefaces.org/primevue) is the new member of the Prime Family of Open Source UI components and shares the same DNA with [PrimeFaces](https://www.primefaces.org/showcase), [PrimeNG](https://www.primefaces.org/primeng) and [PrimeReact](https://www.primefaces.org/primereact).
+
+The video contains <strong>30 minutes {x8}</strong> of making a social media/blog artwork for PrimeVue release.
 
 👇
 
