@@ -6,13 +6,11 @@ categories: video
 ---
 
 🎉
-
 Today, first release of PrimeVue is out. [PrimeVue](https://www.primefaces.org/primevue) is the new member of the Prime Family of Open Source UI components and shares the same DNA with [PrimeFaces](https://www.primefaces.org/showcase), [PrimeNG](https://www.primefaces.org/primeng) and [PrimeReact](https://www.primefaces.org/primereact).
 
 The video contains <strong>30 minutes {x8}</strong> of making a social media/blog artwork for PrimeVue release.
 
 👇
-
 <iframe src="https://player.vimeo.com/video/338752379" width="100%" height="480" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
 
 
