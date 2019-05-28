@@ -1,7 +1,7 @@
 ---
 layout: content
 title: Projects
-permalink: /Projects/
+permalink: /projects/
 ---
 **This page added on 28 May 2019. The list is not complete yet.**
 
