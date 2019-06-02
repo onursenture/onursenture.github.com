@@ -15,7 +15,7 @@ Credits
     <!-- 5 Minutes Episode 1: 14.52 -->
     <a href="https://vimeo.com/339726667"><img class="ready" src="/images/5-minutes/Episode-1.png" style="width:100%"></a>
     <!-- 5 Minutes Episode 4 -->
-    <a href="#"><img class="not-yet" src="/images/5-minutes/Episode-4.png" style="width:100%"></a> 
+    <a href="https://vimeo.com/339876646"><img class="ready" src="/images/5-minutes/Episode-4.png" style="width:100%"></a> 
 
   </div>
   
@@ -23,7 +23,7 @@ Credits
     <!-- 5 Minutes Episode 2: 10.33 -->
     <a href="https://vimeo.com/339734973"><img class="ready" src="/images/5-minutes/Episode-2.png" style="width:100%"></a> 
     <!-- 5 Minutes Episode 5 -->
-    <a href="#"><img class="not-yet" src="/images/5-minutes/Episode-5.png" style="width:100%"></a> 
+    <a href="https://vimeo.com/339877924"><img class="ready" src="/images/5-minutes/Episode-5.png" style="width:100%"></a> 
 
   </div>
    
