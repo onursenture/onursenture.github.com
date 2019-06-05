@@ -13,23 +13,23 @@ Credits
 <div class="row"> 
   <div class="column">
     <!-- 5 Minutes Episode 1: 14.52 -->
-    <a href="https://vimeo.com/339726667"><img class="ready" src="/images/5-minutes/Episode-1.png" style="width:100%"></a>
+    <a href="../2019/05/5minutes-episode-1"><img class="ready" src="/images/5-minutes/Episode-1.png" style="width:100%"></a>
     <!-- 5 Minutes Episode 4 -->
-    <a href="https://vimeo.com/339876646"><img class="ready" src="/images/5-minutes/Episode-4.png" style="width:100%"></a> 
+    <a href="../2019/05/5minutes-episode-4"><img class="ready" src="/images/5-minutes/Episode-4.png" style="width:100%"></a> 
 
   </div>
   
   <div class="column">
     <!-- 5 Minutes Episode 2: 10.33 -->
-    <a href="https://vimeo.com/339734973"><img class="ready" src="/images/5-minutes/Episode-2.png" style="width:100%"></a> 
+    <a href="../2019/05/5minutes-episode-2"><img class="ready" src="/images/5-minutes/Episode-2.png" style="width:100%"></a> 
     <!-- 5 Minutes Episode 5 -->
-    <a href="https://vimeo.com/339877924"><img class="ready" src="/images/5-minutes/Episode-5.png" style="width:100%"></a> 
+    <a href="../2019/05/5minutes-episode-5"><img class="ready" src="/images/5-minutes/Episode-5.png" style="width:100%"></a> 
 
   </div>
    
   <div class="column">
     <!-- 5 Minutes Episode 3: 09.23 -->
-    <a href="https://vimeo.com/339739337"><img class="ready" src="/images/5-minutes/Episode-3.png" style="width:100%"></a> 
+    <a href="../2019/05/5minutes-episode-3"><img class="ready" src="/images/5-minutes/Episode-3.png" style="width:100%"></a> 
     <!-- 5 Minutes Episode 6 -->
     <a href="#"><img class="not-yet" src="/images/5-minutes/Episode-6.png" style="width:100%"></a> 
   </div>
