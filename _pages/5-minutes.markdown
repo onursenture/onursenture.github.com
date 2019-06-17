@@ -37,7 +37,7 @@ Credits
     <!-- 5 Minutes Episode 6 -->
     <a href="../2019/06/5minutes-episode-6"><img class="ready" src="/images/5-minutes/Episode-6.png" style="width:100%"></a> 
     <!-- 5 Minutes Episode 9 -->
-    <a href="#"><img class="not-yet" src="/images/5-minutes/Episode-9.png" style="width:100%"></a> 
+    <a href="../2019/06/5minutes-episode-9"><img class="ready" src="/images/5-minutes/Episode-9.png" style="width:100%"></a> 
   </div>
   
 </div>
