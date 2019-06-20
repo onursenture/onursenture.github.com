@@ -15,29 +15,29 @@ Credits
     <!-- 5 Minutes Episode 1: 14.52 -->
     <a href="../2019/05/5minutes-episode-1"><img class="ready" src="/images/5-minutes/Episode-1.png" style="width:100%"></a>
     <!-- 5 Minutes Episode 4 -->
-    <a href="#"><img class="not-yet" src="/images/5-minutes/Episode-4.png" style="width:100%"></a> 
+    <a href="../2019/05/5minutes-episode-4"><img class="ready" src="/images/5-minutes/Episode-4.png" style="width:100%"></a> 
     <!-- 5 Minutes Episode 7 -->
-    <a href="#"><img class="not-yet" src="/images/5-minutes/Episode-7.png" style="width:100%"></a> 
+    <a href="../2019/06/5minutes-episode-7"><img class="ready" src="/images/5-minutes/Episode-7.png" style="width:100%"></a> 
 
   </div>
   
   <div class="column">
     <!-- 5 Minutes Episode 2: 10.33 -->
-    <a href="#"><img class="not-yet" src="/images/5-minutes/Episode-2.png" style="width:100%"></a> 
+    <a href="../2019/05/5minutes-episode-2"><img class="ready" src="/images/5-minutes/Episode-2.png" style="width:100%"></a> 
     <!-- 5 Minutes Episode 5 -->
-    <a href="#"><img class="not-yet" src="/images/5-minutes/Episode-5.png" style="width:100%"></a> 
+    <a href="../2019/05/5minutes-episode-5"><img class="ready" src="/images/5-minutes/Episode-5.png" style="width:100%"></a> 
     <!-- 5 Minutes Episode 8 -->
-    <a href="#"><img class="not-yet" src="/images/5-minutes/Episode-8.png" style="width:100%"></a> 
+    <a href="../2019/06/5minutes-episode-8"><img class="ready" src="/images/5-minutes/Episode-8.png" style="width:100%"></a> 
 
   </div>
    
   <div class="column">
     <!-- 5 Minutes Episode 3: 09.23 -->
-    <a href="#"><img class="not-yet" src="/images/5-minutes/Episode-3.png" style="width:100%"></a> 
+    <a href="../2019/05/5minutes-episode-3"><img class="ready" src="/images/5-minutes/Episode-3.png" style="width:100%"></a> 
     <!-- 5 Minutes Episode 6 -->
-    <a href="#"><img class="not-yet" src="/images/5-minutes/Episode-6.png" style="width:100%"></a> 
+    <a href="../2019/06/5minutes-episode-6"><img class="ready" src="/images/5-minutes/Episode-6.png" style="width:100%"></a> 
     <!-- 5 Minutes Episode 9 -->
-    <a href="#"><img class="not-yet" src="/images/5-minutes/Episode-9.png" style="width:100%"></a> 
+    <a href="../2019/06/5minutes-episode-9"><img class="ready" src="/images/5-minutes/Episode-9.png" style="width:100%"></a> 
   </div>
   
 </div>
