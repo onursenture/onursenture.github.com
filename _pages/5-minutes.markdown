@@ -18,6 +18,8 @@ Credits
     <a href="../2019/05/5minutes-episode-4"><img class="ready" src="/images/5-minutes/Episode-4.png" style="width:100%"></a> 
     <!-- 5 Minutes Episode 7 -->
     <a href="../2019/06/5minutes-episode-7"><img class="ready" src="/images/5-minutes/Episode-7.png" style="width:100%"></a> 
+    <!-- 5 Minutes Episode 10 -->
+    <a href="../2019/06/5minutes-episode-10"><img class="ready" src="/images/5-minutes/Episode-10.png" style="width:100%"></a> 
 
   </div>
   
@@ -28,6 +30,8 @@ Credits
     <a href="../2019/05/5minutes-episode-5"><img class="ready" src="/images/5-minutes/Episode-5.png" style="width:100%"></a> 
     <!-- 5 Minutes Episode 8 -->
     <a href="../2019/06/5minutes-episode-8"><img class="ready" src="/images/5-minutes/Episode-8.png" style="width:100%"></a> 
+    <!-- 5 Minutes Episode 11 -->
+    <a href="#"><img class="not-yet" src="/images/5-minutes/Episode-11.png" style="width:100%"></a> 
 
   </div>
    
@@ -38,6 +42,8 @@ Credits
     <a href="../2019/06/5minutes-episode-6"><img class="ready" src="/images/5-minutes/Episode-6.png" style="width:100%"></a> 
     <!-- 5 Minutes Episode 9 -->
     <a href="../2019/06/5minutes-episode-9"><img class="ready" src="/images/5-minutes/Episode-9.png" style="width:100%"></a> 
+    <!-- 5 Minutes Episode 12 -->
+    <a href="#"><img class="not-yet" src="/images/5-minutes/Episode-12.png" style="width:100%"></a> 
   </div>
   
 </div>
