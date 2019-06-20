@@ -7,7 +7,6 @@ permalink: /projects/
 
 ...
 
-- [5 Minutes](/5-minutes) — Screen recording expérience.
 - [Sapphire](https://www.primefaces.org/sapphire-ng) — An admin template follows Google Material Design specs for [PrimeFaces](https://www.primefaces.org/layouts/sapphire), [PrimeNG](https://www.primefaces.org/layouts/sapphire-ng)
 - [Roma](https://www.primefaces.org/roma-ng) — A minimal admin template for [PrimeFaces](https://www.primefaces.org/layouts/roma), [PrimeNG](https://www.primefaces.org/layouts/roma-ng)
 - [Babylon](https://www.primefaces.org/babylon-ng) — An admin template with powerful menu features for [PrimeFaces](https://www.primefaces.org/layouts/babylon), [PrimeNG](https://www.primefaces.org/layouts/babylon-ng) and [PrimeReact](https://www.primefaces.org/layouts/babylon-react)
