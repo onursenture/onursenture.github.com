@@ -1,0 +1,34 @@
+/* ==========================================================================
+   Variables
+   ========================================================================== */
+
+// Colors via http://ethanschoonover.com/solarized
+$c-base__03: #FCF5E4;
+$c-base__02: #e0d6ed;
+$c-base__01: #9c96a0;
+$c-base__00: #8e8695;
+$c-base__0: #716982;
+$c-base__1: #6f5c74;
+$c-base__2: #351641;
+$c-base__3: #240d35;
+
+$c-accent__blue: #e75152;
+$c-accent__green: #8BE367;
+
+// Breakpoints
+$bp__sm: 45rem; // 450px
+
+// Misc
+$m-border: 1px solid $c-base__2;
+
+// CSS Custom Properties
+:root {
+  --color-bg: #272226;
+  --color-surface: #2e2832;
+  --color-border: #{$c-base__2};
+  --color-text: #{$c-base__02};
+  --color-text-muted: #{$c-base__01};
+  --color-text-dim: #{$c-base__1};
+  --color-link: #{$c-accent__blue};
+  --color-green: #{$c-accent__green};
+}

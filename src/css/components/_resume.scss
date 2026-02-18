@@ -1,0 +1,90 @@
+/* ==========================================================================
+   Resume
+   ========================================================================== */
+
+.c-resume {
+    @include fs--body;
+    color: $c-base__01;
+
+    h2 {
+        @include fs--heading-2;
+        text-transform: uppercase;
+        margin-bottom: 1.5rem;
+        color: $c-base__02;
+    }
+
+    h3 {
+        @include fs--body;
+        display: inline-block;
+        line-height: 1;
+    }
+
+    section {
+        margin-top: 2.5rem;
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid $c-base__2;
+        margin-top: 2.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    a {
+        color: $c-accent__blue;
+    }
+
+    p {
+        text-align: justify;
+        clear: both;
+    }
+
+    li {
+        margin-left: 2em;
+        text-align: justify;
+        clear: both;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        display: none;
+    }
+
+    td {
+        padding: 0.3rem 0;
+        vertical-align: top;
+    }
+}
+
+.c-resume__header {
+    margin-bottom: 2.5rem;
+
+    h1 {
+        @include fs--heading-1;
+        margin-bottom: 1rem;
+    }
+}
+
+.c-resume__tenure {
+    float: right;
+    color: $c-base__01;
+    @include fs--caption;
+}
+
+.c-resume__keywords {
+    font-size: 1rem;
+    color: $c-base__01;
+}
+
+.c-resume__section > div {
+    margin-bottom: 2rem;
+    clear: both;
+}
+
+.c-resume__contact {
+    float: right;
+}

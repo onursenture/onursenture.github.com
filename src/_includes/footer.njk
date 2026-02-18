@@ -1,0 +1,10 @@
+<footer class="c-page__footer">
+    <p><a href="mailto:{{ site.email }}">{{ site.email }}</a></p>
+    <p>
+      {% if site.social.x %}<a href="https://twitter.com/{{ site.social.x }}">X</a><span class="u-seperate"></span>{% endif %}
+      {% if site.social.dribbble %}<a href="https://dribbble.com/{{ site.social.dribbble }}">Dribbble</a><span class="u-seperate"></span>{% endif %}
+      {% if site.social.github %}<a href="https://github.com/{{ site.social.github }}">GitHub</a><span class="u-seperate"></span>{% endif %}
+      {% if site.social.letterboxd %}<a href="https://letterboxd.com/{{ site.social.letterboxd }}">Letterboxd</a><span class="u-seperate"></span>{% endif %}
+      {% if site.social.goodreads %}<a href="https://goodreads.com/{{ site.social.goodreads }}">Goodreads</a>{% endif %}
+    </p>
+</footer>

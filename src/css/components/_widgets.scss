@@ -1,0 +1,19 @@
+/* ==========================================================================
+   Widgets (shared)
+   ========================================================================== */
+
+.c-widget {
+    margin-bottom: 6rem;
+}
+
+.c-widget__header {
+    margin-bottom: 2.5rem;
+    @include fs--heading-2;
+    color: $c-base__02;
+}
+
+.c-widget__empty {
+    @include fs--body;
+    color: $c-base__01;
+    font-style: italic;
+}

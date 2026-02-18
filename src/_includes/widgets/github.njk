@@ -1,0 +1,17 @@
+<section class="c-widget">
+    <h2 class="c-widget__header">Code</h2>
+    {% if github.weeks.length > 0 %}
+    <div class="c-github__graph">
+        {% for week in github.weeks %}
+        <div class="c-github__week">
+            {% for day in week.days %}
+            <div class="c-github__day c-github__day--level-{{ day.level }}" title="{{ day.date }}: {{ day.count }} contributions"></div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+    <p class="c-github__total">{{ github.total }} contributions in the last year</p>
+    {% else %}
+    <p class="c-widget__empty">Contribution data unavailable.</p>
+    {% endif %}
+</section>

@@ -1,0 +1,21 @@
+{
+  "name": "onursenture.com",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:css": "sass src/css/main.scss:_site/css/main.css --style=compressed --load-path=src/css",
+    "build:11ty": "npx eleventy",
+    "build": "npm run build:11ty && npm run build:css",
+    "dev:css": "sass src/css/main.scss:_site/css/main.css --watch --load-path=src/css",
+    "dev": "npx eleventy --serve",
+    "start": "npm run dev"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0",
+    "sass": "^1.80.0"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "rss-parser": "^3.13.0"
+  }
+}

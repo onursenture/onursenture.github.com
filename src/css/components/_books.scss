@@ -1,0 +1,38 @@
+/* ==========================================================================
+   Books (Goodreads)
+   ========================================================================== */
+
+.c-books__list {
+    display: flex;
+    gap: 2rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    list-style: none;
+}
+
+.c-books__item {
+    flex: 0 0 auto;
+    width: 12rem;
+}
+
+.c-books__cover {
+    display: block;
+    width: 12rem;
+    height: 18rem;
+    object-fit: cover;
+    margin-bottom: 1rem;
+    border: $m-border;
+}
+
+.c-books__title {
+    @include fs--caption;
+    color: $c-base__02;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+.c-books__author {
+    @include fs--caption;
+    color: $c-base__01;
+    display: block;
+}

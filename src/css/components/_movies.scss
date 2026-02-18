@@ -1,0 +1,38 @@
+/* ==========================================================================
+   Movies (Letterboxd)
+   ========================================================================== */
+
+.c-movies__list {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    list-style: none;
+}
+
+.c-movies__item {
+    flex: 0 0 auto;
+    width: 11rem;
+}
+
+.c-movies__poster {
+    display: block;
+    width: 11rem;
+    height: 16.5rem;
+    object-fit: cover;
+    margin-bottom: 0.8rem;
+    border: $m-border;
+}
+
+.c-movies__title {
+    @include fs--caption;
+    color: $c-base__02;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+.c-movies__rating {
+    @include fs--caption;
+    color: $c-accent__green;
+    display: block;
+}

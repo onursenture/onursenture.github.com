@@ -1,0 +1,45 @@
+/* ==========================================================================
+   GitHub Contributions
+   ========================================================================== */
+
+.c-github__graph {
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+}
+
+.c-github__week {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.c-github__day {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    background-color: var(--color-surface);
+}
+
+.c-github__day--level-1 {
+    background-color: rgba(139, 227, 103, 0.25);
+}
+
+.c-github__day--level-2 {
+    background-color: rgba(139, 227, 103, 0.50);
+}
+
+.c-github__day--level-3 {
+    background-color: rgba(139, 227, 103, 0.75);
+}
+
+.c-github__day--level-4 {
+    background-color: rgba(139, 227, 103, 1);
+}
+
+.c-github__total {
+    margin-top: 1.5rem;
+    @include fs--caption;
+    color: $c-base__01;
+}
