@@ -1,22 +1,50 @@
 <section class="c-widget">
-    <h2 class="c-widget__header">Reading</h2>
-    {% if goodreads.length > 0 %}
-    <ul class="c-books__list">
-        {% for book in goodreads %}
-        <li class="c-books__item">
-            {% if book.cover %}
-            <a href="{{ book.link }}" target="_blank">
-                <img class="c-books__cover" src="{{ book.cover }}" alt="{{ book.title }}" loading="lazy">
-            </a>
-            {% endif %}
-            <span class="c-books__title">{{ book.title }}</span>
-            {% if book.author %}
-            <span class="c-books__author">{{ book.author }}</span>
-            {% endif %}
-        </li>
-        {% endfor %}
-    </ul>
-    {% else %}
+    <h2 class="c-widget__header">
+        Reading
+        <a href="https://goodreads.com/{{ site.social.goodreads }}" target="_blank" class="c-widget__more">Goodreads</a>
+    </h2>
+
+    {% if goodreads.currentlyReading.length > 0 %}
+    <div class="c-reading__section">
+        <h3 class="c-reading__subheader">Currently Reading</h3>
+        <ul class="c-reading__list">
+            {% for book in goodreads.currentlyReading %}
+            <li class="c-reading__item">
+                <a href="{{ book.link }}" target="_blank" class="c-reading__link">
+                    <span class="c-reading__title">{{ book.title }}</span>
+                </a>
+                <span class="c-reading__meta">
+                    {{ book.author }}
+                </span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if goodreads.read.length > 0 %}
+    <div class="c-reading__section">
+        <h3 class="c-reading__subheader">Last Read</h3>
+        <ul class="c-reading__list">
+            {% for book in goodreads.read %}
+            <li class="c-reading__item">
+                <a href="{{ book.link }}" target="_blank" class="c-reading__link">
+                    <span class="c-reading__title">{{ book.title }}</span>
+                    {% if book.rating %}
+                    <span class="c-reading__rating">{{ book.rating }}</span>
+                    {% endif %}
+                </a>
+                <span class="c-reading__meta">
+                    {{ book.author }}{% if book.date %} · {{ book.date | timeAgo }}{% endif %}
+                </span>
+                {% if book.review %}
+                <p class="c-reading__review">{{ book.review | truncate(200) }}</p>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% elif goodreads.currentlyReading.length == 0 %}
     <p class="c-widget__empty">No recent books.</p>
     {% endif %}
 </section>

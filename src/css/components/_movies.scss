@@ -8,20 +8,37 @@
     overflow-x: auto;
     padding-bottom: 1rem;
     list-style: none;
+    scrollbar-width: none; // Firefox
+
+    &::-webkit-scrollbar {
+        display: none; // Chrome, Safari
+    }
 }
 
 .c-movies__item {
     flex: 0 0 auto;
-    width: 11rem;
+    width: 12rem;
+}
+
+.c-movies__poster-link {
+    display: block;
+    margin-bottom: 0.8rem;
+    overflow: hidden;
+
+    &:hover .c-movies__poster,
+    &:active .c-movies__poster {
+        transform: scale(1.03);
+        filter: grayscale(0%) brightness(1);
+    }
 }
 
 .c-movies__poster {
     display: block;
-    width: 11rem;
-    height: 16.5rem;
+    width: 12rem;
+    height: 18rem;
     object-fit: cover;
-    margin-bottom: 0.8rem;
-    border: $m-border;
+    filter: grayscale(100%) brightness(0.8);
+    transition: transform 0.3s ease, filter 0.5s ease;
 }
 
 .c-movies__title {
@@ -35,4 +52,11 @@
     @include fs--caption;
     color: $c-accent__green;
     display: block;
+}
+
+.c-movies__date {
+    @include fs--caption;
+    color: $c-base__01;
+    display: block;
+    margin-top: 0.2rem;
 }

@@ -1,17 +1,23 @@
 <section class="c-widget">
-    <h2 class="c-widget__header">Recently Watched</h2>
+    <h2 class="c-widget__header">
+        Recently Watched
+        <a href="https://letterboxd.com/{{ site.social.letterboxd }}" target="_blank" class="c-widget__more">Letterboxd</a>
+    </h2>
     {% if letterboxd.length > 0 %}
     <ul class="c-movies__list">
         {% for movie in letterboxd %}
         <li class="c-movies__item">
             {% if movie.poster %}
-            <a href="{{ movie.link }}" target="_blank">
+            <a href="{{ movie.link }}" target="_blank" class="c-movies__poster-link">
                 <img class="c-movies__poster" src="{{ movie.poster }}" alt="{{ movie.title }}" loading="lazy">
             </a>
             {% endif %}
-            <span class="c-movies__title">{{ movie.title }}</span>
+            <a href="{{ movie.link }}" target="_blank" class="c-movies__title">{{ movie.title }}</a>
             {% if movie.rating %}
             <span class="c-movies__rating">{{ movie.rating }}</span>
+            {% endif %}
+            {% if movie.date %}
+            <span class="c-movies__date">{{ movie.date | timeAgo }}</span>
             {% endif %}
         </li>
         {% endfor %}

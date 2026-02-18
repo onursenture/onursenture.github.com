@@ -10,6 +10,16 @@
     margin-bottom: 2.5rem;
     @include fs--heading-2;
     color: $c-base__02;
+    display: flex;
+    align-items: baseline;
+    gap: 1.2rem;
+}
+
+.c-widget__more {
+    @include fs--caption;
+    color: $c-base__01;
+    margin-left: auto;
+    white-space: nowrap;
 }
 
 .c-widget__empty {

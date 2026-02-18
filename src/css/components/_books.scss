@@ -1,38 +1,64 @@
 /* ==========================================================================
-   Books (Goodreads)
+   Reading (Goodreads) — text-only layout
    ========================================================================== */
 
-.c-books__list {
-    display: flex;
-    gap: 2rem;
-    overflow-x: auto;
-    padding-bottom: 1rem;
+.c-reading__section {
+    margin-bottom: 2.4rem;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.c-reading__subheader {
+    @include fs--caption;
+    color: $c-base__01;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.2rem;
+}
+
+.c-reading__list {
     list-style: none;
 }
 
-.c-books__item {
-    flex: 0 0 auto;
-    width: 12rem;
+.c-reading__item {
+    padding: 1rem 0;
+
+    &:first-child {
+        padding-top: 0;
+    }
 }
 
-.c-books__cover {
-    display: block;
-    width: 12rem;
-    height: 18rem;
-    object-fit: cover;
-    margin-bottom: 1rem;
-    border: $m-border;
-}
-
-.c-books__title {
-    @include fs--caption;
+.c-reading__link {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
     color: $c-base__02;
-    display: block;
-    margin-bottom: 0.3rem;
 }
 
-.c-books__author {
+.c-reading__title {
+    @include fs--body;
+}
+
+.c-reading__rating {
+    @include fs--caption;
+    color: $c-accent__green;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.c-reading__meta {
     @include fs--caption;
     color: $c-base__01;
     display: block;
+    margin-top: 0.3rem;
+}
+
+.c-reading__review {
+    @include fs--caption;
+    color: $c-base__0;
+    margin-top: 0.6rem;
+    line-height: 1.5;
+    font-style: italic;
 }
