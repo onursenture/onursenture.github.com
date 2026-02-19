@@ -1,5 +1,8 @@
 <section class="c-widget">
-    <h2 class="c-widget__header">Code</h2>
+    <h2 class="c-widget__header">
+        Code
+        <a href="https://github.com/{{ site.social.github }}" target="_blank" class="c-widget__more">GitHub</a>
+    </h2>
     {% if github.weeks.length > 0 %}
     <div class="c-github__graph">
         {% for week in github.weeks %}
