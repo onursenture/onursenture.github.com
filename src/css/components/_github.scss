@@ -7,17 +7,18 @@
     gap: 2px;
     overflow-x: auto;
     padding-bottom: 1rem;
+    justify-content: space-between;
 }
 
 .c-github__week {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    flex: 1;
 }
 
 .c-github__day {
-    width: 10px;
-    height: 10px;
+    aspect-ratio: 1;
     border-radius: 2px;
     background-color: var(--color-surface);
 }
