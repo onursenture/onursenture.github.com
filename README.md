@@ -7,7 +7,7 @@ This repository holds the source code for [onursenture.com](https://onursenture.
 
 License
 ---------
-This repo is meant to be available for educational purposes/reference. This is not an Eleventy theme, it is my portfolio. Do not re-use the design/layout or content contained within.
+This repo is intended for educational purposes/reference. This is not an Eleventy theme; it is my personal website. Do not re-use the design/layout or content contained within.
 
 Contact
 ---------
