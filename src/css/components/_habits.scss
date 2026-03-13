@@ -1,0 +1,67 @@
+/* ==========================================================================
+   Habits — compact grid, GitHub-contribution style
+   ========================================================================== */
+
+.c-habits__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem;
+
+    @media (max-width: $bp__sm) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.c-habit {
+    padding: 1.6rem;
+    border: 1px solid $c-base__2;
+    border-radius: 6px;
+}
+
+.c-habit__header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+}
+
+.c-habit__name {
+    @include fs--caption;
+    color: $c-base__02;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.c-habit__rate {
+    @include fs--caption;
+    color: $c-base__01;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.c-habit__graph {
+    display: flex;
+    gap: 2px;
+}
+
+.c-habit__week {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.c-habit__day {
+    aspect-ratio: 1;
+    border-radius: 2px;
+    background-color: #EFF2F5;
+}
+
+.c-habit__day--done {
+    background-color: #2EA44E;
+}
+
+.c-habit__day--future {
+    background-color: transparent;
+}
