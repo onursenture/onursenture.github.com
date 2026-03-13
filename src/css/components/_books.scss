@@ -1,6 +1,45 @@
 /* ==========================================================================
-   Reading (Goodreads) — text-only layout
+   Reading — text-only layout with tabs
    ========================================================================== */
+
+.c-reading__tabs {
+    margin-left: auto;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    white-space: nowrap;
+}
+
+.c-reading__tabs-sep {
+    @include fs--caption;
+    color: $c-base__0;
+}
+
+.c-reading__tab {
+    @include fs--caption;
+    font-family: inherit;
+    color: $c-base__01;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+
+    &:hover {
+        color: $c-base__02;
+    }
+
+    &.is-active {
+        color: $c-base__02;
+    }
+}
+
+.c-reading__panel {
+    display: none;
+
+    &.is-active {
+        display: block;
+    }
+}
 
 .c-reading__section {
     margin-bottom: 2.4rem;

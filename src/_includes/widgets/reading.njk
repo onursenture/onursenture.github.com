@@ -1,0 +1,96 @@
+<section class="c-widget">
+    <h2 class="c-widget__header">
+        Reading
+        <span class="c-reading__tabs" role="tablist">
+            <button class="c-reading__tab is-active" data-tab="goodreads" role="tab" aria-selected="true">Goodreads</button>
+            <span class="c-reading__tabs-sep">/</span>
+            <button class="c-reading__tab" data-tab="instapaper" role="tab" aria-selected="false">Instapaper</button>
+        </span>
+    </h2>
+
+    <div class="c-reading__panel is-active" data-panel="goodreads" role="tabpanel">
+        {% if goodreads.currentlyReading.length > 0 %}
+        <div class="c-reading__section">
+            <h3 class="c-reading__subheader">Currently Reading</h3>
+            <ul class="c-reading__list">
+                {% for book in goodreads.currentlyReading %}
+                <li class="c-reading__item">
+                    <a href="{{ book.link }}" target="_blank" class="c-reading__link">
+                        <span class="c-reading__title">{{ book.title }}</span>
+                    </a>
+                    <span class="c-reading__meta">
+                        {{ book.author }}
+                    </span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if goodreads.read.length > 0 %}
+        <div class="c-reading__section">
+            <h3 class="c-reading__subheader">Last Read</h3>
+            <ul class="c-reading__list">
+                {% for book in goodreads.read %}
+                <li class="c-reading__item">
+                    <a href="{{ book.link }}" target="_blank" class="c-reading__link">
+                        <span class="c-reading__title">{{ book.title }}</span>
+                        {% if book.rating %}
+                        <span class="c-reading__rating">{{ book.rating }}</span>
+                        {% endif %}
+                    </a>
+                    <span class="c-reading__meta">
+                        {{ book.author }}{% if book.date %} · {{ book.date | timeAgo }}{% endif %}
+                    </span>
+                    {% if book.review %}
+                    <p class="c-reading__review">{{ book.review | truncate(200) }}</p>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% elif goodreads.currentlyReading.length == 0 %}
+        <p class="c-widget__empty">No recent books.</p>
+        {% endif %}
+    </div>
+
+    <div class="c-reading__panel" data-panel="instapaper" role="tabpanel">
+        {% if instapaper.length > 0 %}
+        <ul class="c-reading__list">
+            {% for article in instapaper %}
+            <li class="c-reading__item">
+                <a href="{{ article.link }}" target="_blank" class="c-reading__link">
+                    <span class="c-reading__title">{{ article.title }}</span>
+                </a>
+                <span class="c-reading__meta">
+                    {{ article.domain }}{% if article.timeAgo %} · {{ article.timeAgo }}{% endif %}
+                </span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="c-widget__empty">No recent articles.</p>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+(function() {
+    var tabs = document.querySelectorAll('.c-reading__tab');
+    var panels = document.querySelectorAll('.c-reading__panel');
+    tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            tabs.forEach(function(t) {
+                t.classList.remove('is-active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            panels.forEach(function(p) { p.classList.remove('is-active'); });
+            tab.classList.add('is-active');
+            tab.setAttribute('aria-selected', 'true');
+            var target = tab.getAttribute('data-tab');
+            var panel = document.querySelector('.c-reading__panel[data-panel="' + target + '"]');
+            if (panel) panel.classList.add('is-active');
+        });
+    });
+})();
+</script>
