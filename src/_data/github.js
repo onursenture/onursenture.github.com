@@ -47,7 +47,7 @@ module.exports = async function () {
         days: week.contributionDays.map((day) => ({
           count: day.contributionCount,
           date: day.date,
-          level: getLevel(day.contributionCount),
+          level: getLevelFromColor(day.color),
         })),
       })),
     };
@@ -57,10 +57,17 @@ module.exports = async function () {
   }
 };
 
-function getLevel(count) {
-  if (count === 0) return 0;
-  if (count <= 3) return 1;
-  if (count <= 6) return 2;
-  if (count <= 9) return 3;
-  return 4;
+// GitHub API returns a color per day that encodes its contribution level.
+// Map the 5 known colors to levels 0-4 so the distribution matches GitHub exactly.
+const COLOR_TO_LEVEL = {
+  "#ebedf0": 0,
+  "#9be9a8": 1,
+  "#40c463": 2,
+  "#30a14e": 3,
+  "#216e39": 4,
+};
+
+function getLevelFromColor(color) {
+  if (!color) return 0;
+  return COLOR_TO_LEVEL[color.toLowerCase()] ?? 0;
 }
