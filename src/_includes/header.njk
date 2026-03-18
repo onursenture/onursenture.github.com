@@ -1,12 +1,8 @@
 <header class="c-page__header">
     {% if title == 'Home' %}
-        <h1>{{ site.description }}</h1>
+        <h1>{{ site.description | safe }}</h1>
     {% endif %}
-    <p>
+    {# <p>
         <a href="/">Home</a>
-        <span class="u-seperate"></span>
-        <a href="https://www.primetek.com.tr" target="_blank">PrimeTek</a>
-        <span class="u-seperate"></span>
-        <a href="https://web.archive.org/web/20230710045931/https://orkestra.co/" target="_blank">Orkestra Studios</a>
-    </p>
+    </p> #}
 </header>

@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>{% if title %}{{ title }} - {% endif %}{{ site.title }}</title>
-    <meta name="description" content="{% if excerpt %}{{ excerpt }}{% else %}{{ site.description }}{% endif %}">
+    <meta name="description" content="{% if excerpt %}{{ excerpt }}{% else %}{{ site.description | striptags }}{% endif %}">
 
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
     <link href="https://fonts.googleapis.com/css?family=PT+Serif&amp;subset=latin-ext" rel="stylesheet">
