@@ -1,0 +1,43 @@
+---
+layout: page.njk
+---
+<article class="c-photo">
+    <img class="c-photo__image" src="/images/photos/{{ image }}" alt="{{ title }}" loading="lazy">
+    <div class="c-photo__meta">
+        <div class="c-photo__meta-left">
+            <h1 class="c-photo__title">{{ title }}</h1>
+            <time class="c-photo__date" datetime="{{ date | dateDisplay('iso') }}">{{ date | dateDisplay }}</time>
+        </div>
+        {% if camera %}
+        <div class="c-photo__meta-right">
+            <p class="c-photo__camera">Camera: <strong>{{ camera }}</strong></p>
+        </div>
+        {% endif %}
+    </div>
+    {% if content | trim %}
+    <div class="c-photo__body">
+        {{ content | safe }}
+    </div>
+    {% endif %}
+    {# Nunjucks 3.x: set inside for propagates to outer scope #}
+    {% set allPhotos = collections.photos %}
+    {% set currentIndex = -1 %}
+    {% for photo in allPhotos %}
+        {% if photo.url == page.url %}
+            {% set currentIndex = loop.index0 %}
+        {% endif %}
+    {% endfor %}
+    <nav class="c-photo__nav">
+        {% if currentIndex > 0 %}
+            <a href="{{ allPhotos[currentIndex - 1].url }}">← Previous</a>
+        {% else %}
+            <span></span>
+        {% endif %}
+        <a href="/#photos">All Photos</a>
+        {% if currentIndex < allPhotos.length - 1 %}
+            <a href="{{ allPhotos[currentIndex + 1].url }}">Next →</a>
+        {% else %}
+            <span></span>
+        {% endif %}
+    </nav>
+</article>
