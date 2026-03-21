@@ -1,0 +1,131 @@
+/* ==========================================================================
+   Photos
+   ========================================================================== */
+
+// Homepage masonry grid (c-photos)
+
+.c-photos__grid {
+    columns: 2;
+    column-gap: 1.2rem;
+
+    @media screen and (min-width: $bp__sm) {
+        columns: 3;
+    }
+
+    @supports (grid-template-rows: masonry) {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: masonry;
+        gap: 1.2rem;
+
+        @media screen and (min-width: $bp__sm) {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+}
+
+.c-photos__item {
+    display: block;
+    break-inside: avoid;
+    margin-bottom: 1.2rem;
+    overflow: hidden;
+    border-radius: 0.3rem;
+
+    @supports (grid-template-rows: masonry) {
+        margin-bottom: 0;
+    }
+
+    &:hover .c-photos__image,
+    &:active .c-photos__image {
+        transform: scale(1.03);
+    }
+}
+
+.c-photos__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s ease;
+}
+
+// Detail page (c-photo)
+
+.c-photo {
+    margin-bottom: 6rem;
+}
+
+.c-photo__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: 3rem;
+}
+
+.c-photo__meta {
+    margin-bottom: 2.4rem;
+
+    @media screen and (min-width: $bp__sm) {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+    }
+}
+
+.c-photo__title {
+    @include fs--heading-2;
+    color: $c-base__02;
+    margin-bottom: 0.4rem;
+}
+
+.c-photo__date {
+    @include fs--caption;
+    color: $c-base__01;
+}
+
+.c-photo__camera {
+    @include fs--caption;
+    color: $c-base__01;
+    margin-top: 0.8rem;
+
+    @media screen and (min-width: $bp__sm) {
+        margin-top: 0;
+        text-align: right;
+    }
+
+    strong {
+        color: $c-base__02;
+    }
+}
+
+.c-photo__body {
+    padding-top: 2.4rem;
+    border-top: $m-border;
+    @include fs--body;
+    color: $c-base__01;
+
+    > * {
+        margin-bottom: 1.8rem;
+    }
+}
+
+.c-photo__nav {
+    margin-top: 3.2rem;
+    padding-top: 1.6rem;
+    border-top: $m-border;
+    display: flex;
+    justify-content: space-between;
+    @include fs--caption;
+
+    a {
+        color: $c-accent__blue;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    span {
+        // Empty placeholder for flex spacing when prev/next doesn't exist
+    }
+}
