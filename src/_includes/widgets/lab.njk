@@ -4,18 +4,15 @@
         Lab
         <a href="https://lab.onursenture.com" target="_blank" class="c-widget__more">lab.onursenture.com</a>
     </h2>
-    <ul class="c-lab__list">
+    <ul class="c-reading__list">
         {% for project in lab %}
-        <li class="c-lab__item">
-            <a href="https://lab.onursenture.com/projects/{{ project.slug }}" target="_blank" class="c-lab__link">
-                <span class="c-lab__name">{{ project.name }}</span>
+        <li class="c-reading__item">
+            <a href="https://lab.onursenture.com/projects/{{ project.slug }}" target="_blank" class="c-reading__link">
+                <span class="c-reading__title">{{ project.name }}</span>
             </a>
-            {% if project.description %}
-            <span class="c-lab__description">{{ project.description }}</span>
-            {% endif %}
-            {% if project.date %}
-            <span class="c-lab__date">{{ project.date | dateDisplay }}</span>
-            {% endif %}
+            <span class="c-reading__meta">
+                {{ project.description }}{% if project.date %} · {{ project.date | dateDisplay }}{% endif %}
+            </span>
         </li>
         {% endfor %}
     </ul>
