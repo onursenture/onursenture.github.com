@@ -1,0 +1,15 @@
+{% set photos = collections.photos | reverse %}
+{% if photos.length > 0 %}
+<section class="c-widget" id="photos">
+    <h2 class="c-widget__header">
+        Photos
+    </h2>
+    <div class="c-photos__grid">
+        {% for photo in photos %}
+        <a href="{{ photo.url }}" class="c-photos__item">
+            <img class="c-photos__image" src="/images/photos/{{ photo.data.image }}" alt="{{ photo.data.title }}" loading="lazy">
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
