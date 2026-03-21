@@ -3,13 +3,16 @@
 <section class="c-widget" id="photos">
     <h2 class="c-widget__header">
         Photos
+        <a href="/photos/" class="c-widget__more">Show All</a>
     </h2>
-    <div class="c-photos__grid">
+    <ul class="c-photos__list">
         {% for photo in photos %}
-        <a href="{{ photo.url }}" class="c-photos__item">
-            <img class="c-photos__image" src="/images/photos/{{ photo.data.image }}" alt="{{ photo.data.title }}" loading="lazy">
-        </a>
+        <li class="c-photos__item">
+            <a href="{{ photo.url }}" class="c-photos__link">
+                <img class="c-photos__image" src="/images/photos/{{ photo.data.image }}" alt="{{ photo.data.title }}" loading="lazy">
+            </a>
+        </li>
         {% endfor %}
-    </div>
+    </ul>
 </section>
 {% endif %}

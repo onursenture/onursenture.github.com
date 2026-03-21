@@ -1,6 +1,10 @@
 ---
 layout: page.njk
 ---
+<div class="c-photo__topnav">
+    <a href="/" class="c-photos__back">← Home</a>
+    <a href="/photos/" class="c-photo__all-link">All Photos</a>
+</div>
 <article class="c-photo">
     <img class="c-photo__image" src="/images/photos/{{ image }}" alt="{{ title }}">
     <div class="c-photo__meta">
@@ -10,7 +14,7 @@ layout: page.njk
         </div>
         {% if camera %}
         <div class="c-photo__meta-right">
-            <p class="c-photo__camera">Camera: <strong>{{ camera }}</strong></p>
+            <p class="c-photo__camera">Camera: {{ camera }}</p>
         </div>
         {% endif %}
     </div>
@@ -33,7 +37,6 @@ layout: page.njk
         {% else %}
             <span></span>
         {% endif %}
-        <a href="/#photos">All Photos</a>
         {% if currentIndex < allPhotos.length - 1 %}
             <a href="{{ allPhotos[currentIndex + 1].url }}">Next →</a>
         {% else %}

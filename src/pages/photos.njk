@@ -1,0 +1,18 @@
+---
+layout: page.njk
+title: Photos
+permalink: /photos/
+---
+
+<a href="/" class="c-photos__back">← Back</a>
+
+{% set photos = collections.photos | reverse %}
+{% if photos.length > 0 %}
+<div class="c-photos__grid">
+    {% for photo in photos %}
+    <a href="{{ photo.url }}" class="c-photos__grid-item">
+        <img class="c-photos__grid-image" src="/images/photos/{{ photo.data.image }}" alt="{{ photo.data.title }}" loading="lazy">
+    </a>
+    {% endfor %}
+</div>
+{% endif %}

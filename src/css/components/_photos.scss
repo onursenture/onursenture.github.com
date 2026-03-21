@@ -2,38 +2,29 @@
    Photos
    ========================================================================== */
 
-// Homepage masonry grid (c-photos)
+// Homepage horizontal scroll strip (c-photos)
 
-.c-photos__grid {
-    columns: 2;
-    column-gap: 1.2rem;
+.c-photos__list {
+    display: flex;
+    gap: 1.2rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    list-style: none;
+    scrollbar-width: none;
 
-    @media screen and (min-width: $bp__sm) {
-        columns: 3;
-    }
-
-    @supports (grid-template-rows: masonry) {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: masonry;
-        gap: 1.2rem;
-
-        @media screen and (min-width: $bp__sm) {
-            grid-template-columns: repeat(3, 1fr);
-        }
+    &::-webkit-scrollbar {
+        display: none;
     }
 }
 
 .c-photos__item {
+    flex: 0 0 auto;
+}
+
+.c-photos__link {
     display: block;
-    break-inside: avoid;
-    margin-bottom: 1.2rem;
     overflow: hidden;
     border-radius: 0.3rem;
-
-    @supports (grid-template-rows: masonry) {
-        margin-bottom: 0;
-    }
 
     &:hover .c-photos__image,
     &:active .c-photos__image {
@@ -43,9 +34,73 @@
 
 .c-photos__image {
     display: block;
-    width: 100%;
-    height: auto;
+    height: 20rem;
+    width: auto;
     transition: transform 0.3s ease;
+}
+
+// All photos grid page (/photos/)
+
+.c-photos__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+
+    @media screen and (min-width: $bp__sm) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.c-photos__grid-item {
+    display: block;
+    overflow: hidden;
+    border-radius: 0.3rem;
+
+    &:hover .c-photos__grid-image,
+    &:active .c-photos__grid-image {
+        transform: scale(1.03);
+    }
+}
+
+.c-photos__grid-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.c-photos__back {
+    display: inline-block;
+    margin-bottom: 2.4rem;
+    @include fs--caption;
+    color: $c-accent__blue;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.c-photo__topnav {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2.4rem;
+
+    .c-photos__back {
+        margin-bottom: 0;
+    }
+}
+
+.c-photo__all-link {
+    @include fs--caption;
+    color: $c-accent__blue;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 // Detail page (c-photo)
@@ -91,10 +146,6 @@
         margin-top: 0;
         text-align: right;
     }
-
-    strong {
-        color: $c-base__02;
-    }
 }
 
 .c-photo__body {
@@ -116,6 +167,22 @@
     justify-content: space-between;
     @include fs--caption;
 
+    > a, > span {
+        flex: 1 1 0;
+    }
+
+    > :first-child {
+        text-align: left;
+    }
+
+    > :nth-child(2) {
+        text-align: center;
+    }
+
+    > :last-child {
+        text-align: right;
+    }
+
     a {
         color: $c-accent__blue;
         text-decoration: none;
@@ -123,9 +190,5 @@
         &:hover {
             text-decoration: underline;
         }
-    }
-
-    span {
-        // Empty placeholder for flex spacing when prev/next doesn't exist
     }
 }
