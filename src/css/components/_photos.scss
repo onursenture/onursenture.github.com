@@ -41,6 +41,11 @@
 
 // All photos grid page (/photos/)
 
+.u-container:has(.c-photos__grid),
+.u-container:has(.c-photo) {
+    padding-top: 0;
+}
+
 .c-photos__grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
