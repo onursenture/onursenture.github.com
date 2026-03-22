@@ -1,0 +1,18 @@
+{% if writing.length > 0 %}
+<section class="c-widget">
+    <h2 class="c-widget__header">
+        Writing
+        <a href="https://w00f.org" target="_blank" class="c-widget__more">Blog</a>
+    </h2>
+    <ul class="c-reading__list">
+        {% for post in writing %}
+        <li class="c-reading__item">
+            <a href="{{ post.link }}" target="_blank" class="c-reading__link">
+                <span class="c-reading__title">{{ post.title }}</span>
+            </a>
+            <span class="c-reading__meta">{{ post.date | timeAgo }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+{% endif %}
