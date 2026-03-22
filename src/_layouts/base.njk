@@ -2,7 +2,7 @@
 <html>
     {% include "head.njk" %}
     <body>
-        <main class="u-container">
+        <main class="u-container{{ ' ' + containerClass if containerClass }}">
         {{ content | safe }}
         </main>
     </body>
