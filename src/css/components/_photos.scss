@@ -39,7 +39,11 @@
     transition: transform 0.3s ease;
 }
 
-// All photos grid page (/photos/)
+// All photos grid page (/photos/) & detail pages
+
+.c-page--photos {
+    padding-top: 0;
+}
 
 .c-photos__grid {
     display: grid;

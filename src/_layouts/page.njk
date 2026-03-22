@@ -1,7 +1,7 @@
 ---
 layout: base.njk
 ---
-<div class="c-page{{ ' c-page--no-pt' if noPagePadding }}">
+<div class="c-page{{ ' ' + pageClass if pageClass }}">
     {% include "header.njk" %}
     <div class="c-page__main">
     {{ content | safe }}
