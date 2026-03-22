@@ -34,14 +34,23 @@ pageClass: c-page--photos
     {% endfor %}
     <nav class="c-photo__nav">
         {% if currentIndex > 0 %}
-            <a href="{{ allPhotos[currentIndex - 1].url }}">← Previous</a>
+            <a href="{{ allPhotos[currentIndex - 1].url }}" data-nav="prev">← Previous</a>
         {% else %}
             <span></span>
         {% endif %}
         {% if currentIndex < allPhotos.length - 1 %}
-            <a href="{{ allPhotos[currentIndex + 1].url }}">Next →</a>
+            <a href="{{ allPhotos[currentIndex + 1].url }}" data-nav="next">Next →</a>
         {% else %}
             <span></span>
         {% endif %}
     </nav>
+    <script>
+        document.addEventListener('keydown', function (e) {
+            if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+            var link;
+            if (e.key === 'ArrowLeft') link = document.querySelector('[data-nav="prev"]');
+            if (e.key === 'ArrowRight') link = document.querySelector('[data-nav="next"]');
+            if (link) link.click();
+        });
+    </script>
 </article>
