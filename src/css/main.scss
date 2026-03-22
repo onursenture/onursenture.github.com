@@ -1,31 +1,26 @@
 @charset "utf-8";
 
 // Helpers
-@import
-    'helpers/mixins',
-    'helpers/variables';
+@use 'helpers/mixins' as *;
+@use 'helpers/variables' as *;
 
 // Base
-@import
-    'base/reset';
+@use 'base/reset';
 
 // Utilities
-@import
-    'utilities/layout',
-    'utilities/seperator';
+@use 'utilities/layout';
+@use 'utilities/seperator';
 
 // Components
-@import
-    'components/page',
-    'components/article',
-    'components/tag',
-    'components/archives',
-    'components/widgets',
-    'components/github',
-    'components/books',
-    'components/movies',
-    'components/photos';
+@use 'components/page';
+@use 'components/article';
+@use 'components/tag';
+@use 'components/archives';
+@use 'components/widgets';
+@use 'components/github';
+@use 'components/books';
+@use 'components/movies';
+@use 'components/photos';
 
 // Vendor
-@import
-    'vendor/highlight';
+@use 'vendor/highlight';

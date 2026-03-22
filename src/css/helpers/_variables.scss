@@ -3,7 +3,8 @@
    ========================================================================== */
 
 // Active theme — change this import to switch themes
-@import '../themes/2026-2';
+@forward '../themes/2026-2';
+@use '../themes/2026-2' as *;
 
 // Breakpoints
 $bp__sm: 45rem; // 450px
