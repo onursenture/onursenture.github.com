@@ -22,23 +22,23 @@
 .c-github__day {
     aspect-ratio: 1;
     border-radius: 2px;
-    background-color: #eff2f5;
+    background-color: var(--color-graph-0);
 }
 
 .c-github__day--level-1 {
-    background-color: #aceebb;
+    background-color: var(--color-graph-1);
 }
 
 .c-github__day--level-2 {
-    background-color: #4ac26b;
+    background-color: var(--color-graph-2);
 }
 
 .c-github__day--level-3 {
-    background-color: #2EA44E;
+    background-color: var(--color-graph-3);
 }
 
 .c-github__day--level-4 {
-    background-color: #126329;
+    background-color: var(--color-graph-4);
 }
 
 .c-github__total {

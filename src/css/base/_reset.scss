@@ -25,6 +25,7 @@ html {
 body {
     @include ff--sans-serif(400);
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     background-color: var(--color-bg);
 }
 
@@ -50,6 +51,7 @@ h5,
 h6 {
     font-weight: 400;
     color: $c-base__02;
+    text-wrap: balance;
 }
 
 
@@ -73,6 +75,8 @@ img {
     font-style: italic;
     vertical-align: middle;
     border: 0;
+    outline: 1px solid rgba(0, 0, 0, 0.1);
+    outline-offset: -1px;
 }
 
 svg:not(:root) { overflow: hidden; }

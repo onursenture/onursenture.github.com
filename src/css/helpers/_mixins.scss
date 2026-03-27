@@ -54,6 +54,7 @@
 @mixin fs--body {
     line-height: 1.5;
     font-size: 1.8rem; // 18px
+    text-wrap: pretty;
 }
 
 @mixin fs--meta {

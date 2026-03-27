@@ -39,8 +39,11 @@
     width: 12rem;
     height: 18rem;
     object-fit: cover;
+    border-radius: 0.3rem;
     filter: grayscale(100%) brightness(0.8);
-    transition: transform 0.3s ease, filter 0.5s ease;
+    transition-property: transform, filter;
+    transition-duration: 0.3s, 0.5s;
+    transition-timing-function: ease-out;
 }
 
 .c-movies__title {
