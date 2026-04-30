@@ -15,6 +15,7 @@
         margin-bottom: 2.5rem; // 25px
         @include fs--heading-2;
         color: $c-base__02;
+        text-wrap: auto;
     }
 
     p {
