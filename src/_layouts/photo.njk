@@ -3,7 +3,7 @@ layout: page.njk
 pageClass: c-page--photos
 ---
 <div class="c-photo__topnav">
-    <a href="/" class="c-photos__back">← Home</a>
+    <a href="/" class="c-photos__back">Home</a>
     <a href="/photos/" class="c-photo__all-link">All Photos</a>
 </div>
 <article class="c-photo">
@@ -34,12 +34,12 @@ pageClass: c-page--photos
     {% endfor %}
     <nav class="c-photo__nav">
         {% if currentIndex > 0 %}
-            <a href="{{ allPhotos[currentIndex - 1].url }}" data-nav="prev">← Previous</a>
+            <a href="{{ allPhotos[currentIndex - 1].url }}" data-nav="prev">Previous</a>
         {% else %}
             <span></span>
         {% endif %}
         {% if currentIndex < allPhotos.length - 1 %}
-            <a href="{{ allPhotos[currentIndex + 1].url }}" data-nav="next">Next →</a>
+            <a href="{{ allPhotos[currentIndex + 1].url }}" data-nav="next">Next</a>
         {% else %}
             <span></span>
         {% endif %}
