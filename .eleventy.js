@@ -3,7 +3,6 @@ const { execSync } = require("child_process");
 module.exports = function (eleventyConfig) {
   // Pass-through copies (paths relative to project root for files outside src/)
   eleventyConfig.addPassthroughCopy({ "images": "images" });
-  eleventyConfig.addPassthroughCopy({ "beatografi": "beatografi" });
   eleventyConfig.addPassthroughCopy({ "CNAME": "CNAME" });
   eleventyConfig.addPassthroughCopy({ "favicon.ico": "favicon.ico" });
   eleventyConfig.addPassthroughCopy({ "keybase.txt": "keybase.txt" });
