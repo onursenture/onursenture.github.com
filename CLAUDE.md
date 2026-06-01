@@ -48,7 +48,34 @@ Every external fetcher swallows errors with `console.warn` and returns an empty 
 - RSS feed is `src/pages/feed.njk` with `permalink: /feed.xml`.
 
 ### Photos
-Each photo is a markdown file in `src/photos/` with frontmatter (`title`, `date`, `image`, `camera`). `photos.json` in that folder applies `layout: photo.njk`, `tags: photos`, and `permalink: /photos/{{ page.fileSlug }}/` to all files. The image file itself lives in `images/photos/<filename>`. Adding a photo = one new `.md` + one new image; deleting = remove both.
+Each photo is a markdown file in `src/photos/` with frontmatter (`title`, `date`, `image`, `camera`). `photos.json` in that folder applies `layout: photo.njk`, `tags: photos`, and `permalink: /photos/{{ page.fileSlug }}/` to all files. The image file itself lives in `images/photos/<filename>`.
+
+Photos are served via `<picture>` in three templates (`_layouts/photo.njk`, `pages/photos.njk`, `_includes/widgets/photos.njk`) — an AVIF `<source>` plus the JPEG as `<img>` fallback. The AVIF path is derived inline via `image | replace('.jpeg', '.avif')`, so the frontmatter still only names the JPEG.
+
+**Adding a photo** — produce two files (`<slug>.jpeg` and `<slug>.avif`) in `images/photos/`, plus the `.md`. From an original (e.g. on Desktop):
+
+```bash
+SRC=/path/to/original.JPG
+SLUG=my-photo
+DEST=images/photos
+TMP=/tmp/$SLUG.tmp.jpg
+
+# Resize to 2560 wide max, high-quality JPEG intermediate
+sips -Z 2560 -s formatOptions 100 "$SRC" --out "$TMP" >/dev/null
+
+# AVIF: q60, 4:2:0
+/opt/homebrew/bin/avifenc -q 60 -y 420 "$TMP" "$DEST/$SLUG.avif"
+
+# mozjpeg: q82, progressive (decode via djpeg → re-encode via cjpeg)
+/opt/homebrew/opt/mozjpeg/bin/djpeg "$TMP" | \
+  /opt/homebrew/opt/mozjpeg/bin/cjpeg -quality 82 -progressive -optimize > "$DEST/$SLUG.jpeg"
+
+rm "$TMP"
+```
+
+Tools come from `brew install libavif mozjpeg`. If EXIF on the source was stripped (e.g. an already-exported "optimized" JPEG), read camera/date from the untouched original instead.
+
+**Deleting a photo** — remove the `.md` in `src/photos/` and both the `.jpeg` and `.avif` in `images/photos/`.
 
 ### CSS
 Sass with the modern `@use`/`@forward` module system (migrated from `@import`). Entry point `src/css/main.scss` pulls in helpers, base, utilities, and components in order. Class naming follows a BEM-ish convention: `c-` for components (`c-page`, `c-archives`), `u-` for utilities (`u-container`, `u-seperate`), `has-`/modifiers via `--`. The cache-busting `?v={{ build.hash }}` on the stylesheet link comes from `src/_data/build.js`.
@@ -57,4 +84,4 @@ Sass with the modern `@use`/`@forward` module system (migrated from `@import`). 
 
 - Dates in frontmatter are written as `YYYY-MM-DD`. The `dateDisplay` filter formats them.
 - External-data fetchers must fail soft (warn + return an empty shape). The widget partials assume the data may be empty.
-- When removing content (a photo, a post), check both `src/` (markdown) and `images/` (asset) — they are paired but not collocated.
+- When removing content (a photo, a post), check both `src/` (markdown) and `images/` (asset) — they are paired but not collocated. For photos, the asset is a pair: `.jpeg` + `.avif`.
