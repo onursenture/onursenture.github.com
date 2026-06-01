@@ -9,7 +9,10 @@
         {% for photo in photos %}
         <li class="c-photos__item">
             <a href="{{ photo.url }}" class="c-photos__link">
-                <img class="c-photos__image" src="/images/photos/{{ photo.data.image }}" alt="{{ photo.data.title }}" loading="lazy">
+                <picture>
+                    <source srcset="/images/photos/{{ photo.data.image | replace('.jpeg', '.avif') }}" type="image/avif">
+                    <img class="c-photos__image" src="/images/photos/{{ photo.data.image }}" alt="{{ photo.data.title }}" loading="lazy" decoding="async">
+                </picture>
             </a>
         </li>
         {% endfor %}

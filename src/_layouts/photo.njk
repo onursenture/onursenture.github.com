@@ -7,7 +7,10 @@ pageClass: c-page--photos
     <a href="/photos/" class="c-photo__all-link">All Photos</a>
 </div>
 <article class="c-photo">
-    <img class="c-photo__image" src="/images/photos/{{ image }}" alt="{{ title }}">
+    <picture>
+        <source srcset="/images/photos/{{ image | replace('.jpeg', '.avif') }}" type="image/avif">
+        <img class="c-photo__image" src="/images/photos/{{ image }}" alt="{{ title }}" decoding="async">
+    </picture>
     <div class="c-photo__meta">
         <div class="c-photo__meta-left">
             <h1 class="c-photo__title">{{ title }}</h1>

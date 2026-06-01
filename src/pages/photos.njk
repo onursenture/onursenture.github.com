@@ -12,7 +12,10 @@ pageClass: c-page--photos
 <div class="c-photos__grid">
     {% for photo in photos %}
     <a href="{{ photo.url }}" class="c-photos__grid-item">
-        <img class="c-photos__grid-image" src="/images/photos/{{ photo.data.image }}" alt="{{ photo.data.title }}" loading="lazy">
+        <picture>
+            <source srcset="/images/photos/{{ photo.data.image | replace('.jpeg', '.avif') }}" type="image/avif">
+            <img class="c-photos__grid-image" src="/images/photos/{{ photo.data.image }}" alt="{{ photo.data.title }}" loading="lazy" decoding="async">
+        </picture>
     </a>
     {% endfor %}
 </div>
