@@ -25,13 +25,13 @@ pre, code {
 
 .highlight {
     border-radius: 4px;
-    background: #FDFDFD;
-    border: 1px solid #E8E8EB;
+    background: #f0eeeb;
+    border: 1px solid #e3dfdb;
     color: #93a1a1;
 
     .gutter {
         padding: 1.2rem;
-        border-right: 1px solid #E8E8EB;
+        border-right: 1px solid #e3dfdb;
     }
 
     .code {
@@ -40,7 +40,7 @@ pre, code {
 }
 span.lineno {
     padding: 1rem;
-    border-right: 1px solid #E8E8EB;
+    border-right: 1px solid #e3dfdb;
 }
 .highlight .c { color: #586e75 } /* Comment */
 .highlight .err { color: #93a1a1 } /* Error */

@@ -16,7 +16,7 @@
 
 // Font families
 @mixin ff--sans-serif($font-weight: normal) {
-    font-family: 'PT Serif', 'Helvetica Neue', Helvetica, sans-serif;
+    font-family: 'Merriweather', Georgia, 'Times New Roman', serif;
     font-weight: $font-weight;
     line-height: 1.5;
 }

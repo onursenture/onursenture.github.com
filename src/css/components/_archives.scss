@@ -35,6 +35,6 @@
 
     p {
         @include fs--body;
-        color: #9d97a3;
+        color: var(--color-text-muted);
     }
 }
