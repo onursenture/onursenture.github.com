@@ -30,8 +30,8 @@ module.exports = async function () {
 
   // Fetch both shelves in parallel
   const [currentlyReading, read] = await Promise.all([
-    fetchShelf(parser, userId, "currently-reading", 8),
-    fetchShelf(parser, userId, "read", 5),
+    fetchShelf(parser, userId, "currently-reading", 10),
+    fetchShelf(parser, userId, "read", 10),
   ]);
 
   return { currentlyReading, read };
