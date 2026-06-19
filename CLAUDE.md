@@ -23,7 +23,7 @@ There are no tests or linters.
 - `src/` is input, `_site/` is output. Template engines: Nunjucks (`.njk`) and Markdown (rendered through Nunjucks).
 - A pre-build hook compiles `src/css/main.scss` → `_site/css/main.css` so the dev server picks up SCSS changes without a separate watcher.
 - Pass-through copies: `images/`, `CNAME`, `favicon.ico`, `keybase.txt` (all root-level, not under `src/`).
-- Custom filters live here: `dateDisplay` (also supports `"rfc822"` and `"iso"` for the RSS feed), `timeAgo`, `truncate`, `xmlEscape`.
+- Custom filters live here: `dateDisplay` (also supports `"rfc822"` and `"iso"` for the RSS feed), `timeAgo`, `truncate`, `xmlEscape` (for the XML feed only — `.njk` HTML output is already autoescaped by Nunjucks, so do **not** add `xmlEscape` there or values double-escape).
 - One collection: `posts`, sourced from `src/posts/**/*.md`, reversed (newest first).
 
 ### Data layer (`src/_data/*.js`)
@@ -48,7 +48,7 @@ Every external fetcher swallows errors with `console.warn` and returns an empty 
 - RSS feed is `src/pages/feed.njk` with `permalink: /feed.xml`.
 
 ### Photos
-Each photo is a markdown file in `src/photos/` with frontmatter (`title`, `date`, `image`, `camera`). `photos.json` in that folder applies `layout: photo.njk`, `tags: photos`, and `permalink: /photos/{{ page.fileSlug }}/` to all files. The image file itself lives in `images/photos/<filename>`.
+Each photo is a markdown file in `src/photos/` with frontmatter (`title`, `date`, `image`, `camera`). `photos.11tydata.js` in that folder applies `layout: photo.njk`, `tags: photos`, and `permalink: /photos/{{ page.fileSlug }}/` to all files, and via `eleventyComputed` derives two social-sharing fields per photo: `socialImage` (absolute JPEG URL) and `socialImageDimensions` (`{ width, height }`, read at build time from `images/photos/` with the `image-size` package, failing soft to `null`). The image file itself lives in `images/photos/<filename>`.
 
 Photos are served via `<picture>` in three templates (`_layouts/photo.njk`, `pages/photos.njk`, `_includes/widgets/photos.njk`) — an AVIF `<source>` plus the JPEG as `<img>` fallback. The AVIF path is derived inline via `image | replace('.jpeg', '.avif')`, so the frontmatter still only names the JPEG.
 
@@ -76,6 +76,15 @@ rm "$TMP"
 Tools come from `brew install libavif mozjpeg`. If EXIF on the source was stripped (e.g. an already-exported "optimized" JPEG), read camera/date from the untouched original instead.
 
 **Deleting a photo** — remove the `.md` in `src/photos/` and both the `.jpeg` and `.avif` in `images/photos/`.
+
+### Social sharing metadata (Open Graph / Twitter Card)
+`head.njk` emits per-page Open Graph and Twitter Card tags so pasted URLs render rich link previews. The block is generic: it reads `title` / `date` / `excerpt` from the page plus `socialImage` / `socialImageDimensions` (set only on photos by `photos.11tydata.js`). So photo pages get a `summary_large_image` card with the photo, its dimensions, and the title as the description; other pages get a text-only `summary`. Adding a photo needs no extra step — the tags are generated from its frontmatter.
+
+Conventions to preserve:
+- **The OG image is the JPEG, never the AVIF** — social crawlers (Facebook, X, LinkedIn, WhatsApp, iMessage, Slack) don't reliably render AVIF. Build image/URL values as absolute (`site.url` + path).
+- **No default social image** — pages without a photo intentionally omit `og:image` / `twitter:image` and fall back to `twitter:card = summary`.
+- See the `xmlEscape` note above: Nunjucks autoescapes these `.njk` tags, so the filter is not used here.
+- After changing an *existing* photo's title or image, re-scrape via the [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) to bust crawler caches (brand-new URLs fetch fresh on first share).
 
 ### CSS
 Sass with the modern `@use`/`@forward` module system (migrated from `@import`). Entry point `src/css/main.scss` pulls in helpers, base, utilities, and components in order. Class naming follows a BEM-ish convention: `c-` for components (`c-page`, `c-archives`), `u-` for utilities (`u-container`, `u-seperate`), `has-`/modifiers via `--`. The cache-busting `?v={{ build.hash }}` on the stylesheet link comes from `src/_data/build.js`.

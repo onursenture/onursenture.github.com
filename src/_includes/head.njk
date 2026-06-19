@@ -3,12 +3,50 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    {# Shared social/meta values. `socialImage` is only set on photo pages, so its
+       presence is the "is this a photo?" signal — photos use their title as the
+       description, everything else keeps excerpt → site description. #}
+    {%- set metaDescription = excerpt if excerpt else (title if socialImage else (site.description | striptags)) -%}
+    {%- set ogTitle = title if title else site.title -%}
+    {%- set ogType = "article" if date else "website" -%}
+
     <title>{% if title %}{{ title }} - {% endif %}{{ site.title }}</title>
-    <meta name="description" content="{% if excerpt %}{{ excerpt }}{% else %}{{ site.description | striptags }}{% endif %}">
+    {# Nunjucks autoescapes {{ }} in .njk (& < > " '), so no xmlEscape filter here —
+       that one is for the XML feed and would double-escape inside HTML. #}
+    <meta name="description" content="{{ metaDescription }}">
 
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
     <link href="https://fonts.googleapis.com/css?family=PT+Serif&amp;subset=latin-ext" rel="stylesheet">
     <link rel="stylesheet" href="/css/main.css?v={{ build.hash }}">
     <link rel="canonical" href="{{ site.url }}{{ page.url }}">
     <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ site.url }}/feed.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="{{ ogType }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta property="og:title" content="{{ ogTitle }}">
+    <meta property="og:description" content="{{ metaDescription }}">
+    <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+    {%- if socialImage %}
+    <meta property="og:image" content="{{ socialImage }}">
+    <meta property="og:image:alt" content="{{ title }}">
+    {%- if socialImageDimensions %}
+    <meta property="og:image:width" content="{{ socialImageDimensions.width }}">
+    <meta property="og:image:height" content="{{ socialImageDimensions.height }}">
+    {%- endif %}
+    {%- endif %}
+    {%- if date %}
+    <meta property="article:published_time" content="{{ date | dateDisplay('iso') }}">
+    {%- endif %}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="{{ 'summary_large_image' if socialImage else 'summary' }}">
+    <meta name="twitter:site" content="@{{ site.social.x }}">
+    <meta name="twitter:creator" content="@{{ site.social.x }}">
+    <meta name="twitter:title" content="{{ ogTitle }}">
+    <meta name="twitter:description" content="{{ metaDescription }}">
+    {%- if socialImage %}
+    <meta name="twitter:image" content="{{ socialImage }}">
+    <meta name="twitter:image:alt" content="{{ title }}">
+    {%- endif %}
 </head>

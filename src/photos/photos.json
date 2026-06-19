@@ -1,5 +1,0 @@
-{
-  "layout": "photo.njk",
-  "tags": "photos",
-  "permalink": "/photos/{{ page.fileSlug }}/"
-}

@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.0.0",
+    "image-size": "^1.2.0",
     "sass": "^1.80.0"
   },
   "dependencies": {
