@@ -63,6 +63,7 @@
     display: block;
     overflow: hidden;
     border-radius: 0.3rem;
+    aspect-ratio: 16 / 9;
 
     &:hover .c-photos__grid-image,
     &:active .c-photos__grid-image {
