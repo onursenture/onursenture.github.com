@@ -8,6 +8,12 @@ Thumbs.db
 
 !.gitkeep
 
+# Claude Code local working dir (agent worktrees, etc.)
+.claude/
+
+# Local /improve planning backlog (not site content; kept out of the repo)
+plans/
+
 # Legacy Jekyll
 _theme_packages/
 .rbenv-version
