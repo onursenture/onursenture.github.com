@@ -1,5 +1,7 @@
 module.exports = function () {
+  const now = new Date();
   return {
-    hash: Date.now().toString(36),
+    hash: now.getTime().toString(36),
+    date: now,
   };
 };
