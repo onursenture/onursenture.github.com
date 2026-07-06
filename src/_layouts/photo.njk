@@ -9,7 +9,7 @@ pageClass: c-page--photos
 <article class="c-photo">
     <picture>
         <source srcset="/images/photos/{{ image | replace('.jpeg', '.avif') }}" type="image/avif">
-        <img class="c-photo__image" src="/images/photos/{{ image }}" alt="{{ title }}" decoding="async">
+        <img class="c-photo__image" src="/images/photos/{{ image }}" alt="{{ title }}" decoding="async"{% if socialImageDimensions %} width="{{ socialImageDimensions.width }}" height="{{ socialImageDimensions.height }}"{% endif %}>
     </picture>
     <div class="c-photo__meta">
         <div class="c-photo__meta-left">

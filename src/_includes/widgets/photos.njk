@@ -11,7 +11,7 @@
             <a href="{{ photo.url }}" class="c-photos__link">
                 <picture>
                     <source srcset="/images/photos/{{ photo.data.image | replace('.jpeg', '.avif') }}" type="image/avif">
-                    <img class="c-photos__image" src="/images/photos/{{ photo.data.image }}" alt="{{ photo.data.title }}" loading="lazy" decoding="async">
+                    <img class="c-photos__image" src="/images/photos/{{ photo.data.image }}" alt="{{ photo.data.title }}" loading="lazy" decoding="async"{% if photo.data.socialImageDimensions %} width="{{ photo.data.socialImageDimensions.width }}" height="{{ photo.data.socialImageDimensions.height }}"{% endif %}>
                 </picture>
             </a>
         </li>
