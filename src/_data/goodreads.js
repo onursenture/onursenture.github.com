@@ -14,6 +14,7 @@ module.exports = async function () {
         ["user_rating", "userRating"],
         ["user_review", "userReview"],
         ["user_shelves", "userShelves"],
+        ["user_read_at", "userReadAt"],
       ],
     },
   });
@@ -92,7 +93,9 @@ async function fetchShelf(parser, userId, shelf, limit) {
         numRating: numRating || 0,
         review: review,
         link: item.link || "",
-        date: item.pubDate || "",
+        // Prefer the date the book was actually finished (user_read_at); fall
+        // back to pubDate (shelf-add date) when the read date is missing.
+        date: item.userReadAt || item.pubDate || "",
       };
     });
   } catch (e) {
