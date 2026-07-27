@@ -34,7 +34,7 @@ async function fetchShelf(parser, userId, shelf, limit) {
   try {
     const feed = await parser.parseURL(feedUrl);
 
-    return feed.items.slice(0, limit).map((item) => {
+    const books = feed.items.map((item) => {
       // Extract review text and book cover from description HTML
       let review = "";
       let cover = item.bookImageUrl || "";
@@ -98,9 +98,23 @@ async function fetchShelf(parser, userId, shelf, limit) {
         date: item.userReadAt || item.pubDate || "",
       };
     });
+
+    // The feed is ordered by shelf-add date, but we display (and want to rank
+    // by) the read date, so sort before trimming — otherwise a book added long
+    // after it was finished jumps to the top with an older date than the ones
+    // below it, and one finished recently but added earlier never makes the cut.
+    books.sort((a, b) => dateValue(b.date) - dateValue(a.date));
+
+    return books.slice(0, limit);
   } catch (e) {
     console.warn(`[data] Failed to fetch Goodreads RSS (${shelf}):`, e.message);
     return [];
   }
+}
+
+// Sortable timestamp; entries without a usable date sink to the bottom.
+function dateValue(dateStr) {
+  const time = dateStr ? new Date(dateStr).getTime() : NaN;
+  return Number.isNaN(time) ? -Infinity : time;
 }
 
