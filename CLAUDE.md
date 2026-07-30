@@ -38,7 +38,7 @@ This is the most important file to understand. Each `.js` file becomes a global 
 | `goodreads.js` | Goodreads RSS | Needs a numeric user ID — pinned in code (`8143905`), overridable via `GOODREADS_USER_ID`. Returns `{ currentlyReading, read }` |
 | `instapaper.js` | `instapaper.com/p/w00f` (scraped HTML) | Last 15 articles |
 | `writing.js` | `w00f.org/feed/` (Bear Blog) | Last 10 posts |
-| `lab.js` | `lab.onursenture.com/api/projects` | Sibling site's JSON API |
+| `lab.js` | static | Side projects, maintained inline as an array; sorted newest-first. Entries link out via `url`, which is optional |
 
 Every external fetcher swallows errors with `console.warn` and returns an empty fallback so a flaky upstream never breaks the build. Preserve this behavior when adding new sources.
 

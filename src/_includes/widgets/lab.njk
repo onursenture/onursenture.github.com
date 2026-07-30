@@ -2,14 +2,17 @@
 <section class="c-widget">
     <h2 class="c-widget__header">
         Lab
-        <span class="c-widget__more">lab.onursenture.com</span>
     </h2>
     <ul class="c-reading__list">
         {% for project in lab %}
         <li class="c-reading__item">
-            <a href="https://lab.onursenture.com/projects/{{ project.slug }}" target="_blank" class="c-reading__link">
+            {% if project.url %}
+            <a href="{{ project.url }}" target="_blank" class="c-reading__link">
                 <span class="c-reading__title">{{ project.name }}</span>
             </a>
+            {% else %}
+            <span class="c-reading__title">{{ project.name }}</span>
+            {% endif %}
             <span class="c-reading__meta">
                 {{ project.description }}{% if project.date %} · {{ project.date | dateDisplay }}{% endif %}
             </span>
