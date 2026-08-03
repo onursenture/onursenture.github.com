@@ -63,7 +63,7 @@
                     <span class="c-reading__title">{{ article.title }}</span>
                 </a>
                 <span class="c-reading__meta">
-                    {{ article.domain }}{% if article.timeAgo %} · {{ article.timeAgo }}{% endif %}
+                    {{ article.domain }}{% if article.date %} · {{ article.date | timeAgo }}{% endif %}
                 </span>
             </li>
             {% endfor %}

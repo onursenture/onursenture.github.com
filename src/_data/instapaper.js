@@ -1,12 +1,14 @@
-const cheerio = require("cheerio");
-
 module.exports = async function () {
   const username = "w00f";
-  const url = `https://www.instapaper.com/p/${username}`;
+  // The public profile page (instapaper.com/p/<user>) is a React SPA served as
+  // an empty shell, so there is no server-rendered HTML to scrape. This is the
+  // JSON endpoint that SPA calls for the same list; it works unauthenticated.
+  const url = `https://www.instapaper.com/data/profile/${username}?page=1`;
 
   try {
     const response = await fetch(url, {
       headers: {
+        Accept: "application/json",
         "User-Agent": "Mozilla/5.0 (compatible; personal-site-builder/1.0)",
       },
     });
@@ -16,23 +18,21 @@ module.exports = async function () {
       return [];
     }
 
-    const html = await response.text();
-    const $ = cheerio.load(html);
+    const data = await response.json();
+    const bookmarks = Array.isArray(data.bookmarks) ? data.bookmarks : [];
 
-    const articles = [];
-    $(".article_item").each((i, el) => {
-      if (i >= 15) return false;
-
-      const $el = $(el);
-      const title = $el.find(".article_title").text().trim();
-      const link = $el.find(".article_title").attr("href") || "";
-      const domain = $el.find(".js_domain_linkout").text().trim();
-      const timeAgo = $el.find("time.date").text().trim();
-
-      if (title && link) {
-        articles.push({ title, link, domain, timeAgo });
-      }
-    });
+    // Kept in the order the API returns, which is the order the profile page
+    // itself renders — `time` is the save timestamp and isn't strictly
+    // descending (bulk-saved items share one).
+    const articles = bookmarks
+      .filter((b) => b.title && b.url)
+      .slice(0, 15)
+      .map((b) => ({
+        title: b.title.trim(),
+        link: b.url,
+        domain: b.site_name || hostname(b.url),
+        date: b.time ? new Date(b.time * 1000).toISOString() : "",
+      }));
 
     console.log(`[data] Fetched ${articles.length} Instapaper articles`);
     return articles;
@@ -41,3 +41,11 @@ module.exports = async function () {
     return [];
   }
 };
+
+function hostname(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+}

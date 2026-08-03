@@ -36,7 +36,7 @@ This is the most important file to understand. Each `.js` file becomes a global 
 | `github.js` | GitHub GraphQL | Needs `GH_PAT` / `GITHUB_PAT` env var (set as a secret in CI); returns empty silently if missing. Maps the 5 known GitHub contribution colors to levels 0–4 |
 | `letterboxd.js` | `letterboxd.com/onur/rss/` via rss-parser + cheerio | Last 6 films |
 | `goodreads.js` | Goodreads RSS | Needs a numeric user ID — pinned in code (`8143905`), overridable via `GOODREADS_USER_ID`. Returns `{ currentlyReading, read }` |
-| `instapaper.js` | `instapaper.com/p/w00f` (scraped HTML) | Last 15 articles |
+| `instapaper.js` | `instapaper.com/data/profile/w00f` (JSON) | Last 15 articles. The public profile page is a React SPA with no server-rendered HTML — this is the same endpoint the SPA calls, and it works unauthenticated |
 | `writing.js` | `w00f.org/feed/` (Bear Blog) | Last 10 posts |
 | `lab.js` | static | Side projects, maintained inline as an array; sorted newest-first. Entries link out via `url`, which is optional |
 
