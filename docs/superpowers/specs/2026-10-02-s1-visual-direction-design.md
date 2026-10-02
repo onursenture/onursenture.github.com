@@ -15,7 +15,7 @@ They are not two designs. They are one token system read at two densities. For a
 | Topic | Decision |
 |---|---|
 | Direction | Hybrid. Site = Swiss index (refs: Aino, Locomotive, A24, Nite Riot, Collins). Dashboard = product surface (refs: Linear, Tailscale case study, StackAI, Exa, Dub changelog). |
-| Typography | **Instrument Serif** for editorial display, site only. **Geist** for UI and body. **Geist Mono** for metadata, tables and numbers. |
+| Typography | **One Swiss neo-grotesk family:** **Neue Haas Grotesk Display** for headlines and **Neue Haas Grotesk Text** for body and UI, both via Adobe Fonts. **Fragment Mono** (a Helvetica-derived mono) for metadata, tables and numbers. Editorial drama comes from scale contrast (huge display against tiny labels), not from a second typeface. *Revised 2026-10-02: the first pass, Instrument Serif + Geist, was rejected because those faces now read as AI/startup defaults.* |
 | Color | **Pure monochrome**, with no brand accent. |
 | Status color | Color is used **only for functional warnings**. `danger` (red) appears when something is broken: a failed sync, or a failed admin action. Everything else is expressed with glyphs. |
 | Icons | **No icon set.** Typographic glyphs only. |
@@ -42,15 +42,23 @@ Inversion is the emphasis device: `fg` on `bg` becomes `bg` on `fg`. Active navi
 
 | Token | Family | Sizes (px) | Notes |
 |---|---|---|---|
-| `--font-display` | Instrument Serif | 40 / 64 / 96 (fluid `clamp`) | Site only: home headline, case-study openers, era quotes |
-| `--font-sans` | Geist (400, 500) | 13 / 14 / 16 / 20 / 28 | Body, UI, headings |
-| `--font-mono` | Geist Mono (400, 500) | 11 / 12 / 13 | Years, roles, companies, table cells, all numbers |
+| `--font-display` | Neue Haas Grotesk Display (`neue-haas-grotesk-display`; 500 Medium, 400 Roman) | 40 / 64 / 96 / 160 (fluid `clamp`) | Headlines, the home statement, case-study openers. Mostly site mode; the dashboard uses it only for page titles. |
+| `--font-sans` | Neue Haas Grotesk Text (`neue-haas-grotesk-text`; 400 Roman, 500 Medium) | 13 / 14 / 16 / 20 / 28 | Body, UI, small headings |
+| `--font-mono` | Fragment Mono (400) | 11 / 12 / 13 | Years, roles, companies, table cells, all numbers, era stamps, uppercase labels |
 
 - All numerals use `font-variant-numeric: tabular-nums`.
 - Site body text is 16–17px with line-height 1.6.
 - Dashboard body text is 13–14px with line-height 1.4.
-- Headline tracking is −0.02em on Geist 28 and up. Instrument Serif keeps its default tracking.
-- Fonts load through `next/font/google` with `display: swap`.
+- Display tracking tightens with size: −0.02em at 40, −0.03em at 64, −0.035em at 96 and above. Display line-height is 0.92–1.0.
+- Uppercase mono labels use +0.02em tracking.
+- **Loading:** Neue Haas Grotesk comes from an Adobe Fonts web project (the `use.typekit.net/<kit>.css` stylesheet, `font-display: swap`). Its domains must include `onursenture.com`, the Vercel preview domain and `localhost`. Fragment Mono loads through `next/font/google`. Fallback stack: `"Helvetica Neue", Helvetica, Arial, sans-serif`.
+- **Dependency note:** Adobe Fonts is tied to Onur's Creative Cloud subscription. If the subscription lapses, the site falls back to the Helvetica stack. That is an accepted risk, chosen over a paid self-hosted license.
+- **Faces to avoid** in all future work, because they now signal AI/startup templates:
+  - Inter, Geist, Instrument Serif/Sans
+  - Söhne, Tiempos, Styrene
+  - Space Grotesk, DM Sans, Manrope, Satoshi, Fraunces
+  - PP Neue Montreal, PP Editorial New
+  - JetBrains Mono
 
 ### Space, shape, grid
 
@@ -88,7 +96,7 @@ Theme switches are instant. Hover feedback is the only other motion, with no tra
 
 ## Era stamp
 
-A monospace stamp shown next to older work. It places the project in its time, for example `2013 · iOS 6 · pre-flat`. It is a system element (Geist Mono 11–12, muted, optionally preceded by `●`). This spec only defines the element. S4 decides what each stamp says, and how the portfolio narrative uses stamps to show that work was ahead of its time.
+A monospace stamp shown next to older work. It places the project in its time, for example `2013 · iOS 6 · pre-flat`. It is a system element (Fragment Mono 11–12, muted, optionally preceded by `●`). This spec only defines the element. S4 decides what each stamp says, and how the portfolio narrative uses stamps to show that work was ahead of its time.
 
 ## Deliverable: Figma style tile
 
@@ -101,7 +109,7 @@ A Figma file in Onur's account contains:
 
 The style tile is a reference, not a page design. S3 implements from this spec. If the spec and the tile disagree, the spec wins until it is updated.
 
-**File:** https://www.figma.com/design/GJAOUY4DJdPgvPgfNZRsst. It holds variables with web code names (`var(--color-bg)` and so on), 19 text styles, and local components (chip, era-stamp, nav-item, button, toggle, status-row, work-row).
+**File:** https://www.figma.com/design/GJAOUY4DJdPgvPgfNZRsst. Rebuilt with the revised typography. It holds variables with web code names (`var(--color-bg)` and so on), 19 text styles, and local components (chip, era-stamp, nav-item, button, toggle, status-row, work-row).
 
 ### Notes from building the tile (binding for S3)
 
@@ -112,9 +120,7 @@ The style tile is a reference, not a page design. S3 implements from this spec. 
   - sans 20: 1.3
   - sans 28: 1.2
   - mono: 1.4
-- **Glyph font gaps:**
-  - Instrument Serif has no `↗`, so never set `↗` in the display face.
-  - In Geist Mono, `◐` renders larger than `●` and `○`. Set status glyphs in Geist (sans), where all three match.
+- **Glyph font gaps:** re-check glyph coverage for `→ ↗ ● ○ ◐ ×` in Neue Haas Grotesk and Fragment Mono when the tile is rebuilt with the new faces. Set each glyph in whichever face renders all three status glyphs at matching size.
 
 ## Out of scope
 
