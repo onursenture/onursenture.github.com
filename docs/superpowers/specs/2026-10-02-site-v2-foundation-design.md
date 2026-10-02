@@ -204,7 +204,7 @@ Until the admin layer ships, the resume reads only from `content/resume.ts`.
 ### Cutover steps
 
 1. Set the Vercel env vars: `DATABASE_URL`, `AUTH_SECRET`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`, `ADMIN_GITHUB_ID`, `GH_PAT`, `SYNC_SECRET`.
-2. Set the GitHub Actions secrets for the sync workflow: `SYNC_SECRET`, `SITE_URL`.
+2. Configure the sync workflow in GitHub Actions: the secret `SYNC_SECRET` and the repository variable `SITE_URL`. (The workflow lives on `master`, because GitHub only runs scheduled workflows from the default branch.)
 3. Run a forced sync of every source against production, and confirm all snapshots are populated.
 4. Add `onursenture.com` in Vercel. **Onur** updates the DNS records at the registrar.
 5. After DNS has propagated, remove the GitHub Pages deploy workflow and `CNAME`, and rewrite `CLAUDE.md` for the new architecture.
@@ -257,7 +257,7 @@ There are no tests today. v2 adds them, because subagent-driven work needs objec
   - resume composition (base data + overrides)
   - sync behavior: a failure keeps the previous snapshot
 - **Playwright smoke tests:** key routes × both view modes × both themes. Each route renders without errors, the toggles switch and persist, and admin holes render nothing when signed out.
-- **CI on every PR:** typecheck, lint, Vitest, Playwright against the Vercel preview. A task is done only when everything is green.
+- **CI on every PR:** typecheck, lint, Vitest, and Playwright against a local production build (no database, so the empty states are exercised). A task is done only when everything is green.
 
 ## Out of Scope for This Spec
 

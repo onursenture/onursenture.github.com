@@ -12,7 +12,7 @@ Thumbs.db
 .claude/
 
 # Local /improve planning backlog (not site content; kept out of the repo)
-plans/
+/plans/
 
 # Legacy Jekyll
 _theme_packages/

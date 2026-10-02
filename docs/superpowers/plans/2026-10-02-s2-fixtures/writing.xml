@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <id>https://w00f.org</id>
+  <title>w00f's Blog</title>
+  <updated>2026-09-20T10:00:00+00:00</updated>
+  <link href="https://w00f.org/" rel="alternate"/>
+  <entry>
+    <id>https://w00f.org/second-post/</id>
+    <title>Second post</title>
+    <updated>2026-09-20T10:00:00+00:00</updated>
+    <link href="https://w00f.org/second-post/" rel="alternate"/>
+    <published>2026-09-20T10:00:00+00:00</published>
+  </entry>
+  <entry>
+    <id>https://w00f.org/first-post/</id>
+    <title>First post</title>
+    <updated>2026-08-01T08:30:00+00:00</updated>
+    <link href="https://w00f.org/first-post/" rel="alternate"/>
+    <published>2026-08-01T08:30:00+00:00</published>
+  </entry>
+</feed>

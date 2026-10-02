@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" >
+  <channel>
+    <xhtml:meta xmlns:xhtml="http://www.w3.org/1999/xhtml" name="robots" content="noindex" />
+    <title>Onur's bookshelf: read</title>
+    <copyright><![CDATA[Copyright (C) 2026 Goodreads LLC. All rights reserved.]]>
+    </copyright>
+    <link><![CDATA[https://www.goodreads.com/review/list_rss/8143905?shelf=read]]></link>
+    <atom:link href="https://www.goodreads.com/review/list_rss/8143905?shelf=read" rel="self" type="application/rss+xml" />
+    <description><![CDATA[Onur's bookshelf: read]]></description>
+    <language>en-US</language>
+    <lastBuildDate>Fri, 25 Sep 2026 20:43:17 -0700</lastBuildDate>
+    <ttl>60</ttl>
+    <image>
+      <title>Onur's bookshelf: read</title>
+      <link><![CDATA[https://www.goodreads.com/review/list_rss/8143905?shelf=read]]></link>
+      <width>144</width>
+      <height>41</height>
+      <url>https://www.goodreads.com/images/layout/goodreads_logo_144.jpg</url>
+    </image>
+    
+  <item>
+    <guid><![CDATA[https://www.goodreads.com/review/show/8065203117?utm_medium=api&utm_source=rss]]></guid>
+    <pubDate><![CDATA[Tue, 11 Aug 2026 01:01:35 -0700]]></pubDate>
+    <title><![CDATA[Joseph Müller-Brockman, Pioneer of Swiss Graphic Design]]></title>
+    <link><![CDATA[https://www.goodreads.com/review/show/8065203117?utm_medium=api&utm_source=rss]]></link>
+    <book_id>663561</book_id>
+    <book_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347438784l/663561._SX50_.jpg]]></book_image_url>
+    <book_small_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347438784l/663561._SX50_.jpg]]></book_small_image_url>
+    <book_medium_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347438784l/663561._SX98_.jpg]]></book_medium_image_url>
+    <book_large_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347438784l/663561.jpg]]></book_large_image_url>
+    <book_description></book_description>
+    <book id="663561">
+      <num_pages>264</num_pages>
+    </book>
+    <author_name>Lars Müller</author_name>
+    <isbn>3906700895</isbn>
+    <user_name>Onur</user_name>
+    <user_rating>2</user_rating>
+    <user_read_at><![CDATA[Tue, 11 Aug 2026 00:00:00 +0000]]></user_read_at>
+    <user_date_added><![CDATA[Tue, 11 Aug 2026 01:01:35 -0700]]></user_date_added>
+    <user_date_created><![CDATA[Wed, 12 Nov 2025 07:29:41 -0800]]></user_date_created>
+    <user_shelves></user_shelves>
+    <user_review></user_review>
+    <average_rating>4.40</average_rating>
+    <book_published>1994</book_published>
+    <description><![CDATA[<a href="https://www.goodreads.com/book/show/1"><img alt="cover" src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1/1._SY75_.jpg" /></a>]]></description>
+  </item>
+<item>
+    <guid><![CDATA[https://www.goodreads.com/review/show/4102024511?utm_medium=api&utm_source=rss]]></guid>
+    <pubDate><![CDATA[Tue, 21 Jul 2026 11:58:03 -0700]]></pubDate>
+    <title>Bozkır: Bir Yolculuk Hikâyesi</title>
+    <link><![CDATA[https://www.goodreads.com/review/show/4102024511?utm_medium=api&utm_source=rss]]></link>
+    <book_id>43815765</book_id>
+    <book_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1707152758l/43815765._SY75_.jpg]]></book_image_url>
+    <book_small_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1707152758l/43815765._SY75_.jpg]]></book_small_image_url>
+    <book_medium_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1707152758l/43815765._SX98_.jpg]]></book_medium_image_url>
+    <book_large_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1707152758l/43815765._SY475_.jpg]]></book_large_image_url>
+    <book_description></book_description>
+    <book id="43815765">
+      <num_pages>120</num_pages>
+    </book>
+    <author_name>Anton Chekhov</author_name>
+    <isbn>6052956976</isbn>
+    <user_name>Onur</user_name>
+    <user_rating>3</user_rating>
+    <user_read_at><![CDATA[Sun, 21 Jun 2026 00:00:00 +0000]]></user_read_at>
+    <user_date_added><![CDATA[Tue, 21 Jul 2026 11:58:03 -0700]]></user_date_added>
+    <user_date_created><![CDATA[Thu, 08 Jul 2021 01:25:53 -0700]]></user_date_created>
+    <user_shelves></user_shelves>
+    <user_review></user_review>
+    <average_rating>3.69</average_rating>
+    <book_published></book_published>
+    <description><![CDATA[<a href="https://www.goodreads.com/book/show/1"><img alt="cover" src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1/1._SY75_.jpg" /></a>]]></description>
+  </item>
+<item>
+    <guid><![CDATA[https://www.goodreads.com/review/show/4102024441?utm_medium=api&utm_source=rss]]></guid>
+    <pubDate><![CDATA[Sat, 18 Jul 2026 23:56:10 -0700]]></pubDate>
+    <title>Hacı Komünist</title>
+    <link><![CDATA[https://www.goodreads.com/review/show/4102024441?utm_medium=api&utm_source=rss]]></link>
+    <book_id>9740107</book_id>
+    <book_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1290294435l/9740107._SY75_.jpg]]></book_image_url>
+    <book_small_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1290294435l/9740107._SY75_.jpg]]></book_small_image_url>
+    <book_medium_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1290294435l/9740107._SX98_.jpg]]></book_medium_image_url>
+    <book_large_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1290294435l/9740107.jpg]]></book_large_image_url>
+    <book_description></book_description>
+    <book id="9740107">
+      <num_pages>302</num_pages>
+    </book>
+    <author_name>Ferhan Şensoy</author_name>
+    <isbn>9757904104</isbn>
+    <user_name>Onur</user_name>
+    <user_rating>4</user_rating>
+    <user_read_at><![CDATA[Sat, 18 Jul 2026 00:00:00 +0000]]></user_read_at>
+    <user_date_added><![CDATA[Sat, 18 Jul 2026 23:56:10 -0700]]></user_date_added>
+    <user_date_created><![CDATA[Thu, 08 Jul 2021 01:25:48 -0700]]></user_date_created>
+    <user_shelves></user_shelves>
+    <user_review><![CDATA[Funny and <b>sharp</b> satire.]]></user_review>
+    <average_rating>4.30</average_rating>
+    <book_published>2005</book_published>
+    <description><![CDATA[<a href="https://www.goodreads.com/book/show/1"><img alt="cover" src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1/1._SY75_.jpg" /></a>]]></description>
+  </item>
+  </channel>
+</rss>
