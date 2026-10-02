@@ -1,0 +1,53 @@
+name: Sync sources
+
+# Lives on master because GitHub only runs scheduled workflows from the
+# default branch. Calls the v2 site's sync endpoint; skipped until the
+# SITE_URL repository variable is set.
+on:
+  schedule:
+    - cron: "17 * * * *" # hourly, off the top of the hour to dodge cron congestion
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Sync every source now, ignoring schedules"
+        type: boolean
+        default: false
+
+# No token scopes needed: the job only uses curl against the site.
+permissions: {}
+
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: ${{ vars.SITE_URL != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call the sync endpoint
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          SYNC_SECRET: ${{ secrets.SYNC_SECRET }}
+          QUERY: ${{ inputs.force && '?force=1' || '' }}
+        run: |
+          curl --fail-with-body --silent --show-error --max-time 120 \
+            -X POST "${SITE_URL%/}/api/sync/${QUERY}" \
+            -H "Authorization: Bearer ${SYNC_SECRET}"
+
+      # revalidateTag("max") serves stale content to the first visitor after a
+      # sync while the page regenerates in the background. Request the pages
+      # here so that first visitor is this job instead of a human. Both views
+      # are warmed: the site view (no cookie) and the dashboard view (cookie).
+      # Never fail the job on a bad response; the sync step already succeeded.
+      - name: Warm the cache
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: |
+          warm() {
+            curl --silent --show-error --output /dev/null --max-time 60 "$@" || true
+          }
+          for path in /life/ /; do
+            warm "${SITE_URL%/}${path}"
+            warm -H "Cookie: view=dashboard" "${SITE_URL%/}${path}"
+          done
