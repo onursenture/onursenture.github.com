@@ -1,22 +1,50 @@
-_site/
-node_modules/
-.cache/
-.superpowers/
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-Thumbs.db
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
 .DS_Store
+*.pem
 
-!.gitkeep
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
-# Claude Code local working dir (agent worktrees, etc.)
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# testing output
+/test-results/
+/playwright-report/
+
+# Claude Code local working dir, root-level local plans (not docs/superpowers/plans), brainstorm scratch
 .claude/
-
-# Local /improve planning backlog (not site content; kept out of the repo)
 /plans/
-
-# Legacy Jekyll
-_theme_packages/
-.rbenv-version
-.rvmrc
-.sass-cache
-.jekyll-cache
+.superpowers/
