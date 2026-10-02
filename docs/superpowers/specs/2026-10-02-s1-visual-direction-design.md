@@ -120,7 +120,7 @@ The style tile is a reference, not a page design. S3 implements from this spec. 
 - **Error glyph:** an error status uses `●` in `--color-danger`. `×` stays reserved for the close/remove action.
 - **Era stamp inside the work index:** omit the year when a year column already shows it. Elsewhere use the full `2013 · iOS 6 · pre-flat` form.
 - **Line-heights the spec left open:**
-  - display: 1.05
+  - display: 0.95 (revised with Neue Haas Grotesk; the first Instrument Serif tile used 1.05)
   - sans 20: 1.3
   - sans 28: 1.2
   - mono: 1.4

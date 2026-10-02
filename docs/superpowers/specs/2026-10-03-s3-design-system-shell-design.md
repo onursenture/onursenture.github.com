@@ -43,10 +43,12 @@ They are declared in Tailwind's `@theme`, which generates `bg-bg`, `text-fg`, `t
 
 **No-JS fallback.** Add `@media (prefers-color-scheme: dark) { :root:not([data-theme]) { … } }`, so visitors without JavaScript get the system theme.
 
-**Type.** There is one utility class per Figma text style, with the same names:
+**Type.** There is one utility class per Figma text style, named after the Figma style:
 - `type-display-160`, `-96`, `-64`, `-40`
-- `type-text-28`, `-20`, `-16`, `-14`, `-13`, each with a `-medium` variant
+- `type-sans-28`, `-20`, `-16`, `-14`, `-13`, each with a `-medium` variant
 - `type-mono-13`, `-12`, `-11`
+
+Figma's `mono/*-medium` styles map to weight 400, so they get no class. Display line-height is 0.95.
 
 Each class sets family, size, line-height, letter-spacing and weight, with the values in the S1 spec. Display classes encode Adobe's shifted weights: 65 Medium is `font-weight: 600`. Uppercase mono labels use `+0.02em` tracking. `body` sets `font-variant-numeric: tabular-nums`.
 
@@ -71,11 +73,11 @@ Each class sets family, size, line-height, letter-spacing and weight, with the v
 | `IndexRow` | One work-index row: year (mono), title plus inline meta, role (mono), `→`. The whole row is a link when `href` is set; the title underlines on hover. With no `href`, it renders as plain, non-interactive text. Empty fields render as nothing, never as dashes or invented values. |
 | `EraStamp` | `● 2013 · iOS 6 · pre-flat` in `type-mono-11`. |
 | `Cover` | A remote poster or book cover at a fixed 2:3 ratio, with explicit width and height, square corners and `loading="lazy"`. If there is no `src`, it renders a `--color-line` block. |
-| `Stat` | A metric tile: a `MetaLabel` and a large number (`type-text-28-medium`). |
-| `Panel` | A dashboard container. A header row (title `MetaLabel`, an optional count, a right slot) above a body. 1px `--color-line` border, `--color-surface` background, square corners. |
+| `Stat` | A metric tile: a `MetaLabel` and a large number (`type-sans-28-medium`). |
+| `Panel` | A dashboard container. A header row (title in `type-sans-13-medium` as in the tile, an optional mono count, a right slot) above a body. 1px `--color-line` border, `--color-surface` background, square corners. |
 | `DataTable` | A dense table with real `<thead>`/`<th scope="col">`. A column config sets `header`, `align` and `mono`, and there is an empty-state row. |
 | `StatusGlyph`, `Chip` | `●` ok, `○` empty, `◐` late, and a danger-coloured `●` for error. Glyphs are set in Neue Haas Grotesk Text. `Chip` is either inverted or uses danger-bg. |
-| `Button` | Primary is inverted (`bg-fg text-bg`); ghost is the other variant. Both use `--radius-control`. |
+| `Button` | `primary` is inverted (`bg-fg text-bg`). `ghost` has a 1px `line-strong` outline. `text` has no chrome and is used for "Menu". All three use `--radius-control`. |
 | `TextLink` | A link with a trailing `→`, underlined on hover. All links use `→`, including external ones (S1: no `↗`). External links get `rel="noopener noreferrer"`. |
 | `Toggle` | A segmented control with `aria-pressed` on each option, used for theme (Light / Dark / Auto) and view (Site / Dashboard). |
 | `RelativeTime` | A client component. It server-renders the absolute `formatDateTime`, then shows "2h ago" after hydration, with the absolute time in `title` and `dateTime`. |
@@ -111,7 +113,11 @@ The existing `<Picture>` is unchanged. `Empty` is restyled with tokens.
 - Use React's `<ViewTransition>` with Next 16's view transition support. The toggle wraps `router.refresh()` in `startTransition`.
 - The site top-bar nav and the dashboard sidebar share `view-transition-name: shell-nav`, so one morphs into the other. Content cross-fades. 250ms, ease-out.
 - With `prefers-reduced-motion: reduce`, there is no animation.
-- The plan's **first task is a spike** proving this works on Next 16.3.8 with `cacheComponents`. If it doesn't, the toggle keeps the instant swap, and the spike's findings are recorded in this spec.
+- **Spike result (2026-10-03): it works on Next 16.3.8 with `cacheComponents`.**
+  - Both desktop navs are wrapped in `<ViewTransition name="shell-nav" share={{ "view-switch": "shell-morph", default: "none" }} default="none">`. The toggle runs `startTransition(() => { addTransitionType("view-switch"); router.refresh(); })`.
+  - Each toggle produces exactly one view transition: the nav morph plus the root cross-fade. Page navigations produce none, and none run under reduced motion, where the toggle skips `addTransitionType`.
+  - No config flag is needed.
+  - A separate content `<ViewTransition>` never fired and was dropped; the root snapshot already cross-fades the content.
 
 **404 inside the shell.** Add `app/[view]/[...missing]/page.tsx`, which calls `notFound()`, plus `app/[view]/not-found.tsx`. Unknown URLs then render inside the view layout, with nav and toggles, in both views. Cache Components needs at least one prerendered param, so `generateStaticParams` returns a single placeholder param.
 
@@ -174,6 +180,7 @@ They have no years, roles, eras or links; S4 fills those in.
   - **Status:** availability and the booking link.
   - **Activity:** `lib/activity.ts` merges the latest films (watched), read books (finished) and articles (saved), sorts them by date and keeps 8. Each item is a glyph, a verb, a title and a `RelativeTime`.
   - **Sources:** the five sources, each with a `StatusGlyph` from `lib/sources/health.ts`. `●` means `lastSuccessAt` falls within 2× the interval, `◐` means it is older, and `○` means it never synced. There is no error state publicly; error details are admin-only (S7).
+    - Health is computed on the client after hydration, because prerendered pages have no clock. Before hydration, a source that has synced at least once shows `●`.
 
 **`/life`.**
 - **Site view:** one `Band` per section, in order:
