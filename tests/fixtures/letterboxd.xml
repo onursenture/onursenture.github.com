@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:letterboxd="https://letterboxd.com" xmlns:tmdb="https://themoviedb.org">
+	<channel>
+		<title>Letterboxd - Onur Senture</title>
+		<link>https://letterboxd.com/onur/</link>
+		<description>Letterboxd - Onur Senture</description>
+		<atom:link rel="self" href="https://letterboxd.com/onur/rss/" type="application/rss+xml"/>
+		
+		
+			<item> <title>Love &amp; Other Drugs, 2010 - ★★★½</title> <link>https://letterboxd.com/onur/film/love-other-drugs/</link> <guid isPermaLink="false">letterboxd-watch-1511497206</guid> <pubDate>Sun, 27 Sep 2026 03:18:59 +1300</pubDate> <letterboxd:watchedDate>2026-09-26</letterboxd:watchedDate> <letterboxd:rewatch>No</letterboxd:rewatch> <letterboxd:filmTitle>Love &amp; Other Drugs</letterboxd:filmTitle> <letterboxd:filmYear>2010</letterboxd:filmYear> <letterboxd:memberRating>3.5</letterboxd:memberRating> <letterboxd:memberLike>No</letterboxd:memberLike> <tmdb:movieId>43347</tmdb:movieId> <description><![CDATA[ <p><img src="https://a.ltrbxd.com/resized/film-poster/2/1/8/0/1/21801-love-other-drugs-0-600-0-900-crop.jpg?v=08511b998f"/></p> <p>Watched on Saturday September 26, 2026.</p> ]]></description> <dc:creator>Onur Senture</dc:creator> </item>
+<item> <title>Devil Boy, 2026 - ★½</title> <link>https://letterboxd.com/onur/film/devil-boy-2026/</link> <guid isPermaLink="false">letterboxd-watch-1507234817</guid> <pubDate>Wed, 23 Sep 2026 18:33:16 +1200</pubDate> <letterboxd:watchedDate>2026-09-23</letterboxd:watchedDate> <letterboxd:rewatch>No</letterboxd:rewatch> <letterboxd:filmTitle>Devil Boy</letterboxd:filmTitle> <letterboxd:filmYear>2026</letterboxd:filmYear> <letterboxd:memberRating>1.5</letterboxd:memberRating> <letterboxd:memberLike>No</letterboxd:memberLike> <tmdb:movieId>1774995</tmdb:movieId> <description><![CDATA[ <p><img src="https://a.ltrbxd.com/resized/film-poster/1/6/3/8/2/9/4/1638294-seytan-cocuk-0-600-0-900-crop.jpg?v=aad2e16954"/></p> <p>Watched on Wednesday September 23, 2026.</p> ]]></description> <dc:creator>Onur Senture</dc:creator> </item>
+<item> <title>Pickled, 2022</title> <link>https://letterboxd.com/onur/film/pickled/</link> <guid isPermaLink="false">letterboxd-watch-1488372182</guid> <pubDate>Wed, 9 Sep 2026 06:47:54 +1200</pubDate> <letterboxd:watchedDate>2026-09-08</letterboxd:watchedDate> <letterboxd:rewatch>No</letterboxd:rewatch> <letterboxd:filmTitle>Pickled</letterboxd:filmTitle> <letterboxd:filmYear>2022</letterboxd:filmYear> <letterboxd:memberLike>No</letterboxd:memberLike> <tmdb:movieId>1050012</tmdb:movieId> <description><![CDATA[ <p><img src="https://a.ltrbxd.com/resized/film-poster/9/4/7/0/1/9/947019-pickled-0-600-0-900-crop.jpg?v=0e0aad569d"/></p> <p>Watched on Tuesday September 8, 2026.</p> ]]></description> <dc:creator>Onur Senture</dc:creator> </item>
+	</channel>
+</rss>

@@ -1,0 +1,57 @@
+import { describe, expect, it } from "vitest";
+import { goodreads, parseGoodreadsShelf } from "@/lib/sources/goodreads";
+import { fakeFetch, fixture } from "../helpers/fixtures";
+
+describe("parseGoodreadsShelf", () => {
+  it("sorts by read date, not feed (shelf-add) order", async () => {
+    const books = await parseGoodreadsShelf(fixture("goodreads-read.xml"), 5);
+    expect(books.map((b) => b.title)).toEqual([
+      "Joseph Müller-Brockman, Pioneer of Swiss Graphic Design",
+      "Hacı Komünist",
+      "Bozkır: Bir Yolculuk Hikâyesi",
+    ]);
+    expect(books[2].date).toBe("2026-06-21T00:00:00.000Z");
+  });
+
+  it("upgrades cover thumbnails and converts ratings to stars", async () => {
+    const [first] = await parseGoodreadsShelf(fixture("goodreads-read.xml"), 5);
+    expect(first.cover).toBe(
+      "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347438784l/663561._SY475_.jpg",
+    );
+    expect(first).toMatchObject({ rating: "★★", numRating: 2, author: "Lars Müller" });
+  });
+
+  it("extracts review text from user_review only", async () => {
+    const books = await parseGoodreadsShelf(fixture("goodreads-read.xml"), 5);
+    expect(books[1].review).toBe("Funny and sharp satire.");
+    expect(books[0].review).toBe("");
+  });
+
+  it("applies the limit after sorting", async () => {
+    const books = await parseGoodreadsShelf(fixture("goodreads-read.xml"), 1);
+    expect(books.map((b) => b.title)).toEqual([
+      "Joseph Müller-Brockman, Pioneer of Swiss Graphic Design",
+    ]);
+  });
+});
+
+describe("goodreads.fetch", () => {
+  const base = "https://www.goodreads.com/review/list_rss/8143905";
+
+  it("fetches both shelves", async () => {
+    const fetch = fakeFetch({
+      [`${base}?shelf=currently-reading`]: { body: fixture("goodreads-read.xml") },
+      [`${base}?shelf=read`]: { body: fixture("goodreads-read.xml") },
+    });
+    const books = await goodreads.fetch({ fetch, env: {} });
+    expect(books.currentlyReading).toHaveLength(3);
+    expect(books.read).toHaveLength(3);
+  });
+
+  it("throws if either shelf fails", async () => {
+    const fetch = fakeFetch({
+      [`${base}?shelf=read`]: { body: fixture("goodreads-read.xml") },
+    });
+    await expect(goodreads.fetch({ fetch, env: {} })).rejects.toThrow("404");
+  });
+});
