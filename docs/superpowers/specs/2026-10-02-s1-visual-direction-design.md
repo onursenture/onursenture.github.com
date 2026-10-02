@@ -51,6 +51,11 @@ Inversion is the emphasis device: `fg` on `bg` becomes `bg` on `fg`. Active navi
 - Dashboard body text is 13–14px with line-height 1.4.
 - Display tracking tightens with size: −0.02em at 40, −0.03em at 64, −0.035em at 96 and above. Display line-height is 0.92–1.0.
 - Uppercase mono labels use +0.02em tracking.
+- **Adobe Fonts kit:** project "onursenture.com", ID `jgu1ygn` (`https://use.typekit.net/jgu1ygn.css`). It contains Display 55 Roman and 65 Medium, plus Text 55 Roman, 56 Italic and 65 Medium. **Adobe's CSS weights for Display are shifted:**
+  - `neue-haas-grotesk-display` 55 Roman = `font-weight: 500`, and 65 Medium = `600`.
+  - `neue-haas-grotesk-text` 55 Roman = `400`, 56 Italic = `400 italic`, and 65 Medium = `500`.
+
+  So display headlines use `font-weight: 600`.
 - **Loading:** Neue Haas Grotesk comes from an Adobe Fonts web project (the `use.typekit.net/<kit>.css` stylesheet, `font-display: swap`). Its domains must include `onursenture.com`, the Vercel preview domain and `localhost`. Fragment Mono loads through `next/font/google`. Fallback stack: `"Helvetica Neue", Helvetica, Arial, sans-serif`.
 - **Dependency note:** Adobe Fonts is tied to Onur's Creative Cloud subscription. If the subscription lapses, the site falls back to the Helvetica stack. That is an accepted risk, chosen over a paid self-hosted license.
 - **Faces to avoid** in all future work, because they now signal AI/startup templates:
