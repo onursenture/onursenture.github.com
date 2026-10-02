@@ -6,7 +6,9 @@
       640,
       1280,
       2560
-    ]
+    ],
+    "sourceHash": "a88769a1f6bc232911fe9bb7176f688fc8ed1a73dbcfb889d3651be04fe8ae79",
+    "settings": "v1 avif:q60:4:2:0 jpg:q82:progressive:mozjpeg widths:640,1280,2560"
   },
   "photos/bold-vakif-building": {
     "width": 2560,
@@ -15,7 +17,9 @@
       640,
       1280,
       2560
-    ]
+    ],
+    "sourceHash": "99591765cf58f30c55f358a4bd95a58f2e8afd22cb8889b4dd502be2cad67069",
+    "settings": "v1 avif:q60:4:2:0 jpg:q82:progressive:mozjpeg widths:640,1280,2560"
   },
   "photos/kizilcikli": {
     "width": 2560,
@@ -24,7 +28,9 @@
       640,
       1280,
       2560
-    ]
+    ],
+    "sourceHash": "1f96bbe2905d8f4dead94e504eaac0eae000a2caedf477381b38cec7a3010ba3",
+    "settings": "v1 avif:q60:4:2:0 jpg:q82:progressive:mozjpeg widths:640,1280,2560"
   },
   "photos/night-boulevard": {
     "width": 2560,
@@ -33,7 +39,9 @@
       640,
       1280,
       2560
-    ]
+    ],
+    "sourceHash": "5899d6d35bf4505f223c8c382c09b52c16885fa7c38cab40ba673629b3c004dd",
+    "settings": "v1 avif:q60:4:2:0 jpg:q82:progressive:mozjpeg widths:640,1280,2560"
   },
   "photos/stabilo": {
     "width": 2560,
@@ -42,6 +50,8 @@
       640,
       1280,
       2560
-    ]
+    ],
+    "sourceHash": "782901895fbe53e3305efac1cb7bdeb17d22d40602edcfbfb28a0302cb8dff21",
+    "settings": "v1 avif:q60:4:2:0 jpg:q82:progressive:mozjpeg widths:640,1280,2560"
   }
 }

@@ -5,12 +5,14 @@
 // Reads every .jpg/.jpeg/.png under images-src/, writes
 // public/images/<path>-<width>.{avif,jpg}, and records sizes in
 // lib/images/manifest.json (keyed by path without extension, e.g.
-// "photos/stabilo"). Sources whose renditions are newer than the source are
-// skipped, so re-running is cheap. Commit the outputs and the manifest.
+// "photos/stabilo"). Sources are detected as stale by content hash and
+// encoder settings, so re-running with unchanged sources is cheap. Commit
+// the outputs and the manifest.
+import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import sharp from "sharp";
-import { type ImageManifest, widthsFor } from "../lib/images/plan";
+import { IMAGE_SETTINGS, isUpToDate, type ImageManifest, widthsFor } from "../lib/images/plan";
 
 // Run from the repo root (npm run images does this).
 const ROOT = process.cwd();
@@ -27,9 +29,9 @@ function walk(dir: string): string[] {
   });
 }
 
-function isFresh(source: string, outputs: string[]): boolean {
-  const sourceTime = statSync(source).mtimeMs;
-  return outputs.every((o) => existsSync(o) && statSync(o).mtimeMs >= sourceTime);
+function computeSourceHash(source: string): string {
+  const data = readFileSync(source);
+  return createHash("sha256").update(data).digest("hex");
 }
 
 async function main() {
@@ -51,7 +53,10 @@ async function main() {
       (["avif", "jpg"] as const).map((f) => join(OUT_DIR, `${key}-${w}.${f}`)),
     );
 
-    if (previous[key] && isFresh(source, outputs)) {
+    const sourceHash = computeSourceHash(source);
+    const outputsExist = outputs.every((o) => existsSync(o));
+
+    if (isUpToDate(previous[key], sourceHash, IMAGE_SETTINGS, outputsExist)) {
       manifest[key] = previous[key];
       console.log(`skip  ${key}`);
       continue;
@@ -75,6 +80,8 @@ async function main() {
       width: largest,
       height: Math.round((sourceHeight * largest) / sourceWidth),
       widths,
+      sourceHash,
+      settings: IMAGE_SETTINGS,
     };
     console.log(`wrote ${key} (${widths.join(", ")})`);
   }

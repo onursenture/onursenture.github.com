@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { renditionUrl, srcSet, widthsFor } from "@/lib/images/plan";
+import { IMAGE_SETTINGS, isUpToDate, renditionUrl, srcSet, widthsFor } from "@/lib/images/plan";
 
 describe("widthsFor", () => {
   it("generates every target for large sources", () => {
@@ -24,5 +24,34 @@ describe("srcSet", () => {
       "/images/photos/x-640.avif 640w, /images/photos/x-1280.avif 1280w, /images/photos/x-1800.avif 1800w",
     );
     expect(renditionUrl("photos/x", 640, "jpg")).toBe("/images/photos/x-640.jpg");
+  });
+});
+
+describe("isUpToDate", () => {
+  const hash = "abc123";
+  const otherHash = "def456";
+
+  it("returns false when there is no previous entry", () => {
+    expect(isUpToDate(undefined, hash, IMAGE_SETTINGS, true)).toBe(false);
+  });
+
+  it("returns false when the source hash differs", () => {
+    const previous = { width: 100, height: 100, widths: [640], sourceHash: otherHash, settings: IMAGE_SETTINGS };
+    expect(isUpToDate(previous, hash, IMAGE_SETTINGS, true)).toBe(false);
+  });
+
+  it("returns false when the settings differ", () => {
+    const previous = { width: 100, height: 100, widths: [640], sourceHash: hash, settings: "v0 old settings" };
+    expect(isUpToDate(previous, hash, IMAGE_SETTINGS, true)).toBe(false);
+  });
+
+  it("returns false when outputs do not exist", () => {
+    const previous = { width: 100, height: 100, widths: [640], sourceHash: hash, settings: IMAGE_SETTINGS };
+    expect(isUpToDate(previous, hash, IMAGE_SETTINGS, false)).toBe(false);
+  });
+
+  it("returns true when hash, settings, and outputs all match", () => {
+    const previous = { width: 100, height: 100, widths: [640], sourceHash: hash, settings: IMAGE_SETTINGS };
+    expect(isUpToDate(previous, hash, IMAGE_SETTINGS, true)).toBe(true);
   });
 });
