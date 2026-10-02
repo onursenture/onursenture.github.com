@@ -13,6 +13,9 @@ on:
         type: boolean
         default: false
 
+# No token scopes needed: the job only uses curl against the site.
+permissions: {}
+
 concurrency:
   group: sync
   cancel-in-progress: false
@@ -31,3 +34,20 @@ jobs:
           curl --fail-with-body --silent --show-error --max-time 120 \
             -X POST "${SITE_URL%/}/api/sync/${QUERY}" \
             -H "Authorization: Bearer ${SYNC_SECRET}"
+
+      # revalidateTag("max") serves stale content to the first visitor after a
+      # sync while the page regenerates in the background. Request the pages
+      # here so that first visitor is this job instead of a human. Both views
+      # are warmed: the site view (no cookie) and the dashboard view (cookie).
+      # Never fail the job on a bad response; the sync step already succeeded.
+      - name: Warm the cache
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: |
+          warm() {
+            curl --silent --show-error --output /dev/null --max-time 60 "$@" || true
+          }
+          for path in /life/ /; do
+            warm "${SITE_URL%/}${path}"
+            warm -H "Cookie: view=dashboard" "${SITE_URL%/}${path}"
+          done

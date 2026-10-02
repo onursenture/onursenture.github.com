@@ -207,7 +207,7 @@ Until the admin layer ships, the resume reads only from `content/resume.ts`.
 2. Configure the sync workflow in GitHub Actions: the secret `SYNC_SECRET` and the repository variable `SITE_URL`. (The workflow lives on `master`, because GitHub only runs scheduled workflows from the default branch.)
 3. Run a forced sync of every source against production, and confirm all snapshots are populated.
 4. Add `onursenture.com` in Vercel. **Onur** updates the DNS records at the registrar.
-5. After DNS has propagated, remove the GitHub Pages deploy workflow and `CNAME`, and rewrite `CLAUDE.md` for the new architecture.
+5. Merging `v2` into `master` removes the GitHub Pages deploy workflow and `CNAME` (`v2` already deleted both). GitHub Pages keeps serving its last deployment until DNS moves to Vercel. After DNS has propagated, disable Pages in the repository settings.
 
 ## Roadmap
 
