@@ -26,15 +26,24 @@ export function isDue(
   return elapsedMinutes >= definition.intervalMinutes - SLACK_MINUTES;
 }
 
+// `previous` is the stored snapshot (null if none). A fetch that parses fine
+// but comes back empty while a good snapshot exists is treated as a failure,
+// so a degraded upstream (a markup change, a rate-limit page that still
+// parses) can't wipe the page; the old snapshot stays and the error is
+// recorded.
 export async function syncSource<T>(
   definition: SourceDefinition<T>,
   store: SnapshotStore,
   ctx: SourceContext,
   now: Date,
+  previous: Snapshot | null,
 ): Promise<SyncResult> {
   try {
     const data = definition.schema.parse(await definition.fetch(ctx));
     const itemCount = definition.count(data);
+    if (itemCount === 0 && previous && previous.itemCount > 0) {
+      throw new Error(`upstream returned 0 items; kept previous ${previous.itemCount}`);
+    }
     await store.recordSuccess(definition.id, data, itemCount, now);
     return { source: definition.id, status: "ok", itemCount };
   } catch (e) {
@@ -60,7 +69,7 @@ export async function syncAll(
       results.push({ source: definition.id, status: "skipped" });
       continue;
     }
-    results.push(await syncSource(definition, store, ctx, now));
+    results.push(await syncSource(definition, store, ctx, now, snapshot));
   }
   return results;
 }

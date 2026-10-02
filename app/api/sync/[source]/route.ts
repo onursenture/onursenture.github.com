@@ -12,6 +12,13 @@ export async function POST(request: Request, { params }: RouteContext<"/api/sync
   }
   const prepared = prepareSync(request);
   if ("error" in prepared) return prepared.error;
-  const result = await syncSource(getSource(source), prepared.store, prepared.ctx, new Date());
+  const previous = await prepared.store.get(source);
+  const result = await syncSource(
+    getSource(source),
+    prepared.store,
+    prepared.ctx,
+    new Date(),
+    previous,
+  );
   return syncResponse([result]);
 }

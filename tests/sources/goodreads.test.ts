@@ -54,4 +54,28 @@ describe("goodreads.fetch", () => {
     });
     await expect(goodreads.fetch({ fetch, env: {} })).rejects.toThrow("404");
   });
+
+  it("throws when the read shelf comes back empty", async () => {
+    const emptyShelf =
+      '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>read</title></channel></rss>';
+    const fetch = fakeFetch({
+      [`${base}?shelf=currently-reading`]: { body: fixture("goodreads-read.xml") },
+      [`${base}?shelf=read`]: { body: emptyShelf },
+    });
+    await expect(goodreads.fetch({ fetch, env: {} })).rejects.toThrow(
+      "goodreads read shelf returned no books",
+    );
+  });
+
+  it("allows an empty currently-reading shelf", async () => {
+    const emptyShelf =
+      '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>reading</title></channel></rss>';
+    const fetch = fakeFetch({
+      [`${base}?shelf=currently-reading`]: { body: emptyShelf },
+      [`${base}?shelf=read`]: { body: fixture("goodreads-read.xml") },
+    });
+    const books = await goodreads.fetch({ fetch, env: {} });
+    expect(books.currentlyReading).toEqual([]);
+    expect(books.read).toHaveLength(3);
+  });
 });

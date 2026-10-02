@@ -102,12 +102,16 @@ export const goodreads: SourceDefinition<Books, "goodreads"> = {
       fetchText(fetch, shelfUrl(userId, "currently-reading")),
       fetchText(fetch, shelfUrl(userId, "read")),
     ]);
+    const read = await parseGoodreadsShelf(readXml, READ_LIMIT);
+    // The read shelf is never legitimately empty for this account, so an
+    // empty one means a bad response. (Currently-reading may well be empty.)
+    if (read.length === 0) throw new Error("goodreads read shelf returned no books");
     return {
       currentlyReading: await parseGoodreadsShelf(
         currentlyXml,
         CURRENTLY_READING_LIMIT,
       ),
-      read: await parseGoodreadsShelf(readXml, READ_LIMIT),
+      read,
     };
   },
   count: (books) => books.currentlyReading.length + books.read.length,
