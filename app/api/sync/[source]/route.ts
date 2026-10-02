@@ -4,6 +4,9 @@ import { prepareSync } from "@/lib/sync/context";
 import { syncResponse } from "@/lib/sync/respond";
 import { syncSource } from "@/lib/sync/run";
 
+// A slow upstream shouldn't be cut off by the platform's default limit.
+export const maxDuration = 60;
+
 // POST /api/sync/<source>/ → sync one source now, regardless of schedule.
 export async function POST(request: Request, { params }: RouteContext<"/api/sync/[source]">) {
   const { source } = await params;
