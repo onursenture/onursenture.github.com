@@ -101,6 +101,21 @@ A Figma file in Onur's account contains:
 
 The style tile is a reference, not a page design. S3 implements from this spec. If the spec and the tile disagree, the spec wins until it is updated.
 
+**File:** https://www.figma.com/design/GJAOUY4DJdPgvPgfNZRsst. It holds variables with web code names (`var(--color-bg)` and so on), 19 text styles, and local components (chip, era-stamp, nav-item, button, toggle, status-row, work-row).
+
+### Notes from building the tile (binding for S3)
+
+- **Error glyph:** an error status uses `●` in `--color-danger`. `×` stays reserved for the close/remove action.
+- **Era stamp inside the work index:** omit the year when a year column already shows it. Elsewhere use the full `2013 · iOS 6 · pre-flat` form.
+- **Line-heights the spec left open:**
+  - display: 1.05
+  - sans 20: 1.3
+  - sans 28: 1.2
+  - mono: 1.4
+- **Glyph font gaps:**
+  - Instrument Serif has no `↗`, so never set `↗` in the display face.
+  - In Geist Mono, `◐` renders larger than `●` and `○`. Set status glyphs in Geist (sans), where all three match.
+
 ## Out of scope
 
 - Page layouts beyond the shells (S3 onward).
