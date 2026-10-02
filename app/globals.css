@@ -1,26 +1,28 @@
 @import "tailwindcss";
 
+/* Theme and view are attributes, not media queries, so both can be toggled.
+   Usage: dark:bg-black, dashboard:text-xs. Design tokens arrive in S3. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+@custom-variant dashboard (&:where([data-view="dashboard"], [data-view="dashboard"] *));
+
 :root {
+  color-scheme: light;
   --background: #ffffff;
   --foreground: #171717;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
