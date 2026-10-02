@@ -141,7 +141,12 @@ The existing `<Picture>` is unchanged. `Empty` is restyled with tokens.
 - nebuu: "ongoing, Orkestra"
 
 They have no years, roles, eras or links; S4 fills those in.
-- `content/lab-index.ts`: an ordered list of `{ title, description, year?, href?, status?: "live" | "wip" }`. It ships with exactly the entries Onur supplies. While the list is empty, the Lab section and panel do not render.
+- `content/lab-index.ts`: an ordered list of `{ title, description, year?, href?, status?: "live" | "wip", placeholder?: boolean }`. While the list is empty, the Lab section and panel do not render. Onur approved placeholders until he supplies real entries. S3 ships:
+  1. `{ title: "onursenture.com", description: "This site — designed in Figma, built in Next.js with an AI-agent workflow.", year: "2026", href: "https://github.com/onursenture/onursenture.github.com", status: "wip" }` (real)
+  2. `{ title: "Project 02", description: "Details coming soon.", status: "wip", placeholder: true }`
+  3. `{ title: "Project 03", description: "Details coming soon.", status: "wip", placeholder: true }`
+
+  `placeholder` is data-only. It does not change rendering, and it marks the entries to replace.
 - **Live clock:** `components/ui/live-clock.tsx` is a client component. It server-renders `--:--` (pages are prerendered), then shows `HH:mm` for the given time zone after hydration and ticks every minute. It uses `<time>` with `aria-label="Local time in Ankara"`.
 
 **Home, site view (`app/[view]/page.tsx` → `HomeSite`).**
