@@ -71,8 +71,7 @@ Inversion is the emphasis device: `fg` on `bg` becomes `bg` on `fg`. Active navi
 
 | Glyph | Meaning |
 |---|---|
-| `→` | Internal link / call to action |
-| `↗` | External link |
+| `→` | Link, internal or external; call to action |
 | `●` | Active, live, synced |
 | `○` | Empty, inactive |
 | `◐` | Late or partial (e.g. sync overdue) |
@@ -120,7 +119,9 @@ The style tile is a reference, not a page design. S3 implements from this spec. 
   - sans 20: 1.3
   - sans 28: 1.2
   - mono: 1.4
-- **Glyph font gaps:** re-check glyph coverage for `→ ↗ ● ○ ◐ ×` in Neue Haas Grotesk and Fragment Mono when the tile is rebuilt with the new faces. Set each glyph in whichever face renders all three status glyphs at matching size.
+- **Glyph coverage:**
+  - Neue Haas Grotesk has no `↗`; it falls back to an emoji. `↗` is therefore dropped, and external links use `→` too.
+  - `● ○ ◐` render at matching size in Neue Haas Grotesk Text, so set status glyphs there.
 
 ## Out of scope
 
