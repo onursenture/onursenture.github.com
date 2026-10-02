@@ -91,7 +91,7 @@ export async function parseGoodreadsShelf(
   return books.slice(0, limit);
 }
 
-export const goodreads: SourceDefinition<Books> = {
+export const goodreads: SourceDefinition<Books, "goodreads"> = {
   id: "goodreads",
   intervalMinutes: 180,
   empty: { currentlyReading: [], read: [] },

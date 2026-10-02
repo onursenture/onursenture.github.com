@@ -73,7 +73,7 @@ export async function parseLetterboxd(xml: string): Promise<Film[]> {
   });
 }
 
-export const letterboxd: SourceDefinition<Film[]> = {
+export const letterboxd: SourceDefinition<Film[], "letterboxd"> = {
   id: "letterboxd",
   intervalMinutes: 180,
   empty: [],

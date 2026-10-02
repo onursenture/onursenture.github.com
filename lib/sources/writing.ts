@@ -24,7 +24,7 @@ export async function parseWriting(xml: string): Promise<Post[]> {
   }));
 }
 
-export const writing: SourceDefinition<Post[]> = {
+export const writing: SourceDefinition<Post[], "writing"> = {
   id: "writing",
   intervalMinutes: 180,
   empty: [],

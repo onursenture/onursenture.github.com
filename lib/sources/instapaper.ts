@@ -54,7 +54,7 @@ export function parseInstapaper(json: unknown): Article[] {
     }));
 }
 
-export const instapaper: SourceDefinition<Article[]> = {
+export const instapaper: SourceDefinition<Article[], "instapaper"> = {
   id: "instapaper",
   intervalMinutes: 60,
   empty: [],

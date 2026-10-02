@@ -21,8 +21,11 @@ export interface SourceContext {
   env: Record<string, string | undefined>;
 }
 
-export interface SourceDefinition<T> {
-  id: SourceId;
+// `I` is the source's own id. It defaults to the whole union, so generic code
+// can take any definition; each source module narrows it to its literal id
+// so the registry can check that every key matches its definition's id.
+export interface SourceDefinition<T, I extends SourceId = SourceId> {
+  id: I;
   // How often the scheduled sync should refresh this source.
   intervalMinutes: number;
   // Returned to pages when no snapshot exists yet.
@@ -40,3 +43,6 @@ export interface SourceDefinition<T> {
 // accept definitions of any payload type.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnySourceDefinition = SourceDefinition<any>;
+
+// The shape of the registry: one definition per id, filed under its own id.
+export type SourceRegistry = { [K in SourceId]: AnySourceDefinition & { id: K } };

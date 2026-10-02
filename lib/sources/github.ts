@@ -79,7 +79,7 @@ export function parseGithub(json: unknown): Contributions {
   };
 }
 
-export const github: SourceDefinition<Contributions> = {
+export const github: SourceDefinition<Contributions, "github"> = {
   id: "github",
   intervalMinutes: 60,
   empty: { total: 0, weeks: [] },
