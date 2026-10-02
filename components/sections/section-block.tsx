@@ -1,5 +1,5 @@
 import type { View } from "@/lib/view/views";
-import type { AnySectionDefinition } from "./types";
+import { type AnySectionDefinition, isVisible } from "./types";
 
 export async function SectionBlock({
   section,
@@ -8,6 +8,8 @@ export async function SectionBlock({
   section: AnySectionDefinition;
   view: View;
 }) {
+  // Checked before loading so a hidden section costs nothing.
+  if (!isVisible(section, view)) return null;
   const { data, lastSuccessAt } = await section.load();
   const { Site, Dashboard } = section;
   return (
