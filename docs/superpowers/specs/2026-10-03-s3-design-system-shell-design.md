@@ -25,6 +25,8 @@ Case-study content, career data and the career timeline belong to S4. In S3, the
 | Topic | Decision |
 |---|---|
 | Home, site view, first screen | **Work-index first.** A one-line identity, a mono meta line, then the selected work index. |
+| Identity (approved 2026-10-03) | Headline: **"From components to complete apps, designed and built end to end."** Meta line: **`DESIGNER + BUILDER · ANKARA 14:32 · OPEN TO ROLES`**. The time is a live Europe/Istanbul clock, and "OPEN TO ROLES" shows only while `available` is true. The positioning is designer + builder: Onur designs and ships whole apps. |
+| Lab on home | **Added in S3.** A second index, "Lab", sits below the work index. It lists things Onur builds, so the home page shows both what he designed and what he built. |
 | "Off the clock" strip | **Four-column visual strip**: the book currently being read (cover), the latest film (poster and rating), the latest photo, the latest saved article (text tile). It links to `/life/`. |
 | Home, dashboard view (Overview) | **Metric row plus panel grid**: Work, Status, Activity, Sources. A career Gantt panel is added in S4. |
 | `/life`, site view | **Full-width bands.** Each section has a header rule, then its content. |
@@ -118,9 +120,14 @@ The existing `<Picture>` is unchanged. `Empty` is restyled with tokens.
 **New content files.**
 - `content/profile.ts`:
   - `name`
-  - `identity`: the one-line headline
-  - `meta`: an array of mono facts, e.g. `"Ankara"` and `"Open to roles"`
-  - `available: boolean`
+  - `identity`: `"From components to complete apps, designed and built end to end."`
+  - `meta`: an ordered list of segments, each one of:
+    - `{ text }`: a static fact
+    - `{ clock: "Europe/Istanbul", label: "ANKARA" }`: the label plus a live `HH:mm` time
+    - `{ availability: true }`: renders "OPEN TO ROLES" only when `available` is true
+
+    S3 ships `[{ text: "DESIGNER + BUILDER" }, { clock: "Europe/Istanbul", label: "ANKARA" }, { availability: true }]`, joined by ` · `.
+  - `available: true`
   - `bookingUrl?`
   - `social` (the old `site.json` handles: x `w00f`, dribbble `onursenture`, github `onursenture`, goodreads `onur`, letterboxd `onur`, instapaper `w00f`)
   - `metrics?`: career metrics such as years and components, shown only when present
@@ -133,19 +140,22 @@ The existing `<Picture>` is unchanged. `Empty` is restyled with tokens.
 - "Premium admin dashboards"
 - nebuu: "ongoing, Orkestra"
 
-They have no years, roles, eras or links; S4 fills those in. `identity` and `meta` are drafted with Onur during S3 implementation. Until he approves them, the home page renders the name only.
+They have no years, roles, eras or links; S4 fills those in.
+- `content/lab-index.ts`: an ordered list of `{ title, description, year?, href?, status?: "live" | "wip" }`. It ships with exactly the entries Onur supplies. While the list is empty, the Lab section and panel do not render.
+- **Live clock:** `components/ui/live-clock.tsx` is a client component. It server-renders `--:--` (pages are prerendered), then shows `HH:mm` for the given time zone after hydration and ticks every minute. It uses `<time>` with `aria-label="Local time in Ankara"`.
 
 **Home, site view (`app/[view]/page.tsx` → `HomeSite`).**
 1. The identity line (`type-display-40`) and the mono meta line.
 2. The work index (`IndexRow` per entry).
-3. The "Off the clock" `Band` with four columns:
+3. The **Lab** index: a `Band` titled "LAB" with one row per `lab-index` entry. Each row shows title, description, year and an optional status glyph (● live, ◐ wip), with `→` when `href` is set. External links use `rel="noopener noreferrer"`. The band has no "All →" link until `/lab` ships in S5.
+4. The "Off the clock" `Band` with four columns:
    - `currentlyReading[0]` (Goodreads) as `Cover` + title + author
    - `films[0]` as `Cover` + title + stars
    - the newest photo as `<Picture>` + title + camera
    - `articles[0]` as a text tile: title, domain, minutes
 
    Each column links to its `/life/` section. If a source is empty, its column is omitted.
-4. The footer.
+5. The footer.
 
 **Home, dashboard view (`HomeDashboard`).**
 - A `Stat` row:
@@ -155,6 +165,7 @@ They have no years, roles, eras or links; S4 fills those in. `identity` and `met
   - each `profile.metrics` entry, when present
 - `Panel`s:
   - **Work:** a `DataTable` of the work index.
+  - **Lab:** a `DataTable` of the lab index. It is hidden while the list is empty.
   - **Status:** availability and the booking link.
   - **Activity:** `lib/activity.ts` merges the latest films (watched), read books (finished) and articles (saved), sorts them by date and keeps 8. Each item is a glyph, a verb, a title and a `RelativeTime`.
   - **Sources:** the five sources, each with a `StatusGlyph` from `lib/sources/health.ts`. `●` means `lastSuccessAt` falls within 2× the interval, `◐` means it is older, and `○` means it never synced. There is no error state publicly; error details are admin-only (S7).
