@@ -70,10 +70,10 @@ e2e/                             Playwright smoke specs
 Replaces the Eleventy source with a fresh create-next-app scaffold, moves the public assets so their URLs survive, and sets up the tooling (scripts, Vitest, ESLint ignores, CLAUDE.md). It ends with one real unit test passing and a clean build.
 
 **Files:**
-- Delete: `src/`, `.eleventy.js`, `package.json`, `package-lock.json`, `.github/workflows/deploy.yml`, `CNAME`
+- Delete: `src/`, `.eleventy.js`, `package.json`, `package-lock.json`, `.github/workflows/build-deploy.yml`, `CNAME`
 - Move: `images/` → `public/images/`, `favicon.ico` → `public/favicon.ico`, `keybase.txt` → `public/keybase.txt`
 - Create (scaffold): `app/`, `public/`, `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`, `AGENTS.md`, `package.json`
-- Create: `vitest.config.ts`, `lib/format.ts`, `tests/format.test.ts`
+- Create: `vitest.config.mts`, `.npmrc` (`save-exact=true`), `lib/format.ts`, `tests/format.test.ts`
 - Replace: `CLAUDE.md`, `README.md`, `.gitignore`
 
 **Interfaces:**
@@ -89,7 +89,7 @@ git checkout -b v2
 - [ ] **Step 2: Remove Eleventy and move public assets**
 
 ```bash
-git rm -r -q src .eleventy.js package.json package-lock.json .github/workflows/deploy.yml CNAME
+git rm -r -q src .eleventy.js package.json package-lock.json .github/workflows/build-deploy.yml CNAME
 mkdir -p public
 git mv images public/images
 git mv favicon.ico public/favicon.ico
@@ -163,7 +163,7 @@ export default nextConfig;
 
 - [ ] **Step 7: Configure Vitest**
 
-Create `vitest.config.ts`:
+Create `vitest.config.mts` (`.mts` so Vite loads it as ESM without a warning), and `.npmrc` containing `save-exact=true` so package.json keeps exact versions:
 
 ```ts
 import { fileURLToPath } from "node:url";
