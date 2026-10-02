@@ -30,3 +30,7 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run e2e
+      # Second pass: a build in fixture data mode, so /life renders real rows.
+      # The normal e2e above must keep running against the non-fixture build.
+      - run: SOURCE_FIXTURES=1 npm run build
+      - run: npm run e2e:fixtures

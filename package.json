@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:fixtures": "SOURCE_FIXTURES=1 next dev",
     "build": "tsx scripts/migrate.ts && next build",
     "start": "next start",
     "lint": "eslint",
@@ -11,6 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "playwright test",
+    "e2e:fixtures": "playwright test --config playwright.fixtures.config.ts",
     "images": "tsx scripts/images.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts --force"

@@ -3,10 +3,15 @@ import { cacheLife, cacheTag } from "next/cache";
 import { getDb } from "../db/client";
 import { DrizzleSnapshotStore } from "../sync/drizzle-store";
 import type { Snapshot } from "../sync/store";
+import { loadFixtureData } from "./fixtures";
 import { type SourceData, getSource } from "./registry";
 import { type SourceView, toSourceView } from "./snapshot-view";
 import { sourceTag } from "./tags";
 import type { SourceId } from "./types";
+
+// What fixture mode reports as the sync time, so the dashboard has a stable
+// "Synced" value to show and test.
+const FIXTURE_SYNCED_AT = "2026-10-02T12:00:00.000Z";
 
 // Page-side read of a source snapshot. Cached and tagged so pages are
 // prerendered and only regenerate when the sync route revalidates the tag
@@ -22,6 +27,12 @@ export async function readSource<K extends SourceId>(id: K): Promise<SourceView<
   cacheTag(sourceTag(id));
 
   const definition = getSource(id);
+
+  if (process.env.SOURCE_FIXTURES === "1") {
+    cacheLife("hours");
+    const data = definition.schema.parse(await loadFixtureData(id));
+    return { data, lastSuccessAt: FIXTURE_SYNCED_AT };
+  }
 
   const db = getDb();
   if (!db) {

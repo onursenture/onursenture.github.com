@@ -29,6 +29,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.unstubAllEnvs();
   vi.restoreAllMocks();
 });
 
@@ -80,5 +81,25 @@ describe("readSource cache lifetime", () => {
     expect(mocks.cacheLife).toHaveBeenCalledWith("minutes");
     expect(mocks.cacheTag).toHaveBeenCalledWith(sourceTag("goodreads"));
     expect(console.warn).toHaveBeenCalled();
+  });
+});
+
+describe("readSource fixture mode", () => {
+  it("serves the recorded fixtures without touching the database", async () => {
+    vi.stubEnv("SOURCE_FIXTURES", "1");
+    const view = await readSource("letterboxd");
+    expect(view.lastSuccessAt).toBe("2026-10-02T12:00:00.000Z");
+    expect(view.data.map((film) => film.title)).toContain("Love & Other Drugs");
+    expect(mocks.getDb).not.toHaveBeenCalled();
+    expect(mocks.cacheLife).toHaveBeenCalledTimes(1);
+    expect(mocks.cacheLife).toHaveBeenCalledWith("hours");
+    expect(mocks.cacheTag).toHaveBeenCalledWith(sourceTag("letterboxd"));
+  });
+
+  it("is off unless SOURCE_FIXTURES is exactly 1", async () => {
+    vi.stubEnv("SOURCE_FIXTURES", "true");
+    mocks.getDb.mockReturnValue(null);
+    expect(await readSource("letterboxd")).toEqual({ data: [], lastSuccessAt: null });
+    expect(mocks.getDb).toHaveBeenCalled();
   });
 });
