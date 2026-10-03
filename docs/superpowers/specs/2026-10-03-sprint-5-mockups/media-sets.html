@@ -1,0 +1,116 @@
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&family=Doto:wght@900&display=swap" rel="stylesheet">
+
+<h2>B üzerine: tek figür yerine görsel setleri</h2>
+<p class="subtitle">B'nin iskeleti aynen duruyor: hero, yapışkan Doto yıllar, release log. Değişen tek şey, her log maddesinin artık bir <b>set</b> taşıması (1 ile N arası görsel). Setin sayfada nasıl görüneceği için üç seçenek var. Hepsinde tıklayınca aynı tam ekran görüntüleyici açılıyor (en altta). Böylece görsel başına ayrı sayfa olmuyor.</p>
+
+<style>
+  .mk { border: 1px solid rgba(127,127,127,.3); border-radius: 6px; overflow: hidden; margin: 10px 0 6px; }
+  .mk * { box-sizing: border-box; }
+  .why { font-size: 13px; margin: 6px 0 4px; }
+  .pg { background: #FAFAF8; color: #1F1F22; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; line-height: 1.62; }
+  .pg .m { color: #6E6E73; }
+  .pg a { color: #2F55F5; text-decoration: none; }
+  .pg p { margin: 4px 0 8px; color: #52525A; }
+  .pg .ver { font-weight: 500; }
+  .pg .rule { height: 6px; background-image: radial-gradient(#C9C9C3 .8px, transparent 1px); background-size: 3px 3px; }
+  .tl { display: grid; grid-template-columns: 170px 1fr; gap: 28px; padding: 26px 40px; }
+  .yr { font-family: 'Doto'; font-weight: 900; font-size: 26px; line-height: 1; }
+  .ent { display: grid; grid-template-columns: 300px 1fr; gap: 28px; align-items: start; }
+  .fig { background-color: #F1F1EE; background-image: radial-gradient(rgba(47,85,245,.55) .9px, transparent 1.15px), radial-gradient(rgba(47,85,245,.28) .9px, transparent 1.15px); background-size: 4px 4px; background-position: 0 0, 2px 2px; -webkit-mask: linear-gradient(115deg, #000 0%, rgba(0,0,0,.55) 55%, rgba(0,0,0,.2) 100%); mask: linear-gradient(115deg, #000 0%, rgba(0,0,0,.55) 55%, rgba(0,0,0,.2) 100%); }
+  .figw { position: relative; border: 1px solid #E6E6E1; }
+  .figw .t { position: absolute; left: 8px; bottom: 6px; font-size: 10px; letter-spacing: .04em; background: #FAFAF8; padding: 0 5px; }
+  .figw.sm .t { font-size: 9px; left: 5px; bottom: 4px; padding: 0 3px; }
+  .more { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(31,31,34,.78); color: #FAFAF8; font-size: 13px; }
+
+  /* 1 filmstrip */
+  .f1 .big .fig { aspect-ratio: 16/10; }
+  .f1 .strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 6px; }
+  .f1 .strip .fig { aspect-ratio: 4/3; }
+  .f1 .strip .on { outline: 1.5px solid #2F55F5; outline-offset: 1px; }
+  .f1 .ctl { display: flex; justify-content: space-between; margin-top: 6px; color: #6E6E73; }
+  /* 2 mosaic */
+  .f2 .mos { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; aspect-ratio: 16/9; }
+  .f2 .mos .figw:first-child { grid-row: 1 / 3; }
+  .f2 .mos .figw, .f2 .mos .fig { height: 100%; }
+  /* 3 contact sheet */
+  .f3 .sheet { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .f3 .sheet .fig { aspect-ratio: 4/3; }
+  .f3 .lbl { font-size: 10.5px; margin-top: 2px; }
+  /* catalog */
+  .cat { padding: 26px 40px; }
+  .cat .hd { display: grid; grid-template-columns: 170px 1fr auto; gap: 28px; margin-bottom: 14px; }
+  .cat .flt { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cat .flt span { border: 1px solid #E6E6E1; padding: 0 6px; font-size: 11px; color: #6E6E73; }
+  .cat .flt span.on { border-color: #1F1F22; color: #1F1F22; }
+  .cat .grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; margin-left: 198px; }
+  .cat .grid .fig { aspect-ratio: 1; }
+  .cat .grid div div + div { font-size: 10.5px; margin-top: 3px; }
+  /* viewer */
+  .vw { background: #0B0B0C; color: #EDEDED; font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 18px 26px 22px; }
+  .vw .top { display: flex; justify-content: space-between; color: #8A8A90; }
+  .vw .top b { color: #EDEDED; font-weight: 400; }
+  .vw .stage { display: grid; grid-template-columns: 30px 1fr 30px; align-items: center; gap: 16px; margin: 16px 0 12px; }
+  .vw .stage .fig { aspect-ratio: 16/9; background-color: #141416; background-image: radial-gradient(rgba(110,139,255,.6) .9px, transparent 1.15px), radial-gradient(rgba(110,139,255,.3) .9px, transparent 1.15px); }
+  .vw .arr { font-size: 18px; color: #8A8A90; text-align: center; }
+  .vw .cap { display: flex; justify-content: space-between; color: #8A8A90; } .vw .cap b { color: #EDEDED; font-weight: 400; }
+  .vw .th { display: grid; grid-template-columns: repeat(12, 1fr); gap: 5px; margin-top: 12px; }
+  .vw .th i { aspect-ratio: 4/3; background: #1A1A1D; border: 1px solid #222225; }
+  .vw .th i.on { border-color: #6E8BFF; }
+</style>
+
+<!-- 1 -->
+<h3>1 · Film şeridi</h3>
+<div class="mk"><div class="pg f1">
+  <div class="tl"><div class="yr">2024</div>
+    <div class="ent"><div><span class="ver">3.0</span> <span class="m">· Nov</span><p>Redesigned from the ground up for the new theming engine.</p><a>post ↗</a></div>
+      <div><div class="figw big"><div class="fig"></div><span class="t">FIG. 03.2 · TOKENS</span></div>
+        <div class="strip"><div class="figw sm"><div class="fig"></div></div><div class="figw sm on"><div class="fig"></div></div><div class="figw sm"><div class="fig"></div></div><div class="figw sm"><div class="fig"></div></div><div class="figw sm"><div class="fig"></div></div><div class="figw sm"><div class="fig"></div></div><div class="figw sm"><div class="fig"></div><div class="more">+6</div></div></div>
+        <div class="ctl"><span>← →</span><span>02 / 12</span></div></div></div></div>
+</div></div>
+<p class="why">Yerinde gezilen tek büyük görsel ve altında bir şerit. Sayfa kısa kalıyor. <b>Risk:</b> görsellerin çoğu gizli kalıyor, yalnızca ilki "görülüyor".</p>
+
+<!-- 2 -->
+<h3 style="margin-top:28px">2 · Mozaik + görüntüleyici</h3>
+<div class="mk"><div class="pg f2">
+  <div class="tl"><div class="yr">2024</div>
+    <div class="ent"><div><span class="ver">3.0</span> <span class="m">· Nov</span><p>Redesigned from the ground up for the new theming engine.</p><a>post ↗</a><br><span class="m">12 figures</span></div>
+      <div class="mos"><div class="figw"><div class="fig"></div><span class="t">FIG. 03.1 · OVERVIEW</span></div><div class="figw"><div class="fig"></div><span class="t">03.2</span></div><div class="figw"><div class="fig"></div><span class="t">03.3</span><div class="more">+9 →</div></div></div></div></div>
+</div></div>
+<p class="why">Bir büyük ve iki küçük figür var, sonuncusu "+9" ile görüntüleyiciyi açıyor. Her madde aynı yüksekliği kaplıyor, ritim bozulmuyor. 1 ya da 2 görselli setlerde mozaik kendini otomatik sadeleştiriyor (tek büyük figür ya da yan yana iki figür). <b>Önerim bu.</b></p>
+
+<!-- 3 -->
+<h3 style="margin-top:28px">3 · Temas baskısı (contact sheet)</h3>
+<div class="mk"><div class="pg f3">
+  <div class="tl"><div class="yr">2024</div>
+    <div class="ent"><div><span class="ver">3.0</span> <span class="m">· Nov</span><p>Redesigned from the ground up for the new theming engine.</p><a>post ↗</a></div>
+      <div class="sheet"><div><div class="figw sm"><div class="fig"></div></div><div class="lbl m">03.1 Overview</div></div><div><div class="figw sm"><div class="fig"></div></div><div class="lbl m">03.2 Tokens</div></div><div><div class="figw sm"><div class="fig"></div></div><div class="lbl m">03.3 Button</div></div><div><div class="figw sm"><div class="fig"></div></div><div class="lbl m">03.4 Input</div></div><div><div class="figw sm"><div class="fig"></div></div><div class="lbl m">03.5 Table</div></div><div><div class="figw sm"><div class="fig"></div></div><div class="lbl m">03.6 Dialog</div></div><div><div class="figw sm"><div class="fig"></div></div><div class="lbl m">03.7 Menu</div></div><div><div class="figw sm"><div class="fig"></div></div><div class="lbl m">03.8 Dark</div></div></div></div></div>
+</div></div>
+<p class="why">Setin tamamı küçük ve etiketli karelerle görünüyor. Tarama için iyi. <b>Risk:</b> 12+ görselde madde çok uzuyor, figürler de "vitrin" olamayacak kadar küçük kalıyor.</p>
+
+<!-- catalog -->
+<h3 style="margin-top:34px">Ek: 80 component için "Catalog" bandı</h3>
+<p class="subtitle" style="margin-bottom:6px">Release log'dan ayrı. Ürünün <i>bütününü</i> gösteren bir bölüm. Sayfanın sonunda duruyor, kategoriye göre filtreleniyor ve her kare aynı görüntüleyicide açılıyor. Component başına sayfa yok. Bu bant sadece PrimeOne ve PrimeBlocks gibi büyük setlerde var, diğer sayfalarda hiç render edilmiyor.</p>
+<div class="mk"><div class="pg">
+  <div class="rule"></div>
+  <div class="cat"><div class="hd"><div>Catalog<br><span class="m">80 components</span></div><div class="flt"><span class="on">All 80</span><span>Form 24</span><span>Data 14</span><span>Panel 11</span><span>Overlay 9</span><span>Menu 10</span><span>Misc 12</span></div><div class="m">grid · list</div></div>
+    <div class="grid">
+      <div><div class="figw sm"><div class="fig"></div></div><div>Button</div></div><div><div class="figw sm"><div class="fig"></div></div><div>InputText</div></div><div><div class="figw sm"><div class="fig"></div></div><div>Select</div></div><div><div class="figw sm"><div class="fig"></div></div><div>DatePicker</div></div><div><div class="figw sm"><div class="fig"></div></div><div>Checkbox</div></div><div><div class="figw sm"><div class="fig"></div></div><div>Slider</div></div><div><div class="figw sm"><div class="fig"></div></div><div>DataTable</div></div><div><div class="figw sm"><div class="fig"></div></div><div>Tree</div></div>
+      <div><div class="figw sm"><div class="fig"></div></div><div>Dialog</div></div><div><div class="figw sm"><div class="fig"></div></div><div>Toast</div></div><div><div class="figw sm"><div class="fig"></div></div><div>Menubar</div></div><div><div class="figw sm"><div class="fig"></div></div><div>Tabs</div></div><div><div class="figw sm"><div class="fig"></div></div><div>Stepper</div></div><div><div class="figw sm"><div class="fig"></div></div><div>Chart</div></div><div><div class="figw sm"><div class="fig"></div></div><div>Galleria</div></div><div><div class="figw sm"><div class="fig"></div></div><div class="m">+65</div></div>
+    </div></div>
+</div></div>
+
+<!-- viewer -->
+<h3 style="margin-top:34px">Ortak: tam ekran görüntüleyici</h3>
+<p class="subtitle" style="margin-bottom:6px">Bir mozaik, şerit ya da katalog karesine tıklayınca açılıyor. Koyu zemin, Life tarafının diliyle aynı. Klavye (← → Esc) ile gezilebiliyor. Her açık görselin kendi URL'i var (<code>?fig=03.2</code>), yani tek bir görsel paylaşılabiliyor ve Geri tuşu görüntüleyiciyi kapatıyor. Bunun için ayrı sayfa açmaya gerek yok.</p>
+<div class="mk"><div class="vw">
+  <div class="top"><span><b>PrimeOne</b> · 3.0 · Nov 2024</span><span>Esc ×</span></div>
+  <div class="stage"><span class="arr">←</span><div class="fig"></div><span class="arr">→</span></div>
+  <div class="cap"><span><b>FIG. 03.2</b> · Tokens: primitive → semantic → component</span><span>02 / 12</span></div>
+  <div class="th"><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+</div></div>
+
+<div class="options" style="margin-top:20px">
+  <div class="option" data-choice="1" onclick="toggleSelect(this)"><div class="letter">1</div><div class="content"><h3>Film şeridi</h3><p>Kısa sayfa, görseller gizli</p></div></div>
+  <div class="option" data-choice="2" onclick="toggleSelect(this)"><div class="letter">2</div><div class="content"><h3>Mozaik + görüntüleyici</h3><p>Önerim: eşit ritim, set boyutundan bağımsız</p></div></div>
+  <div class="option" data-choice="3" onclick="toggleSelect(this)"><div class="letter">3</div><div class="content"><h3>Contact sheet</h3><p>Hepsi görünür, uzun</p></div></div>
+</div>

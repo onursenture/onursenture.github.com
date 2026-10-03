@@ -1,0 +1,76 @@
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&family=Doto:wght@900&display=swap" rel="stylesheet">
+
+<h2>4. yön: Figma'yı kaynak yapmak</h2>
+<p class="subtitle">Sayfada az görsel olur, işin asıl detayı Figma'da durur. Bunu yapmanın üç yolu var. Üçü birbirini dışlamıyor. Teknik açıdan her görsel slotunun bir <b>türü</b> oluyor: <code>image</code>, <code>video</code>, <code>figma-link</code> ya da <code>figma-embed</code>. Önceki 1–3 numaralı yönler de bu türlerle birlikte çalışabiliyor.</p>
+
+<style>
+  .mk { border: 1px solid rgba(127,127,127,.3); border-radius: 6px; overflow: hidden; margin: 10px 0 6px; }
+  .mk * { box-sizing: border-box; }
+  .why { font-size: 13px; margin: 6px 0 4px; }
+  .pg { background: #FAFAF8; color: #1F1F22; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; line-height: 1.62; }
+  .pg .m { color: #6E6E73; }
+  .pg a { color: #2F55F5; text-decoration: none; }
+  .pg p { margin: 4px 0 8px; color: #52525A; }
+  .pg .ver { font-weight: 500; }
+  .rule { height: 6px; background-image: radial-gradient(#C9C9C3 .8px, transparent 1px); background-size: 3px 3px; }
+  .tl { display: grid; grid-template-columns: 150px 1fr; gap: 28px; padding: 24px 40px; }
+  .yr { font-family: 'Doto'; font-weight: 900; font-size: 26px; line-height: 1; }
+  .ent { display: grid; grid-template-columns: 260px 1fr; gap: 28px; align-items: start; }
+  .fig { background-color: #F1F1EE; background-image: radial-gradient(rgba(47,85,245,.55) .9px, transparent 1.15px), radial-gradient(rgba(47,85,245,.28) .9px, transparent 1.15px); background-size: 4px 4px; background-position: 0 0, 2px 2px; }
+  .figw { position: relative; border: 1px solid #E6E6E1; }
+  .t { position: absolute; left: 8px; bottom: 6px; font-size: 10px; letter-spacing: .04em; background: #FAFAF8; padding: 0 5px; }
+  /* a: link card */
+  .fcard { display: grid; grid-template-columns: 96px 1fr auto; gap: 14px; align-items: center; border: 1px solid #E6E6E1; padding: 10px; background: #FAFAF8; }
+  .fcard .fig { height: 60px; }
+  .fcard b { font-weight: 500; }
+  .pages { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .pages span { font-size: 10.5px; border: 1px solid #E6E6E1; padding: 0 5px; color: #6E6E73; }
+  /* b: facade embed */
+  .emb { position: relative; aspect-ratio: 16/9; border: 1px solid #E6E6E1; }
+  .emb .fig { position: absolute; inset: 0; opacity: .6; }
+  .emb .play { position: absolute; inset: 0; display: grid; place-items: center; }
+  .emb .play div { background: #1F1F22; color: #FAFAF8; padding: 8px 14px; font-size: 12px; }
+  .emb .play small { display: block; color: #8A8A90; font-size: 10.5px; margin-top: 2px; }
+  .emb.live { background: #2C2C2C; }
+  .emb.live .tb { position: absolute; top: 0; left: 0; right: 0; height: 26px; background: #1E1E1E; color: #B3B3B3; font: 11px/26px 'IBM Plex Sans'; padding: 0 10px; display: flex; justify-content: space-between; }
+  .emb.live .cv { position: absolute; inset: 26px 0 0 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 22px; }
+  .emb.live .cv i { background: #3A3A3A; border-radius: 2px; }
+  /* c: auto export */
+  .flow { display: grid; grid-template-columns: 1fr 24px 1fr 24px 1fr; align-items: center; gap: 8px; padding: 22px 40px; font-size: 11.5px; }
+  .flow .box { border: 1px solid #E6E6E1; padding: 10px; background: #FAFAF8; min-height: 88px; }
+  .flow .box b { font-weight: 500; display: block; margin-bottom: 4px; }
+  .flow .ar { text-align: center; color: #6E6E73; }
+</style>
+
+<!-- ===== 4a ===== -->
+<h3>4a · Az görsel, Figma'ya yönlendirme</h3>
+<div class="mk"><div class="pg">
+  <div class="tl"><div class="yr">2024</div>
+    <div class="ent"><div><span class="ver">3.0</span> <span class="m">· Nov</span><p>Redesigned from the ground up for the new theming engine.</p><a>post ↗</a></div>
+      <div><div class="figw"><div class="fig" style="aspect-ratio:21/9"></div><span class="t">FIG. 03 · 3.0</span></div>
+        <div class="fcard" style="margin-top:8px"><div class="fig"></div><div><b>PrimeOne 3.0</b> <span class="m">· Figma Community</span><div class="pages"><span>Cover</span><span>Tokens</span><span>Components · 80</span><span>Blocks</span><span>Changelog</span></div></div><a>Open in Figma ↗</a></div></div></div></div>
+</div></div>
+<p class="why">Sayfada her release için bir figür ve bir <b>Figma kartı</b> var. Kartta dosyanın adı, sayfa listesi ve "Open in Figma ↗" bağlantısı yer alıyor. 80 component'in tamamı Figma'da duruyor, siteye taşınmıyor. Yapılacak iş en az bu seçenekte. <b>Risk:</b> ziyaretçi siteden çıkıyor. Ayrıca Figma, giriş yapmamış birine dosyayı açarken bazen giriş ekranı gösteriyor.</p>
+
+<!-- ===== 4b ===== -->
+<h3 style="margin-top:28px">4b · Figma embed, tıklayınca yüklenen</h3>
+<div class="split">
+  <div class="mk"><div class="pg" style="padding:16px"><div class="m" style="margin-bottom:6px">Önce: hafif poster</div><div class="emb"><div class="fig"></div><div class="play"><div>▶ Load Figma file<small>embed.figma.com · ~3 MB · interactive</small></div></div></div></div></div>
+  <div class="mk"><div class="pg" style="padding:16px"><div class="m" style="margin-bottom:6px">Sonra: canlı Figma canvas'ı</div><div class="emb live"><div class="tb"><span>PrimeOne 3.0 — Components</span><span>⤢ ✕</span></div><div class="cv"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div></div>
+</div>
+<p class="why">Slot önce dither bir poster olarak görünüyor. Tıklayınca yerine gerçek Figma embed'i geliyor ve ziyaretçi canvas'ta gezip zoom yapabiliyor. Dosyanın tamamı yerine belirli bir frame de gösterilebilir (<code>node-id</code> ile, örneğin "Components" sayfası). Poster sayesinde sayfa hızlı kalıyor, Figma'nın ağır JS'i ve çerezleri yalnızca tıklayana yükleniyor. <b>Risk:</b> mobilde kötü çalışıyor, bu yüzden mobilde 4a'daki link karta düşmeli. Dosya herkese açık olmalı. Bir de PrimeTek dosyaları PrimeTek'in malı; aşağıdaki soruya bak.</p>
+
+<!-- ===== 4c ===== -->
+<h3 style="margin-top:28px">4c · Figma'dan otomatik görsel (bonus)</h3>
+<div class="mk"><div class="pg"><div class="flow">
+  <div class="box"><b>1 · Figma linki</b>Admin'de (ya da şimdilik içerik dosyasında) frame linkini yapıştırırsın: <span class="m">figma.com/design/…?node-id=12-345</span></div><div class="ar">→</div>
+  <div class="box"><b>2 · Figma API export</b>Sistem frame'i PNG olarak dışa aktarır, kendi görsel boru hattımızdan geçirir (AVIF + JPEG) ve kendi sunucumuzda saklar.</div><div class="ar">→</div>
+  <div class="box"><b>3 · Slot dolar</b>Dither placeholder gider, yerine gerçek görsel gelir. Kaynağı linklenmiş olur: <a>Open in Figma ↗</a></div>
+</div></div></div>
+<p class="why">"Görsel hazırlayacak vaktim yok" sorununa en doğrudan çözüm bu. Elinde güncel Figma dosyaları varsa, sen sadece frame linklerini verirsin, görselleri sistem üretir. Sayfa hızlı kalıyor ve Figma kapansa bile görseller bizde duruyor. Embed ya da link isteğe bağlı olarak yanına eklenebiliyor. <b>Şartlar:</b> dosyalara senin Figma hesabınla erişilebiliyor olmalı (Figma'da kişisel bir token) ve görselleri yayınlama hakkın olmalı. Bu aslında Sprint 7'deki admin upload'ın bir parçası; Sprint 5'te sadece veri modelinde <code>figma</code> kaynağı için yer açarız.</p>
+
+<div class="options" data-multiselect style="margin-top:20px">
+  <div class="option" data-choice="4a" onclick="toggleSelect(this)"><div class="letter">4a</div><div class="content"><h3>Figma'ya yönlendirme</h3><p>Az görsel + "Open in Figma ↗" kartı</p></div></div>
+  <div class="option" data-choice="4b" onclick="toggleSelect(this)"><div class="letter">4b</div><div class="content"><h3>Tıklayınca embed</h3><p>Poster → canlı canvas, mobilde link</p></div></div>
+  <div class="option" data-choice="4c" onclick="toggleSelect(this)"><div class="letter">4c</div><div class="content"><h3>Figma'dan otomatik görsel</h3><p>Link ver, görsel kendiliğinden gelsin</p></div></div>
+</div>
