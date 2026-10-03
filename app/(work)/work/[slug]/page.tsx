@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { CaseStudyHeader } from "@/components/work/case-study-header";
 import { StudyBody } from "@/components/work/study-body";
+import { StudyBrowser } from "@/components/work/study-browser";
 import { renditionUrl } from "@/lib/images/plan";
 import { pageMetadata } from "@/lib/metadata";
+import { DEFAULT_VIEW_STATE } from "@/lib/work/url-state";
 import { caseStudyFacts, getCaseStudies, getCaseStudy, getStudyView } from "@/lib/work";
 
 // One page per PrimeTek product (Sprint 5 spec §3). Unknown slugs 404 inside
@@ -34,7 +37,12 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
   return (
     <main className="pb-16">
       <CaseStudyHeader study={study} facts={caseStudyFacts(study, view)} />
-      <StudyBody study={view} />
+      {/* The fallback is the prerendered default (Log) view. StudyBrowser
+          reads ?view/tag/density after hydration, so every query shares one
+          cached HTML (spec §3.2). */}
+      <Suspense fallback={<StudyBody study={view} state={DEFAULT_VIEW_STATE} />}>
+        <StudyBrowser study={view} />
+      </Suspense>
     </main>
   );
 }

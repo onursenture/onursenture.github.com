@@ -1,30 +1,44 @@
 "use client";
 
-import type { StudyView } from "@/lib/work/derive";
+import { type StudyView, filterMedia } from "@/lib/work/derive";
 import type { ViewState } from "@/lib/work/url-state";
+import { GridView } from "./grid-view";
+import { IndexView } from "./index-view";
 import { LogView } from "./log-view";
 import { MediaButton } from "./media-button";
+import { ViewBar } from "./view-bar";
 
 const HERO_SIZES = "(min-width: 768px) calc(100vw - 80px), calc(100vw - 32px)";
 
-// Everything under a case study's header: the hero and the release log. A
-// client component so StudyBrowser (Task 5) can drive it. The server renders
-// it with no handlers as the <Suspense> fallback.
+// Everything under a case study's header: the hero, the view bar and the
+// current view. The server renders it with the default state and no
+// handlers as the <Suspense> fallback; StudyBrowser drives it after
+// hydration.
 export function StudyBody({
   study,
+  state,
   onChange,
   onOpen,
 }: {
   study: StudyView;
+  state: ViewState;
   onChange?: (patch: Partial<ViewState>) => void;
   onOpen?: (id: string) => void;
 }) {
+  const shown = filterMedia(study.media, state.tag);
   return (
     <div>
       <div className="px-4 pb-8 md:px-10">
         <MediaButton media={study.hero} onOpen={onOpen} sizes={HERO_SIZES} ratio="aspect-[16/10] md:aspect-[21/9]" priority />
       </div>
-      <LogView study={study} onOpen={onOpen} onShowEntry={(entryId) => onChange?.({ view: "grid", tag: entryId })} />
+      <ViewBar chips={study.chips} state={state} onChange={onChange} />
+      {state.view === "grid" ? (
+        <GridView media={shown} density={state.density} onOpen={onOpen} />
+      ) : state.view === "index" ? (
+        <IndexView media={shown} onOpen={onOpen} />
+      ) : (
+        <LogView study={study} onOpen={onOpen} onShowEntry={(entryId) => onChange?.({ view: "grid", tag: entryId })} />
+      )}
     </div>
   );
 }

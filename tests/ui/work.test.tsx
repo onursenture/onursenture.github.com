@@ -1,10 +1,15 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { CreditLine } from "@/components/work/credit-line";
+import { GridView } from "@/components/work/grid-view";
+import { IndexView } from "@/components/work/index-view";
 import { LogView } from "@/components/work/log-view";
 import { MediaFigure } from "@/components/work/media-figure";
+import { StudyBody } from "@/components/work/study-body";
+import { ViewBar } from "@/components/work/view-bar";
 import type { CaseStudy } from "@/content/work/types";
 import { buildStudyView } from "@/lib/work/derive";
+import { DEFAULT_VIEW_STATE } from "@/lib/work/url-state";
 
 const html = renderToStaticMarkup;
 
@@ -81,5 +86,45 @@ describe("LogView", () => {
     expect(markup).toContain('data-media="overview"');
     expect(markup).not.toContain('data-media="tokens"');
     expect(markup).toContain("+1 in Grid →");
+  });
+});
+
+describe("ViewBar", () => {
+  it("presses the current view, and shows chips and density only where they apply", () => {
+    const log = html(<ViewBar chips={view.chips} state={DEFAULT_VIEW_STATE} />);
+    expect(log).toMatch(/aria-pressed="true"[^>]*>Log</);
+    expect(log).not.toContain('aria-label="Filter"');
+    expect(log).not.toContain('aria-label="Density"');
+    const grid = html(<ViewBar chips={view.chips} state={{ ...DEFAULT_VIEW_STATE, view: "grid", tag: "3-0" }} />);
+    expect(grid).toContain('aria-label="Filter"');
+    expect(grid).toContain('aria-label="Density"');
+    expect(grid).toMatch(/aria-pressed="true"[^>]*>3\.0 <span[^>]*>2<\/span>/);
+    const index = html(<ViewBar chips={view.chips} state={{ ...DEFAULT_VIEW_STATE, view: "index" }} />);
+    expect(index).toContain('aria-label="Filter"');
+    expect(index).not.toContain('aria-label="Density"');
+  });
+});
+
+describe("GridView and IndexView", () => {
+  it("renders a file-like card per figure with caption and group", () => {
+    const markup = html(<GridView media={view.media} density="2" />);
+    expect(markup).toContain('data-density="2"');
+    expect(markup.match(/data-media="/g)).toHaveLength(3);
+    expect(markup).toContain("Tokens");
+    expect(markup).toContain("3.0");
+  });
+
+  it("lists figures with their FIG number", () => {
+    const markup = html(<IndexView media={view.media} />);
+    expect(markup).toContain(">02.1<");
+    expect(markup).toContain(">01<");
+  });
+});
+
+describe("StudyBody", () => {
+  it("renders the view the state asks for", () => {
+    expect(html(<StudyBody study={view} state={DEFAULT_VIEW_STATE} />)).toContain('data-view="log"');
+    expect(html(<StudyBody study={view} state={{ ...DEFAULT_VIEW_STATE, view: "grid" }} />)).toContain('data-view="grid"');
+    expect(html(<StudyBody study={view} state={{ ...DEFAULT_VIEW_STATE, view: "index", tag: "3-0" }} />)).not.toContain(">01<");
   });
 });
