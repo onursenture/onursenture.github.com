@@ -100,14 +100,12 @@
   }
 }
 
-/* View switch (components/shell/shell-morph.tsx): the navs morph, the rest
-   of the page cross-fades through the root snapshot. 250ms, ease-out. Theme
-   switches and navigations don't animate. */
-::view-transition-group(.shell-morph),
-::view-transition-old(.shell-morph),
-::view-transition-new(.shell-morph),
-::view-transition-old(root),
-::view-transition-new(root) {
+/* View switch (components/shell/shell-fade.tsx): the whole page cross-fades
+   between the two shells. 250ms, ease-out. Theme switches and navigations
+   don't animate. */
+::view-transition-group(.shell-fade),
+::view-transition-old(.shell-fade),
+::view-transition-new(.shell-fade) {
   animation-duration: 250ms;
   animation-timing-function: ease-out;
 }

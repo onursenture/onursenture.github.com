@@ -8,15 +8,13 @@ import { readSourceStatuses } from "@/lib/sources/status";
 import { MenuDialog } from "./menu-dialog";
 import { NavLinks } from "./nav-links";
 import { ShellControls } from "./shell-controls";
-import { ShellMorph } from "./shell-morph";
+import { ShellFade } from "./shell-fade";
 
-// Nav on top; toggles and the sync line at the foot. Only the desktop
-// sidebar's nav morphs; the mobile slide-over's copy must not share the name.
-function SidebarBody({ statuses, morph = false }: { statuses: SourceStatus[]; morph?: boolean }) {
-  const nav = <NavLinks items={[OVERVIEW, ...readyItems()]} placement="list" />;
+// Nav on top; toggles and the sync line at the foot.
+function SidebarBody({ statuses }: { statuses: SourceStatus[] }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col justify-between gap-8 overflow-y-auto p-4">
-      {morph ? <ShellMorph>{nav}</ShellMorph> : nav}
+      <NavLinks items={[OVERVIEW, ...readyItems()]} placement="list" />
       <div className="flex flex-col gap-4 border-t pt-4">
         <ShellControls view="dashboard" />
         <div className="pl-3">
@@ -38,22 +36,24 @@ export async function DashboardShell({ children }: { children: ReactNode }) {
     </Link>
   );
   return (
-    <div className="min-h-dvh md:grid md:grid-cols-[240px_minmax(0,1fr)]">
-      {/* The column carries the fill, so it runs the full page height while
-          the sidebar itself stays pinned to the viewport. */}
-      <div className="hidden border-r bg-surface md:block">
-        <aside className="sticky top-0 flex h-dvh flex-col">
-          <div className="flex h-12 shrink-0 items-center border-b pr-4 pl-7">{name}</div>
-          <SidebarBody statuses={statuses} morph />
-        </aside>
+    <ShellFade>
+      <div className="min-h-dvh md:grid md:grid-cols-[240px_minmax(0,1fr)]">
+        {/* The column carries the fill, so it runs the full page height while
+            the sidebar itself stays pinned to the viewport. */}
+        <div className="hidden border-r bg-surface md:block">
+          <aside className="sticky top-0 flex h-dvh flex-col">
+            <div className="flex h-12 shrink-0 items-center border-b pr-4 pl-7">{name}</div>
+            <SidebarBody statuses={statuses} />
+          </aside>
+        </div>
+        <div className="flex h-12 items-center justify-between border-b bg-surface pr-1 pl-4 md:hidden">
+          {name}
+          <MenuDialog variant="slide" title={name}>
+            <SidebarBody statuses={statuses} />
+          </MenuDialog>
+        </div>
+        <div className="min-w-0">{children}</div>
       </div>
-      <div className="flex h-12 items-center justify-between border-b bg-surface pr-1 pl-4 md:hidden">
-        {name}
-        <MenuDialog variant="slide" title={name}>
-          <SidebarBody statuses={statuses} />
-        </MenuDialog>
-      </div>
-      <div className="min-w-0">{children}</div>
-    </div>
+    </ShellFade>
   );
 }

@@ -93,7 +93,7 @@ Hovered links are underlined. The active navigation item is inverted.
 ## Motion
 
 There are only two moments of motion:
-1. **View switch:** a View Transition morphs the top bar into the sidebar (or back) while the content cross-fades. 250ms, ease-out.
+1. **View switch:** the whole page cross-fades from one shell to the other. 250ms, ease-out. *Revised 2026-10-03: the first pass also morphed the top-bar nav into the sidebar nav. The two navs differ in shape, so the morph stretched the nav snapshot while the rest of the page swapped instantly. The morph was dropped.*
 2. **The paddle-spin easter egg:** S9, footer by default.
 
 Theme switches are instant. Hover feedback is the only other motion, with no transforms. With `prefers-reduced-motion`, the view switch also becomes instant.
