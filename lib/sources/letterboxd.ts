@@ -30,7 +30,7 @@ type LetterboxdItem = {
 };
 
 // The star suffix at the end of the feed title (U+2605 and U+00BD).
-const STARS_SUFFIX = /\s*-\s*([\u2605\u00bd]+)\s*$/;
+const STARS_SUFFIX = /\s*-\s*[\u2605\u00bd]+\s*$/;
 
 export async function parseLetterboxd(xml: string): Promise<Film[]> {
   const parser = new Parser<Record<string, never>, LetterboxdItem>({

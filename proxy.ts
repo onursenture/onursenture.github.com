@@ -34,18 +34,18 @@ export function proxy(request: NextRequest) {
   const url = request.nextUrl.clone();
   url.pathname = `/${view}${pathname}`;
   const response = NextResponse.rewrite(url);
-  // Both variants answer the same URL, so no cache may reuse a response
-  // without asking again. Next sends prerendered pages and their RSC payloads
-  // with `s-maxage, stale-while-revalidate` and keys them only on its router
-  // headers (Vary and the `_rsc` hash), never the cookie. Chrome applies the
-  // stale-while-revalidate to the client router's prefetches, so after a
-  // toggle it hands back the other view's prefetch for the same URL; Next
-  // stores that route tree, and the next link click stitches the old view's
-  // [view] layout onto a page of the new one. `no-cache` still lets the
-  // browser keep a copy and revalidate it (ETag), and keeps the bfcache.
+  // Both views answer the same URL, so the browser must not reuse a response
+  // without asking again. Self-hosted (`next start`), Next sends prerendered
+  // pages and their RSC payloads with `s-maxage, stale-while-revalidate` and
+  // keys them only on its router headers (Vary and the `_rsc` hash), never the
+  // cookie. Chrome then serves the other view's prefetch after a toggle, and
+  // the next link click stitches the old view's [view] layout onto a page of
+  // the new one. Vercel already strips those directives for browsers and sends
+  // this same header, so this changes nothing there. It avoids `private` and
+  // `no-cache`, which would make Vercel's CDN skip caching the response.
   // Next keeps a Cache-Control set here; it would overwrite a Vary, and it
   // hides the RSC headers from the proxy, hence every response.
-  response.headers.set("Cache-Control", "private, no-cache");
+  response.headers.set("Cache-Control", "public, max-age=0, must-revalidate");
   return response;
 }
 
