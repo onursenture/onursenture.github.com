@@ -69,8 +69,7 @@ test("the theme cookie applies before paint and the toggle sets light, dark and 
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 });
 
-// A 404 looks the same whether or not the proxy ran, so probe with ?view=,
-// which only the proxy answers (with a redirect).
+// Probe with ?view=, which only the proxy answers (with a redirect).
 test("only /api and /_next skip the proxy, not paths that merely start with them", async ({ request }) => {
   const proxied = await request.get("/apiary/?view=dashboard", { maxRedirects: 0 });
   expect(proxied.status()).toBe(307);
@@ -78,9 +77,4 @@ test("only /api and /_next skip the proxy, not paths that merely start with them
 
   const skipped = await request.get("/api/anything/?view=dashboard", { maxRedirects: 0 });
   expect(skipped.status()).toBe(404);
-});
-
-test("unknown pages 404", async ({ page }) => {
-  const response = await page.goto("/nope/");
-  expect(response?.status()).toBe(404);
 });

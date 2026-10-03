@@ -4,7 +4,7 @@ export const THEME_PREFERENCES = ["light", "dark", "system"] as const;
 export type ThemePreference = (typeof THEME_PREFERENCES)[number];
 export const THEME_COOKIE = "theme";
 
-const THEME_COOKIE_PATTERN = cookiePattern(THEME_COOKIE, THEME_PREFERENCES.join("|"));
+export const THEME_COOKIE_PATTERN = cookiePattern(THEME_COOKIE, THEME_PREFERENCES.join("|"));
 
 // Runs inline in <head> before first paint: reads the theme cookie, resolves
 // "system" against the OS setting, and sets <html data-theme>. Kept tiny and

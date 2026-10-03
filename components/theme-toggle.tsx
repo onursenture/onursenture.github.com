@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { Toggle } from "@/components/ui/toggle";
 import { serializeCookie } from "@/lib/view/cookies";
-import { THEME_COOKIE, THEME_PREFERENCES, type ThemePreference } from "@/lib/view/theme";
+import { THEME_COOKIE, THEME_COOKIE_PATTERN, THEME_PREFERENCES, type ThemePreference } from "@/lib/view/theme";
 
 const OPTIONS = [
   { value: "light", label: "Light" },
@@ -29,8 +29,20 @@ function apply(preference: ThemePreference) {
 
 const listeners = new Set<() => void>();
 
+// themeScript sets the theme before first paint, but only in server-rendered
+// HTML. Under Cache Components a 404 is served as an empty error shell that
+// React renders on the client, where inline scripts never run: apply the
+// cookie's theme on mount instead.
+function ensureTheme() {
+  if (document.documentElement.dataset.themePreference) return;
+  const match = document.cookie.match(THEME_COOKIE_PATTERN);
+  apply((match?.[1] as ThemePreference | undefined) ?? "system");
+  listeners.forEach((l) => l());
+}
+
 function subscribe(listener: () => void) {
   listeners.add(listener);
+  ensureTheme();
   // Follow OS changes while the preference is "system".
   const media = window.matchMedia("(prefers-color-scheme: dark)");
   const onChange = () => {
