@@ -26,8 +26,9 @@ export function ViewToggle({ current }: { current: View }) {
       // starts a view transition and the swap is instant.
       if (!reduceMotion) addTransitionType(VIEW_SWITCH);
       // Re-requests the current URL; the proxy now rewrites to the other
-      // variant. Also drops the client router cache so later navigations
-      // don't serve prefetched pages of the old view.
+      // variant. Also invalidates the prefetched segments, and visible links
+      // prefetch again; proxy.ts keeps the browser's HTTP cache from
+      // answering those with the old view.
       router.refresh();
     });
   }

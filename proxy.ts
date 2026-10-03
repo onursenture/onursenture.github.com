@@ -33,7 +33,20 @@ export function proxy(request: NextRequest) {
   const view = resolveView(null, request.cookies.get(VIEW_COOKIE)?.value);
   const url = request.nextUrl.clone();
   url.pathname = `/${view}${pathname}`;
-  return NextResponse.rewrite(url);
+  const response = NextResponse.rewrite(url);
+  // Both variants answer the same URL, so no cache may reuse a response
+  // without asking again. Next sends prerendered pages and their RSC payloads
+  // with `s-maxage, stale-while-revalidate` and keys them only on its router
+  // headers (Vary and the `_rsc` hash), never the cookie. Chrome applies the
+  // stale-while-revalidate to the client router's prefetches, so after a
+  // toggle it hands back the other view's prefetch for the same URL; Next
+  // stores that route tree, and the next link click stitches the old view's
+  // [view] layout onto a page of the new one. `no-cache` still lets the
+  // browser keep a copy and revalidate it (ETag), and keeps the bfcache.
+  // Next keeps a Cache-Control set here; it would overwrite a Vary, and it
+  // hides the RSC headers from the proxy, hence every response.
+  response.headers.set("Cache-Control", "private, no-cache");
+  return response;
 }
 
 export const config = {

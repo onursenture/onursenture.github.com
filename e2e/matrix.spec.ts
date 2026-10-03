@@ -90,3 +90,46 @@ test("an invalid ?view= is ignored: default view, no cookie, URL kept", async ({
   await expect(page.locator("[data-view]")).toHaveAttribute("data-view", "site");
   expect((await context.cookies()).map((cookie) => cookie.name)).not.toContain("view");
 });
+
+const PAGES = {
+  home: { title: "Onur Senture", heading: HOME_HEADING },
+  life: { title: "Life · Onur Senture", heading: { site: "Life", dashboard: "Life" } },
+} as const;
+
+// The visible page must agree with the cookie on every axis: the shell, the
+// pressed View option, and the page itself (a stale shell can wrap a fresh
+// page, so the URL and the heading alone don't catch it).
+async function expectCoherent(page: Page, view: "site" | "dashboard", which: keyof typeof PAGES) {
+  expect(await page.evaluate(() => document.cookie.match(/(?:^|;\s*)view=(site|dashboard)/)?.[1])).toBe(view);
+  await expect(page).toHaveTitle(PAGES[which].title);
+  await expect(page.getByRole("heading", { level: 1, name: PAGES[which].heading[view] })).toBeVisible();
+  await expect(page.locator("[data-view]:visible")).toHaveAttribute("data-view", view);
+  await expect(viewButton(page, view === "site" ? "Site" : "Dashboard")).toHaveAttribute("aria-pressed", "true");
+  await expect(viewButton(page, view === "site" ? "Dashboard" : "Site")).toHaveAttribute("aria-pressed", "false");
+}
+
+for (const [start, other] of [
+  ["site", "dashboard"],
+  ["dashboard", "site"],
+] as const) {
+  test(`navigating after a ${start} → ${other} → ${start} round trip keeps the ${start} shell`, async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    await context.addCookies([{ name: "view", value: start, url: baseURL! }]);
+    await page.goto("/life/");
+    await viewButton(page, other === "site" ? "Site" : "Dashboard").click();
+    await expectCoherent(page, other, "life");
+    await viewButton(page, start === "site" ? "Site" : "Dashboard").click();
+    await expectCoherent(page, start, "life");
+
+    await page.getByRole("link", { name: "Onur Senture", exact: true }).click();
+    await expect(page).toHaveURL(/^http:\/\/localhost:\d+\/$/);
+    await expectCoherent(page, start, "home");
+
+    await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Life" }).click();
+    await expect(page).toHaveURL(/\/life\/$/);
+    await expectCoherent(page, start, "life");
+  });
+}
