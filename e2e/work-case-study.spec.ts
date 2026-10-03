@@ -26,15 +26,15 @@ test("the PrimeOne log is newest first and links each entry's post", async ({ pa
   await expect(entry).toContainText("3.0");
   await expect(entry).toContainText("· Nov");
   await expect(entry.getByRole("link", { name: "post" })).toHaveAttribute("href", "https://x.com/w00f/status/1854537901700186303");
-  await expect(entry.locator('[data-media="overview-3-0"]')).toContainText("FIG. 04.1 · Overview");
+  await expect(entry.locator('[data-media="overview-3-0"]')).toContainText("FIG. 06.1 · Overview");
   await expect(entry.getByRole("button", { name: "+1 in Grid →" })).toBeVisible();
 });
 
 test("Templates credits Genesis and counts its coverage from the data", async ({ page }) => {
   await page.goto("/work/templates/");
-  await expect(page.locator("#entry-genesis [data-credits]")).toHaveText("Design: @umitceliks · Implementation: @tanerengiin");
+  await expect(page.locator("#entry-genesis [data-credits]")).toHaveText("Design: Ümit Çelik · Implementation: Taner Ergin");
   await expect(page.locator("#entry-genesis").getByRole("list", { name: "Frameworks" })).toContainText("React");
-  await expect(page.locator("dl")).toContainText(/Coverage\s*6 templates · 1 page$/);
+  await expect(page.locator("dl")).toContainText(/Coverage\s*34 templates · 1 page$/);
   await expect(page.locator("#entry-verona").getByRole("button", { name: "+1 page in Grid →" })).toBeVisible();
 });
 

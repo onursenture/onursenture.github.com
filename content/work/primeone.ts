@@ -1,7 +1,7 @@
 import type { CaseStudy } from "./types";
 
-// Draft (Sprint 5, Task 3): every line comes from Onur's posts; Task 11 adds
-// the PrimeTek-account research and Onur confirms on the preview.
+// Every line is backed by the post in its `source`: Onur's own, or the
+// PrimeTek accounts' announcements.
 export const primeone: CaseStudy = {
   slug: "primeone",
   org: "primetek",
@@ -22,13 +22,28 @@ export const primeone: CaseStudy = {
   hero: { id: "cover", caption: "PrimeOne" },
   entries: [
     {
-      // Draft: confirm this kit is PrimeOne's first release (Task 11).
       id: "kit-2022",
       date: "2022-07",
-      title: "Figma UI kit",
-      note: "An all-new Figma UI kit, rebuilt on variants and auto layout, in light and dark modes.",
+      title: "PrimeOne for Figma",
+      note: "The all-new Figma UI kit, built with variants and auto layout, in light and dark modes.",
       source: "https://x.com/w00f/status/1551880003134128128",
       media: [{ id: "kit-2022", caption: "Figma UI kit" }],
+    },
+    {
+      id: "2-0",
+      date: "2023-02",
+      version: "2.0",
+      note: "Optimized components, with new boolean, instance swap and text properties.",
+      source: "https://x.com/primefaces/status/1630205822981533696",
+      media: [],
+    },
+    {
+      id: "2-1",
+      date: "2023-07",
+      version: "2.1",
+      note: "Support for Tokens Studio.",
+      source: "https://x.com/primereact/status/1685967643570741248",
+      media: [],
     },
     {
       id: "2-2",
@@ -53,8 +68,8 @@ export const primeone: CaseStudy = {
       id: "4-0",
       date: "2026-01",
       version: "4.0",
-      note: "Design tokens re-architected around native Figma Variable collections.",
-      source: "https://x.com/w00f/status/2013248948748656769",
+      note: "Fully transitioned to native Figma Variables, with new variable collections and a new Figma plugin that generates theme code from Figma.",
+      source: "https://x.com/primevue/status/2013200903923245079",
       media: [{ id: "variables-4-0", caption: "Variable collections", tags: ["tokens"] }],
     },
   ],

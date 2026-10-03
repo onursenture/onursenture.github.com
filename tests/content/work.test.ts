@@ -27,8 +27,8 @@ describe("content/work", () => {
   it("credits Genesis to the colleagues who designed and built it", () => {
     const genesis = caseStudies.find((s) => s.slug === "templates")!.entries.find((e) => e.id === "genesis")!;
     expect(genesis.credits).toEqual([
-      { name: "@umitceliks", href: "https://x.com/umitceliks" },
-      { name: "@tanerengiin", role: "implementation", href: "https://x.com/tanerengiin" },
+      { name: "Ümit Çelik", href: "https://x.com/umitceliks" },
+      { name: "Taner Ergin", role: "implementation", href: "https://x.com/tanerengiin" },
     ]);
   });
 

@@ -22,6 +22,6 @@ describe("buildWorkIndex", () => {
       ["Templates", "/work/templates/"],
       ["Archive", "/work/archive/"],
     ]);
-    expect(groups[0].rows[4]).toMatchObject({ years: "2023–2024", kind: "everything else" });
+    expect(groups[0].rows[4]).toMatchObject({ years: "2018–2025", kind: "everything else" });
   });
 });

@@ -1,12 +1,12 @@
 import type { CaseStudy } from "./types";
 
-// Draft (Sprint 5, Task 3); see primeone.ts.
+// Every entry is backed by the post in its `source`; see primeone.ts.
 export const primeblocks: CaseStudy = {
   slug: "primeblocks",
   org: "primetek",
   title: "PrimeBlocks",
   kind: "UI blocks",
-  years: "2022–2025",
+  years: "2021–2025",
   lead: {
     strong: "PrimeBlocks.",
     rest: "Ready-made UI blocks for the Prime libraries, designed in Figma and kept in sync with the code.",
@@ -14,12 +14,49 @@ export const primeblocks: CaseStudy = {
   intro: ["Application and marketing blocks, relaunched in 2024 on Tailwind CSS and redesigned block by block."],
   facts: [
     { label: "Role", value: "Design lead" },
-    { label: "Years", value: "2022–2025" },
+    { label: "Years", value: "2021–2025" },
     { label: "Tools", value: "Figma, Tailwind CSS" },
   ],
   links: [{ label: "primeblocks.org", href: "https://primeblocks.org" }],
   hero: { id: "cover", caption: "PrimeBlocks" },
   entries: [
+    {
+      id: "launch",
+      date: "2021-07",
+      title: "Launch",
+      note: "Introduced with 150+ copy-paste ready UI blocks at launch; the Vue and React versions followed in August.",
+      source: "https://x.com/prime_ng/status/1417116182965018626",
+      links: [
+        { label: "Vue version", href: "https://x.com/primevue/status/1423560641005109248" },
+        { label: "React version", href: "https://x.com/primereact/status/1427969400565637130" },
+        { label: "JSF version", href: "https://x.com/primefaces/status/1433395958985990149" },
+      ],
+      media: [],
+    },
+    {
+      id: "2-0",
+      date: "2021-10",
+      version: "2.0",
+      note: "Version 2 for Angular added 130+ new blocks, bringing the total to over 280.",
+      source: "https://x.com/prime_ng/status/1450787551065907205",
+      links: [
+        { label: "Vue version", href: "https://x.com/primevue/status/1455500261397520386" },
+        { label: "React version", href: "https://x.com/primereact/status/1458802542264172552" },
+      ],
+      media: [],
+    },
+    {
+      id: "3-0",
+      date: "2022-03",
+      version: "3.0",
+      note: "Version 3, the E-Commerce Edition, for Angular; the Vue and React editions were announced with 70+ new blocks.",
+      source: "https://x.com/prime_ng/status/1508415120086646790",
+      links: [
+        { label: "Vue version", href: "https://x.com/primevue/status/1510883802884808716" },
+        { label: "React version", href: "https://x.com/primereact/status/1527632682108215299" },
+      ],
+      media: [],
+    },
     {
       id: "3-1-1",
       date: "2022-12",
@@ -27,6 +64,22 @@ export const primeblocks: CaseStudy = {
       note: "The Figma file fully synced with the code.",
       source: "https://x.com/w00f/status/1602656029464006658",
       media: [{ id: "figma-sync", caption: "Figma file" }],
+    },
+    {
+      id: "jsf-ecommerce",
+      date: "2023-05",
+      title: "E-commerce for JSF",
+      note: "PrimeBlocks for JSF added 120+ new blocks and an all-new E-Commerce category.",
+      source: "https://x.com/primefaces/status/1655900374950195201",
+      media: [],
+    },
+    {
+      id: "tailwind-move",
+      date: "2024-02",
+      title: "Moving to Tailwind CSS",
+      note: "Announced that PrimeBlocks were moving to Tailwind CSS, with an initial release planned for March.",
+      source: "https://x.com/primevue/status/1757763510979699186",
+      media: [],
     },
     {
       id: "next-gen",
@@ -37,12 +90,36 @@ export const primeblocks: CaseStudy = {
       media: [{ id: "next-gen", caption: "Next-gen launch" }],
     },
     {
+      id: "q1-2025",
+      date: "2025-02",
+      title: "Q1 2025 update",
+      note: "30 new blocks and a complete overhaul of all marketing blocks, redesigned and reimplemented.",
+      source: "https://x.com/primevue/status/1890067025189585349",
+      media: [],
+    },
+    {
+      id: "q2-2025",
+      date: "2025-05",
+      title: "Q2 2025 update",
+      note: "Remastered Application UI blocks, rebuilt for speed.",
+      source: "https://x.com/primevue/status/1921867582123991257",
+      media: [],
+    },
+    {
       id: "redesign",
       date: "2025-07",
       title: "Full redesign",
       note: "The e-commerce update completed the redesign of every block.",
       source: "https://x.com/w00f/status/1948024774577287515",
       media: [{ id: "ecommerce", caption: "E-commerce blocks" }],
+    },
+    {
+      id: "angular",
+      date: "2025-09",
+      title: "Angular support",
+      note: "Support for Angular on PrimeNG v20, announced with 490+ UI blocks styled with Tailwind CSS.",
+      source: "https://x.com/prime_ng/status/1965754057638953432",
+      media: [],
     },
   ],
 };

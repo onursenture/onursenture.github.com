@@ -1,6 +1,6 @@
 import type { CaseStudy } from "./types";
 
-// Draft (Sprint 5, Task 3); see primeone.ts. The live icon grid comes from
+// Every entry is backed by the post in its `source`. The live icon grid comes from
 // the primeicons package (7.0.0, MIT), not from this file.
 export const primeicons: CaseStudy = {
   slug: "primeicons",
@@ -21,6 +21,14 @@ export const primeicons: CaseStudy = {
   links: [{ label: "GitHub", href: "https://github.com/primefaces/primeicons" }],
   hero: { id: "cover", caption: "PrimeIcons" },
   entries: [
+    {
+      id: "start",
+      date: "2018-02",
+      title: "Work starts",
+      note: "Work started on PrimeIcons, our own free icon library to replace the Font Awesome dependency.",
+      source: "https://x.com/primereact/status/963322417467789312",
+      media: [],
+    },
     {
       id: "alpha",
       date: "2018-05",
@@ -57,8 +65,8 @@ export const primeicons: CaseStudy = {
       id: "7-0",
       date: "2024-03",
       version: "7.0",
-      note: "That year's icon update: version 7.0.0.",
-      source: "https://x.com/w00f/status/1773662703183118550",
+      note: "Version 7.0.0: 50+ new icons, with over 2 million monthly downloads at release.",
+      source: "https://x.com/primefaces/status/1773661861151432797",
       media: [{ id: "set-7-0", caption: "The 7.0 set" }],
     },
   ],

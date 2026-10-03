@@ -40,7 +40,7 @@ test("Back closes the viewer and stays on the page", async ({ page }) => {
 test("a ?fig= deep link opens the viewer on load; closing drops the param", async ({ page }) => {
   await page.goto("/work/primeone/?fig=tokens-3-0");
   await expect(viewer(page)).toBeVisible();
-  await expect(viewer(page)).toContainText("FIG. 04.2 · Tokens");
+  await expect(viewer(page)).toContainText("FIG. 06.2 · Tokens");
   await viewer(page).getByRole("button", { name: "Close viewer" }).click();
   await expect(viewer(page)).toBeHidden();
   await expect(page).toHaveURL(/\/work\/primeone\/$/);
@@ -57,8 +57,8 @@ test("G toggles the grid inside the viewer", async ({ page }) => {
   await page.goto("/work/primeone/?fig=cover");
   await page.keyboard.press("g");
   await expect(viewer(page).getByRole("list", { name: "All figures" }).getByRole("button")).toHaveCount(6);
-  await viewer(page).getByRole("button", { name: "Show FIG. 03.1" }).click();
-  await expect(viewer(page)).toContainText("FIG. 03.1 · Tokens");
+  await viewer(page).getByRole("button", { name: "Show FIG. 05.1" }).click();
+  await expect(viewer(page)).toContainText("FIG. 05.1 · Tokens");
 });
 
 test("the viewer's top line names the figure's entry and month", async ({ page }) => {

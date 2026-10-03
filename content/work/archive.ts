@@ -1,8 +1,47 @@
 import type { ArchiveEntry } from "./types";
 
-// Other PrimeTek work, from the posts that announced it (spec §4.3). Draft
-// (Sprint 5, Task 3): Task 11 adds the PrimeTek-account research.
+// Other PrimeTek work, from the posts that announced it (spec §4.3).
 export const archiveEntries: ArchiveEntry[] = [
+  {
+    id: "nova-luna",
+    org: "primetek",
+    date: "2018-11",
+    title: "Nova and Luna themes",
+    note: "New open source and free Nova and Luna themes for PrimeFaces, announced with the modernized PrimeFaces.",
+    source: "https://x.com/primefaces/status/1061931021355106304",
+  },
+  {
+    id: "primeng-theme-designer-7",
+    org: "primetek",
+    date: "2018-12",
+    title: "PrimeNG Theme Designer",
+    note: "The PrimeNG Theme Designer updated to Angular 7 and PrimeNG 7.",
+    source: "https://x.com/prime_ng/status/1070961512251080704",
+  },
+  {
+    id: "tailwind-theme",
+    org: "primetek",
+    date: "2021-09",
+    title: "Free Tailwind theme",
+    note: "A new free Tailwind theme for PrimeVue.",
+    source: "https://x.com/primevue/status/1434846405818998790",
+  },
+  {
+    id: "lara-themes",
+    org: "primetek",
+    date: "2021-11",
+    title: "Lara themes",
+    note: "New free Lara themes, released with PrimeVue 3.9.0.",
+    source: "https://x.com/primevue/status/1461339072199278594",
+  },
+  {
+    id: "visual-theme-designer-free",
+    org: "primetek",
+    date: "2023-07",
+    title: "Visual Theme Designer for PrimeFaces",
+    note: "The Visual Theme Designer became a free tool for PrimeFaces users.",
+    source: "https://x.com/primefaces/status/1684176428512821249",
+  },
   {
     id: "theme-gallery",
     org: "primetek",
@@ -12,11 +51,43 @@ export const archiveEntries: ArchiveEntry[] = [
     source: "https://x.com/w00f/status/1699028097872371916",
   },
   {
+    id: "aura",
+    org: "primetek",
+    date: "2024-01",
+    title: "Aura theme",
+    note: "The all-new open source Aura theme, released with PrimeVue 3.47.0, with 10 color alternatives and a Noir mode.",
+    source: "https://x.com/primevue/status/1750202624069058637",
+  },
+  {
     id: "visual-theme-editor",
     org: "primetek",
     date: "2024-11",
     title: "Visual Theme Editor",
     note: "A visual editor for custom PrimeVue themes, from idea to release in under a week.",
     source: "https://x.com/w00f/status/1857050715224494345",
+  },
+  {
+    id: "primevue-theme-designer",
+    org: "primetek",
+    date: "2025-02",
+    title: "PrimeVue Theme Designer",
+    note: "The all-new PrimeVue Theme Designer, with a visual editor, a Figma to code generator, a migration assistant and cloud storage.",
+    source: "https://x.com/primevue/status/1892887414865011098",
+  },
+  {
+    id: "primeng-theme-designer",
+    org: "primetek",
+    date: "2025-04",
+    title: "PrimeNG Theme Designer",
+    note: "The all-new PrimeNG Theme Designer, with a visual editor, a Figma to theme code generator, a migration assistant and cloud storage.",
+    source: "https://x.com/prime_ng/status/1912477580525027569",
+  },
+  {
+    id: "figma-theme-code",
+    org: "primetek",
+    date: "2025-10",
+    title: "Figma to Theme Code pipeline",
+    note: "A CI pipeline for automated conversion from Figma to theme code, announced to launch the following week.",
+    source: "https://x.com/primevue/status/1976629074488619089",
   },
 ];

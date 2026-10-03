@@ -10,12 +10,12 @@ describe("caseStudyFacts", () => {
     expect(facts).toEqual(primeone.facts);
   });
 
-  it("for the real templates case study with getStudyView, the last fact is Coverage with 6 templates and 1 page", () => {
+  it("for the real templates case study with getStudyView, the last fact is Coverage with 34 templates and 1 page", () => {
     const templates = getCaseStudy("templates")!;
     const view = getStudyView(templates);
     const facts = caseStudyFacts(templates, view);
     const lastFact = facts[facts.length - 1];
-    expect(lastFact).toEqual({ label: "Coverage", value: "6 templates · 1 page" });
+    expect(lastFact).toEqual({ label: "Coverage", value: "34 templates · 1 page" });
   });
 
   it("for a templates study with zero page-tagged media, value is just the template count", () => {
@@ -34,15 +34,16 @@ describe("caseStudyFacts", () => {
     const view = getStudyView(templatesNoPages);
     const facts = caseStudyFacts(templatesNoPages, view);
     const lastFact = facts[facts.length - 1];
-    expect(lastFact).toEqual({ label: "Coverage", value: "6 templates" });
+    expect(lastFact).toEqual({ label: "Coverage", value: "34 templates" });
   });
 
   it("with exactly 1 entry and a page, the Coverage says 1 template · 1 page (singular)", () => {
     const templates = getCaseStudy("templates")!;
     // Create a copy with only one entry (Verona, which has page-tagged media)
+    const verona = templates.entries.find((entry) => entry.id === "verona")!;
     const templatesOneEntry: CaseStudy = {
       ...templates,
-      entries: [templates.entries[0]],
+      entries: [verona],
     };
     const view = getStudyView(templatesOneEntry);
     const facts = caseStudyFacts(templatesOneEntry, view);
@@ -52,13 +53,14 @@ describe("caseStudyFacts", () => {
 
   it("with exactly 1 entry and no pages, the Coverage says 1 template (singular)", () => {
     const templates = getCaseStudy("templates")!;
-    // Create a copy with only one entry and no page tags
+    // Create a copy with only one entry (Verona) and no page tags
+    const verona = templates.entries.find((entry) => entry.id === "verona")!;
     const templatesOneEntry: CaseStudy = {
       ...templates,
       entries: [
         {
-          ...templates.entries[0],
-          media: templates.entries[0].media.map((media) => ({
+          ...verona,
+          media: verona.media.map((media) => ({
             ...media,
             tags: (media.tags || []).filter((tag) => tag !== "page"),
           })),
