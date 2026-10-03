@@ -81,7 +81,7 @@ export default async function SystemPage({ params }: PageProps<"/[view]/system">
   const [photo] = photos;
 
   return (
-    <div className="flex flex-col gap-16 py-16 dashboard:gap-8 dashboard:p-6">
+    <main className="flex flex-col gap-16 py-16 dashboard:gap-8 dashboard:p-6">
       <h1 className="type-display-64 dashboard:type-sans-20-medium">System</h1>
 
       <Band label="Type" source="17 styles">
@@ -209,6 +209,6 @@ export default async function SystemPage({ params }: PageProps<"/[view]/system">
           ) : null}
         </Specimen>
       </Band>
-    </div>
+    </main>
   );
 }

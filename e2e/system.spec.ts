@@ -25,6 +25,7 @@ for (const view of ["site", "dashboard"]) {
   test(`/system/ renders every primitive and the type scale in the ${view} view`, async ({ page }) => {
     await page.goto(`/system/?view=${view}`);
     await expect(page.locator("[data-view]")).toHaveAttribute("data-view", view);
+    await expect(page.locator("main")).toHaveCount(1);
     for (const name of PRIMITIVES) {
       await expect(page.locator(`[data-primitive="${name}"]`)).toBeVisible();
     }
