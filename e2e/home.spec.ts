@@ -65,3 +65,11 @@ test("every canvas on the home is decorative", async ({ page }) => {
     .evaluateAll((canvases) => canvases.filter((c) => !c.closest('[aria-hidden="true"]')).length);
   expect(unlabelled).toBe(0);
 });
+
+test("no section row renders an empty cell (it adds a gap below lg)", async ({ page }) => {
+  await page.goto("/");
+  const empty = await page
+    .locator("main section > div > *")
+    .evaluateAll((cells) => cells.filter((cell) => !cell.textContent?.trim() && !cell.querySelector("canvas, img, svg")).length);
+  expect(empty).toBe(0);
+});

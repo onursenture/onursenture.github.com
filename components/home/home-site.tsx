@@ -16,10 +16,11 @@ import { ExperienceTree } from "./experience-tree";
 import { LabGrid } from "./lab-grid";
 import { WorkTiles } from "./work-tiles";
 
-// An "All →" style action, only once its section ships.
-function SectionLink({ label, href }: { label: string; href: string }) {
+// An "All →" style action, only once its section ships. Undefined (not an
+// element that renders nothing) so SectionRow leaves out the action cell.
+function sectionLink(label: string, href: string) {
   const item = NAV_ITEMS.find((i) => i.href === href);
-  return item?.ready ? <TextLink href={href}>{label}</TextLink> : null;
+  return item?.ready ? <TextLink href={href}>{label}</TextLink> : undefined;
 }
 
 // The Work home: identity, work, experience, latest work and Lab, separated
@@ -57,10 +58,10 @@ export function HomeSite() {
         </div>
       ) : null}
     </SectionRow>,
-    <SectionRow key="work" id="work" label="Work" action={<SectionLink label="All work" href="/work/" />}>
+    <SectionRow key="work" id="work" label="Work" action={sectionLink("All work", "/work/")}>
       <WorkTiles entries={workIndex} />
     </SectionRow>,
-    <SectionRow key="experience" id="experience" label="Experience" action={<SectionLink label="Resume" href="/resume/" />}>
+    <SectionRow key="experience" id="experience" label="Experience" action={sectionLink("Resume", "/resume/")}>
       <ExperienceTree entries={experience} />
     </SectionRow>,
     <SectionRow
@@ -72,7 +73,7 @@ export function HomeSite() {
       <Contributions />
     </SectionRow>,
     labIndex.length > 0 ? (
-      <SectionRow key="lab" id="lab" label="Lab" action={<SectionLink label="All lab" href="/lab/" />}>
+      <SectionRow key="lab" id="lab" label="Lab" action={sectionLink("All lab", "/lab/")}>
         <LabGrid entries={labIndex} />
       </SectionRow>
     ) : null,

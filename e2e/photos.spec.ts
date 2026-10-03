@@ -44,7 +44,7 @@ test("the photos index links every photo with decorative thumbnails", async ({ p
   await expect(page.locator('main img[alt=""]')).toHaveCount(5);
   await expect(page.locator("main picture source").first()).toHaveAttribute(
     "sizes",
-    "(min-width: 1248px) 384px, (min-width: 768px) calc((100vw - 96px) / 3), calc((100vw - 48px) / 2)",
+    "(min-width: 768px) calc((100vw - 128px) / 3), calc((100vw - 48px) / 2)",
   );
 });
 

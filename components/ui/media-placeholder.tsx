@@ -28,7 +28,7 @@ export function MediaPlaceholder({
   return (
     <div className={cx("relative w-full overflow-hidden border", ASPECT[aspect])}>
       <PlaceholderWash tone={tone} />
-      <span aria-hidden="true" className="absolute bottom-2 left-2 bg-bg px-1.5 type-label text-fg">
+      <span aria-hidden="true" className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate bg-bg px-1.5 type-label text-fg">
         FIG. {String(index).padStart(2, "0")} · {label}
       </span>
     </div>

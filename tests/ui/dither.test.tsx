@@ -60,4 +60,25 @@ describe("SectionRow", () => {
     expect(html).toMatch(/<h2[^>]*>Films<\/h2><div class="mt-1[^"]*"><span>All<\/span><\/div>/);
     expect(html).not.toContain("lg:text-right");
   });
+
+  it("repeats a wide row's action after the content below lg, and hides it from the label cell there", () => {
+    const html = renderToStaticMarkup(
+      <SectionRow label="Films" wide action={<span>All</span>}>
+        <p>content</p>
+      </SectionRow>,
+    );
+    expect(html).toMatch(/<div class="mt-1[^"]*hidden[^"]*lg:block[^"]*"><span>All<\/span><\/div>/);
+    expect(html).toMatch(/<p>content<\/p><\/div><div class="[^"]*lg:hidden[^"]*"><span>All<\/span><\/div>/);
+  });
+
+  it("renders no action cell without an action", () => {
+    const html = renderToStaticMarkup(
+      <SectionRow label="Films" wide>
+        <p>content</p>
+      </SectionRow>,
+    );
+    expect(html).not.toContain("text-fg-muted");
+    expect(html.endsWith("</div></div></section>")).toBe(true);
+    expect(html.match(/<div/g)).toHaveLength(2);
+  });
 });

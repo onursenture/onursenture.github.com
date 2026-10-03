@@ -34,7 +34,7 @@ export async function SiteFooter() {
             </span>
           ))}
         </p>
-        <div data-slot="paddle" />
+        <div data-slot="paddle" className="empty:hidden" />
       </div>
       <FooterWash />
     </footer>

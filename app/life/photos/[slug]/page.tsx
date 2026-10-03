@@ -10,8 +10,8 @@ import { getImage } from "@/lib/images/manifest";
 import { renditionUrl } from "@/lib/images/plan";
 import { pageMetadata } from "@/lib/metadata";
 
-// The picture spans the content column: the 1200px site container.
-const SIZES = "(min-width: 1248px) 1200px, (min-width: 768px) calc(100vw - 48px), calc(100vw - 32px)";
+// The picture spans the full-width shell: 40px side padding from md, 16px below.
+const SIZES = "(min-width: 768px) calc(100vw - 80px), calc(100vw - 32px)";
 
 export async function generateStaticParams() {
   return (await getPhotos()).map((photo) => ({ slug: photo.slug }));
