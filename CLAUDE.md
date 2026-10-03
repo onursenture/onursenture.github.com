@@ -84,6 +84,7 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
 - **Viewer.**
   - `MediaViewer` is a native `<dialog>` in the Life palette.
   - Opening pushes `?fig=`, so Back closes it; stepping replaces it.
+- **Posts.** A fourth view (`?view=posts`), shown only when a case study has `posts`. Data lives in `content/work/posts/<slug>.ts` (`Post`: date, account, status id, `entryId`); the URL is derived. Summaries are our own one-liners, never PrimeTek's text (Onur's @w00f posts may quote him). The chips filter by entry (`?tag=<entry id>`); verify every id against `.superpowers/research/`.
 - **Credits.** Onur's role is a case-study fact. `credits` on an entry or a media item names colleagues, and Templates uses media-level credits for pages others designed.
 - **Numbers.** Coverage (Templates) and the icon count (PrimeIcons) are computed, never written by hand.
 - **Filling media from Figma.**

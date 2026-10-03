@@ -1,5 +1,5 @@
 import { ORGS } from "@/content/orgs";
-import type { ArchiveEntry, CaseStudy, Credit, Entry, FigmaRef, Link, Media, MediaAspect } from "@/content/work/types";
+import type { ArchiveEntry, CaseStudy, Credit, Entry, FigmaRef, Link, Media, MediaAspect, Post } from "@/content/work/types";
 import type { ImageEntry } from "@/lib/images/plan";
 
 // Pure builders from content (content/work/) to the serialisable views the
@@ -65,6 +65,19 @@ export interface ChipView {
   count: number;
 }
 
+export interface PostView {
+  id: string;
+  date: string;
+  year: string;
+  // "7 Nov"
+  day: string;
+  // "@primevue"
+  account: string;
+  summary: string;
+  url: string;
+  entryId: string | null;
+}
+
 export interface StudyView {
   slug: string;
   title: string;
@@ -73,6 +86,10 @@ export interface StudyView {
   // The hero, then every entry's media, newest entry first.
   media: MediaView[];
   chips: ChipView[];
+  // Related X posts, newest first; the chips filter them by entry.
+  posts: YearGroup<PostView>[];
+  postCount: number;
+  postChips: ChipView[];
   // "+N in Grid →"; Templates says "+1 page in Grid →" / "+N pages in Grid →".
   moreLabel: { one: string; many: string };
 }
@@ -190,6 +207,17 @@ export function chipsFor(media: MediaView[], entries: EntryView[]): ChipView[] {
   return chips;
 }
 
+export function postUrl(post: Post): string {
+  return `https://x.com/${post.account}/status/${post.id}`;
+}
+
+export function filterPosts(groups: YearGroup<PostView>[], key: string): YearGroup<PostView>[] {
+  if (key === "all") return groups;
+  return groups
+    .map((group) => ({ year: group.year, items: group.items.filter((post) => post.entryId === key) }))
+    .filter((group) => group.items.length > 0);
+}
+
 export function filterMedia(media: MediaView[], key: string): MediaView[] {
   if (key === "all") return media;
   return media.filter((item) => item.entryId === key || item.tags.includes(key));
@@ -199,7 +227,7 @@ export function filterMedia(media: MediaView[], key: string): MediaView[] {
 // figures open the full set), the filtered set from Grid and Index. A fig
 // outside the filter (a hand-edited URL) falls back to the full set.
 export function viewerItems(media: MediaView[], view: string, tag: string, fig: string | null): MediaView[] {
-  if (view === "log") return media;
+  if (view === "log" || view === "posts") return media;
   const filtered = filterMedia(media, tag);
   return fig && !filtered.some((item) => item.id === fig) ? media : filtered;
 }
@@ -229,6 +257,23 @@ export function buildStudyView(study: CaseStudy, lookup: ImageLookup, options: V
   });
   const hero = mediaView(study.slug, study.hero, "FIG. 01", "Cover", "Cover", null, lookup, figmaLinks);
   const media = [hero, ...entries.flatMap((entry) => entry.media)];
+  const posts: PostView[] = [...(study.posts ?? [])]
+    .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id, "en", { numeric: true }))
+    .map((post) => ({
+      id: post.id,
+      date: post.date,
+      year: post.date.slice(0, 4),
+      day: `${Number(post.date.slice(8, 10))} ${monthOf(post.date)}`,
+      account: `@${post.account}`,
+      summary: post.summary,
+      url: postUrl(post),
+      entryId: post.entryId ?? null,
+    }));
+  const postChips: ChipView[] = posts.length > 0 ? [{ key: "all", label: "All", count: posts.length }] : [];
+  for (const entry of entries) {
+    const count = posts.filter((post) => post.entryId === entry.id).length;
+    if (count > 0) postChips.push({ key: entry.id, label: entry.heading, count });
+  }
   return {
     slug: study.slug,
     title: study.title,
@@ -236,6 +281,9 @@ export function buildStudyView(study: CaseStudy, lookup: ImageLookup, options: V
     groups: groupByYear(entries),
     media,
     chips: chipsFor(media, entries),
+    posts: groupByYear(posts),
+    postCount: posts.length,
+    postChips,
     moreLabel:
       study.slug === "templates" ? { one: "page in Grid", many: "pages in Grid" } : { one: "in Grid", many: "in Grid" },
   };

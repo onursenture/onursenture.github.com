@@ -168,12 +168,12 @@ Under the header, the **hero** spans the full content width (40px page padding o
 ### 3.2 View bar
 
 A hairline-bordered bar under the hero:
-- **Left:** `Log · Grid · Index`, a segmented control with the active item underlined.
+- **Left:** `Log · Grid · Index`, plus `Posts` when the study has posts (§3.9), a segmented control with the active item underlined.
 - **Middle (Grid and Index only):** the filter chips (§2), as `Chip` toggles, with one active at a time.
 - **Right (Grid only):** density `1× · 2× · ∞`.
 
 **URL state.**
-- The URL holds the view state: `?view=grid|index`, `?tag=<chip key>` and `?density=2|inf`. The defaults (Log, All, 1×) are left out of the URL.
+- The URL holds the view state: `?view=grid|index|posts`, `?tag=<chip key>` and `?density=2|inf`. The defaults (Log, All, 1×) are left out of the URL.
 - Changes use `history.replaceState`.
 - The server always renders the Log view, so there is one rendering per URL path and CDN caching is untouched. After hydration, a client component reads the query and switches views, wrapped in `<Suspense>` for `useSearchParams`.
 - Unknown values fall back to the defaults.
@@ -251,6 +251,18 @@ Unit tests cover the credit line formatting; e2e checks that one credited media 
 - Years render as group headings, not sticky.
 - The view bar scrolls horizontally.
 - Grid follows §3.4. The viewer is full-screen, with swipe left/right (pointer events) in addition to the buttons.
+
+### 3.9 Posts view
+
+A fourth view, shown only when a case study has posts, listing the X posts about the project.
+- **Data.** `posts?: Post[]` on the case study (`content/work/posts/<slug>.ts`). A post is `{ date: "YYYY-MM-DD", account, id, summary, entryId? }`:
+  - the account is one of `w00f`, `primevue`, `prime_ng`, `primereact`, `primefaces`;
+  - the URL is derived (`x.com/<account>/status/<id>`);
+  - the summary is **our own** one-line wording, never PrimeTek's text (Onur's own @w00f posts may quote him);
+  - `entryId` ties the post to a release or template, and `validateWork` checks the date, id, account, id uniqueness and that entry.
+- **Layout.** Year groups newest first (ties by id, descending), like the Log: Doto year (sticky at lg), dither rule between groups. A row is `day · @account · summary · post ↗`: a four-column grid at md and up (`7ch 12ch 1fr auto`), stacked on mobile. Rows are `li#post-<id>`.
+- **Filter.** The chips are `All` plus each entry that has posts (newest first, label = the entry heading, computed counts), so on Templates a template chip narrows the posts to that template. The filter is `?tag=<entry id>`; there is no density.
+- **Fallback.** `?view=posts` on a study without posts falls back to the Log. The server HTML is still the Log.
 
 ## 4. Special pages
 

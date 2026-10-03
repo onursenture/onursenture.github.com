@@ -1,3 +1,4 @@
+import { primeonePosts } from "./posts/primeone";
 import type { CaseStudy } from "./types";
 
 // Every line is backed by the post in its `source`: Onur's own, or the
@@ -73,4 +74,5 @@ export const primeone: CaseStudy = {
       media: [{ id: "variables-4-0", caption: "Variable collections", tags: ["tokens"] }],
     },
   ],
+  posts: primeonePosts,
 };

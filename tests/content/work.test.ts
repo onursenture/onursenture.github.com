@@ -34,6 +34,14 @@ describe("content/work", () => {
     ]);
   });
 
+  it("seeds PrimeOne's posts, each in order of the registry's entries and with a derived URL", () => {
+    const primeone = caseStudies.find((s) => s.slug === "primeone")!;
+    const view = getStudyView(primeone);
+    expect(view.postCount).toBe(8);
+    expect(view.postChips.map((c) => c.key)).toEqual(["all", "4-0", "3-0", "2-2", "2-1", "2-0", "kit-2022"]);
+    for (const post of view.posts.flatMap((g) => g.items)) expect(post.url).toBe(`https://x.com/${post.account.slice(1)}/status/${post.id}`);
+  });
+
   it("never states an unconfirmed headline number", () => {
     const text = JSON.stringify({ caseStudies, archive });
     for (const claim of ["80+", "500 blocks", "25+"]) expect(text).not.toContain(claim);

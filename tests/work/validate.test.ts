@@ -86,6 +86,40 @@ describe("validateWork", () => {
     );
   });
 
+  it("accepts valid posts", () => {
+    const posts = [
+      { date: "2024-11-07", account: "w00f" as const, id: "1854537901700186303", summary: "s", entryId: "3-0" },
+      { date: "2024-02-29", account: "primevue" as const, id: "2", summary: "s" },
+    ];
+    expect(validateWork([study({ posts })], [], noImages)).toEqual([]);
+  });
+
+  it("rejects bad post dates, ids, accounts, duplicate ids and unknown entries", () => {
+    const posts = [
+      { date: "2024-11", account: "w00f" as const, id: "1", summary: "s" },
+      { date: "2023-02-29", account: "w00f" as const, id: "2", summary: "s" },
+      { date: "2024-13-01", account: "w00f" as const, id: "3", summary: "s" },
+      { date: "2024-11-07", account: "w00f" as const, id: "12ab", summary: "s" },
+      { date: "2024-11-07", account: "someone" as never, id: "5", summary: "s" },
+      { date: "2024-11-07", account: "w00f" as const, id: "6", summary: "s" },
+      { date: "2024-11-08", account: "primevue" as const, id: "6", summary: "s" },
+      { date: "2024-11-07", account: "w00f" as const, id: "7", summary: "s", entryId: "9-9" },
+    ];
+    const errors = validateWork([study({ posts })], [], noImages);
+    expect(errors).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('post date "2024-11" must be YYYY-MM-DD'),
+        expect.stringContaining('post date "2023-02-29" must be YYYY-MM-DD'),
+        expect.stringContaining('post date "2024-13-01" must be YYYY-MM-DD'),
+        expect.stringContaining('post id "12ab" must be digits'),
+        expect.stringContaining('post account "someone" is not one of'),
+        expect.stringContaining('duplicate post id "6"'),
+        expect.stringContaining('entryId "9-9" is not an entry'),
+      ]),
+    );
+    expect(errors).toHaveLength(7);
+  });
+
   it("rejects duplicate slugs", () => {
     expect(validateWork([study(), study()], [], noImages)).toEqual([expect.stringContaining('duplicate slug "primeone"')]);
   });

@@ -5,8 +5,10 @@ import {
   buildArchiveView,
   buildStudyView,
   filterMedia,
+  filterPosts,
   formatYearMonth,
   groupCredits,
+  postUrl,
   resolveImage,
   viewerItems,
 } from "@/lib/work/derive";
@@ -112,6 +114,73 @@ describe("filterMedia and viewerItems", () => {
     expect(viewerItems(view.media, "log", "tokens", null)).toHaveLength(5);
     expect(viewerItems(view.media, "grid", "tokens", "tokens").map((m) => m.id)).toEqual(["tokens", "table"]);
     expect(viewerItems(view.media, "grid", "tokens", "cover")).toHaveLength(5);
+  });
+});
+
+describe("posts", () => {
+  const withPosts: CaseStudy = {
+    ...study,
+    posts: [
+      { date: "2023-12-11", account: "primevue", id: "300", summary: "Tokens improved.", entryId: "2-2" },
+      { date: "2024-11-07", account: "primereact", id: "100", summary: "Launch.", entryId: "3-0" },
+      { date: "2024-11-07", account: "w00f", id: "200", summary: "Achievement unlocked.", entryId: "3-0" },
+      { date: "2026-01-07", account: "w00f", id: "400", summary: "Arriving soon." },
+      { date: "2024-03-05", account: "prime_ng", id: "500", summary: "Roadmap.", entryId: "3-0" },
+    ],
+  };
+  const view = buildStudyView(withPosts, lookup);
+
+  it("builds the URL from the account and id", () => {
+    expect(postUrl({ date: "2024-11-07", account: "primereact", id: "100", summary: "s" })).toBe("https://x.com/primereact/status/100");
+  });
+
+  it("groups posts by year, newest first, ties by id descending", () => {
+    expect(view.posts.map((g) => g.year)).toEqual(["2026", "2024", "2023"]);
+    expect(view.posts[1].items.map((p) => p.id)).toEqual(["200", "100", "500"]);
+    expect(view.postCount).toBe(5);
+  });
+
+  it("formats the day, account and URL, and nulls a missing entry", () => {
+    expect(view.posts[1].items[1]).toEqual({
+      id: "100",
+      date: "2024-11-07",
+      year: "2024",
+      day: "7 Nov",
+      account: "@primereact",
+      summary: "Launch.",
+      url: "https://x.com/primereact/status/100",
+      entryId: "3-0",
+    });
+    expect(view.posts[0].items[0].entryId).toBeNull();
+    expect(view.posts[2].items[0].day).toBe("11 Dec");
+  });
+
+  it("builds chips: All, then each entry with posts in entry order, with computed counts", () => {
+    expect(view.postChips).toEqual([
+      { key: "all", label: "All", count: 5 },
+      { key: "3-0", label: "3.0", count: 3 },
+      { key: "2-2", label: "2.2", count: 1 },
+    ]);
+  });
+
+  it("has no posts, count or chips when a study has none", () => {
+    const none = buildStudyView(study, lookup);
+    expect(none.posts).toEqual([]);
+    expect(none.postCount).toBe(0);
+    expect(none.postChips).toEqual([]);
+  });
+
+  it("filters by entry id and drops empty year groups", () => {
+    expect(filterPosts(view.posts, "all")).toBe(view.posts);
+    const only = filterPosts(view.posts, "2-2");
+    expect(only.map((g) => g.year)).toEqual(["2023"]);
+    expect(filterPosts(view.posts, "3-0").flatMap((g) => g.items.map((p) => p.id))).toEqual(["200", "100", "500"]);
+    expect(filterPosts(view.posts, "nope")).toEqual([]);
+  });
+
+  it("treats posts like the Log for the viewer (the full media set)", () => {
+    const v = buildStudyView(study, lookup);
+    expect(viewerItems(v.media, "posts", "3-0", null)).toHaveLength(5);
   });
 });
 

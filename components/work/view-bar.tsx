@@ -6,7 +6,10 @@ const VIEWS: { value: WorkView; label: string }[] = [
   { value: "log", label: "Log" },
   { value: "grid", label: "Grid" },
   { value: "index", label: "Index" },
+  { value: "posts", label: "Posts" },
 ];
+
+const DEFAULT_VIEWS: readonly WorkView[] = ["log", "grid", "index"];
 
 const DENSITIES: { value: Density; label: string }[] = [
   { value: "1", label: "1×" },
@@ -45,27 +48,34 @@ function Segmented<T extends string>({
   );
 }
 
-// The bar under the hero (spec §3.2): views on the left, filter chips in Grid
-// and Index, density in Grid. Scrolls sideways on narrow screens.
+// The bar under the hero (spec §3.2): views on the left (Posts only when the
+// study has posts), filter chips in Grid and Index (entry chips in Posts),
+// density in Grid. Scrolls sideways on narrow screens.
 export function ViewBar({
   chips,
+  postChips = [],
+  views = DEFAULT_VIEWS,
   state,
   onChange,
   showChips = true,
   showDensity = true,
 }: {
   chips: ChipView[];
+  postChips?: ChipView[];
+  views?: readonly WorkView[];
   state: ViewState;
   onChange?: (patch: Partial<ViewState>) => void;
   showChips?: boolean;
   showDensity?: boolean;
 }) {
+  const posts = state.view === "posts";
+  const shownChips = posts ? postChips : chips;
   return (
     <div className="flex items-center gap-x-6 overflow-x-auto border-y px-4 py-2.5 whitespace-nowrap type-meta md:px-10">
-      <Segmented label="View" options={VIEWS} value={state.view} onChange={(view) => onChange?.({ view })} />
-      {state.view !== "log" && showChips ? (
+      <Segmented label="View" options={VIEWS.filter((option) => views.includes(option.value))} value={state.view} onChange={(view) => onChange?.({ view })} />
+      {state.view !== "log" && (posts || showChips) ? (
         <div role="group" aria-label="Filter" className="flex shrink-0 gap-1.5">
-          {chips.map((chip) => {
+          {shownChips.map((chip) => {
             const pressed = chip.key === state.tag;
             return (
               <button

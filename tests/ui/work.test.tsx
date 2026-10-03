@@ -6,6 +6,7 @@ import { GridView } from "@/components/work/grid-view";
 import { IndexView } from "@/components/work/index-view";
 import { LogView } from "@/components/work/log-view";
 import { MediaFigure } from "@/components/work/media-figure";
+import { PostsView } from "@/components/work/posts-view";
 import { StudyBody } from "@/components/work/study-body";
 import { ViewBar } from "@/components/work/view-bar";
 import type { CaseStudy } from "@/content/work/types";
@@ -127,6 +128,55 @@ describe("StudyBody", () => {
     expect(html(<StudyBody study={view} state={DEFAULT_VIEW_STATE} />)).toContain('data-view="log"');
     expect(html(<StudyBody study={view} state={{ ...DEFAULT_VIEW_STATE, view: "grid" }} />)).toContain('data-view="grid"');
     expect(html(<StudyBody study={view} state={{ ...DEFAULT_VIEW_STATE, view: "index", tag: "3-0" }} />)).not.toContain(">01<");
+  });
+});
+
+describe("Posts", () => {
+  const withPosts = buildStudyView(
+    {
+      ...study,
+      posts: [
+        { date: "2024-11-07", account: "primereact", id: "100", summary: "Launch.", entryId: "3-0" },
+        { date: "2026-01-19", account: "primevue", id: "200", summary: "Variables.", entryId: "4-0" },
+      ],
+    },
+    () => undefined,
+  );
+
+  it("renders rows newest first, with the day, account, summary and an external post link", () => {
+    const markup = html(<PostsView groups={withPosts.posts} />);
+    expect(markup).toContain('data-view="posts"');
+    expect(markup.indexOf(">2026<")).toBeLessThan(markup.indexOf(">2024<"));
+    expect(markup).toContain('id="post-100"');
+    expect(markup).toContain(">7 Nov<");
+    expect(markup).toContain(">@primereact<");
+    expect(markup).toContain("Launch.");
+    expect(markup).toContain('href="https://x.com/primereact/status/100"');
+    expect(markup).toContain("\u00a0\u2197");
+  });
+
+  it("renders an empty list when the filter leaves nothing", () => {
+    expect(html(<PostsView groups={[]} />)).toContain('data-view="posts"');
+  });
+
+  it("shows Posts in the view bar only when asked, with post chips instead of media chips", () => {
+    const state = { ...DEFAULT_VIEW_STATE, view: "posts" as const, tag: "3-0" };
+    const bar = html(<ViewBar chips={withPosts.chips} postChips={withPosts.postChips} views={["log", "grid", "index", "posts"]} state={state} />);
+    expect(bar).toMatch(/aria-pressed="true"[^>]*>Posts</);
+    expect(bar).toContain('aria-label="Filter"');
+    expect(bar).toMatch(/aria-pressed="true"[^>]*>3\.0 <span[^>]*>1<\/span>/);
+    expect(bar).not.toContain("Tokens");
+    expect(bar).not.toContain('aria-label="Density"');
+    expect(html(<ViewBar chips={withPosts.chips} state={DEFAULT_VIEW_STATE} />)).not.toContain(">Posts<");
+  });
+
+  it("StudyBody renders the filtered Posts view, and no Posts button without posts", () => {
+    const body = html(<StudyBody study={withPosts} state={{ ...DEFAULT_VIEW_STATE, view: "posts", tag: "4-0" }} />);
+    expect(body).toContain('data-view="posts"');
+    expect(body).toContain('id="post-200"');
+    expect(body).not.toContain('id="post-100"');
+    expect(body).toContain(">Posts<");
+    expect(html(<StudyBody study={view} state={DEFAULT_VIEW_STATE} />)).not.toContain(">Posts<");
   });
 });
 

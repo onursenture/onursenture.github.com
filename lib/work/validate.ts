@@ -1,11 +1,21 @@
-import type { ArchiveEntry, CaseStudy, Credit, Media } from "@/content/work/types";
+import { type ArchiveEntry, type CaseStudy, type Credit, type Media, POST_ACCOUNTS } from "@/content/work/types";
 
 // Registry checks, run by tests/content/work.test.ts in CI. Returns every
 // problem as a readable line instead of throwing at the first one.
 
 const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const YEAR_MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
+const DAY = /^(\d{4})-(\d{2})-(\d{2})$/;
+const DIGITS = /^\d+$/;
 const NODE_ID = /^\d+:\d+$/;
+
+function isDay(value: string): boolean {
+  const match = DAY.exec(value);
+  if (!match) return false;
+  const [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])];
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+}
 
 export function validateWork(
   studies: CaseStudy[],
@@ -62,6 +72,19 @@ export function validateWork(
       for (const link of entry.links ?? []) url(where, link.href);
       credits(where, entry.credits);
       for (const item of entry.media) media(where, item, mediaIds, chipKeys);
+    }
+
+    const postIds = new Set<string>();
+    for (const post of study.posts ?? []) {
+      const where = `${study.slug}/post ${post.id}`;
+      if (!isDay(post.date)) errors.push(`${where}: post date "${post.date}" must be YYYY-MM-DD`);
+      if (!DIGITS.test(post.id)) errors.push(`${where}: post id "${post.id}" must be digits`);
+      if (!(POST_ACCOUNTS as readonly string[]).includes(post.account)) {
+        errors.push(`${where}: post account "${post.account}" is not one of ${POST_ACCOUNTS.join(", ")}`);
+      }
+      if (postIds.has(post.id)) errors.push(`${where}: duplicate post id "${post.id}"`);
+      postIds.add(post.id);
+      if (post.entryId && !entryIds.has(post.entryId)) errors.push(`${where}: entryId "${post.entryId}" is not an entry of ${study.slug}`);
     }
   }
 

@@ -73,6 +73,22 @@ export interface Entry {
   media: Media[];
 }
 
+export const POST_ACCOUNTS = ["w00f", "primevue", "prime_ng", "primereact", "primefaces"] as const;
+export type PostAccount = (typeof POST_ACCOUNTS)[number];
+
+// A post about the project on X. The URL is derived (x.com/<account>/status/<id>).
+export interface Post {
+  // "YYYY-MM-DD"
+  date: string;
+  account: PostAccount;
+  // The status id (digits only).
+  id: string;
+  // Our own one-line summary, never the post's text (except @w00f, which may quote Onur).
+  summary: string;
+  // The entry it belongs to (a release or a template), for the Posts filter.
+  entryId?: string;
+}
+
 export interface CaseStudy {
   slug: WorkSlug;
   org: OrgId;
@@ -89,6 +105,8 @@ export interface CaseStudy {
   hero: Media;
   // Any order; rendered newest first.
   entries: Entry[];
+  // X posts about the project, any order; rendered newest first.
+  posts?: Post[];
 }
 
 export interface ArchiveEntry {
