@@ -16,3 +16,22 @@ test("Off the clock shows four tiles with real titles", async ({ page }) => {
   await expect(strip.locator('[data-tile="Saved"]')).toContainText("Jurassic Park computers in excruciating detail");
   await expect(strip.locator('[data-tile="Saved"]')).toContainText("fabiensanglard.net · 13 min");
 });
+
+test("the dashboard home fills the metrics, Activity and Sources", async ({ page }) => {
+  await page.goto("/?view=dashboard");
+  // 3 films; 3 reading + 3 read; 7 contributions.
+  await expect(page.locator("main dl").first().locator("dd")).toHaveText(["3", "6", "7"]);
+
+  const activity = page.locator("#activity li");
+  await expect(activity).toHaveCount(8);
+  await expect(activity.first()).toContainText("Watched");
+  await expect(activity.first()).toContainText("Love & Other Drugs");
+  await expect(activity.nth(3)).toContainText("Finished");
+  await expect(activity.last()).toContainText("Saved");
+  await expect(activity.last()).toContainText("Leaving Mozilla");
+
+  const sources = page.locator("#sources");
+  await expect(sources.locator("[data-health]")).toHaveCount(5);
+  await expect(sources.locator('[data-health="never"]')).toHaveCount(0);
+  await expect(page.getByTestId("sync-line")).not.toContainText("○");
+});

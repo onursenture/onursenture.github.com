@@ -1,6 +1,9 @@
 import { Band } from "@/components/ui/band";
+import { DataTable } from "@/components/ui/data-table";
 import { type IndexEntry, IndexRow } from "@/components/ui/index-row";
-import type { GlyphStatus } from "@/components/ui/status-glyph";
+import { Panel } from "@/components/ui/panel";
+import { type GlyphStatus, StatusGlyph } from "@/components/ui/status-glyph";
+import { TextLink } from "@/components/ui/text-link";
 import type { LabEntry } from "@/content/lab-index";
 
 export const LAB_STATUS: Record<NonNullable<LabEntry["status"]>, { glyph: GlyphStatus; label: string }> = {
@@ -30,5 +33,35 @@ export function LabBand({ entries }: { entries: LabEntry[] }) {
         <IndexRow key={entry.title} entry={labIndexEntry(entry)} />
       ))}
     </Band>
+  );
+}
+
+// The same list as a dashboard panel. Also hidden while empty.
+export function LabPanel({ entries }: { entries: LabEntry[] }) {
+  if (entries.length === 0) return null;
+  return (
+    <Panel title="Lab" count={entries.length} id="lab">
+      <DataTable
+        caption="Lab"
+        rows={entries}
+        rowKey={(entry) => entry.title}
+        columns={[
+          {
+            header: "Project",
+            cell: (entry) => (
+              <span className="inline-flex items-center gap-2 whitespace-nowrap">
+                {entry.status ? (
+                  <StatusGlyph status={LAB_STATUS[entry.status].glyph} label={LAB_STATUS[entry.status].label} />
+                ) : null}
+                {entry.href ? <TextLink href={entry.href}>{entry.title}</TextLink> : entry.title}
+              </span>
+            ),
+          },
+          { header: "Description", cell: (entry) => entry.description },
+          { header: "Year", cell: (entry) => entry.year ?? "", mono: true },
+          { header: "Status", cell: (entry) => entry.status ?? "", mono: true },
+        ]}
+      />
+    </Panel>
   );
 }

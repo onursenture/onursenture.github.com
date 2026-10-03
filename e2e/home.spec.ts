@@ -53,3 +53,27 @@ test("Off the clock keeps the photo tile and links to Life", async ({ page }) =>
   await expect(strip.locator('[data-tile="Photo"]')).toHaveAttribute("href", "/life/#photos");
   await expect(strip.getByRole("link", { name: "Life", exact: true })).toHaveAttribute("href", "/life/");
 });
+
+test("the dashboard home shows the metric row and the Overview panels", async ({ page }) => {
+  await page.goto("/?view=dashboard");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Overview");
+  await expect(page.locator("main dl").first().locator("dt")).toHaveText([
+    "Films synced",
+    "Books",
+    "GitHub contributions",
+  ]);
+
+  const work = page.locator("#work");
+  await expect(work.getByRole("columnheader")).toHaveText(["Project", "Notes", "Years", "Role"]);
+  await expect(work.locator("tbody tr")).toHaveCount(5);
+  await expect(page.locator("#lab tbody tr")).toHaveCount(3);
+  await expect(page.locator("#status")).toContainText("Open to roles");
+  await expect(page.locator("#activity")).toContainText("No activity yet.");
+});
+
+test("the Sources panel lists every source as never synced without a database", async ({ page }) => {
+  await page.goto("/?view=dashboard");
+  const sources = page.locator("#sources");
+  await expect(sources.locator("tbody tr")).toHaveCount(5);
+  await expect(sources.locator('[data-health="never"]')).toHaveCount(5);
+});

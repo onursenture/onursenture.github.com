@@ -3,9 +3,23 @@
 import { RelativeTime } from "@/components/ui/relative-time";
 import { type GlyphStatus, StatusGlyph } from "@/components/ui/status-glyph";
 import { useNow } from "@/components/ui/use-now";
-import { type Health, type SourceStatus, summarizeHealth } from "@/lib/sources/health";
+import { HEALTH_LABELS, type Health, type SourceStatus, sourceHealth, summarizeHealth } from "@/lib/sources/health";
 
 const GLYPHS: Record<Health, GlyphStatus> = { ok: "ok", late: "late", never: "empty" };
+
+// ● / ◐ / ○ for one source.
+export function HealthGlyph({ status }: { status: SourceStatus }) {
+  // Health depends on the current time, so it is computed on the client.
+  const health = sourceHealth(status.lastSuccessAt, status.intervalMinutes, useNow());
+  return <StatusGlyph status={GLYPHS[health]} />;
+}
+
+// "synced" / "late" / "never synced" for one source.
+export function HealthLabel({ status }: { status: SourceStatus }) {
+  // Health depends on the current time, so it is computed on the client.
+  const health = sourceHealth(status.lastSuccessAt, status.intervalMinutes, useNow());
+  return <span data-health={health}>{HEALTH_LABELS[health]}</span>;
+}
 
 // "● 5/5 synced · 12m ago" under the sidebar toggles.
 export function SyncLine({ statuses }: { statuses: SourceStatus[] }) {

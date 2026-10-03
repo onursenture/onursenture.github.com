@@ -1,15 +1,23 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { LabBand, labIndexEntry } from "@/components/home/lab-index";
+import { LabBand, LabPanel, labIndexEntry } from "@/components/home/lab-index";
 import { MetaLine, visibleSegments } from "@/components/home/meta-line";
 import type { LabEntry } from "@/content/lab-index";
 import type { MetaSegment } from "@/content/profile";
 
 const html = renderToStaticMarkup;
 
-describe("LabBand", () => {
-  it("renders nothing while the list is empty", () => {
+describe("Lab index", () => {
+  it("renders neither the band nor the panel while the list is empty", () => {
     expect(html(<LabBand entries={[]} />)).toBe("");
+    expect(html(<LabPanel entries={[]} />)).toBe("");
+  });
+
+  it("renders the panel as a table with one row per entry", () => {
+    const markup = html(<LabPanel entries={[{ title: "a", description: "b", status: "live" }]} />);
+    expect(markup).toContain(">Lab</h2>");
+    expect(markup.split("<tbody>")[1].match(/<tr /g)).toHaveLength(1);
+    expect(markup).toContain('aria-label="live"');
   });
 
   it("renders one row per entry with its status glyph", () => {
