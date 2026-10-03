@@ -26,7 +26,7 @@ export const primeone: CaseStudy = {
       id: "kit-2022",
       date: "2022-07",
       title: "PrimeOne for Figma",
-      note: "The first PrimeOne kit: components rebuilt with auto layout and variants, with light and dark modes from the start.",
+      note: "The first PrimeOne kit, with light and dark modes from the start.",
       source: "https://x.com/w00f/status/1551880003134128128",
       media: [
         { id: "kit-2022", caption: "Figma UI kit" },
@@ -73,7 +73,7 @@ export const primeone: CaseStudy = {
       id: "3-2",
       date: "2026-01",
       version: "3.2",
-      note: "The last 3.x release and the last one built on Tokens Studio. It shipped the same day as 4.0, with component fixes and tidier naming.",
+      note: "The last 3.x release and the last to support Tokens Studio. It shipped the same day as 4.0, with component fixes and tidier naming.",
       source: "https://www.primefaces.org/blog/primeone-4-0-is-here-native-figma-variables/",
       media: [
         { id: "overview-3-2", caption: "Overview" },

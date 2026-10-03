@@ -120,7 +120,7 @@ export const templatesPosts: Post[] = [
     date: "2022-02-21",
     account: "primevue",
     id: "1495690462212112385",
-    summary: "Atlantis for PrimeVue, the admin template, promoted again.",
+    summary: "Atlantis for PrimeVue, an admin template, promoted again.",
     entryId: "atlantis",
   },
   {
