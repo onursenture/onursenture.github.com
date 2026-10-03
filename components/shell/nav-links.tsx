@@ -5,9 +5,8 @@ import { usePathname } from "next/navigation";
 import { cx } from "@/lib/cx";
 import { type NavItem, isActive } from "@/lib/nav";
 
-// The same list at two densities: the site top bar (Text 14) and the
-// dashboard sidebar or mobile menu (Text 13, full width). Hover underlines;
-// the active item is inverted.
+// The same list at two densities: the top bar (Text 14) and the mobile menu
+// (Text 13, full width). Hover underlines; the active item is inverted.
 export function NavLinks({ items, placement }: { items: NavItem[]; placement: "bar" | "list" }) {
   const pathname = usePathname();
   return (

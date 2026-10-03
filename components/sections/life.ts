@@ -3,7 +3,6 @@ import { books } from "./books";
 import { films } from "./films";
 import { github } from "./github";
 import { photos } from "./photos";
-import { syncStatus } from "./sync-status";
 import type { AnySectionDefinition } from "./types";
 import { writing } from "./writing";
 
@@ -15,5 +14,4 @@ export const lifeSections: AnySectionDefinition[] = [
   writing,
   github,
   photos,
-  syncStatus,
 ];

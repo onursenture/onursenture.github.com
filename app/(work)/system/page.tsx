@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Picture } from "@/components/picture";
 import { Empty } from "@/components/sections/empty";
+import { SourcesTable } from "@/components/sources/sources-table";
 import { ToggleDemo } from "@/components/system/toggle-demo";
 import { Band } from "@/components/ui/band";
 import { Button } from "@/components/ui/button";
@@ -12,20 +13,17 @@ import { EraStamp } from "@/components/ui/era-stamp";
 import { IndexRow } from "@/components/ui/index-row";
 import { LiveClock } from "@/components/ui/live-clock";
 import { MetaLabel } from "@/components/ui/meta-label";
-import { Panel } from "@/components/ui/panel";
 import { RelativeTime } from "@/components/ui/relative-time";
-import { Stat, StatRow } from "@/components/ui/stat";
 import { StatusGlyph } from "@/components/ui/status-glyph";
 import { TextLink } from "@/components/ui/text-link";
 import { type Photo, getPhotos } from "@/lib/content/photos";
 import { formatDate } from "@/lib/format";
 import { formatRating } from "@/lib/sources/rating";
+import { readSourceStatuses } from "@/lib/sources/status";
 import { pageMetadata } from "@/lib/metadata";
-import { assertView } from "@/lib/view/params";
 
 // The in-code style tile and the S3 review surface. Not in the nav, not
-// indexed. Every primitive renders here in whichever view and theme is
-// active. Sample values are deliberately generic: no invented facts.
+// indexed. Every primitive renders here in whichever theme is active. Sample values are deliberately generic: no invented facts.
 export const metadata: Metadata = pageMetadata("System", { robots: { index: false, follow: false } });
 
 const TYPE_STYLES = [
@@ -39,8 +37,8 @@ const TYPE_STYLES = [
   ["type-sans-20-medium", "Section title"],
   ["type-sans-16", "Site body text sits in a ~680px measure at line-height 1.6."],
   ["type-sans-16-medium", "Site body text sits in a ~680px measure at line-height 1.6."],
-  ["type-sans-14", "Navigation, buttons and dashboard body."],
-  ["type-sans-14-medium", "Navigation, buttons and dashboard body."],
+  ["type-sans-14", "Navigation, buttons and compact body."],
+  ["type-sans-14-medium", "Navigation, buttons and compact body."],
   ["type-sans-13", "Sidebar items, table cells, panel headers."],
   ["type-sans-13-medium", "Sidebar items, table cells, panel headers."],
   ["type-mono-13", "2026 · 1,284 · 12:00"],
@@ -75,14 +73,14 @@ const photoColumns = [
   { header: "Date", cell: (photo: Photo) => formatDate(photo.date), mono: true, align: "right" as const },
 ];
 
-export default async function SystemPage({ params }: PageProps<"/[view]/system">) {
-  assertView((await params).view);
+export default async function SystemPage() {
   const photos = await getPhotos();
+  const statuses = await readSourceStatuses();
   const [photo] = photos;
 
   return (
-    <main className="flex flex-col gap-16 py-16 dashboard:gap-8 dashboard:p-6">
-      <h1 className="type-display-64 dashboard:type-sans-20-medium">System</h1>
+    <main className="flex flex-col gap-16 py-16">
+      <h1 className="type-display-64">System</h1>
 
       <Band label="Type" source="17 styles">
         <div className="flex flex-col">
@@ -157,30 +155,10 @@ export default async function SystemPage({ params }: PageProps<"/[view]/system">
             <Cover src="" alt="" />
           </div>
         </Specimen>
-        <Specimen name="Stat">
-          <div className="w-full">
-            <StatRow>
-              <Stat label="Photos" value={photos.length} />
-              <Stat label="Type styles" value={TYPE_STYLES.length} />
-              <Stat label="Color tokens" value={SWATCHES.length} />
-            </StatRow>
-          </div>
-        </Specimen>
-        <Specimen name="Panel">
-          <div className="w-full">
-            <Panel title="Photos" count={photos.length}>
-              <p className="p-3 type-sans-13">Panel body.</p>
-            </Panel>
-          </div>
-        </Specimen>
         <Specimen name="DataTable">
           <div className="grid w-full gap-4 md:grid-cols-2">
-            <Panel title="With rows" count={photos.length}>
-              <DataTable columns={photoColumns} rows={photos} rowKey={(p) => p.slug} caption="Photos" />
-            </Panel>
-            <Panel title="Empty" count={0}>
-              <DataTable columns={photoColumns} rows={[]} rowKey={(p) => p.slug} />
-            </Panel>
+            <DataTable columns={photoColumns} rows={photos} rowKey={(p) => p.slug} caption="Photos" />
+            <DataTable columns={photoColumns} rows={[]} rowKey={(p) => p.slug} />
           </div>
         </Specimen>
         <Specimen name="Band">
@@ -208,6 +186,10 @@ export default async function SystemPage({ params }: PageProps<"/[view]/system">
             </div>
           ) : null}
         </Specimen>
+      </Band>
+
+      <Band label="Sources">
+        <SourcesTable statuses={statuses} />
       </Band>
     </main>
   );

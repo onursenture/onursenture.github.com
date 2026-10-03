@@ -1,27 +1,21 @@
 import { describe, expect, it } from "vitest";
-import { NAV_ITEMS, OVERVIEW, cleanPath, isActive, readyItems } from "@/lib/nav";
+import { NAV_ITEMS, isActive, readyItems } from "@/lib/nav";
 
 describe("nav config", () => {
-  it("keeps the foundation IA order and renders only ready items", () => {
-    expect(NAV_ITEMS.map((i) => i.label)).toEqual(["Work", "Lab", "Resume", "Notes", "Life"]);
-    expect(readyItems().map((i) => i.label)).toEqual(["Life"]);
+  it("lists the Work-side items in IA order; Life is reached by the switch, not the nav", () => {
+    expect(NAV_ITEMS.map((i) => i.label)).toEqual(["Work", "Lab", "Resume"]);
   });
 
-  it("strips the internal view prefix that prerendering sees", () => {
-    expect(cleanPath("/site/")).toBe("/");
-    expect(cleanPath("/dashboard/life/")).toBe("/life/");
-    expect(cleanPath("/life/")).toBe("/life/");
-    expect(cleanPath("/sitemap/")).toBe("/sitemap/");
+  it("renders only ready items (none yet in Sprint 4)", () => {
+    expect(readyItems()).toEqual([]);
+    expect(readyItems([{ label: "X", href: "/x/", ready: true }]).map((i) => i.label)).toEqual(["X"]);
   });
 
-  it("matches Overview exactly and Life by prefix, including photos", () => {
-    const life = NAV_ITEMS.find((i) => i.label === "Life")!;
-    expect(isActive(OVERVIEW, "/")).toBe(true);
-    expect(isActive(OVERVIEW, "/site/")).toBe(true);
-    expect(isActive(OVERVIEW, "/life/")).toBe(false);
-    expect(isActive(life, "/life/")).toBe(true);
-    expect(isActive(life, "/site/life/")).toBe(true);
-    expect(isActive(life, "/photos/stabilo/")).toBe(true);
-    expect(isActive(life, "/system/")).toBe(false);
+  it("matches an item by prefix", () => {
+    const work = NAV_ITEMS[0];
+    expect(isActive(work, "/work/")).toBe(true);
+    expect(isActive(work, "/work/primeone/")).toBe(true);
+    expect(isActive(work, "/")).toBe(false);
+    expect(isActive(work, "/life/")).toBe(false);
   });
 });

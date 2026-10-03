@@ -1,8 +1,6 @@
 import { Cover } from "@/components/ui/cover";
-import { DataTable } from "@/components/ui/data-table";
 import { MetaLabel } from "@/components/ui/meta-label";
 import { profile } from "@/content/profile";
-import { formatDate } from "@/lib/format";
 import type { Book, Books } from "@/lib/sources/goodreads";
 import { readSource } from "@/lib/sources/read";
 import { formatRating } from "@/lib/sources/rating";
@@ -47,7 +45,7 @@ function Read({ books }: { books: Book[] }) {
 }
 
 // Covers for the reading shelf, then the read list with ratings.
-function Site({ data }: { data: Books }) {
+function Render({ data }: { data: Books }) {
   return (
     <div className="flex flex-col gap-12">
       <div className="flex flex-col gap-6">
@@ -62,37 +60,12 @@ function Site({ data }: { data: Books }) {
   );
 }
 
-function Dashboard({ data }: { data: Books }) {
-  const rows = [
-    ...data.currentlyReading.map((book) => ({ ...book, shelf: "reading" })),
-    ...data.read.map((book) => ({ ...book, shelf: "read" })),
-  ];
-  return (
-    <DataTable
-      caption="Books"
-      rows={rows}
-      rowKey={(book) => `${book.shelf}-${book.link}`}
-      columns={[
-        { header: "Shelf", cell: (book) => book.shelf, mono: true },
-        { header: "Title", cell: (book) => <ItemLink href={book.link}>{book.title}</ItemLink> },
-        { header: "Author", cell: (book) => book.author, mono: true, wrap: true },
-        { header: "Rating", cell: (book) => formatRating(book.numRating), mono: true },
-        { header: "Date", cell: (book) => formatDate(book.date), mono: true, align: "right" },
-      ]}
-    />
-  );
-}
 
 export const books: SectionDefinition<Books> = {
   id: "books",
   title: "Books",
-  visibility: "both",
   load: () => readSource("goodreads"),
-  Site,
-  Dashboard,
+  Render,
   source: "Goodreads",
-  synced: true,
   href: `https://www.goodreads.com/${profile.social.goodreads}`,
-  count: (data) => data.currentlyReading.length + data.read.length,
-  span: 6,
 };

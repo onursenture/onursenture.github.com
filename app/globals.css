@@ -3,10 +3,9 @@
 /* docs/ holds plans whose code samples would otherwise ship as utilities. */
 @source not "../docs";
 
-/* Theme and view are attributes, not media queries, so both can be toggled.
-   Usage: dark:…, dashboard:… (density tweaks only; colors come from tokens). */
+/* Theme is an attribute, not a media query, so it can be toggled.
+   Usage: dark:… (colors come from tokens). */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
-@custom-variant dashboard (&:where([data-view="dashboard"], [data-view="dashboard"] *));
 
 /* Design tokens (S1). Names match the Figma variables exactly. The defaults
    are cleared first, so only these exist: no palette colors, no shadows, one
@@ -103,18 +102,7 @@
   }
 }
 
-/* View switch (components/shell/shell-fade.tsx): the whole page cross-fades
-   between the two shells. 250ms, ease-out. Theme switches and navigations
-   don't animate. */
-::view-transition-group(.shell-fade),
-::view-transition-old(.shell-fade),
-::view-transition-new(.shell-fade) {
-  animation-duration: 250ms;
-  animation-timing-function: ease-out;
-}
-
-/* The toggle skips the transition under reduced motion; this guards any
-   other view transition. */
+/* Any view transition is skipped under reduced motion. */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
   ::view-transition-old(*),

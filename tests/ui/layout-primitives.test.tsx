@@ -4,8 +4,6 @@ import { Band } from "@/components/ui/band";
 import { Cover } from "@/components/ui/cover";
 import { DataTable } from "@/components/ui/data-table";
 import { IndexList, IndexRow } from "@/components/ui/index-row";
-import { Panel } from "@/components/ui/panel";
-import { Stat } from "@/components/ui/stat";
 
 const html = renderToStaticMarkup;
 
@@ -112,19 +110,8 @@ describe("Cover", () => {
   });
 });
 
-describe("Panel, Band and Stat", () => {
-  it("Panel shows its title and count and spans the given columns", () => {
-    const markup = html(
-      <Panel title="Work" count={5} span={8}>
-        body
-      </Panel>,
-    );
-    expect(markup).toContain("xl:col-span-8");
-    expect(markup).toContain(">Work</h2>");
-    expect(markup).toContain("<span>5</span>");
-  });
-
-  it("Band shows label · source and an All → link only with an href", () => {
+describe("Band", () => {
+  it("shows label · source and an All → link only with an href", () => {
     expect(html(<Band label="Films" source="Letterboxd">x</Band>)).not.toContain("<a");
     const linked = html(
       <Band label="Films" source="Letterboxd" href="https://letterboxd.com/onur/">
@@ -133,11 +120,5 @@ describe("Panel, Band and Stat", () => {
     );
     expect(linked).toContain("· Letterboxd");
     expect(linked).toContain('rel="noopener noreferrer"');
-  });
-
-  it("Stat pairs a label with a value", () => {
-    const markup = html(<Stat label="Films" value={6} />);
-    expect(markup).toContain(">Films</dt>");
-    expect(markup).toContain(">6</dd>");
   });
 });

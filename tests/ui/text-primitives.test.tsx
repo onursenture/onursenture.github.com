@@ -83,18 +83,18 @@ describe("Toggle", () => {
   it("marks exactly the current option as pressed", () => {
     const markup = html(
       <Toggle
-        label="View"
-        testId="view-toggle"
-        value="site"
+        label="Layout"
+        testId="layout-toggle"
+        value="list"
         options={[
-          { value: "site", label: "Site" },
-          { value: "dashboard", label: "Dashboard" },
+          { value: "list", label: "List" },
+          { value: "grid", label: "Grid" },
         ]}
       />,
     );
-    expect(markup).toContain('role="group" aria-label="View" data-testid="view-toggle"');
+    expect(markup).toContain('role="group" aria-label="Layout" data-testid="layout-toggle"');
     expect(markup.match(/aria-pressed="true"/g)).toHaveLength(1);
-    expect(markup).toMatch(/aria-pressed="true"[^>]*>Site</);
+    expect(markup).toMatch(/aria-pressed="true"[^>]*>List</);
   });
 });
 

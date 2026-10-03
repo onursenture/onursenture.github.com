@@ -7,12 +7,11 @@ export interface Column<T> {
   align?: "left" | "right";
   // Fragment Mono, muted: numbers, dates, years, domains. Stays on one line.
   mono?: boolean;
-  // Lets a mono cell wrap (names, which can be long) below xl, where the
-  // dashboard sidebar leaves the tables little room.
+  // Lets a mono cell wrap (names, which can be long) below xl.
   wrap?: boolean;
 }
 
-// A dense dashboard table with a real header row. When there are no rows it
+// A dense table with a real header row. When there are no rows it
 // renders one empty-state row instead of an empty body.
 export function DataTable<T>({
   columns,

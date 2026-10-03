@@ -1,8 +1,8 @@
 import { ThemeSync } from "@/components/theme-toggle";
 import { TextLink } from "@/components/ui/text-link";
 
-// Only for requests that never reach app/[view] (paths the proxy skips, such
-// as ones with a dot). Everything else 404s inside the shell.
+// Only for requests that match no layout (paths with a dot, for example).
+// Everything else 404s inside the Work or Life layout.
 export default function RootNotFound() {
   return (
     <>

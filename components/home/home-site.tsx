@@ -7,7 +7,7 @@ import { LabBand } from "./lab-index";
 import { MetaLine } from "./meta-line";
 import { OffTheClock } from "./off-the-clock";
 
-// Site view of "/": identity, work index, Lab, then the Off the clock strip.
+// "/": identity, work index, Lab, then the Off the clock strip.
 export function HomeSite() {
   return (
     <main className="flex flex-col gap-16 pt-16 pb-24 md:gap-24 md:pt-24">

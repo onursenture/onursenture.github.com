@@ -9,8 +9,8 @@ import { type SourceView, toSourceView } from "./snapshot-view";
 import { sourceTag } from "./tags";
 import type { SourceId } from "./types";
 
-// What fixture mode reports as the sync time, so the dashboard has a stable
-// "Synced" value to show and test.
+// What fixture mode reports as the sync time, so pages have a stable
+// sync time to show and test.
 const FIXTURE_SYNCED_AT = "2026-10-02T12:00:00.000Z";
 
 // Page-side read of a source snapshot. Cached and tagged so pages are

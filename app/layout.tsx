@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Fragment_Mono } from "next/font/google";
-import { ViewHistoryGuard } from "@/components/view-toggle";
 import { OPEN_GRAPH_DEFAULTS, TWITTER_DEFAULTS } from "@/lib/metadata";
 import { site } from "@/lib/site";
-import { themeScript } from "@/lib/view/theme";
+import { themeScript } from "@/lib/theme/theme";
 import "./globals.css";
 
 // Self-hosted at build time; exposed as --font-fragment-mono, which
@@ -38,9 +37,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <link rel="stylesheet" href={ADOBE_FONTS_KIT} />
       </head>
       <body>
-        {/* Here, not under app/[view]: a view switch hides that layout, which
-            would drop the listener for a moment. */}
-        <ViewHistoryGuard />
         {children}
       </body>
     </html>

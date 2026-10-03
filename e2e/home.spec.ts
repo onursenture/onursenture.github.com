@@ -67,32 +67,6 @@ test("Off the clock keeps the photo tile and links to Life", async ({ page }) =>
   await expect(strip.getByRole("link", { name: "Life", exact: true })).toHaveAttribute("href", "/life/");
 });
 
-test("the dashboard home shows the metric row and the Overview panels", async ({ page }) => {
-  await page.goto("/?view=dashboard");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Overview");
-  // No database, so no source has data: the metric tiles are left out
-  // rather than shown as 0.
-  await expect(page.getByTestId("stat-row")).toHaveCount(0);
-
-  // No entry has years or a role yet, so those columns are not rendered.
-  const work = page.locator("#work");
-  await expect(work.getByRole("columnheader")).toHaveText(["Project", "Notes"]);
-  await expect(work.locator("tbody tr")).toHaveCount(5);
-  // The Lab table carries status in the Project cell's glyph, not a column.
-  const lab = page.locator("#lab");
-  await expect(lab.getByRole("columnheader")).toHaveText(["Project", "Description", "Year"]);
-  await expect(lab.locator("tbody tr")).toHaveCount(3);
-  await expect(page.locator("#status")).toContainText("Open to roles");
-  await expect(page.locator("#activity")).toContainText("No activity yet.");
-});
-
-test("the Sources panel lists every source as never synced without a database", async ({ page }) => {
-  await page.goto("/?view=dashboard");
-  const sources = page.locator("#sources");
-  await expect(sources.locator("tbody tr")).toHaveCount(5);
-  await expect(sources.locator('[data-health="never"]')).toHaveCount(5);
-});
-
 for (const width of [320, 390]) {
   test.describe(`at ${width}px`, () => {
     test.use({ viewport: { width, height: 844 } });

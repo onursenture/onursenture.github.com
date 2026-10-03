@@ -1,6 +1,6 @@
-// The view and theme preference cookies share one set of attributes. proxy.ts
-// sets them through NextResponse.cookies; the toggles write document.cookie.
-// Both read from here, so the two can't drift apart.
+// Preference cookie attributes. The theme toggle writes document.cookie
+// (serializeCookie) and the theme script reads it (cookiePattern); both come
+// from here, so the two can't drift apart.
 export const PREFERENCE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 export const PREFERENCE_COOKIE = {

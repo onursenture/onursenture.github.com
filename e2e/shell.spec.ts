@@ -1,11 +1,9 @@
 import { expect, test } from "@playwright/test";
 
-test("the site shell has the top bar, the active nav item and the footer", async ({ page }) => {
+test("the site shell has the top bar and the footer", async ({ page }) => {
   await page.goto("/life/");
-  const nav = page.getByRole("navigation", { name: "Main" });
-  // Only ready sections are listed; S3 ships Life.
-  await expect(nav.getByRole("link")).toHaveText(["Life"]);
-  await expect(nav.getByRole("link", { name: "Life" })).toHaveAttribute("aria-current", "page");
+  // No nav item is ready yet, so the list is empty.
+  await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Onur Senture" })).toHaveAttribute("href", "/");
   await expect(page.getByRole("link", { name: /Book a call/ })).toHaveCount(0);
 
@@ -17,18 +15,6 @@ test("the site shell has the top bar, the active nav item and the footer", async
   await expect(footer.locator('[data-slot="paddle"]')).toHaveCount(1);
 });
 
-test("the dashboard sidebar lists Overview first, then the toggles and the sync line", async ({ page }) => {
-  await page.goto("/?view=dashboard");
-  const sidebar = page.locator("aside");
-  const nav = sidebar.getByRole("navigation", { name: "Main" });
-  await expect(nav.getByRole("link")).toHaveText(["Overview", "Life"]);
-  await expect(nav.getByRole("link", { name: "Overview" })).toHaveAttribute("aria-current", "page");
-  await expect(sidebar.getByRole("group", { name: "Theme" })).toBeVisible();
-  await expect(sidebar.getByRole("group", { name: "View" })).toBeVisible();
-  // This run has no database, so no source has synced.
-  await expect(sidebar.getByTestId("sync-line")).toHaveText(/○\s*0\/5 synced/);
-});
-
 test.describe("at 390px", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
@@ -37,20 +23,8 @@ test.describe("at 390px", () => {
     await expect(page.getByRole("navigation", { name: "Main" })).toBeHidden();
     await page.getByRole("button", { name: "Menu" }).click();
     const menu = page.getByRole("dialog", { name: "Menu" });
-    await expect(menu.getByRole("link", { name: "Life" })).toBeVisible();
-    await expect(menu.getByRole("group", { name: "View" })).toBeVisible();
+    await expect(menu.getByRole("group", { name: "Theme" })).toBeVisible();
     await menu.getByRole("button", { name: "Close menu" }).click();
-    await expect(menu).toBeHidden();
-  });
-
-  test("the dashboard menu opens the sidebar as a slide-over", async ({ page }) => {
-    await page.goto("/?view=dashboard");
-    await expect(page.locator("aside")).toBeHidden();
-    await page.getByRole("button", { name: "Menu" }).click();
-    const menu = page.getByRole("dialog", { name: "Menu" });
-    await expect(menu.getByRole("link", { name: "Overview" })).toBeVisible();
-    await expect(menu.getByTestId("sync-line")).toBeVisible();
-    await page.keyboard.press("Escape");
     await expect(menu).toBeHidden();
   });
 
@@ -62,16 +36,6 @@ test.describe("at 390px", () => {
     // An open modal <dialog> inside a display:none ancestor would leave the
     // rest of the page inert.
     await expect(page.locator("dialog")).toHaveJSProperty("open", false);
-    await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Life" }).click();
-    await expect(page).toHaveURL(/\/life\/$/);
-  });
-
-  test("switching view from the menu leaves the new page usable", async ({ page }) => {
-    await page.goto("/");
-    await page.getByRole("button", { name: "Menu" }).click();
-    await page.getByRole("dialog", { name: "Menu" }).getByRole("button", { name: "Dashboard" }).click();
-    await expect(page.locator('[data-view="dashboard"]')).toBeVisible();
-    await page.getByRole("button", { name: "Menu" }).click();
-    await expect(page.getByRole("dialog", { name: "Menu" }).getByRole("link", { name: "Overview" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Onur Senture" })).toBeVisible();
   });
 });
