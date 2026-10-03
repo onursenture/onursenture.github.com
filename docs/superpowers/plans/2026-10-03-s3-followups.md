@@ -9,7 +9,14 @@ Closed in Sprint 4:
 - `PageHeader`'s site-branch test is moot: it lost its view branch.
 - Closed by removing the dashboard view: the scrolled dashboard to site slide, the cross-tab stale view, the `ViewHistoryGuard` private-API risk, the "Known trade-offs" below, and the dashboard density items under S7.
 
-Moved to Sprint 8 (launch): DataTable at 390px, the ThemeToggle hydration flash, 404 titles, menu dialog tests and CSP. The rest of the S6 list below (Lab placeholders, token-test gaps, font preconnect and focus ring) goes with them. The remaining items under the old S7 and S8 headings stay open for the sprints that now own them (Sprint 7 admin, Sprint 10 personal layer). "Before merge" is the historical `s3` checklist.
+Moot after Sprint 4 (they only concerned the removed dashboard view): the S7 items for Stat and PanelGrid on `/system/`, the dashboard heatmap at 390px (S8), the panel header counts (S8) and the "dashboard detail" e2e for the photo page (S8). The other items under the old S7 and S8 headings stay open for the sprints that now own them (Sprint 7 admin, Sprint 10 personal layer). "Before merge" is the historical `s3` checklist.
+
+Moved to Sprint 8 (launch), as the Sprint 4 spec §7 names them:
+- DataTable at 390px
+- the ThemeToggle hydration flash
+- 404 titles
+- menu dialog tests
+- CSP
 
 The sections below keep their original S-numbers from the S3 plan; read them against this status.
 

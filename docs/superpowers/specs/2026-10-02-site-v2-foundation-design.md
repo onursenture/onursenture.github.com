@@ -211,7 +211,7 @@ Until the admin layer ships, the resume reads only from `content/resume.ts`.
 
 ## Roadmap
 
-There are two parallel tracks. On the **design** track, Onur and Claude work together, using Mobbin MCP, Figma MCP and reference sites Onur shares. On the **platform** track, subagents do the work. The early sprints don't block each other.
+Onur and Claude design together, using Mobbin MCP, Figma MCP and reference sites Onur shares, and subagents build. The sprints in the table below run in order, with no separate design and platform tracks. The early sprints don't block each other.
 
 > Revised 2026-10-03 (Sprint 4): sprints are named "Sprint N"; the S1 direction and the dashboard view were replaced (see `2026-10-03-sprint-4-visual-direction-design.md`).
 
@@ -230,7 +230,7 @@ Priority within the roadmap is intentional. The professional core (portfolio, re
 
 ### Content inventory (can start now, in parallel)
 
-S4 and S5 will be blocked by material, not code. For each project, gather:
+Sprint 5 (Work I) and Sprint 6 (Work II) will be blocked by material, not code. Placeholders unblock them: each case study can ship with `MediaPlaceholder` slots, and Sprint 7's upload swaps real media in. For each project, gather:
 - Figma links
 - old screenshots and exports
 - the year(s)
