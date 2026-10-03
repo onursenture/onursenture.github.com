@@ -117,7 +117,7 @@ The existing `<Picture>` is unchanged. `Empty` is restyled with tokens.
 - **Revised after the Task 6 review (2026-10-03).**
   - The first pass wrapped both desktop navs in a shared `<ViewTransition name="shell-nav">` and relied on the root snapshot to cross-fade the content.
   - React sets `view-transition-name: none` on `<html>` when no boundary covers the root. So only the nav animated, and its snapshot stretched between the bar and list shapes.
-  - Onur chose to drop the nav morph. Each shell's outer element is now wrapped in `<ViewTransition name="shell" share={{ "view-switch": "shell-fade" }} default="none">`. The outgoing and incoming shells form a shared pair, and their snapshots cross-fade.
+  - Onur chose to drop the nav morph. Each shell's outer element is now wrapped in `<ViewTransition name="shell" share={{ "view-switch": "shell-fade", default: "none" }} default="none">` (`@types/react` requires the `default` key in the per-type map). The outgoing and incoming shells form a shared pair, and their snapshots cross-fade.
 
 **404 inside the shell.** Add `app/[view]/[...missing]/page.tsx`, which calls `notFound()`, plus `app/[view]/not-found.tsx`. Unknown URLs then render inside the view layout, with nav and toggles, in both views. Cache Components needs at least one prerendered param, so `generateStaticParams` returns a single placeholder param.
 

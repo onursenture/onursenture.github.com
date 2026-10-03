@@ -10,6 +10,11 @@
 
 **Spec:** `docs/superpowers/specs/2026-10-03-s3-design-system-shell-design.md` (with `2026-10-02-s1-visual-direction-design.md` for token values). Figma style tile: file `GJAOUY4DJdPgvPgfNZRsst`.
 
+## Errata (applied during execution)
+
+- **Task 6 (2026-10-03).** The nav morph described below was replaced by a whole-page cross-fade, at Onur's decision after the task review. React sets `view-transition-name: none` on `<html>` when no boundary covers the root, so the content never cross-faded, and the nav snapshot stretched between the bar and the list. `ShellMorph` / `shell-morph.tsx` / the `shell-nav` name became `ShellFade` / `shell-fade.tsx` / the `shell` name, which wraps each shell's outer element. Where the text below says "morph", `shell-nav` or `ShellMorph`, read the cross-fade. See the S1 and S3 specs' revised motion lines and commit 0d6963b.
+- **Task 5 (2026-10-03).** A review fix (8a9facc) moved the site bar height onto the bordered `<header>`, added a matchMedia close to `MenuDialog`, and changed the slide-over header padding, the wash and the footer separators. Later tasks that "Replace" those files keep these fixes.
+
 ## Notes from the planning spike (record these in the spec)
 
 Every code block below was run in a throwaway worktree of `v2`, task by task, with the full verification at each step.
