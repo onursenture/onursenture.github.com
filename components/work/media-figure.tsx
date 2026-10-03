@@ -39,7 +39,7 @@ export function MediaFigure({ media, sizes, ratio, bare = false, fit = false, pr
         sizes={sizes}
         priority={priority}
         className={cx(
-          fit ? "mx-auto max-h-[62dvh] w-auto max-w-full border object-contain" : cx("w-full border object-cover", ratio ?? RATIO[media.aspect]),
+          fit ? "mx-auto max-h-[62dvh] w-auto max-w-full border object-contain" : cx("w-full border object-cover object-top", ratio ?? RATIO[media.aspect]),
           className,
         )}
       />

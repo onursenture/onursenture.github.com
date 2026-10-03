@@ -52,7 +52,7 @@ export const primeicons: CaseStudy = {
       version: "1.0",
       note: "Version 1.0 released.",
       source: "https://x.com/w00f/status/1052113437382328320",
-      media: [{ id: "set-1-0", caption: "The 1.0 set" }],
+      media: [],
     },
     {
       id: "1m",
@@ -68,7 +68,7 @@ export const primeicons: CaseStudy = {
       version: "7.0",
       note: "Version 7.0.0: 50+ new icons, with over 2 million monthly downloads at release.",
       source: "https://x.com/primefaces/status/1773661861151432797",
-      media: [{ id: "set-7-0", caption: "The 7.0 set" }],
+      media: [{ id: "set-7-0", caption: "The 7.0 set", aspect: "16/9" }],
     },
   ],
   posts: primeiconsPosts,

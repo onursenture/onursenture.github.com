@@ -1,3 +1,5 @@
+"use client";
+
 import { Fragment } from "react";
 import { DitherRule } from "@/components/ui/dither";
 import { TextLink } from "@/components/ui/text-link";

@@ -28,7 +28,10 @@ export const primeone: CaseStudy = {
       title: "PrimeOne for Figma",
       note: "The all-new Figma UI kit, built with variants and auto layout, in light and dark modes.",
       source: "https://x.com/w00f/status/1551880003134128128",
-      media: [{ id: "kit-2022", caption: "Figma UI kit" }],
+      media: [
+        { id: "kit-2022", caption: "Figma UI kit" },
+        { id: "kit-2022-inside", caption: "What's inside" },
+      ],
     },
     {
       id: "2-0",
@@ -36,7 +39,7 @@ export const primeone: CaseStudy = {
       version: "2.0",
       note: "Components tidied up, with boolean, text and instance swap properties added.",
       source: "https://x.com/primefaces/status/1630205822981533696",
-      media: [],
+      media: [{ id: "overview-2-0", caption: "Overview" }],
     },
     {
       id: "2-1",
@@ -44,7 +47,7 @@ export const primeone: CaseStudy = {
       version: "2.1",
       note: "Support for Tokens Studio.",
       source: "https://x.com/primereact/status/1685967643570741248",
-      media: [],
+      media: [{ id: "overview-2-1", caption: "Overview" }],
     },
     {
       id: "2-2",
@@ -63,6 +66,7 @@ export const primeone: CaseStudy = {
       media: [
         { id: "overview-3-0", caption: "Overview" },
         { id: "tokens-3-0", caption: "Tokens", tags: ["tokens"] },
+        { id: "cover-3-0", caption: "PrimeOne 3", aspect: "16/9" },
       ],
     },
     {
@@ -71,7 +75,10 @@ export const primeone: CaseStudy = {
       version: "4.0",
       note: "Tokens moved to native Figma variables, organised in new variable collections, plus a new Figma plugin that outputs theme code.",
       source: "https://x.com/primevue/status/2013200903923245079",
-      media: [{ id: "variables-4-0", caption: "Variable collections", tags: ["tokens"] }],
+      media: [
+        { id: "overview-4-0", caption: "Overview" },
+        { id: "variables-4-0", caption: "Variable collections", tags: ["tokens"] },
+      ],
     },
   ],
   posts: primeonePosts,

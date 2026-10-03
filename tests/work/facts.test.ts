@@ -10,12 +10,12 @@ describe("caseStudyFacts", () => {
     expect(facts).toEqual(primeone.facts);
   });
 
-  it("for the real templates case study with getStudyView, the last fact is Coverage with 26 templates, 8 remasters and 1 page", () => {
+  it("for the real templates case study with getStudyView, the last fact is Coverage with 26 templates, 8 remasters and 33 pages", () => {
     const templates = getCaseStudy("templates")!;
     const view = getStudyView(templates);
     const facts = caseStudyFacts(templates, view);
     const lastFact = facts[facts.length - 1];
-    expect(lastFact).toEqual({ label: "Coverage", value: "26 templates · 8 remasters · 1 page" });
+    expect(lastFact).toEqual({ label: "Coverage", value: "26 templates · 8 remasters · 33 pages" });
   });
 
   it("for a templates study with zero page-tagged media, value is the templates and remasters", () => {
@@ -75,8 +75,8 @@ describe("caseStudyFacts", () => {
 
   it("with 1 original and 1 remaster and no pages, the Coverage says 1 template · 1 remaster", () => {
     const templates = getCaseStudy("templates")!;
-    const original = templates.entries.find((entry) => entry.id === "ultima")!;
-    const remaster = templates.entries.find((entry) => entry.id === "ultima-definitive")!;
+    const original = templates.entries.find((entry) => entry.id === "morpheus")!;
+    const remaster = templates.entries.find((entry) => entry.id === "poseidon-remastered-2020")!;
     const study: CaseStudy = { ...templates, entries: [original, remaster] };
     const facts = caseStudyFacts(study, getStudyView(study));
     expect(facts[facts.length - 1]).toEqual({ label: "Coverage", value: "1 template · 1 remaster" });
@@ -84,7 +84,7 @@ describe("caseStudyFacts", () => {
 
   it("with only remasters, the templates part reads 0 templates", () => {
     const templates = getCaseStudy("templates")!;
-    const remaster = templates.entries.find((entry) => entry.id === "ultima-definitive")!;
+    const remaster = templates.entries.find((entry) => entry.id === "poseidon-remastered-2020")!;
     const study: CaseStudy = { ...templates, entries: [remaster] };
     const facts = caseStudyFacts(study, getStudyView(study));
     expect(facts[facts.length - 1]).toEqual({ label: "Coverage", value: "0 templates · 1 remaster" });

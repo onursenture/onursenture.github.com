@@ -14,7 +14,7 @@ for (const [slug, title] of STUDIES) {
     await expect(page).toHaveTitle(`${title} · Onur Senture`);
     await expect(page.getByRole("heading", { level: 1 })).toContainText(`${title}.`);
     await expect(page.getByText("Design lead", { exact: true })).toBeVisible();
-    await expect(page.locator('[data-media="cover"]')).toContainText("FIG. 01");
+    await expect(page.locator('[data-media="cover"]')).toHaveAttribute("aria-label", /^Open FIG\. 01: /);
     await expect(page.locator('[data-view="log"] h2').first()).toHaveText(/^\d{4}$/);
     await expect(page.getByRole("link", { name: "← Work" })).toHaveAttribute("href", "/work/");
   });
@@ -31,7 +31,7 @@ test("the PrimeOne log is newest first and links each entry's post", async ({ pa
   const post = block.getByRole("link", { name: `Post on X, ${e30.heading}, ${e30.month} ${e30.year}` });
   await expect(post).toHaveAttribute("href", "https://x.com/w00f/status/1854537901700186303");
   await expect(post).toContainText("post");
-  await expect(block.locator('[data-media="overview-3-0"]')).toContainText(`${overview.label} · ${overview.caption}`);
+  await expect(block.locator('[data-media="overview-3-0"]')).toHaveAttribute("aria-label", `Open ${overview.label}: ${overview.caption}`);
   await expect(block.getByRole("button", { name: `+${e30.media.length - 1} in Grid →` })).toBeVisible();
 });
 
@@ -39,7 +39,7 @@ test("Templates credits Genesis and counts its coverage from the data", async ({
   await page.goto("/work/templates/");
   await expect(page.locator("#entry-genesis [data-credits]")).toHaveText("Design: Ümit Çelik · Implementation: Taner Ergin");
   await expect(page.locator("#entry-genesis").getByRole("list", { name: "Frameworks" })).toContainText("React");
-  await expect(page.locator("dl")).toContainText(/Coverage\s*26 templates · 8 remasters · 1 page$/);
+  await expect(page.locator("dl")).toContainText(/Coverage\s*26 templates · 8 remasters · 33 pages$/);
   await expect(page.locator("#entry-verona").getByRole("button", { name: "+1 page in Grid →" })).toBeVisible();
 });
 

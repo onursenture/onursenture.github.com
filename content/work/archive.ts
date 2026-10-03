@@ -41,6 +41,7 @@ export const archiveEntries: ArchiveEntry[] = [
     title: "Visual Theme Designer for PrimeFaces",
     note: "The Visual Theme Designer opened to PrimeFaces users at no cost.",
     source: "https://x.com/primefaces/status/1684176428512821249",
+    media: { id: "visual-theme-designer-promo", caption: "PrimeDesigner promo", tags: ["promo"] },
   },
   {
     id: "theme-gallery",
@@ -57,6 +58,7 @@ export const archiveEntries: ArchiveEntry[] = [
     title: "Aura theme",
     note: "The all-new open source Aura theme, released with PrimeVue 3.47.0, with 10 color alternatives and a Noir mode.",
     source: "https://x.com/primevue/status/1750202624069058637",
+    media: { id: "aura-promo", caption: "PrimeVue 4 launch art, with Aura", tags: ["promo"], aspect: "16/9" },
   },
   {
     id: "visual-theme-editor",
