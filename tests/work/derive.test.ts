@@ -94,11 +94,6 @@ describe("buildStudyView", () => {
       { key: "components", label: "Components", count: 1 },
     ]);
   });
-
-  it("says 'page(s) in Grid' only on Templates", () => {
-    expect(view.moreLabel).toEqual({ one: "in Grid", many: "in Grid" });
-    expect(buildStudyView({ ...study, slug: "templates" }, lookup).moreLabel).toEqual({ one: "page in Grid", many: "pages in Grid" });
-  });
 });
 
 describe("filterMedia and viewerItems", () => {

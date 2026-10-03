@@ -90,8 +90,6 @@ export interface StudyView {
   posts: YearGroup<PostView>[];
   postCount: number;
   postChips: ChipView[];
-  // "+N in Grid →"; Templates says "+1 page in Grid →" / "+N pages in Grid →".
-  moreLabel: { one: string; many: string };
 }
 
 export interface ArchiveRowView {
@@ -284,8 +282,6 @@ export function buildStudyView(study: CaseStudy, lookup: ImageLookup, options: V
     posts: groupByYear(posts),
     postCount: posts.length,
     postChips,
-    moreLabel:
-      study.slug === "templates" ? { one: "page in Grid", many: "pages in Grid" } : { one: "in Grid", many: "in Grid" },
   };
 }
 

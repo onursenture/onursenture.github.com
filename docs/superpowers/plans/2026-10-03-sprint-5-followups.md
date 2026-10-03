@@ -8,11 +8,10 @@ Sprint 5 (Work I: PrimeTek) is complete on branch `sprint-5`: `/work/`, four cas
   - PrimeOne starts in 2022 with the Figma kit; 3.1 has no entry (no public date found; give the month to add it).
   - Apollo's first release: a Nov 2017 PrimeFaces "remastered Apollo" post exists, so Apollo may predate the 2018 entry.
   - "Apollo (2022)" naming for the all-new 2022 Apollo.
-  - The Archive "Aura" row shows PrimeVue 4 launch art (captioned as such): keep or drop.
   - Archive rows that are engineering releases (e.g. Theme Designer updated to Angular 7): keep only if they were your design work.
   - Grid and Index show credit names next to figures.
-  - Templates coverage reads "26 templates · 8 remasters · 33 pages".
-- **Template covers.** 23 template slots are still placeholders (no Figma source for those templates). Supply exports later via Sprint 7's upload, or leave them.
+  - Templates coverage reads "26 templates · 8 remasters · 1 page".
+- **Images.** Onur prepares the visuals per release (several per release, shown as a grid). Recommended source size 2560×1600 (16:10) PNG or JPG; deliver into `images-src/work/<slug>/<media id>.png` (or via Sprint 7 upload); tell Claude how many images each release has so the slots can be added.
 - **CDN caching check** (preview is behind Vercel Authentication; add the bypass header):
   ```bash
   U=https://<preview>.vercel.app
@@ -40,7 +39,6 @@ Sprint 5 (Work I: PrimeTek) is complete on branch `sprint-5`: `/work/`, four cas
 - Validator: reject the reserved entry id `all`; reject a bare `https://`.
 - `viewerItems(view: string)` → `WorkView`.
 - Swipe handler fires on mouse drags; restrict to `pointerType === "touch"` (switch the swipe e2e to touch emulation).
-- Deep link to a figure not shown in the Log has no focus target on close (falls back to default); could focus the entry's "+N in Grid" button.
 - Vendored `DitherGradient` renders a `div` inside the placeholder `span` (client-only; harmless).
 - `recolorIcon` leaves a dangling `clip-path` on the `twitter` icon (renders fine).
 - Filter chips are hand-rolled `aria-pressed` buttons, not the `Chip` primitive (which is a status span); consider a toggle variant.

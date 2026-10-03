@@ -4,6 +4,8 @@
 
 Sprint 5 opens the Work section. It adds the `/work/` index, four PrimeTek case studies (PrimeOne, PrimeBlocks, PrimeIcons, Templates) and an Archive page for PrimeTek work that has no design files and is not fully remembered.
 
+Images will be prepared by Onur; the auto-exported Figma frames were removed (PR #27 feedback). Until his images land, every slot stays a labelled placeholder.
+
 Onur has no time to prepare visuals. Three things make the pages complete without his time:
 1. **Placeholders by default.** Every media slot starts as the Sprint 4 labelled dither wash.
 2. **Figma as the source.** Onur has copies of the PrimeTek Figma files in his own account. A local script, `npm run figma`, exports chosen frames into the repo's image pipeline. A slot can also link to its Figma frame or embed it.
@@ -163,7 +165,7 @@ The Sprint 4 section grid, `[200px label] [minmax(0,480px) content] [1fr action]
   - `facts` as a two-column `<dl>`.
 - **Action:** `links`, right-aligned, each with `↗`.
 
-Under the header, the **hero** spans the full content width (40px page padding on both sides) at 21/9 on desktop and 16/10 under 768px.
+Under the header, the **hero** sits in the content column (the 480px middle column of the section grid from lg, full width below lg), at 16/10.
 
 ### 3.2 View bar
 
@@ -191,8 +193,8 @@ A hairline-bordered bar under the hero:
     - `post ↗` when a `source` exists;
     - any `links`.
   - **Media column:**
-    - the entry's first media item, large;
-    - "+N in Grid →" when it has more. The link switches to Grid filtered to that entry.
+    - all of the entry's media, as an equal-size grid, each cell at its own aspect (default 16/10) and opening the viewer on the full set;
+    - 1 item is a single figure, 2 items are 2 columns from md, 3 or more are 2 columns from md and 3 from xl. There is no "+N in Grid" link.
   - An entry with no media renders only its text, at full width.
 - Section breaks between year groups use the Sprint 4 dither rule.
 
@@ -288,7 +290,7 @@ A fourth view, shown only when a case study has posts, listing the X posts about
   - the cover comes first;
   - then one item per inner page, each tagged `page`, with the page name as caption ("Dashboard · Sales", "Login");
   - the Grid filter for a template shows all its pages, and the viewer steps through them;
-  - the Log view shows the cover with "+N pages in Grid →". Templates use "pages" where other case studies say "in Grid".
+  - the Log view shows the cover and every inner page as the entry's grid.
 - **Coverage.** The header says how many templates and pages the page covers, both counted from the entries. It never says "25+" unless Onur confirms it.
 - **Initial list.** Built from the X archives and PrimeTek's public template pages: Verona, Paradise, Manhattan, Avalon, Babylon, Diamond (remastered), Genesis… The final list is whatever the sources confirm.
 - **Credits.** Onur led design for every template, so every template can be shown, and his lead role is stated once in the header facts. Where a colleague designed a template or some of its pages (Genesis per Onur's post, or pages added later), the `credits` field names them:

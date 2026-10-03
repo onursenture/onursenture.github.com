@@ -50,14 +50,27 @@ test("a ?fig= deep link opens the viewer on load; closing drops the param", asyn
 
 test("a deep-linked viewer returns focus to the figure's button on close", async ({ page }) => {
   // Nothing is focused on load, so there is no opener to remember. The Log
-  // shows each entry's first figure, so deep-link to one of those.
-  const shown = entry("3-0").media[0].id;
+  // shows every figure, so the button exists to take the focus back.
+  const shown = entry("3-0").media[1].id;
   await page.goto(`/work/primeone/?fig=${shown}`);
   await expect(viewer(page)).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(viewer(page)).toBeHidden();
   await expect(page).toHaveURL(/\/work\/primeone\/$/);
   await expect(page.locator(`[data-media="${shown}"]:visible`)).toBeFocused();
+});
+
+test("a figure in a Log entry's grid opens the viewer on the full set", async ({ page }) => {
+  await page.goto("/work/primeone/");
+  const figure = byId("tokens-3-0");
+  const cell = page.locator(`#entry-3-0 [data-media="${figure.id}"]`);
+  await cell.click();
+  await expect(viewer(page)).toBeVisible();
+  await expect(page).toHaveURL(new RegExp(`\\?fig=${figure.id}$`));
+  await expect(viewer(page)).toContainText(`${figure.label} · ${figure.caption}`);
+  await expect(viewer(page)).toContainText(position(media.findIndex((item) => item.id === figure.id)));
+  await page.keyboard.press("Escape");
+  await expect(cell).toBeFocused();
 });
 
 test("closing a Grid-opened viewer returns focus to the Grid figure", async ({ page }) => {

@@ -13,9 +13,10 @@ import { ViewBar } from "./view-bar";
 
 const BASE_VIEWS: WorkView[] = ["log", "grid", "index"];
 const WITH_POSTS: WorkView[] = [...BASE_VIEWS, "posts"];
-const HERO_SIZES = "(min-width: 768px) calc(100vw - 80px), calc(100vw - 32px)";
+// The hero sits in the content column (480px from lg).
+const HERO_SIZES = "(min-width: 1024px) 480px, calc(100vw - 32px)";
 
-// Everything under a case study's header: the hero, the view bar and the
+// Everything under a case study's header: the hero (in the content column), the view bar and the
 // current view. The server renders it with the default state and no
 // handlers as the <Suspense> fallback; StudyBrowser drives it after
 // hydration.
@@ -36,8 +37,10 @@ export function StudyBody({
   const hasPosts = study.postCount > 0;
   return (
     <div>
-      <div className="px-4 pb-8 md:px-10">
-        <MediaButton media={study.hero} onOpen={onOpen} sizes={HERO_SIZES} ratio="aspect-[16/10] md:aspect-[21/9]" priority />
+      <div className="grid px-4 pb-8 md:px-10 lg:grid-cols-[200px_minmax(0,480px)_1fr] lg:gap-7">
+        <div className="lg:col-start-2">
+          <MediaButton media={study.hero} onOpen={onOpen} sizes={HERO_SIZES} ratio="aspect-[16/10]" priority />
+        </div>
       </div>
       <ViewBar
         chips={study.chips}
@@ -55,7 +58,7 @@ export function StudyBody({
       ) : state.view === "index" ? (
         icons ? <IconIndex set={icons} /> : <IndexView media={shown} onOpen={onOpen} />
       ) : (
-        <LogView study={study} onOpen={onOpen} onShowEntry={(entryId) => onChange?.({ view: "grid", tag: entryId })} />
+        <LogView study={study} onOpen={onOpen} />
       )}
     </div>
   );

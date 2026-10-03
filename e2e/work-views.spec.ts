@@ -52,11 +52,13 @@ test("unknown query values fall back to the Log", async ({ page }) => {
   await expect(page.locator('[data-view="log"]')).toBeVisible();
 });
 
-test("'+N in Grid' opens the Grid filtered to that entry", async ({ page }) => {
+test("all figures of 3.0 render in its Log entry, as a grid", async ({ page }) => {
   await page.goto("/work/primeone/");
-  await page.locator("#entry-3-0").getByRole("button", { name: `+${e30.media.length - 1} in Grid →` }).click();
-  await expect(page).toHaveURL(/\?view=grid&tag=3-0$/);
-  await expect(page.locator('[data-view="grid"] [data-media]')).toHaveCount(e30.media.length);
+  const block = page.locator("#entry-3-0");
+  await expect(block.locator("[data-media]")).toHaveCount(e30.media.length);
+  for (const item of e30.media) await expect(block.locator(`[data-media="${item.id}"]`)).toBeVisible();
+  await expect(block.getByRole("button", { name: /in Grid/ })).toHaveCount(0);
+  await expect(block.locator("[data-entry-media]")).toHaveClass(/md:grid-cols-2/);
 });
 
 test("the server HTML is the Log whatever the query", async ({ request }) => {

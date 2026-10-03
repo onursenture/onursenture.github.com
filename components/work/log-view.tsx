@@ -6,22 +6,24 @@ import type { EntryView, StudyView } from "@/lib/work/derive";
 import { CreditLine } from "./credit-line";
 import { MediaButton } from "./media-button";
 
-// At lg the figure column is what's left after the padding (80), the label
-// (200), the text (480) and two gaps (56).
-const FIGURE_SIZES = "(min-width: 1024px) calc(100vw - 816px), (min-width: 768px) calc(100vw - 80px), calc(100vw - 32px)";
+// Figure column widths: at lg it is what's left after the padding (80), the
+// label (200), the text (480) and two gaps (56), so 100vw - 816px. A grid cell
+// is that width divided by its column count (2 from md, 3 from xl on 3+).
+function figureSizes(count: number) {
+  if (count === 1) return "(min-width: 1024px) calc(100vw - 816px), (min-width: 768px) calc(100vw - 80px), calc(100vw - 32px)";
+  const xl = count >= 3 ? "(min-width: 1280px) calc((100vw - 816px) / 3), " : "";
+  return `${xl}(min-width: 1024px) calc((100vw - 816px) / 2), (min-width: 768px) calc((100vw - 80px) / 2), calc(100vw - 32px)`;
+}
+
+// 1 figure: single. 2: two columns from md. 3+: two from md, three from xl.
+function gridClass(count: number) {
+  if (count === 1) return "";
+  return count === 2 ? "md:grid-cols-2" : "md:grid-cols-2 xl:grid-cols-3";
+}
 
 // The release log: year groups, newest first. The Doto year sticks while its
-// group scrolls (lg only). Each entry shows its first figure; "+N in Grid →"
-// opens the Grid filtered to that entry.
-export function LogView({
-  study,
-  onOpen,
-  onShowEntry,
-}: {
-  study: StudyView;
-  onOpen?: (id: string) => void;
-  onShowEntry?: (entryId: string) => void;
-}) {
+// group scrolls (lg only). Each entry shows all of its figures as an equal grid.
+export function LogView({ study, onOpen }: { study: StudyView; onOpen?: (id: string) => void }) {
   return (
     <div data-view="log">
       {study.groups.map((group, index) => (
@@ -39,7 +41,7 @@ export function LogView({
             <ol className="flex flex-col gap-10">
               {group.items.map((entry) => (
                 <li key={entry.id} id={`entry-${entry.id}`}>
-                  <EntryBlock entry={entry} moreLabel={study.moreLabel} onOpen={onOpen} onShowEntry={onShowEntry} />
+                  <EntryBlock entry={entry} onOpen={onOpen} />
                 </li>
               ))}
             </ol>
@@ -50,20 +52,10 @@ export function LogView({
   );
 }
 
-function EntryBlock({
-  entry,
-  moreLabel,
-  onOpen,
-  onShowEntry,
-}: {
-  entry: EntryView;
-  moreLabel: StudyView["moreLabel"];
-  onOpen?: (id: string) => void;
-  onShowEntry?: (entryId: string) => void;
-}) {
-  const [first, ...rest] = entry.media;
+function EntryBlock({ entry, onOpen }: { entry: EntryView; onOpen?: (id: string) => void }) {
+  const count = entry.media.length;
   return (
-    <article className={cx("grid gap-4", first && "lg:grid-cols-[minmax(0,480px)_1fr] lg:gap-7")}>
+    <article className={cx("grid gap-4", count > 0 && "lg:grid-cols-[minmax(0,480px)_1fr] lg:gap-7")}>
       <div className="flex flex-col gap-2">
         <h3 className="type-body">
           <span className="font-medium">{entry.heading}</span> <span className="text-fg-muted">· {entry.month}</span>
@@ -94,18 +86,11 @@ function EntryBlock({
           </p>
         ) : null}
       </div>
-      {first ? (
-        <div className="flex flex-col gap-1.5">
-          <MediaButton media={first} onOpen={onOpen} sizes={FIGURE_SIZES} />
-          {rest.length > 0 ? (
-            <button
-              type="button"
-              onClick={() => onShowEntry?.(entry.id)}
-              className="self-start type-meta text-accent hover:underline"
-            >
-              +{rest.length} {rest.length === 1 ? moreLabel.one : moreLabel.many} →
-            </button>
-          ) : null}
+      {count > 0 ? (
+        <div data-entry-media={count} className={cx("grid content-start gap-3", gridClass(count))}>
+          {entry.media.map((media) => (
+            <MediaButton key={media.id} media={media} onOpen={onOpen} sizes={figureSizes(count)} />
+          ))}
         </div>
       ) : null}
     </article>

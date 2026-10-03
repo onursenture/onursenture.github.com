@@ -84,10 +84,30 @@ describe("LogView", () => {
     expect(markup).toContain('href="https://x.com/w00f/status/1"');
   });
 
-  it("shows the first figure and a link to the rest", () => {
+  it("shows every figure of an entry, with no link to a Grid", () => {
     expect(markup).toContain('data-media="overview"');
-    expect(markup).not.toContain('data-media="tokens"');
-    expect(markup).toContain("+1 in Grid →");
+    expect(markup).toContain('data-media="tokens"');
+    expect(markup).not.toContain("in Grid");
+  });
+
+  it("lays the figures out as one, two or three-plus equal columns", () => {
+    const media = (n: number) => Array.from({ length: n }, (_, i) => ({ id: `m${i}`, caption: `M${i}` }));
+    const entryOf = (n: number): CaseStudy => ({
+      ...study,
+      entries: [{ id: "e", date: "2024-11", version: "1.0", note: "N.", media: media(n) }],
+    });
+    const render = (n: number) => html(<LogView study={buildStudyView(entryOf(n), () => undefined)} />);
+    const one = render(1);
+    expect(one.match(/data-media="m/g)).toHaveLength(1);
+    expect(one).not.toContain("grid-cols-2");
+    const two = render(2);
+    expect(two.match(/data-media="m/g)).toHaveLength(2);
+    expect(two).toContain("md:grid-cols-2");
+    expect(two).not.toContain("xl:grid-cols-3");
+    const three = render(3);
+    expect(three.match(/data-media="m/g)).toHaveLength(3);
+    expect(three).toContain("md:grid-cols-2 xl:grid-cols-3");
+    expect(render(7).match(/data-media="m/g)).toHaveLength(7);
   });
 });
 
@@ -124,6 +144,13 @@ describe("GridView and IndexView", () => {
 });
 
 describe("StudyBody", () => {
+  it("puts the 16/10 hero in the content column", () => {
+    const markup = html(<StudyBody study={view} state={DEFAULT_VIEW_STATE} />);
+    expect(markup).toContain("lg:col-start-2");
+    expect(markup).toContain("aspect-[16/10]");
+    expect(markup).not.toContain("21/9");
+  });
+
   it("renders the view the state asks for", () => {
     expect(html(<StudyBody study={view} state={DEFAULT_VIEW_STATE} />)).toContain('data-view="log"');
     expect(html(<StudyBody study={view} state={{ ...DEFAULT_VIEW_STATE, view: "grid" }} />)).toContain('data-view="grid"');

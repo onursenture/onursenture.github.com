@@ -32,7 +32,8 @@ test("the PrimeOne log is newest first and links each entry's post", async ({ pa
   await expect(post).toHaveAttribute("href", "https://x.com/primereact/status/1854528709304205531");
   await expect(post).toContainText("post");
   await expect(block.locator('[data-media="overview-3-0"]')).toContainText(`${overview.label} · ${overview.caption}`);
-  await expect(block.getByRole("button", { name: `+${e30.media.length - 1} in Grid →` })).toBeVisible();
+  await expect(block.locator("[data-media]")).toHaveCount(e30.media.length);
+  await expect(block.getByRole("button", { name: /in Grid/ })).toHaveCount(0);
 });
 
 test("Templates credits Genesis and counts its coverage from the data", async ({ page }) => {
@@ -40,7 +41,9 @@ test("Templates credits Genesis and counts its coverage from the data", async ({
   await expect(page.locator("#entry-genesis [data-credits]")).toHaveText("Design: Ümit Çelik · Implementation: Taner Ergin");
   await expect(page.locator("#entry-genesis").getByRole("list", { name: "Frameworks" })).toContainText("React");
   await expect(page.locator("dl")).toContainText(/Coverage\s*26 templates · 8 remasters · 1 page$/);
-  await expect(page.locator("#entry-verona").getByRole("button", { name: "+1 page in Grid →" })).toBeVisible();
+  // Verona's cover and its landing page both show in its entry.
+  await expect(page.locator("#entry-verona [data-media]")).toHaveCount(2);
+  await expect(page.locator('#entry-verona [data-media="verona-landing"]')).toBeVisible();
 });
 
 test("an unknown case study 404s inside the Work shell", async ({ page }) => {
