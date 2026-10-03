@@ -10,6 +10,6 @@ test("Contributions shows GitHub's total with its period, and the heatmap", asyn
   await expect(heatmap).toBeVisible();
   // tests/fixtures/github.json: 5 days; the 4-contribution day is level 4.
   await expect(heatmap.locator("[title]")).toHaveCount(5);
-  // Fails if the build doesn't generate the arbitrary bg-[#216e39] class.
-  await expect(heatmap.locator('[title="4 on 2026-09-30"]')).toHaveCSS("background-color", "rgb(33, 110, 57)");
+  // Level 4 is the full accent (#2F55F5).
+  await expect(heatmap.locator('[title="4 on 2026-09-30"]')).toHaveCSS("background-color", "rgb(47, 85, 245)");
 });

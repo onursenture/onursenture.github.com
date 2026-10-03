@@ -30,7 +30,7 @@ Part 1 lands on branch `sprint-5` (PR #27), so Onur reviews one preview. Nothing
   - The section shows whatever real entries exist (today, one: onursenture.com).
 - **Contributions** (renamed from "Latest work"):
   - Replace the dither chart with the GitHub contribution heatmap: the existing `components/sections/github/heatmap.tsx`, or a shared extraction of it.
-  - The heatmap uses GitHub's own greens. Level 0 is `#ebedf0`, then `#9be9a8`, `#40c463`, `#30a14e` and `#216e39`. These are the only colours on the Work side outside the palette, and that is deliberate: the audience recognises them.
+  - The heatmap uses five accent steps: the line colour, the accent mixed in at 25, 50 and 75%, then the full accent. (Revised 2026-10-03: GitHub's greens clashed with the palette.)
   - Keep the "N contributions in the last 12 months" line and the GitHub action link.
   - Keep the empty state, for when the source has no data.
 - **Work tiles and the Experience tree:** unchanged here. Part 2 replaces them.

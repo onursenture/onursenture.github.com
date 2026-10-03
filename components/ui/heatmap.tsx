@@ -1,9 +1,16 @@
 import { cx } from "@/lib/cx";
 import type { Contributions } from "@/lib/sources/github";
 
-// GitHub's own contribution greens (levels 0–4). The only colours on the Work
-// side outside the palette, on purpose: the audience knows them (Onur 2026-10-03).
-const LEVELS = ["bg-[#ebedf0]", "bg-[#9be9a8]", "bg-[#40c463]", "bg-[#30a14e]", "bg-[#216e39]"];
+// GitHub's five levels (0–4) in the accent: an empty cell is the line colour,
+// then the accent mixed into it at 25, 50 and 75%, then the full accent
+// (Onur 2026-10-03: the greens clashed with the palette).
+const LEVELS = [
+  "bg-line",
+  "bg-[color-mix(in_srgb,var(--color-accent)_25%,var(--color-line))]",
+  "bg-[color-mix(in_srgb,var(--color-accent)_50%,var(--color-line))]",
+  "bg-[color-mix(in_srgb,var(--color-accent)_75%,var(--color-line))]",
+  "bg-accent",
+];
 
 // The sentence that names the figure and its period; the visible line and the
 // heatmap's accessible name both use it so they can't drift.

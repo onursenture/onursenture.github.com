@@ -124,7 +124,7 @@ describe("labIndex", () => {
 });
 
 describe("Heatmap", () => {
-  it("colours the heatmap with GitHub's greens", () => {
+  it("colours the heatmap in accent steps", () => {
     const data = {
       total: 10,
       weeks: [
@@ -140,6 +140,7 @@ describe("Heatmap", () => {
       ],
     };
     const markup = html(<Heatmap data={data} />);
-    for (const hex of ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"]) expect(markup).toContain(hex);
+    for (const level of ["bg-line", "_25%", "_50%", "_75%", "bg-accent"]) expect(markup).toContain(level);
+    expect(markup).not.toMatch(/bg-\[#/);
   });
 });
