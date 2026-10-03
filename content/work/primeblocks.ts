@@ -96,7 +96,7 @@ export const primeblocks: CaseStudy = {
       title: "Q1 2025 update",
       note: "Added 30 blocks and overhauled the whole marketing category: each block redesigned and rebuilt.",
       source: "https://x.com/primevue/status/1890067025189585349",
-      media: [{ id: "new-blocks", caption: "30+ new blocks", tags: ["promo"], aspect: "16/9" }],
+      media: [],
     },
     {
       id: "q2-2025",
@@ -104,7 +104,7 @@ export const primeblocks: CaseStudy = {
       title: "Q2 2025 update",
       note: "The Application UI blocks remastered, with a rebuild aimed at speed.",
       source: "https://x.com/primevue/status/1921867582123991257",
-      media: [{ id: "application-ui", caption: "Application UI" }],
+      media: [],
     },
     {
       id: "redesign",

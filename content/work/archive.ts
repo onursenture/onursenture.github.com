@@ -57,7 +57,6 @@ export const archiveEntries: ArchiveEntry[] = [
     title: "Aura theme",
     note: "Aura, an open source theme released with PrimeVue 3.47.0: ten color options and a Noir mode.",
     source: "https://x.com/primevue/status/1750202624069058637",
-    media: { id: "aura-promo", caption: "PrimeVue 4 launch art, with Aura", tags: ["promo"], aspect: "16/9" },
   },
   {
     id: "visual-theme-editor",

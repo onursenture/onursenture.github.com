@@ -56,10 +56,9 @@ test("a deep link opens the filtered Posts view", async ({ page }) => {
 });
 
 test("moving from a posts-only filter to the Grid resets the filter", async ({ page }) => {
-  // PrimeBlocks 3.0 has posts but no figures, so its chip only filters Posts.
-  await page.goto("/work/primeblocks/?view=posts&tag=3-0");
+  await page.goto("/work/primeone/?view=posts&tag=2-0");
   await page.getByRole("group", { name: "View" }).getByRole("button", { name: "Grid" }).click();
-  await expect(page).toHaveURL(/\/work\/primeblocks\/\?view=grid$/);
+  await expect(page).toHaveURL(/\/work\/primeone\/\?view=grid$/);
   await expect(page.locator('[data-view="grid"] [data-media]')).not.toHaveCount(0);
 });
 

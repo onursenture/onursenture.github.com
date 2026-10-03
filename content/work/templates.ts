@@ -37,9 +37,6 @@ export const templates: CaseStudy = {
       ],
       media: [
         { id: "ultima-cover", caption: "Ultima" },
-        { id: "ultima-landing", caption: "Landing", tags: ["page"] },
-        { id: "ultima-update-sales", caption: "Later version: sales dashboard" },
-        { id: "ultima-update-saas", caption: "Later version: SaaS dashboard" },
       ],
     },
     {
@@ -157,8 +154,6 @@ export const templates: CaseStudy = {
       ],
       media: [
         { id: "avalon-cover", caption: "Avalon" },
-        { id: "avalon-login", caption: "Login", tags: ["page"] },
-        { id: "avalon-not-found", caption: "Not found", tags: ["page"] },
       ],
     },
     {
@@ -233,8 +228,6 @@ export const templates: CaseStudy = {
       source: "https://x.com/prime_ng/status/1042682337153220608",
       media: [
         { id: "olympia-cover", caption: "Olympia" },
-        { id: "olympia-analytics", caption: "Analytics" },
-        { id: "olympia-signin", caption: "Sign in", tags: ["page"] },
       ],
     },
     {
@@ -347,9 +340,6 @@ export const templates: CaseStudy = {
       ],
       media: [
         { id: "diamond-cover", caption: "Diamond" },
-        { id: "diamond-landing", caption: "Landing", tags: ["page"] },
-        { id: "diamond-crud", caption: "CRUD", tags: ["page"] },
-        { id: "diamond-login", caption: "Login", tags: ["page"] },
       ],
     },
     {
@@ -375,11 +365,6 @@ export const templates: CaseStudy = {
       ],
       media: [
         { id: "freya-cover", caption: "Freya" },
-        { id: "freya-landing", caption: "Landing", tags: ["page"] },
-        { id: "freya-crud", caption: "CRUD", tags: ["page"] },
-        { id: "freya-login", caption: "Login", tags: ["page"] },
-        { id: "freya-update-dashboard", caption: "Later update: dashboard" },
-        { id: "freya-update-cms", caption: "Later update: CMS", tags: ["page"] },
       ],
     },
     {
@@ -407,10 +392,6 @@ export const templates: CaseStudy = {
       ],
       media: [
         { id: "ultima-definitive-cover", caption: "Ultima Definitive Edition" },
-        { id: "ultima-definitive-landing", caption: "Landing", tags: ["page"] },
-        { id: "ultima-definitive-cms", caption: "CMS", tags: ["page"] },
-        { id: "ultima-definitive-products", caption: "Product list", tags: ["page"] },
-        { id: "ultima-definitive-promo", caption: "Promo", tags: ["promo"], aspect: "16/9" },
       ],
     },
     {
@@ -423,10 +404,6 @@ export const templates: CaseStudy = {
       source: "https://x.com/prime_ng/status/1450438816108531714",
       media: [
         { id: "verona-remastered-cover", caption: "Verona Remastered" },
-        { id: "verona-remastered-landing", caption: "Landing", tags: ["page"] },
-        { id: "verona-remastered-crud", caption: "CRUD", tags: ["page"] },
-        { id: "verona-remastered-cms", caption: "CMS", tags: ["page"] },
-        { id: "verona-remastered-promo", caption: "Promo", tags: ["promo"], aspect: "16/9" },
       ],
     },
     {
@@ -439,9 +416,6 @@ export const templates: CaseStudy = {
       source: "https://x.com/prime_ng/status/1491015084847419393",
       media: [
         { id: "atlantis-remastered-cover", caption: "Atlantis Remastered" },
-        { id: "atlantis-remastered-landing", caption: "Landing", tags: ["page"] },
-        { id: "atlantis-remastered-cms", caption: "CMS", tags: ["page"] },
-        { id: "atlantis-remastered-products", caption: "Product list", tags: ["page"] },
       ],
     },
     {
@@ -457,9 +431,6 @@ export const templates: CaseStudy = {
       ],
       media: [
         { id: "apollo-2022-cover", caption: "Apollo (2022)" },
-        { id: "apollo-2022-landing", caption: "Landing", tags: ["page"] },
-        { id: "apollo-2022-cms", caption: "CMS", tags: ["page"] },
-        { id: "apollo-2022-products", caption: "Product list", tags: ["page"] },
       ],
     },
     {
@@ -475,10 +446,6 @@ export const templates: CaseStudy = {
       ],
       media: [
         { id: "diamond-remastered-cover", caption: "Diamond Remastered" },
-        { id: "diamond-remastered-banking", caption: "Banking dashboard" },
-        { id: "diamond-remastered-landing", caption: "Landing", tags: ["page"] },
-        { id: "diamond-remastered-mail", caption: "Mail", tags: ["page"] },
-        { id: "diamond-remastered-promo", caption: "Promo", tags: ["promo"], aspect: "16/9" },
       ],
     },
     {
@@ -497,10 +464,7 @@ export const templates: CaseStudy = {
         { name: "Taner Ergin", role: "implementation", href: "https://x.com/tanerengiin" },
       ],
       media: [
-        { id: "genesis-cover", caption: "Genesis", aspect: "16/9" },
-        { id: "genesis-saas", caption: "SaaS", tags: ["page"] },
-        { id: "genesis-agency", caption: "Agency", tags: ["page"] },
-        { id: "genesis-pricing", caption: "Pricing", tags: ["page"] },
+        { id: "genesis-cover", caption: "Genesis" },
       ],
     },
     {
@@ -513,9 +477,6 @@ export const templates: CaseStudy = {
       source: "https://x.com/primevue/status/1891483427955687549",
       media: [
         { id: "poseidon-remastered-cover", caption: "Poseidon Remastered Edition" },
-        { id: "poseidon-remastered-marketing", caption: "Marketing dashboard" },
-        { id: "poseidon-remastered-landing", caption: "Landing", tags: ["page"] },
-        { id: "poseidon-remastered-cms", caption: "CMS", tags: ["page"] },
       ],
     },
     {
@@ -528,9 +489,6 @@ export const templates: CaseStudy = {
       source: "https://x.com/primevue/status/1914327500659830814",
       media: [
         { id: "avalon-remastered-cover", caption: "Avalon Remastered" },
-        { id: "avalon-remastered-home", caption: "Home", tags: ["page"] },
-        { id: "avalon-remastered-cms", caption: "CMS", tags: ["page"] },
-        { id: "avalon-remastered-menus", caption: "Menu modes" },
       ],
     },
   ],

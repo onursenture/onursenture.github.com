@@ -25,8 +25,7 @@ test("the bio names PrimeTek, Orkestra and Bilkent with inline marks", async ({ 
 test("Work shows four numbered tiles, each linking to its case study", async ({ page }) => {
   await page.goto("/");
   const work = page.locator("#work");
-  // A tile shows its FIG. label only while it is a placeholder, so the tiles are named by their kind line.
-  for (const label of ["PrimeOne · design system", "PrimeBlocks · UI blocks", "PrimeIcons · icon set", "Templates · app templates"]) {
+  for (const label of ["FIG. 01 · PrimeOne", "FIG. 02 · PrimeBlocks", "FIG. 03 · PrimeIcons", "FIG. 04 · Templates"]) {
     await expect(work).toContainText(label);
   }
   await expect(work.getByRole("list").getByRole("link")).toHaveCount(4);
