@@ -43,17 +43,18 @@ describe("color tokens", () => {
     expect(colorTokens(block("@theme static {"))).toEqual(expected("light"));
   });
 
-  it('[data-theme="dark"] redefines every token with its dark value', () => {
-    // Line start: the @custom-variant line also contains '[data-theme="dark"],'.
-    expect(colorTokens(block('\n[data-theme="dark"],'))).toEqual(expected("dark"));
+  it('[data-side="life"] redefines every token with its dark value', () => {
+    // Line start: the @custom-variant line also contains '[data-side="life"],'.
+    expect(colorTokens(block('\n[data-side="life"] {'))).toEqual(expected("dark"));
   });
 
-  it("the no-JS prefers-color-scheme fallback matches the dark values", () => {
-    expect(colorTokens(block(":root:not([data-theme]) {"))).toEqual(expected("dark"));
+  it("is light only: no data-theme attribute and no prefers-color-scheme rule", () => {
+    expect(css).not.toMatch(/data-theme/);
+    expect(css).not.toMatch(/prefers-color-scheme/);
   });
 
-  it("the Life side shares the dark rule, whatever the theme", () => {
-    expect(css).toMatch(/\[data-theme="dark"\],\s*\[data-side="life"\]\s*\{/);
+  it("dark: utilities apply only inside the Life side", () => {
+    expect(css).toContain('@custom-variant dark (&:where([data-side="life"], [data-side="life"] *));');
   });
 
   it("defines no shadows and only the control radius", () => {

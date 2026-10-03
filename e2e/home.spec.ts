@@ -76,3 +76,10 @@ test("no section row renders an empty cell (it adds a gap below lg)", async ({ p
     .evaluateAll((cells) => cells.filter((cell) => !cell.textContent?.trim() && !cell.querySelector("canvas, img, svg")).length);
   expect(empty).toBe(0);
 });
+
+test("a leftover view cookie from the old dashboard view is ignored", async ({ page, context, baseURL }) => {
+  await context.addCookies([{ name: "view", value: "dashboard", url: baseURL! }]);
+  await page.goto("/");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.locator("[data-view]")).toHaveCount(0);
+});

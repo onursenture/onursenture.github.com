@@ -14,7 +14,6 @@ const PRIMITIVES = [
   "EraStamp",
   "TextLink",
   "Button",
-  "Toggle",
   "RelativeTime",
   "LiveClock",
   "Rating",
@@ -43,10 +42,8 @@ test("/system/ renders every primitive, the type scale and the Sources row", asy
   await expect(sources.locator('[data-health="never"]')).toHaveCount(5);
 });
 
-test("the Life palette block is dark under the light theme", async ({ page, context, baseURL }) => {
-  await context.addCookies([{ name: "theme", value: "light", url: baseURL! }]);
+test("the Life palette block is dark on the light page", async ({ page }) => {
   await page.goto("/system/");
-  await expect(page.locator("html")).not.toHaveAttribute("data-theme", "dark");
   const palette = page.getByTestId("life-palette");
   await expect(palette).toBeVisible();
   await expect(palette).toHaveCSS("background-color", "rgb(11, 11, 12)");

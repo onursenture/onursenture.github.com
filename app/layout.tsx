@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Doto, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import { OPEN_GRAPH_DEFAULTS, TITLE_TEMPLATE, TWITTER_DEFAULTS } from "@/lib/metadata";
 import { site } from "@/lib/site";
-import { themeScript } from "@/lib/theme/theme";
 import "./globals.css";
 
 // Self-hosted at build time. globals.css maps these variables to
@@ -36,16 +35,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    // data-theme is set by themeScript before hydration, so React must not
-    // complain that the server HTML lacked it.
+    // SideSync sets data-side after hydration, so React must not complain
+    // that the server HTML lacked it.
     <html
       lang="en"
       className={`${plexMono.variable} ${plexSans.variable} ${doto.variable}`}
       suppressHydrationWarning
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
       <body>{children}</body>
     </html>
   );

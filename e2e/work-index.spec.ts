@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("/work/ lists PrimeTek's work and the Archive, and marks Work active", async ({ page }) => {
+test("/work/ lists PrimeTek's work and the Archive", async ({ page }) => {
   await page.goto("/work/");
   await expect(page).toHaveTitle("Work · Onur Senture");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Work.");
@@ -17,12 +17,6 @@ test("/work/ lists PrimeTek's work and the Archive, and marks Work active", asyn
   ]) {
     await expect(group.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
   }
-  await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Work" })).toHaveAttribute("aria-current", "page");
-});
-
-test("a case study keeps Work active in the nav", async ({ page }) => {
-  await page.goto("/work/primeone/");
-  await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Work" })).toHaveAttribute("aria-current", "page");
 });
 
 test.describe("at 390px", () => {

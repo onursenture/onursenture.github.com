@@ -7,8 +7,8 @@ import { SideFade } from "./side-fade";
 import { SideSync } from "./side-sync";
 import { SiteFooter } from "./site-footer";
 
-// The Life side: always dark (data-side="life" forces the dark tokens),
-// whatever the theme. No theme toggle; the switch is on.
+// The Life side: always dark (data-side="life" forces the dark tokens). The
+// header matches the Work side: the name, then the Life switch (on).
 export function LifeShell({ children }: { children: ReactNode }) {
   return (
     <SideFade>
@@ -16,10 +16,12 @@ export function LifeShell({ children }: { children: ReactNode }) {
         <SideSync side="life" />
         <DitherStrip />
         <header className="flex h-16 items-center justify-between gap-6 px-4 md:px-10">
-          <Link href="/life/" className="type-name uppercase">
-            {profile.name}
-          </Link>
-          <LifeSwitch on />
+          <div className="flex items-center gap-4">
+            <Link href="/life/" className="type-name uppercase">
+              {profile.name}
+            </Link>
+            <LifeSwitch on />
+          </div>
         </header>
         <div className="flex-1">{children}</div>
         <SiteFooter />

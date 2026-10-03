@@ -30,7 +30,7 @@ describe("MediaPlaceholder", () => {
 });
 
 describe("PrimaryButton", () => {
-  it("switches to the dark ink label in dark mode (white on the dark accent fails AA)", () => {
+  it("switches to the dark ink label on the Life side (white on the dark accent fails AA)", () => {
     const html = renderToStaticMarkup(<PrimaryButton href="/x/">Go</PrimaryButton>);
     expect(html).toContain("text-[#fff]");
     expect(html).toContain("dark:text-bg");

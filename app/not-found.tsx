@@ -1,4 +1,3 @@
-import { ThemeSync } from "@/components/theme-toggle";
 import { SectionRow } from "@/components/ui/section-row";
 import { TextLink } from "@/components/ui/text-link";
 
@@ -7,7 +6,6 @@ import { TextLink } from "@/components/ui/text-link";
 export default function RootNotFound() {
   return (
     <div className="min-h-dvh bg-bg text-fg">
-      <ThemeSync />
       <main className="pb-16 pt-8">
         <SectionRow label="404" labelAs="div">
           <h1 className="mb-3 type-lead">Page not found.</h1>

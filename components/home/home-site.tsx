@@ -17,7 +17,8 @@ import { ExperienceTree } from "./experience-tree";
 import { LabGrid } from "./lab-grid";
 import { WorkTiles } from "./work-tiles";
 
-// An "All →" style action, only once its section ships. Undefined (not an
+// An "All →" style action, only once its section ships (/work/ is always
+// there, so its link is written out below). Undefined (not an
 // element that renders nothing) so SectionRow leaves out the action cell.
 function sectionLink(label: string, href: string) {
   const item = NAV_ITEMS.find((i) => i.href === href);
@@ -59,7 +60,7 @@ export function HomeSite() {
         </div>
       ) : null}
     </SectionRow>,
-    <SectionRow key="work" id="work" label="Work" action={sectionLink("All work", "/work/")}>
+    <SectionRow key="work" id="work" label="Work" action={<TextLink href="/work/">All work</TextLink>}>
       <WorkTiles entries={workIndex.map((entry) => ({ ...entry, image: entry.slug ? heroImageKey(entry.slug) : undefined }))} />
     </SectionRow>,
     <SectionRow key="experience" id="experience" label="Experience" action={sectionLink("Resume", "/resume/")}>

@@ -10,6 +10,8 @@ test("the hero opens the viewer on the full set, with its URL", async ({ page })
   await expect(page).toHaveURL(/\?fig=cover$/);
   await expect(viewer(page)).toContainText(position(0));
   await expect(viewer(page)).toHaveAttribute("aria-label", `PrimeOne, ${media[0].label}`);
+  // The viewer keeps the Life palette on the light Work side.
+  await expect(viewer(page)).toHaveCSS("background-color", "rgb(11, 11, 12)");
 });
 
 test("arrows step and wrap, replacing the URL; Esc closes and returns focus", async ({ page }) => {

@@ -5,10 +5,12 @@ export interface NavItem {
   ready: boolean;
 }
 
-// The Work side's IA order (Sprint 4 spec §1). Life is not a nav item: the
-// Life switch in the header reaches it. Notes returns in Sprint 9.
+// The Work side's IA order (Sprint 4 spec §1). No item is ready until Lab or
+// Resume ships; the header then shows no nav. Work is reached from the home
+// page, not the header. Life is not a nav item: the Life switch in the
+// header reaches it. Notes returns in Sprint 9.
 export const NAV_ITEMS: NavItem[] = [
-  { label: "Work", href: "/work/", ready: true },
+  { label: "Work", href: "/work/", ready: false },
   { label: "Lab", href: "/lab/", ready: false },
   { label: "Resume", href: "/resume/", ready: false },
 ];

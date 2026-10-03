@@ -4,7 +4,6 @@ import { LifeSwitch } from "@/components/life-switch";
 import { Picture } from "@/components/picture";
 import { Empty } from "@/components/sections/empty";
 import { SourcesTable } from "@/components/sources/sources-table";
-import { ToggleDemo } from "@/components/system/toggle-demo";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
 import { ContributionChart } from "@/components/ui/contribution-chart";
@@ -30,7 +29,7 @@ import { readSourceStatuses } from "@/lib/sources/status";
 import { pageMetadata } from "@/lib/metadata";
 
 // The Sprint 4 style tile: every token, type class, dither specimen and
-// primitive, in whichever theme is active, plus a Life palette preview. Not
+// primitive in the light palette, plus a Life palette preview. Not
 // in the nav, not indexed. Sample values are deliberately generic: no invented
 // facts.
 export const metadata: Metadata = pageMetadata("System", { robots: { index: false, follow: false } });
@@ -189,9 +188,6 @@ export default async function SystemPage() {
         <Specimen name="LifeSwitch">
           <LifeSwitch on={false} />
           <LifeSwitch on />
-        </Specimen>
-        <Specimen name="Toggle">
-          <ToggleDemo />
         </Specimen>
         <Specimen name="RelativeTime">
           <span className="type-meta">
