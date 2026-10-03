@@ -5,8 +5,11 @@ export interface Column<T> {
   header: string;
   cell: (row: T) => ReactNode;
   align?: "left" | "right";
-  // Fragment Mono, muted: numbers, dates, years, domains.
+  // Fragment Mono, muted: numbers, dates, years, domains. Stays on one line.
   mono?: boolean;
+  // Lets a mono cell wrap (names, which can be long) below xl, where the
+  // dashboard sidebar leaves the tables little room.
+  wrap?: boolean;
 }
 
 // A dense dashboard table with a real header row. When there are no rows it
@@ -64,7 +67,7 @@ export function DataTable<T>({
                       "h-9 px-3 align-middle",
                       // Text cells keep a readable width; on narrow screens
                       // the table scrolls sideways instead of squeezing them.
-                      column.mono ? "type-mono-12 whitespace-nowrap text-fg-muted" : "min-w-40 type-sans-13",
+                      column.mono ? cx("type-mono-12 text-fg-muted", column.wrap ? "xl:whitespace-nowrap" : "whitespace-nowrap") : "min-w-24 type-sans-13",
                       column.align === "right" ? "text-right" : "text-left",
                     )}
                   >

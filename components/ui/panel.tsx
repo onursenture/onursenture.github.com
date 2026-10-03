@@ -1,20 +1,26 @@
 import type { ReactNode } from "react";
 import { cx } from "@/lib/cx";
 
-// Columns a panel spans on the dashboard's 12-column grid (md and up).
-// Literal class names, so Tailwind can see them.
+// Columns a panel spans on the dashboard's 12-column grid. Below xl (1280px)
+// every panel stacks full width: the dashboard already gives 240px to the
+// sidebar, so before that the 4- and 6-column panels (Status, Sources,
+// Writing, Films, Books) are too narrow for their rows and tables. At 1280px
+// the narrowest are about 320px (4 columns, tables need ~265) and 488px
+// (6 columns; the Books table needs ~487 and wraps its author names below
+// xl to fit the stacked layout). Literal class names, so Tailwind can see
+// them.
 export type PanelSpan = 3 | 4 | 6 | 8 | 12;
 const SPANS: Record<PanelSpan, string> = {
-  3: "md:col-span-3",
-  4: "md:col-span-4",
-  6: "md:col-span-6",
-  8: "md:col-span-8",
-  12: "md:col-span-12",
+  3: "xl:col-span-3",
+  4: "xl:col-span-4",
+  6: "xl:col-span-6",
+  8: "xl:col-span-8",
+  12: "xl:col-span-12",
 };
 
-// The dashboard content grid: 12 columns, 16px gutters, one column on mobile.
+// The dashboard content grid: 12 columns, 16px gutters, one column below xl.
 export function PanelGrid({ children }: { children: ReactNode }) {
-  return <div className="grid grid-cols-1 items-start gap-4 p-4 md:grid-cols-12 md:p-6">{children}</div>;
+  return <div className="grid grid-cols-1 items-start gap-4 p-4 xl:grid-cols-12 md:p-6">{children}</div>;
 }
 
 // A dashboard container: a 36px header (title, optional count, right slot)

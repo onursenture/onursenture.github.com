@@ -63,3 +63,22 @@ test("pages without a photo share the defaults: site name, summary card, no imag
     await expect(page.locator('meta[property="og:image"]')).toHaveCount(0);
   }
 });
+
+test.describe("at 390px", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("a long dashboard photo title stays on one line in the 40px bar", async ({ page }) => {
+    await page.goto("/photos/bazi-kotu-aliskanliklarin-politik-tarihi/?view=dashboard");
+    const title = page.getByRole("heading", { level: 1 });
+    await expect(title).toHaveText("Bazı Kötü Alışkanlıkların Politik Tarihi");
+    const header = page.locator("main > header");
+    expect((await header.boundingBox())!.height).toBe(40);
+    // One line of 14px type (it truncates with an ellipsis rather than
+    // wrapping when it is longer than the bar), and the meta is hidden so it
+    // cannot squeeze the title.
+    expect((await title.boundingBox())!.height).toBeLessThan(24);
+    expect(await title.evaluate((el) => getComputedStyle(el).textOverflow)).toBe("ellipsis");
+    await expect(header.locator("span")).toBeHidden();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth === document.documentElement.clientWidth)).toBe(true);
+  });
+});

@@ -17,16 +17,26 @@ function Site({ data }: { data: Contributions }) {
   );
 }
 
+// All three figures cover the 12-month window GitHub returns, so a streak
+// that crosses the window start is cut short; the labels say so. With no
+// weeks there is nothing to count, so the tiles are left out, not shown as 0.
 function Dashboard({ data }: { data: Contributions }) {
+  if (data.weeks.length === 0) {
+    return (
+      <div className="p-3">
+        <Empty />
+      </div>
+    );
+  }
   const stats = contributionStats(data);
   return (
     <div className="flex flex-col gap-4 p-3">
       <StatRow>
-        <Stat label="Contributions" value={stats.total} />
-        <Stat label="Active days" value={stats.activeDays} />
-        <Stat label="Longest streak" value={stats.longestStreak} />
+        <Stat label="Contributions · 12 mo" value={stats.total} />
+        <Stat label="Active days · 12 mo" value={stats.activeDays} />
+        <Stat label="Longest streak · 12 mo" value={stats.longestStreak} />
       </StatRow>
-      {data.weeks.length === 0 ? <Empty /> : <Heatmap data={data} />}
+      <Heatmap data={data} />
     </div>
   );
 }

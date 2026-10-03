@@ -32,6 +32,19 @@ test("the work index lists the confirmed entries as plain rows", async ({ page }
   await expect(work.getByRole("link")).toHaveCount(0);
 });
 
+test("the work index collapses the empty year and role columns", async ({ page }) => {
+  await page.goto("/");
+  const work = page.locator("#work");
+  await expect(work.locator("div.group")).toHaveCount(5);
+  // Titles start at the section's left edge, not after an empty year track.
+  const sectionLeft = await work.evaluate((el) => el.getBoundingClientRect().left);
+  const titleLefts = await work
+    .locator("div.group > span:first-child")
+    .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().left));
+  expect(titleLefts).toHaveLength(5);
+  for (const left of titleLefts) expect(left).toBeCloseTo(sectionLeft, 0);
+});
+
 test("the Lab index lists every entry and links out only where it has a link", async ({ page }) => {
   await page.goto("/");
   const lab = page.locator("#lab");
@@ -57,16 +70,18 @@ test("Off the clock keeps the photo tile and links to Life", async ({ page }) =>
 test("the dashboard home shows the metric row and the Overview panels", async ({ page }) => {
   await page.goto("/?view=dashboard");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Overview");
-  await expect(page.locator("main dl").first().locator("dt")).toHaveText([
-    "Films synced",
-    "Books",
-    "GitHub contributions",
-  ]);
+  // No database, so no source has data: the metric tiles are left out
+  // rather than shown as 0.
+  await expect(page.getByTestId("stat-row")).toHaveCount(0);
 
+  // No entry has years or a role yet, so those columns are not rendered.
   const work = page.locator("#work");
-  await expect(work.getByRole("columnheader")).toHaveText(["Project", "Notes", "Years", "Role"]);
+  await expect(work.getByRole("columnheader")).toHaveText(["Project", "Notes"]);
   await expect(work.locator("tbody tr")).toHaveCount(5);
-  await expect(page.locator("#lab tbody tr")).toHaveCount(3);
+  // The Lab table carries status in the Project cell's glyph, not a column.
+  const lab = page.locator("#lab");
+  await expect(lab.getByRole("columnheader")).toHaveText(["Project", "Description", "Year"]);
+  await expect(lab.locator("tbody tr")).toHaveCount(3);
   await expect(page.locator("#status")).toContainText("Open to roles");
   await expect(page.locator("#activity")).toContainText("No activity yet.");
 });
@@ -77,3 +92,27 @@ test("the Sources panel lists every source as never synced without a database", 
   await expect(sources.locator("tbody tr")).toHaveCount(5);
   await expect(sources.locator('[data-health="never"]')).toHaveCount(5);
 });
+
+for (const width of [320, 390]) {
+  test.describe(`at ${width}px`, () => {
+    test.use({ viewport: { width, height: 844 } });
+
+    test("index rows never scroll the page sideways and keep the → inside the gutter", async ({ page }) => {
+      await page.goto("/");
+      const scroll = await page.evaluate(() => ({
+        scrollWidth: document.documentElement.scrollWidth,
+        clientWidth: document.documentElement.clientWidth,
+      }));
+      expect(scroll.scrollWidth).toBe(scroll.clientWidth);
+
+      // The Lab index has a linked row, so it has an arrow.
+      const arrow = page.locator("#lab a").first().locator('span[aria-hidden="true"]').last();
+      await expect(arrow).toHaveText("→");
+      const box = await arrow.boundingBox();
+      expect(box).not.toBeNull();
+      // 16px page gutter on the right.
+      expect(box!.x + box!.width).toBeLessThanOrEqual(width - 16 + 0.5);
+      expect(box!.x).toBeGreaterThanOrEqual(0);
+    });
+  });
+}

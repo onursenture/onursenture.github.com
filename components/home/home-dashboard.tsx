@@ -10,11 +10,12 @@ import { StatusGlyph } from "@/components/ui/status-glyph";
 import { TextLink } from "@/components/ui/text-link";
 import { labIndex } from "@/content/lab-index";
 import { profile } from "@/content/profile";
-import { type WorkEntry, workIndex } from "@/content/work-index";
+import { workIndex } from "@/content/work-index";
 import { type ActivityItem, buildActivity } from "@/lib/activity";
 import { readSource } from "@/lib/sources/read";
 import { readSourceStatuses } from "@/lib/sources/status";
 import { LabPanel } from "./lab-index";
+import { workColumns } from "./work-index";
 
 function StatusRow({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -53,15 +54,11 @@ function ActivityList({ items }: { items: ActivityItem[] }) {
   );
 }
 
-const WORK_COLUMNS = [
-  { header: "Project", cell: (entry: WorkEntry) => (entry.href ? <TextLink href={entry.href}>{entry.title}</TextLink> : entry.title) },
-  { header: "Notes", cell: (entry: WorkEntry) => entry.meta ?? "", mono: true },
-  { header: "Years", cell: (entry: WorkEntry) => entry.years ?? "", mono: true },
-  { header: "Role", cell: (entry: WorkEntry) => entry.role ?? "", mono: true },
-];
-
 // Dashboard view of "/" (Overview): a metric row, then the Work, Status, Lab,
-// Activity and Sources panels on the 12-column grid.
+// Activity and Sources panels on the 12-column grid. The metrics are the ones
+// that mean something at a glance: GitHub contributions over the last 12
+// months and the books being read now. A tile whose source has no data is
+// left out rather than shown as 0.
 export async function HomeDashboard() {
   const [films, books, articles, github, statuses] = await Promise.all([
     readSource("letterboxd"),
@@ -71,23 +68,29 @@ export async function HomeDashboard() {
     readSourceStatuses(),
   ]);
   const activity = buildActivity({ films: films.data, books: books.data.read, articles: articles.data });
+  const metrics = [
+    github.data.weeks.length > 0
+      ? { label: "Contributions · 12 mo", value: github.data.total }
+      : null,
+    books.lastSuccessAt ? { label: "Reading now", value: books.data.currentlyReading.length } : null,
+    ...(profile.metrics ?? []),
+  ].filter((metric) => metric !== null);
 
   return (
     <main>
       <PageHeader view="dashboard" title="Overview" meta={`${workIndex.length} projects`} />
       <PanelGrid>
-        <div className="md:col-span-12">
-          <StatRow>
-            <Stat label="Films synced" value={films.data.length} />
-            <Stat label="Books" value={books.data.currentlyReading.length + books.data.read.length} />
-            <Stat label="GitHub contributions" value={github.data.total} />
-            {profile.metrics?.map((metric) => (
-              <Stat key={metric.label} label={metric.label} value={metric.value} />
-            ))}
-          </StatRow>
-        </div>
+        {metrics.length > 0 ? (
+          <div data-testid="stat-row" className="col-span-full">
+            <StatRow>
+              {metrics.map((metric) => (
+                <Stat key={metric.label} label={metric.label} value={metric.value} />
+              ))}
+            </StatRow>
+          </div>
+        ) : null}
         <Panel title="Work" count={workIndex.length} span={8} id="work">
-          <DataTable caption="Selected work" columns={WORK_COLUMNS} rows={workIndex} rowKey={(entry) => entry.title} />
+          <DataTable caption="Selected work" columns={workColumns(workIndex)} rows={workIndex} rowKey={(entry) => entry.title} />
         </Panel>
         <Panel title="Status" span={4} id="status">
           <dl>

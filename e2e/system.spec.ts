@@ -10,6 +10,7 @@ const PRIMITIVES = [
   "Toggle",
   "RelativeTime",
   "LiveClock",
+  "Rating",
   "Cover",
   "Stat",
   "Panel",
@@ -28,6 +29,9 @@ for (const view of ["site", "dashboard"]) {
       await expect(page.locator(`[data-primitive="${name}"]`)).toBeVisible();
     }
     await expect(page.locator("[data-type]")).toHaveCount(17);
+    // Ratings are numbers in mono, never stars.
+    await expect(page.locator('[data-primitive="Rating"]')).toContainText("3.5 · 4");
+    await expect(page.locator('[data-primitive="Rating"]')).not.toContainText("\u2605");
   });
 }
 

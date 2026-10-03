@@ -6,7 +6,7 @@ import { Cover } from "@/components/ui/cover";
 import { MetaLabel } from "@/components/ui/meta-label";
 import { getPhotos } from "@/lib/content/photos";
 import { readSource } from "@/lib/sources/read";
-import { stars } from "@/lib/sources/stars";
+import { formatRating } from "@/lib/sources/rating";
 
 // Four columns at md, two below, inside the 1200px container.
 const PHOTO_SIZES = "(min-width: 1248px) 282px, (min-width: 768px) calc((100vw - 120px) / 4), calc((100vw - 48px) / 2)";
@@ -22,7 +22,7 @@ function Tile({
   href: string;
   media: ReactNode;
   title?: string;
-  detail?: string;
+  detail?: ReactNode;
 }) {
   return (
     <Link href={href} data-tile={label} className="group flex min-w-0 flex-col gap-3">
@@ -71,7 +71,7 @@ export async function OffTheClock() {
         href="/life/#films"
         media={<Cover src={film.poster} alt="" />}
         title={film.title}
-        detail={stars(film.ratingValue)}
+        detail={formatRating(film.ratingValue)}
       />
     ) : null,
     photo ? (
@@ -98,7 +98,14 @@ export async function OffTheClock() {
             </span>
           </span>
         }
-        detail={[article.domain, article.minutes ? `${article.minutes} min` : ""].filter(Boolean).join(" · ")}
+        detail={
+          // The reading time stays on one line: "13 min" never breaks.
+          <>
+            {article.domain}
+            {article.domain && article.minutes ? " · " : null}
+            {article.minutes ? <span className="whitespace-nowrap">{article.minutes} min</span> : null}
+          </>
+        }
       />
     ) : null,
   ].filter(Boolean);

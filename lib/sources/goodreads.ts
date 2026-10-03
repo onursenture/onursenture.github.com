@@ -76,7 +76,7 @@ export async function parseGoodreadsShelf(
       title: (item.title ?? "").trim(),
       author: (item.authorName ?? "").trim(),
       cover: rawCover ? upgradeCover(rawCover) : "",
-      rating: "★".repeat(numRating),
+      rating: "\u2605".repeat(numRating),
       numRating,
       // Only the explicit review field; the old description-scraping
       // fallback picked up book blurbs and is intentionally gone.

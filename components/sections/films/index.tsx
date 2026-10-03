@@ -4,12 +4,12 @@ import { profile } from "@/content/profile";
 import { formatDate } from "@/lib/format";
 import type { Film } from "@/lib/sources/letterboxd";
 import { readSource } from "@/lib/sources/read";
-import { stars } from "@/lib/sources/stars";
+import { formatRating } from "@/lib/sources/rating";
 import { Empty } from "../empty";
 import { ItemLink } from "../item-link";
 import type { SectionDefinition } from "../types";
 
-// A row of posters with stars and year.
+// A row of posters with rating and year.
 function Site({ data }: { data: Film[] }) {
   if (data.length === 0) return <Empty />;
   return (
@@ -22,7 +22,7 @@ function Site({ data }: { data: Film[] }) {
               {film.title}
             </span>
             <span className="type-mono-12 text-fg-muted">
-              {[stars(film.ratingValue), film.year].filter(Boolean).join(" · ")}
+              {[formatRating(film.ratingValue), film.year].filter(Boolean).join(" · ")}
             </span>
           </a>
         </li>
@@ -40,7 +40,7 @@ function Dashboard({ data }: { data: Film[] }) {
       columns={[
         { header: "Title", cell: (film) => <ItemLink href={film.link}>{film.title}</ItemLink> },
         { header: "Year", cell: (film) => film.year ?? "", mono: true },
-        { header: "Rating", cell: (film) => stars(film.ratingValue), mono: true },
+        { header: "Rating", cell: (film) => formatRating(film.ratingValue), mono: true },
         {
           header: "Watched",
           cell: (film) => (film.watchedDate ? formatDate(film.watchedDate) : ""),

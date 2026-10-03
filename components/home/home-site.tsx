@@ -1,5 +1,5 @@
 import { Band } from "@/components/ui/band";
-import { IndexRow } from "@/components/ui/index-row";
+import { IndexList } from "@/components/ui/index-row";
 import { labIndex } from "@/content/lab-index";
 import { profile } from "@/content/profile";
 import { workIndex } from "@/content/work-index";
@@ -16,9 +16,7 @@ export function HomeSite() {
         {profile.meta ? <MetaLine segments={profile.meta} available={profile.available} /> : null}
       </header>
       <Band label="Selected work" id="work">
-        {workIndex.map((entry) => (
-          <IndexRow key={entry.title} entry={entry} />
-        ))}
+        <IndexList entries={workIndex} />
       </Band>
       <LabBand entries={labIndex} />
       <OffTheClock />

@@ -19,6 +19,7 @@ import { StatusGlyph } from "@/components/ui/status-glyph";
 import { TextLink } from "@/components/ui/text-link";
 import { type Photo, getPhotos } from "@/lib/content/photos";
 import { formatDate } from "@/lib/format";
+import { formatRating } from "@/lib/sources/rating";
 import { pageMetadata } from "@/lib/metadata";
 import { assertView } from "@/lib/view/params";
 
@@ -144,6 +145,12 @@ export default async function SystemPage({ params }: PageProps<"/[view]/system">
           <span className="type-mono-12">
             ANKARA <LiveClock timeZone="Europe/Istanbul" place="Ankara" />
           </span>
+        </Specimen>
+        <Specimen name="Rating">
+          <span className="type-mono-12">
+            {formatRating(3.5)} · {formatRating(4)}
+          </span>
+          <span className="type-mono-12 text-fg-muted">unrated shows nothing: [{formatRating(null)}]</span>
         </Specimen>
         <Specimen name="Cover">
           <div className="w-24">

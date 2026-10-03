@@ -5,7 +5,7 @@ import { profile } from "@/content/profile";
 import { formatDate } from "@/lib/format";
 import type { Book, Books } from "@/lib/sources/goodreads";
 import { readSource } from "@/lib/sources/read";
-import { stars } from "@/lib/sources/stars";
+import { formatRating } from "@/lib/sources/rating";
 import { Empty } from "../empty";
 import { ItemLink } from "../item-link";
 import type { SectionDefinition } from "../types";
@@ -39,14 +39,14 @@ function Read({ books }: { books: Book[] }) {
             {book.title}
           </ItemLink>
           <span className="col-span-8 type-mono-12 text-fg-muted md:col-span-4">{book.author}</span>
-          <span className="col-span-4 text-right type-mono-12 md:col-span-2">{stars(book.numRating)}</span>
+          <span className="col-span-4 text-right type-mono-12 md:col-span-2">{formatRating(book.numRating)}</span>
         </li>
       ))}
     </ul>
   );
 }
 
-// Covers for the reading shelf, then the read list with stars.
+// Covers for the reading shelf, then the read list with ratings.
 function Site({ data }: { data: Books }) {
   return (
     <div className="flex flex-col gap-12">
@@ -75,8 +75,8 @@ function Dashboard({ data }: { data: Books }) {
       columns={[
         { header: "Shelf", cell: (book) => book.shelf, mono: true },
         { header: "Title", cell: (book) => <ItemLink href={book.link}>{book.title}</ItemLink> },
-        { header: "Author", cell: (book) => book.author, mono: true },
-        { header: "Rating", cell: (book) => stars(book.numRating), mono: true },
+        { header: "Author", cell: (book) => book.author, mono: true, wrap: true },
+        { header: "Rating", cell: (book) => formatRating(book.numRating), mono: true },
         { header: "Date", cell: (book) => formatDate(book.date), mono: true, align: "right" },
       ]}
     />

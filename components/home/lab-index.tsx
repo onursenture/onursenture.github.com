@@ -1,10 +1,11 @@
 import { Band } from "@/components/ui/band";
 import { DataTable } from "@/components/ui/data-table";
-import { type IndexEntry, IndexRow } from "@/components/ui/index-row";
+import { type IndexEntry, IndexList } from "@/components/ui/index-row";
 import { Panel } from "@/components/ui/panel";
 import { type GlyphStatus, StatusGlyph } from "@/components/ui/status-glyph";
 import { TextLink } from "@/components/ui/text-link";
 import type { LabEntry } from "@/content/lab-index";
+import { visibleColumns } from "@/lib/index-columns";
 
 export const LAB_STATUS: Record<NonNullable<LabEntry["status"]>, { glyph: GlyphStatus; label: string }> = {
   live: { glyph: "ok", label: "live" },
@@ -29,16 +30,17 @@ export function LabBand({ entries }: { entries: LabEntry[] }) {
   if (entries.length === 0) return null;
   return (
     <Band label="Lab" id="lab">
-      {entries.map((entry) => (
-        <IndexRow key={entry.title} entry={labIndexEntry(entry)} />
-      ))}
+      <IndexList entries={entries.map(labIndexEntry)} />
     </Band>
   );
 }
 
-// The same list as a dashboard panel. Also hidden while empty.
+// The same list as a dashboard panel. Also hidden while empty. The status
+// glyph in the Project cell carries the status, so there is no Status column,
+// and Year is dropped while no entry has one.
 export function LabPanel({ entries }: { entries: LabEntry[] }) {
   if (entries.length === 0) return null;
+  const showYear = visibleColumns(entries, ["year"]).length > 0;
   return (
     <Panel title="Lab" count={entries.length} id="lab">
       <DataTable
@@ -58,8 +60,7 @@ export function LabPanel({ entries }: { entries: LabEntry[] }) {
             ),
           },
           { header: "Description", cell: (entry) => entry.description },
-          { header: "Year", cell: (entry) => entry.year ?? "", mono: true },
-          { header: "Status", cell: (entry) => entry.status ?? "", mono: true },
+          ...(showYear ? [{ header: "Year", cell: (entry: LabEntry) => entry.year ?? "", mono: true }] : []),
         ]}
       />
     </Panel>

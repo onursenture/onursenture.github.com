@@ -40,3 +40,12 @@ test("/dashboard/life/ redirects to /life/", async ({ page }) => {
   await page.goto("/dashboard/life/");
   await expect(page).toHaveURL(/^http:\/\/localhost:\d+\/life\/$/);
 });
+
+test("the home tiles' /life fragments each resolve to one element in both views", async ({ page }) => {
+  for (const suffix of ["", "?view=dashboard"]) {
+    for (const id of ["books", "films", "photos", "articles"]) {
+      await page.goto(`/life/${suffix}#${id}`);
+      await expect(page.locator(`[id="${id}"]`), `#${id} in ${suffix || "site"}`).toHaveCount(1);
+    }
+  }
+});

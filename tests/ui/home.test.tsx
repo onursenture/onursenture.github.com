@@ -2,7 +2,9 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { LabBand, LabPanel, labIndexEntry } from "@/components/home/lab-index";
 import { MetaLine, visibleSegments } from "@/components/home/meta-line";
+import { workColumns } from "@/components/home/work-index";
 import type { LabEntry } from "@/content/lab-index";
+import type { WorkEntry } from "@/content/work-index";
 import type { MetaSegment } from "@/content/profile";
 
 const html = renderToStaticMarkup;
@@ -18,6 +20,25 @@ describe("Lab index", () => {
     expect(markup).toContain(">Lab</h2>");
     expect(markup.split("<tbody>")[1].match(/<tr /g)).toHaveLength(1);
     expect(markup).toContain('aria-label="live"');
+  });
+
+  it("renders the panel without a Status column, and Year only while an entry has one", () => {
+    const withYear = html(
+      <LabPanel entries={[{ title: "a", description: "b", year: "2026", status: "wip" }, { title: "c", description: "d" }]} />,
+    );
+    expect(withYear).toContain(">Project<");
+    expect(withYear).toContain(">Description<");
+    expect(withYear).toContain(">Year<");
+    expect(withYear).not.toContain(">Status<");
+    const withoutYear = html(<LabPanel entries={[{ title: "a", description: "b", status: "wip" }]} />);
+    expect(withoutYear).not.toContain(">Year<");
+    expect(withoutYear.match(/<th /g)).toHaveLength(2);
+  });
+
+  it("collapses the empty year column in the site band", () => {
+    const markup = html(<LabBand entries={[{ title: "a", description: "b" }]} />);
+    expect(markup).not.toContain("type-mono-13");
+    expect(markup).toContain("md:col-span-11");
   });
 
   it("renders one row per entry with its status glyph", () => {
@@ -47,6 +68,20 @@ describe("Lab index", () => {
   });
 });
 
+describe("workColumns", () => {
+  const headers = (entries: WorkEntry[]) => workColumns(entries).map((column) => column.header);
+
+  it("leaves out Years and Role while no entry has them", () => {
+    expect(headers([{ title: "a", meta: "m" }])).toEqual(["Project", "Notes"]);
+  });
+
+  it("brings each column back on its own once an entry has a value", () => {
+    expect(headers([{ title: "a" }, { title: "b", years: "2024" }])).toEqual(["Project", "Notes", "Years"]);
+    expect(headers([{ title: "a", role: "Lead" }])).toEqual(["Project", "Notes", "Role"]);
+    expect(headers([{ title: "a", years: "2024", role: "Lead" }])).toEqual(["Project", "Notes", "Years", "Role"]);
+  });
+});
+
 describe("MetaLine", () => {
   const segments: MetaSegment[] = [
     { text: "DESIGNER + BUILDER" },
@@ -65,5 +100,10 @@ describe("MetaLine", () => {
     expect(markup).toContain('ANKARA <time aria-label="Local time in Ankara">--:--</time>');
     expect(markup).toContain("OPEN TO ROLES");
     expect(markup.match(/ · /g)).toHaveLength(2);
+  });
+
+  it("keeps every segment on one line", () => {
+    const markup = html(<MetaLine segments={segments} available />);
+    expect(markup.match(/whitespace-nowrap/g)).toHaveLength(3);
   });
 });

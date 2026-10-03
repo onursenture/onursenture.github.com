@@ -8,11 +8,19 @@ test("site bands show real rows from every source", async ({ page }) => {
   const films = page.locator('[data-section="films"]');
   await expect(films.locator("li")).toHaveCount(3);
   await expect(films).toContainText("Love & Other Drugs");
-  await expect(films).toContainText("★★★½ · 2010");
+  await expect(films).toContainText("3.5 · 2010");
+  await expect(films).not.toContainText("\u2605");
   const books = page.locator('[data-section="books"]');
   await expect(books).toContainText("Harry Potter and the Deathly Hallows");
   await expect(books).toContainText("Hacı Komünist");
-  await expect(books).toContainText("★★★★");
+  for (const [title, rating] of [
+    ["Joseph Müller-Brockman", "2"],
+    ["Bozkır", "3"],
+    ["Hacı Komünist", "4"],
+  ]) {
+    await expect(books.locator("li", { hasText: title }).locator("span.type-mono-12").last()).toHaveText(rating);
+  }
+  await expect(books).not.toContainText("\u2605");
   const articles = page.locator('[data-section="articles"]');
   await expect(articles).toContainText("Jurassic Park computers in excruciating detail");
   await expect(articles).toContainText("fabiensanglard.net · 13 min");
@@ -32,7 +40,7 @@ test("dashboard panels show table rows, sync times and GitHub stats", async ({ p
   await expect(films.locator('time[datetime="2026-10-02T12:00:00.000Z"]')).toBeVisible();
   await expect(page.locator('[data-section="books"] tbody tr')).toHaveCount(6);
   const github = page.locator('[data-section="github"]');
-  await expect(github.locator("dt")).toHaveText(["Contributions", "Active days", "Longest streak"]);
+  await expect(github.locator("dt")).toHaveText(["Contributions · 12 mo", "Active days · 12 mo", "Longest streak · 12 mo"]);
   await expect(github.locator("dd")).toHaveText(["7", "3", "3"]);
   const sources = page.locator('[data-section="sync-status"]');
   await expect(sources.locator("[data-health]")).toHaveCount(5);

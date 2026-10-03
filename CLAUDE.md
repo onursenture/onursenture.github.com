@@ -56,6 +56,9 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
 - Back/forward to a history entry rendered in the other view must not use Next's restore (it hangs on the stale cache); `ViewHistoryGuard` navigates to the URL instead. It reads Next's private `history.state`, so recheck the back/forward tests in `e2e/matrix.spec.ts` after a Next upgrade.
 - Unknown URLs 404 inside the shell (`app/[view]/[...missing]`). Under Cache Components these 404s are served as an error shell that React renders on the client, so the inline theme script never runs there; `ThemeToggle` re-applies the cookie, and `ThemeSync` does the same on the root 404 (`app/not-found.tsx`).
 - After a client navigation or a view switch, Next keeps the previous tree mounted but hidden. In e2e, prefer role locators (they skip hidden elements) or filter with `:visible`.
+- Optional index columns (`years`, `role` in the work index, `year` in the Lab index) are not rendered at all while no entry has a value (`visibleColumns` in `lib/index-columns.ts`, used by `IndexList`, `workColumns` and `LabPanel`); they return on their own once an entry gets one.
+- Ratings are plain numbers in mono (`formatRating` in `lib/sources/rating.ts`: `3.5`, `4`, unrated shows nothing). Never stars: neither face has `★`. `grep -rn "★" app components lib` must stay empty.
+- Dashboard panel spans start at `xl` (1280px); below it panels stack full width, because the 240px sidebar leaves 4- and 6-column panels too narrow. Contribution figures always name their period ("12 mo").
 - Only confirmed facts go in `content/profile.ts`, `content/work-index.ts` and `content/lab-index.ts`.
 
 ## Sources and sync

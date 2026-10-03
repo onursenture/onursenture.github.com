@@ -13,18 +13,19 @@ function placeName(label: string): string {
 }
 
 function Segment({ segment }: { segment: MetaSegment }) {
-  if ("text" in segment) return <span>{segment.text}</span>;
+  if ("text" in segment) return <span className="whitespace-nowrap">{segment.text}</span>;
   if ("clock" in segment) {
     return (
-      <span>
+      <span className="whitespace-nowrap">
         {segment.label} <LiveClock timeZone={segment.clock} place={placeName(segment.label)} />
       </span>
     );
   }
-  return <span>OPEN TO ROLES</span>;
+  return <span className="whitespace-nowrap">OPEN TO ROLES</span>;
 }
 
-// DESIGNER + BUILDER · ANKARA 14:32 · OPEN TO ROLES
+// DESIGNER + BUILDER · ANKARA 14:32 · OPEN TO ROLES. The line wraps between
+// segments, never inside one.
 export function MetaLine({ segments, available }: { segments: MetaSegment[]; available: boolean }) {
   const visible = visibleSegments(segments, available);
   if (visible.length === 0) return null;
