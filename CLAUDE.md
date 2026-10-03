@@ -19,6 +19,7 @@ npm run e2e            # Playwright on port 3217; run `npm run build` first
 npm run e2e:fixtures   # port 3219; run `SOURCE_FIXTURES=1 npm run build` first
 npm run images         # optimize images-src/ into public/images/ + manifest
 npm run db:generate    # drizzle-kit generate; db:migrate applies it (--force)
+npm run screenshots -- <dir> <path>...  # 1440 + 390, both views, both themes (build first)
 ```
 
 CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixtures`. Finish with a plain `npm run build` so the local `.next` isn't left in fixture mode.
@@ -42,6 +43,19 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
 - Faces to avoid: see the S1 spec's "Faces to avoid" list.
 - OG images are always JPEG with an absolute URL (via `metadataBase`). Pages without a real image omit `og:image`.
 - English only.
+
+## Design system (S3)
+
+- Tokens live in `app/globals.css` (`@theme static`), named exactly as the Figma variables (`--color-bg`, `--color-fg-muted`, `--radius-control`, …). `tests/tokens.test.ts` pins them to the S1 values. Tailwind's default palette, text sizes, radii and shadows are cleared, so only token utilities exist: `bg-bg`, `text-fg-muted`, `border` (a `--color-line` rule), `rounded-control`.
+- Type comes only from the Figma text-style classes: `type-display-{160,96,64,40}`, `type-sans-{28,20,16,14,13}` (plus `-medium`), `type-mono-{13,12,11}`.
+- Square corners except form controls (`rounded-control`). No shadows. Monochrome; `--color-danger` only for errors.
+- No icons. Glyphs only: `→` (every link, internal or external; never `↗`), `●` ok, `○` empty, `◐` late or partial, `×` close. Status glyphs go through `<StatusGlyph>`.
+- Primitives are in `components/ui/`. `/system/` renders all of them (not in the nav, `noindex`); check it in both views and themes after UI changes.
+- Shells are in `components/shell/`. The nav comes from `lib/nav.ts`: flip `ready` when a section ships.
+- The view switch cross-fades the whole page through React `<ViewTransition>` (`ShellFade`: each shell's outer element shares the name `shell`) and the `view-switch` transition type that `ViewToggle` adds; reduced motion skips it.
+- Unknown URLs 404 inside the shell (`app/[view]/[...missing]`). Under Cache Components these 404s are served as an error shell that React renders on the client, so the inline theme script never runs there; `ThemeToggle` re-applies the cookie, and `ThemeSync` does the same on the root 404 (`app/not-found.tsx`).
+- After a client navigation or a view switch, Next keeps the previous tree mounted but hidden. In e2e, prefer role locators (they skip hidden elements) or filter with `:visible`.
+- Only confirmed facts go in `content/profile.ts`, `content/work-index.ts` and `content/lab-index.ts`.
 
 ## Sources and sync
 
