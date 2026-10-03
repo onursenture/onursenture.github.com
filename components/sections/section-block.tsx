@@ -26,7 +26,7 @@ export async function SectionBlock({
         count={section.count?.(data)}
         right={section.synced ? <SyncedAt at={lastSuccessAt} /> : undefined}
       >
-        <Dashboard data={data} lastSuccessAt={lastSuccessAt} />
+        <Dashboard data={data} />
       </Panel>
     );
   }

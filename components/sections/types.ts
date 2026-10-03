@@ -15,7 +15,7 @@ export interface SectionDefinition<T> {
   visibility: Visibility;
   load: () => Promise<SourceView<T>>;
   Site: (props: { data: T }) => ReactNode;
-  Dashboard: (props: { data: T; lastSuccessAt: string | null }) => ReactNode;
+  Dashboard: (props: { data: T }) => ReactNode;
   // Upstream name for the band header ("Films · Letterboxd").
   source?: string;
   // Fed by a synced source: the dashboard panel header shows the sync time.
