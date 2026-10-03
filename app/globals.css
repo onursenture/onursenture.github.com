@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* docs/ holds plans whose code samples would otherwise ship as utilities. */
+@source not "../docs";
+
 /* Theme and view are attributes, not media queries, so both can be toggled.
    Usage: dark:…, dashboard:… (density tweaks only; colors come from tokens). */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
