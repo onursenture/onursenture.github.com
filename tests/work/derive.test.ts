@@ -148,3 +148,35 @@ describe("buildArchiveView", () => {
     expect(view.media.map((m) => [m.id, m.label, m.context])).toEqual([["aura", "FIG. 02", "Aura · Jan 2024"]]);
   });
 });
+
+describe("figmaLinks option", () => {
+  const FIGMA = { fileKey: "abc123", nodeId: "1:2", embed: true };
+  const withFigma: CaseStudy = {
+    ...study,
+    hero: { ...study.hero, figma: FIGMA },
+    entries: study.entries.map((entry) => ({ ...entry, media: entry.media.map((item) => ({ ...item, figma: FIGMA })) })),
+  };
+  const archiveEntries: ArchiveEntry[] = [
+    { id: "a", org: "primetek", date: "2024-01", title: "A", note: "n", source: "https://x.com/a", media: { id: "m", caption: "M", figma: FIGMA } },
+  ];
+
+  it("keeps figma refs by default", () => {
+    expect(buildStudyView(withFigma, lookup).media.every((m) => m.figma !== null)).toBe(true);
+    expect(buildArchiveView(archiveEntries, lookup).media[0].figma).toEqual(FIGMA);
+  });
+
+  it("nulls every figma ref when figmaLinks is false", () => {
+    const study = buildStudyView(withFigma, lookup, { figmaLinks: false });
+    expect(study.media.length).toBeGreaterThan(1);
+    expect(study.media.every((m) => m.figma === null)).toBe(true);
+    expect(study.hero.figma).toBeNull();
+    expect(JSON.stringify(study)).not.toContain("abc123");
+    const archive = buildArchiveView(archiveEntries, lookup, { figmaLinks: false });
+    expect(archive.media.every((m) => m.figma === null)).toBe(true);
+    expect(JSON.stringify(archive)).not.toContain("abc123");
+  });
+
+  it("keeps figma refs when figmaLinks is true", () => {
+    expect(buildStudyView(withFigma, lookup, { figmaLinks: true }).hero.figma).toEqual(FIGMA);
+  });
+});

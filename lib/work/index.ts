@@ -1,5 +1,6 @@
 import { experience } from "@/content/experience";
 import { archive, caseStudies } from "@/content/work";
+import { workSettings } from "@/content/work/settings";
 import type { CaseStudy, Fact, WorkSlug } from "@/content/work/types";
 import { findImage } from "@/lib/images/manifest";
 import { type ArchiveView, type StudyView, buildArchiveView, buildStudyView } from "./derive";
@@ -17,11 +18,11 @@ export function getCaseStudy(slug: string): CaseStudy | undefined {
 }
 
 export function getStudyView(study: CaseStudy): StudyView {
-  return buildStudyView(study, findImage);
+  return buildStudyView(study, findImage, { figmaLinks: workSettings.figmaLinks });
 }
 
 export function getArchiveView(): ArchiveView {
-  return buildArchiveView(archive, findImage);
+  return buildArchiveView(archive, findImage, { figmaLinks: workSettings.figmaLinks });
 }
 
 function plural(count: number, word: string): string {
@@ -29,12 +30,21 @@ function plural(count: number, word: string): string {
 }
 
 // The header facts, plus computed ones. Templates counts its templates and
-// their pages (media tagged "page"), so the numbers are always true.
+// remasters (entries marked `remaster`) and pages (media tagged "page"),
+// so the numbers are always true.
 export function caseStudyFacts(study: CaseStudy, view: StudyView): Fact[] {
   if (study.slug !== "templates") return study.facts;
   const pages = view.media.filter((item) => item.tags.includes("page")).length;
-  const templates = plural(study.entries.length, "template");
-  return [...study.facts, { label: "Coverage", value: pages > 0 ? `${templates} · ${plural(pages, "page")}` : templates }];
+  const remasters = study.entries.filter((entry) => entry.remaster).length;
+  const originals = study.entries.length - remasters;
+  const value = [
+    plural(originals, "template"),
+    remasters > 0 ? plural(remasters, "remaster") : null,
+    pages > 0 ? plural(pages, "page") : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  return [...study.facts, { label: "Coverage", value }];
 }
 
 export function getWorkIndexGroups(): WorkIndexGroup[] {

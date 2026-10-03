@@ -68,6 +68,7 @@ export interface Entry {
   links?: Link[];
   // Templates only: "Vue", "Angular", "React", "JSF".
   frameworks?: string[];
+  remaster?: boolean; // a remastered or all-new edition of an earlier template (Templates Coverage counts these separately)
   credits?: Credit[];
   media: Media[];
 }

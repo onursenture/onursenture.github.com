@@ -34,7 +34,7 @@ test("Templates credits Genesis and counts its coverage from the data", async ({
   await page.goto("/work/templates/");
   await expect(page.locator("#entry-genesis [data-credits]")).toHaveText("Design: Ümit Çelik · Implementation: Taner Ergin");
   await expect(page.locator("#entry-genesis").getByRole("list", { name: "Frameworks" })).toContainText("React");
-  await expect(page.locator("dl")).toContainText(/Coverage\s*34 templates · 1 page$/);
+  await expect(page.locator("dl")).toContainText(/Coverage\s*26 templates · 8 remasters · 1 page$/);
   await expect(page.locator("#entry-verona").getByRole("button", { name: "+1 page in Grid →" })).toBeVisible();
 });
 

@@ -37,7 +37,7 @@ export const primeblocks: CaseStudy = {
       id: "2-0",
       date: "2021-10",
       version: "2.0",
-      note: "Version 2 for Angular added 130+ new blocks, bringing the total to over 280.",
+      note: "Version 2 for Angular added 130+ new blocks, bringing it to 280-plus blocks in total.",
       source: "https://x.com/prime_ng/status/1450787551065907205",
       links: [
         { label: "Vue version", href: "https://x.com/primevue/status/1455500261397520386" },

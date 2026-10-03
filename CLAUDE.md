@@ -92,6 +92,7 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
   3. Commit everything.
 
   `embed: true` adds the click-to-load embed in the viewer. Set it only on files shared as "anyone with the link can view".
+- **Figma switch.** `workSettings.figmaLinks` (`content/work/settings.ts`) is **off by default**: PrimeTek may not want its files linked. Off, `getStudyView` / `getArchiveView` null every `figma` ref, so no "Open in Figma ↗", no embed control and no `fileKey`/`nodeId` in the HTML or RSC payload. The refs stay in `content/work/*.ts` and still drive `npm run figma`.
 
 ## Sources and sync
 

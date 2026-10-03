@@ -10,15 +10,15 @@ describe("caseStudyFacts", () => {
     expect(facts).toEqual(primeone.facts);
   });
 
-  it("for the real templates case study with getStudyView, the last fact is Coverage with 34 templates and 1 page", () => {
+  it("for the real templates case study with getStudyView, the last fact is Coverage with 26 templates, 8 remasters and 1 page", () => {
     const templates = getCaseStudy("templates")!;
     const view = getStudyView(templates);
     const facts = caseStudyFacts(templates, view);
     const lastFact = facts[facts.length - 1];
-    expect(lastFact).toEqual({ label: "Coverage", value: "34 templates · 1 page" });
+    expect(lastFact).toEqual({ label: "Coverage", value: "26 templates · 8 remasters · 1 page" });
   });
 
-  it("for a templates study with zero page-tagged media, value is just the template count", () => {
+  it("for a templates study with zero page-tagged media, value is the templates and remasters", () => {
     const templates = getCaseStudy("templates")!;
     // Create a copy with all page tags removed
     const templatesNoPages: CaseStudy = {
@@ -34,7 +34,7 @@ describe("caseStudyFacts", () => {
     const view = getStudyView(templatesNoPages);
     const facts = caseStudyFacts(templatesNoPages, view);
     const lastFact = facts[facts.length - 1];
-    expect(lastFact).toEqual({ label: "Coverage", value: "34 templates" });
+    expect(lastFact).toEqual({ label: "Coverage", value: "26 templates · 8 remasters" });
   });
 
   it("with exactly 1 entry and a page, the Coverage says 1 template · 1 page (singular)", () => {
@@ -71,5 +71,22 @@ describe("caseStudyFacts", () => {
     const facts = caseStudyFacts(templatesOneEntry, view);
     const lastFact = facts[facts.length - 1];
     expect(lastFact).toEqual({ label: "Coverage", value: "1 template" });
+  });
+
+  it("with 1 original and 1 remaster and no pages, the Coverage says 1 template · 1 remaster", () => {
+    const templates = getCaseStudy("templates")!;
+    const original = templates.entries.find((entry) => entry.id === "ultima")!;
+    const remaster = templates.entries.find((entry) => entry.id === "ultima-definitive")!;
+    const study: CaseStudy = { ...templates, entries: [original, remaster] };
+    const facts = caseStudyFacts(study, getStudyView(study));
+    expect(facts[facts.length - 1]).toEqual({ label: "Coverage", value: "1 template · 1 remaster" });
+  });
+
+  it("with only remasters, the templates part reads 0 templates", () => {
+    const templates = getCaseStudy("templates")!;
+    const remaster = templates.entries.find((entry) => entry.id === "ultima-definitive")!;
+    const study: CaseStudy = { ...templates, entries: [remaster] };
+    const facts = caseStudyFacts(study, getStudyView(study));
+    expect(facts[facts.length - 1]).toEqual({ label: "Coverage", value: "0 templates · 1 remaster" });
   });
 });

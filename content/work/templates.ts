@@ -368,6 +368,7 @@ export const templates: CaseStudy = {
     },
     {
       id: "poseidon-remastered-2020",
+      remaster: true,
       date: "2020-12",
       title: "Poseidon Remastered",
       frameworks: ["Angular"],
@@ -379,6 +380,7 @@ export const templates: CaseStudy = {
     },
     {
       id: "ultima-definitive",
+      remaster: true,
       date: "2021-01",
       title: "Ultima Definitive Edition",
       frameworks: ["Angular", "React"],
@@ -393,6 +395,7 @@ export const templates: CaseStudy = {
     },
     {
       id: "verona-remastered",
+      remaster: true,
       date: "2021-10",
       title: "Verona Remastered",
       frameworks: ["Angular"],
@@ -404,6 +407,7 @@ export const templates: CaseStudy = {
     },
     {
       id: "atlantis-remastered",
+      remaster: true,
       date: "2022-02",
       title: "Atlantis Remastered",
       frameworks: ["Angular"],
@@ -415,8 +419,9 @@ export const templates: CaseStudy = {
     },
     {
       id: "apollo-2022",
+      remaster: true,
       date: "2022-06",
-      title: "Apollo 2022",
+      title: "Apollo (all-new)",
       frameworks: ["Angular", "React"],
       note: "An all-new application template for PrimeNG with light, dark and dim modes; the Next.js version for PrimeReact followed in December 2022.",
       source: "https://x.com/prime_ng/status/1542510180499304449",
@@ -424,11 +429,12 @@ export const templates: CaseStudy = {
         { label: "PrimeReact version", href: "https://x.com/primereact/status/1600777904069156864" },
       ],
       media: [
-        { id: "apollo-2022-cover", caption: "Apollo 2022" },
+        { id: "apollo-2022-cover", caption: "Apollo (all-new)" },
       ],
     },
     {
       id: "diamond-remastered",
+      remaster: true,
       date: "2024-10",
       title: "Diamond Remastered",
       frameworks: ["Vue", "Angular"],
@@ -462,6 +468,7 @@ export const templates: CaseStudy = {
     },
     {
       id: "poseidon-remastered",
+      remaster: true,
       date: "2025-02",
       title: "Poseidon Remastered Edition",
       frameworks: ["Vue"],
@@ -473,6 +480,7 @@ export const templates: CaseStudy = {
     },
     {
       id: "avalon-remastered",
+      remaster: true,
       date: "2025-04",
       title: "Avalon Remastered",
       frameworks: ["Vue"],

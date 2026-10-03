@@ -8,6 +8,13 @@ import type { ImageEntry } from "@/lib/images/plan";
 
 export type ImageLookup = (key: string) => ImageEntry | undefined;
 
+export interface ViewOptions {
+  // Keep `figma` refs on media views. Default true; the site passes
+  // workSettings.figmaLinks, and false nulls every ref so no file key or node
+  // id reaches the client.
+  figmaLinks?: boolean;
+}
+
 export interface ResolvedImage extends ImageEntry {
   key: string;
 }
@@ -132,6 +139,7 @@ function mediaView(
   context: string,
   entryId: string | null,
   lookup: ImageLookup,
+  figmaLinks: boolean,
 ): MediaView {
   return {
     id: media.id,
@@ -141,7 +149,7 @@ function mediaView(
     tags: media.tags ?? [],
     credits: media.credits ?? [],
     image: resolveImage(scope, media, lookup),
-    figma: media.figma ?? null,
+    figma: figmaLinks ? (media.figma ?? null) : null,
     entryId,
     group,
     context,
@@ -196,7 +204,8 @@ export function viewerItems(media: MediaView[], view: string, tag: string, fig: 
   return fig && !filtered.some((item) => item.id === fig) ? media : filtered;
 }
 
-export function buildStudyView(study: CaseStudy, lookup: ImageLookup): StudyView {
+export function buildStudyView(study: CaseStudy, lookup: ImageLookup, options: ViewOptions = {}): StudyView {
+  const figmaLinks = options.figmaLinks ?? true;
   const ordered = oldestFirst(study.entries);
   const ordinal = new Map(ordered.map((entry, index) => [entry.id, pad2(index + 2)]));
   const entries: EntryView[] = [...ordered].reverse().map((entry) => {
@@ -214,11 +223,11 @@ export function buildStudyView(study: CaseStudy, lookup: ImageLookup): StudyView
       frameworks: entry.frameworks ?? [],
       credits: entry.credits ?? [],
       media: entry.media.map((item, index) =>
-        mediaView(study.slug, item, `FIG. ${ordinal.get(entry.id)}.${index + 1}`, heading, context, entry.id, lookup),
+        mediaView(study.slug, item, `FIG. ${ordinal.get(entry.id)}.${index + 1}`, heading, context, entry.id, lookup, figmaLinks),
       ),
     };
   });
-  const hero = mediaView(study.slug, study.hero, "FIG. 01", "Cover", "Cover", null, lookup);
+  const hero = mediaView(study.slug, study.hero, "FIG. 01", "Cover", "Cover", null, lookup, figmaLinks);
   const media = [hero, ...entries.flatMap((entry) => entry.media)];
   return {
     slug: study.slug,
@@ -232,7 +241,8 @@ export function buildStudyView(study: CaseStudy, lookup: ImageLookup): StudyView
   };
 }
 
-export function buildArchiveView(entries: ArchiveEntry[], lookup: ImageLookup): ArchiveView {
+export function buildArchiveView(entries: ArchiveEntry[], lookup: ImageLookup, options: ViewOptions = {}): ArchiveView {
+  const figmaLinks = options.figmaLinks ?? true;
   const ordered = oldestFirst(entries);
   const ordinal = new Map(ordered.map((entry, index) => [entry.id, pad2(index + 1)]));
   const rows: ArchiveRowView[] = [...ordered].reverse().map((entry) => {
@@ -247,7 +257,7 @@ export function buildArchiveView(entries: ArchiveEntry[], lookup: ImageLookup): 
       credits: entry.credits ?? [],
       orgName: ORGS[entry.org].name,
       media: entry.media
-        ? mediaView("archive", entry.media, `FIG. ${ordinal.get(entry.id)}`, entry.title, `${entry.title} · ${monthYear}`, entry.id, lookup)
+        ? mediaView("archive", entry.media, `FIG. ${ordinal.get(entry.id)}`, entry.title, `${entry.title} · ${monthYear}`, entry.id, lookup, figmaLinks)
         : null,
     };
   });

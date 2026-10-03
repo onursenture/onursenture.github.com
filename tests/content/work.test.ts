@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { archive, caseStudies } from "@/content/work";
+import { workSettings } from "@/content/work/settings";
 import { hasImage } from "@/lib/images/manifest";
+import { getArchiveView, getCaseStudies, getStudyView } from "@/lib/work";
 import { validateWork } from "@/lib/work/validate";
 
 describe("content/work", () => {
@@ -35,5 +37,37 @@ describe("content/work", () => {
   it("never states an unconfirmed headline number", () => {
     const text = JSON.stringify({ caseStudies, archive });
     for (const claim of ["80+", "500 blocks", "25+"]) expect(text).not.toContain(claim);
+  });
+
+  it("ships the Figma links switch off", () => {
+    expect(workSettings.figmaLinks).toBe(false);
+  });
+
+  it("exposes no figma refs through lib/work while figmaLinks is off", () => {
+    if (workSettings.figmaLinks) return;
+    const media = [...getCaseStudies().flatMap((study) => getStudyView(study).media), ...getArchiveView().media];
+    expect(media.length).toBeGreaterThan(0);
+    for (const item of media) expect(item.figma, item.id).toBeNull();
+  });
+
+  it("marks exactly the eight remastered or all-new templates", () => {
+    const templates = caseStudies.find((s) => s.slug === "templates")!;
+    expect(
+      templates.entries
+        .filter((e) => e.remaster)
+        .map((e) => e.id)
+        .sort(),
+    ).toEqual(
+      [
+        "poseidon-remastered-2020",
+        "ultima-definitive",
+        "verona-remastered",
+        "atlantis-remastered",
+        "apollo-2022",
+        "diamond-remastered",
+        "poseidon-remastered",
+        "avalon-remastered",
+      ].sort(),
+    );
   });
 });

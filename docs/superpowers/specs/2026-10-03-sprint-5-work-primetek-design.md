@@ -26,7 +26,7 @@ Every mockup line is draft copy. The Mobbin references are Studio Freight (Grid 
 | Narrative spine | **Release log.** A short summary on top, then the product's evolution as dated entries (version · month · one or two sentences · source post). It needs little prose, and each entry can be checked against an X post. |
 | Page layout | **B, wide showcase with sticky years.** A grid header, a full-width hero figure, then year groups whose Doto year stays stuck while the group scrolls. |
 | Media | **Sets, not single figures.** Each entry carries 0–N media items. A page shows its media in three views, **Log · Grid · Index**, and they all open one shared full-screen viewer. Media never gets a page of its own. |
-| Figma | Every media item may carry a Figma frame reference. It is used three ways: an "Open in Figma ↗" link (4a), a click-to-load embed (4b), and the local export script that fills the image (4c). |
+| Figma | Every media item may carry a Figma frame reference. It is used three ways: an "Open in Figma ↗" link (4a), a click-to-load embed (4b), and the local export script that fills the image (4c). A site-wide switch, `workSettings.figmaLinks` in `content/work/settings.ts`, defaults to **off** (decided 2026-10-03: PrimeTek may not want its files linked): off hides 4a and 4b and keeps Figma refs out of the client payload, while 4c keeps working. |
 | `/work/` index | **A, index table.** One row group per org: years · title · type · →. |
 | Archive | Our own hairline log: date · title · one-line note · `post ↗`, plus an optional media slot. **X embeds are never used.** |
 | PrimeIcons | Its Grid view is a **live icon grid** from the `primeicons` package, with search and copy-to-clipboard. The icon count comes from the package. |
