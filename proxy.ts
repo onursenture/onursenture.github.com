@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { PREFERENCE_COOKIE } from "@/lib/view/cookies";
 import { VIEW_COOKIE, VIEW_QUERY, isView, resolveView } from "@/lib/view/views";
-
-const ONE_YEAR = 60 * 60 * 24 * 365;
 
 // Every public page exists twice, prerendered under /site/... and
 // /dashboard/... (app/[view]). The view cookie is the single source of truth:
@@ -26,11 +25,7 @@ export function proxy(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.searchParams.delete(VIEW_QUERY);
     const response = NextResponse.redirect(url);
-    response.cookies.set(VIEW_COOKIE, query, {
-      path: "/",
-      maxAge: ONE_YEAR,
-      sameSite: "lax",
-    });
+    response.cookies.set(VIEW_COOKIE, query, PREFERENCE_COOKIE);
     return response;
   }
 

@@ -1,7 +1,15 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { Toggle } from "@/components/ui/toggle";
+import { serializeCookie } from "@/lib/view/cookies";
 import { THEME_COOKIE, THEME_PREFERENCES, type ThemePreference } from "@/lib/view/theme";
+
+const OPTIONS = [
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+  { value: "system", label: "Auto" },
+] as const satisfies readonly { value: ThemePreference; label: string }[];
 
 function readPreference(): ThemePreference {
   const value = document.documentElement.dataset.themePreference;
@@ -35,21 +43,16 @@ function subscribe(listener: () => void) {
   };
 }
 
+// Light / Dark / Auto. Theme switches are instant (no transition).
 export function ThemeToggle() {
   // Server render has no preference; "system" matches the script's default.
   const preference = useSyncExternalStore(subscribe, readPreference, () => "system" as const);
 
-  function cycle() {
-    const index = THEME_PREFERENCES.indexOf(preference);
-    const next = THEME_PREFERENCES[(index + 1) % THEME_PREFERENCES.length];
-    document.cookie = `${THEME_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
+  function choose(next: ThemePreference) {
+    document.cookie = serializeCookie(THEME_COOKIE, next);
     apply(next);
     listeners.forEach((l) => l());
   }
 
-  return (
-    <button type="button" onClick={cycle} data-testid="theme-toggle">
-      Theme: {preference}
-    </button>
-  );
+  return <Toggle label="Theme" testId="theme-toggle" options={OPTIONS} value={preference} onChange={choose} />;
 }

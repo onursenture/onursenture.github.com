@@ -16,7 +16,7 @@ test("dashboard view adds dashboard-only sections", async ({ page }) => {
 
 test("client navigation after a toggle lands on the new view", async ({ page }) => {
   await page.goto("/");
-  await page.getByTestId("view-toggle").click();
+  await page.getByRole("group", { name: "View" }).getByRole("button", { name: "Dashboard" }).click();
   await expect(page.locator('[data-view="dashboard"]')).toBeVisible();
   await page.getByRole("navigation").getByRole("link", { name: "Life" }).click();
   await expect(page).toHaveURL(/\/life\/$/);
