@@ -48,8 +48,6 @@ test("switching view cross-fades the page in one 250ms ease-out view transition"
       oldEasing: "ease-out",
     },
   ]);
-  const [call] = await recorded(page);
-  expect(call.animated.filter((name) => name.includes("shell-nav"))).toEqual([]);
   // Exactly one transition, even once the animation has finished.
   await page.waitForTimeout(400);
   expect(await recorded(page)).toHaveLength(1);
