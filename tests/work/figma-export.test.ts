@@ -67,6 +67,68 @@ describe("exportFrames", () => {
     expect(result.failed).toBe(true);
     expect(result.written).toEqual([]);
     const [, init] = (env.fetch as unknown as ReturnType<typeof vi.fn>).mock.calls[0];
-    expect(init).toEqual({ headers: { "X-Figma-Token": "TOKEN" } });
+    expect(init).toEqual({ headers: { "X-Figma-Token": "TOKEN" }, signal: expect.any(AbortSignal) });
+  });
+
+  it("warns and keeps going when a 200 response has no nodes, and still returns the lock", async () => {
+    const lock = { "work/primeone/a": { fileKey: "F1", nodeId: "1:1", lastModified: "L1", exportedAt: "old" } };
+    const env = io(async () => json({ err: "File not found" }));
+    const result = await exportFrames(targets, lock, "TOKEN", env);
+    expect(result.lock).toEqual(lock);
+    expect(result.written).toEqual([]);
+    expect(env.warn).toHaveBeenCalledWith(expect.stringContaining("F1"));
+    expect(env.warn).toHaveBeenCalledWith(expect.stringContaining("File not found"));
+  });
+
+  it("warns and keeps going when the export response has no images", async () => {
+    const env = io(async (url) => {
+      if (url.includes("/files/")) return json({ lastModified: "L1", nodes: { "1:1": {}, "1:2": {} } });
+      if (url.includes("/images/")) return json({ err: "Render timeout" });
+      throw new Error(`unexpected ${url}`);
+    });
+    const result = await exportFrames(targets.slice(0, 2), {}, "TOKEN", env);
+    expect(result.lock).toEqual({});
+    expect(result.written).toEqual([]);
+    expect(env.warn).toHaveBeenCalledWith(expect.stringContaining("Render timeout"));
+  });
+
+  it("logs a 200 response's err even when images came back", async () => {
+    const env = io(async (url) => {
+      if (url.includes("/files/")) return json({ lastModified: "L1", nodes: { "1:1": {} } });
+      if (url.includes("/images/")) return json({ err: "partial", images: { "1:1": "https://cdn.figma/a.png" } });
+      return new Response(new Uint8Array([1]));
+    });
+    const result = await exportFrames([targets[0]], {}, "TOKEN", env);
+    expect(result.written).toEqual(["work/primeone/a"]);
+    expect(env.warn).toHaveBeenCalledWith(expect.stringContaining("partial"));
+  });
+
+  it("carries on with the next file when one file group throws", async () => {
+    const two: FigmaTarget[] = [
+      { key: "work/primeone/a", fileKey: "F1", nodeId: "1:1", out: "images-src/work/primeone/a.png" },
+      { key: "work/primeone/b", fileKey: "F2", nodeId: "2:2", out: "images-src/work/primeone/b.png" },
+    ];
+    const env = io(async (url) => {
+      if (url.includes("/files/F1/")) throw new Error("socket hang up");
+      if (url.includes("/files/F2/")) return json({ lastModified: "L2", nodes: { "2:2": {} } });
+      if (url.includes("/images/F2")) return json({ err: null, images: { "2:2": "https://cdn.figma/b.png" } });
+      return new Response(new Uint8Array([2]));
+    });
+    const result = await exportFrames(two, {}, "TOKEN", env);
+    expect(result.written).toEqual(["work/primeone/b"]);
+    expect(env.warn).toHaveBeenCalledWith(expect.stringContaining("socket hang up"));
+    expect(result.failed).toBe(false);
+  });
+
+  it("puts a timeout signal on every request, including downloads", async () => {
+    const env = io(async (url) => {
+      if (url.includes("/files/")) return json({ lastModified: "L1", nodes: { "1:1": {} } });
+      if (url.includes("/images/")) return json({ err: null, images: { "1:1": "https://cdn.figma/a.png" } });
+      return new Response(new Uint8Array([1]));
+    });
+    await exportFrames([targets[0]], {}, "TOKEN", env);
+    const calls = (env.fetch as unknown as ReturnType<typeof vi.fn>).mock.calls;
+    expect(calls).toHaveLength(3);
+    for (const [, init] of calls) expect(init.signal).toBeInstanceOf(AbortSignal);
   });
 });
