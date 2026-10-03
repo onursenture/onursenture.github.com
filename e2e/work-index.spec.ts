@@ -17,7 +17,6 @@ test("/work/ lists PrimeTek's work and the Archive, and marks Work active", asyn
   ]) {
     await expect(group.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
   }
-  await expect(group.getByRole("link", { name: "primefaces.org" })).toHaveAttribute("href", "https://primefaces.org");
   await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Work" })).toHaveAttribute("aria-current", "page");
 });
 

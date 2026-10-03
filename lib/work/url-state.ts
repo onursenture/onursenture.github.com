@@ -7,8 +7,6 @@ export interface ViewState {
   fig: string | null;
 }
 
-export const DEFAULT_VIEW_STATE: ViewState = { fig: null };
-
 interface ParamReader {
   get(name: string): string | null;
 }

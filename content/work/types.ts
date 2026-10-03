@@ -40,8 +40,7 @@ export interface Media {
   id: string;
   caption: string;
   credits?: Credit[];
-  // Kebab-case labels: "components", "tokens", "page"… Only "page" is read
-  // (Templates counts pages); there is no tag filter any more.
+  // Kebab-case labels. Only "page" is read (Templates counts pages).
   tags?: string[];
   // An image manifest key. Leave unset: lib/work/ finds work/<slug>/<id>
   // when `npm run figma` (or a hand-placed file) has produced it.

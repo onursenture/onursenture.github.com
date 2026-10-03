@@ -3,7 +3,6 @@ import { Fragment } from "react";
 import { DitherRule } from "@/components/ui/dither";
 import { OrgMark } from "@/components/ui/org-mark";
 import { SectionRow } from "@/components/ui/section-row";
-import { TextLink } from "@/components/ui/text-link";
 import { WorkTable } from "@/components/work/work-table";
 import { ORGS } from "@/content/orgs";
 import { pageMetadata } from "@/lib/metadata";
@@ -36,7 +35,6 @@ export default function WorkIndexPage() {
                 <span className="block text-fg-muted">{group.span}</span>
               </>
             }
-            action={group.site ? <TextLink href={group.site}>{new URL(group.site).hostname}</TextLink> : undefined}
           >
             <WorkTable rows={group.rows} />
           </SectionRow>

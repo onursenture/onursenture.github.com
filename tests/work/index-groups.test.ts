@@ -11,7 +11,7 @@ describe("buildWorkIndex", () => {
   });
 
   it("takes the role and span from the experience list, and the org's site", () => {
-    expect(groups[0]).toMatchObject({ role: "Design lead", span: "May 2016–Apr 2026", site: "https://primefaces.org" });
+    expect(groups[0]).toMatchObject({ role: "Design lead", span: "May 2016–Apr 2026" });
   });
 
   it("lists the case studies in registry order, then the Archive with its year span", () => {

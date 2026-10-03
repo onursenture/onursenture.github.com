@@ -31,3 +31,10 @@ test("the old ?view=index URL is ignored: the same page, no index list", async (
   await expect(page.locator('[data-view="index"]')).toHaveCount(0);
   await expect(page.getByText("313 of 313 icons")).toBeVisible();
 });
+
+test("the server HTML already has the icons and the licence line", async ({ request }) => {
+  // React separates adjacent text nodes with <!-- --> in server HTML.
+  const html = (await (await request.get("/work/primeicons/")).text()).replaceAll("<!-- -->", "");
+  expect(html).toContain("PrimeIcons 7.0.0 © PrimeTek, MIT License");
+  expect(html).toContain("Copy pi pi-chart-bar");
+});

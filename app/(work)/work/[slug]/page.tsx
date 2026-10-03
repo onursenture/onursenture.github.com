@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { DitherRule } from "@/components/ui/dither";
 import { CaseStudyHeader } from "@/components/work/case-study-header";
+import { IconGrid } from "@/components/work/icon-grid";
 import { StudyBody } from "@/components/work/study-body";
 import { StudyBrowser } from "@/components/work/study-browser";
 import { renditionUrl } from "@/lib/images/plan";
@@ -47,8 +49,16 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
           StudyBrowser reads ?fig after hydration, so every query shares one
           cached HTML (spec §3.2). */}
       <Suspense fallback={<StudyBody study={view} />}>
-        <StudyBrowser study={view} icons={icons} />
+        <StudyBrowser study={view} />
       </Suspense>
+      {/* PrimeIcons' live set is page content, not query state: it renders outside
+          the Suspense, so the icons and the licence line are in the static HTML. */}
+      {icons ? (
+        <>
+          <DitherRule className="mx-4 md:mx-10" />
+          <IconGrid set={icons} />
+        </>
+      ) : null}
     </main>
   );
 }

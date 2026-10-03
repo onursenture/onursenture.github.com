@@ -120,7 +120,6 @@ describe("posts", () => {
   it("formats the date and account, and links only @w00f posts", () => {
     expect(entry("3-0").posts[1]).toEqual({
       id: "100",
-      date: "2024-11-07",
       display: "Nov 7, 2024",
       account: "@primereact",
       summary: "Launch.",

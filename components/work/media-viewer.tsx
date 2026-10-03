@@ -11,17 +11,18 @@ import { MediaFigure } from "./media-figure";
 // Horizontal travel (px) that counts as a swipe on touch screens.
 const SWIPE = 50;
 
-// The button that opens a figure: prefer the one in the active view.
+// The button that opens a figure: the visible one (after a client navigation
+// Next keeps the previous route's tree mounted but hidden, and ids can repeat).
 function findOpener(id: string): HTMLElement | null {
-  const selector = `[data-media="${CSS.escape(id)}"]`;
-  return document.querySelector<HTMLElement>(`[data-view] ${selector}`) ?? document.querySelector<HTMLElement>(selector);
+  const matches = document.querySelectorAll<HTMLElement>(`[data-media="${CSS.escape(id)}"]`);
+  return Array.from(matches).find((el) => el.checkVisibility()) ?? null;
 }
 
 // The shared full-screen viewer (spec §3.6): a native modal <dialog> in the
 // Life palette. `current` (the ?fig= id) drives it: a known id opens it, null
 // closes it. The owner keeps the URL in step (useViewerHistory). Keys: ← →
-// step through `items` (wrapping), Esc closes. On close, focus returns to whatever opened it (or, with no opener, to the
-// figure's own button).
+// step through `items` (wrapping), Esc closes. On close, focus returns to
+// whatever opened it (or, with no opener, to the figure's own button).
 export function MediaViewer({
   title,
   items,

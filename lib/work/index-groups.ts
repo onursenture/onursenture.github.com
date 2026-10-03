@@ -1,5 +1,5 @@
 import { type ExperienceEntry, formatSpan } from "@/content/experience";
-import { ORGS, type OrgId } from "@/content/orgs";
+import type { OrgId } from "@/content/orgs";
 import type { ArchiveEntry, CaseStudy } from "@/content/work/types";
 
 export interface WorkIndexRow {
@@ -13,7 +13,6 @@ export interface WorkIndexGroup {
   org: OrgId;
   role: string;
   span: string;
-  site?: string;
   rows: WorkIndexRow[];
 }
 
@@ -41,7 +40,6 @@ export function buildWorkIndex(studies: CaseStudy[], archive: ArchiveEntry[], ex
       org,
       role: role?.role ?? "",
       span: role ? formatSpan(role.start, role.end) : "",
-      site: ORGS[org].site,
       rows,
     };
   });

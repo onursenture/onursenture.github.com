@@ -170,12 +170,10 @@ describe("LogView", () => {
       () => undefined,
     );
     const out = html(<LogView study={withPosts} />);
-    const entry3 = out.slice(out.indexOf('id="entry-3-0"'));
+    // One entry's own markup: from its <li> to the end of its <article>.
     const list = (id: string) => {
       const start = out.indexOf(`id="entry-${id}"`);
-      const rest = out.slice(start);
-      const next = rest.indexOf('<li id="entry-', 10);
-      return next < 0 ? rest : rest.slice(0, next);
+      return out.slice(start, out.indexOf("</article>", start));
     };
 
     it("lists an entry's posts after its note, credits and media, oldest first", () => {
@@ -185,17 +183,26 @@ describe("LogView", () => {
       expect(block.indexOf('id="post-100"')).toBeLessThan(block.indexOf('id="post-200"'));
       expect(list("4-0")).toContain('id="post-300"');
       expect(list("4-0")).not.toContain('id="post-100"');
-      expect(entry3).toContain('aria-label="Posts"');
+      expect(list("3-0")).toContain('aria-label="Posts"');
     });
 
     it("reads date, account, summary", () => {
-      expect(out).toContain("Nov 7, 2024 · @primereact");
-      expect(out).toContain("Launch.");
+      const row = /<li id="post-100">.*?<\/li>/.exec(list("3-0"))![0];
+      expect(row).toContain("Nov 7, 2024 · @primereact");
+      expect(row).toContain("Launch.");
+    });
+
+    it("keeps real whitespace between date, account and summary, even around the hidden separator", () => {
+      const row = /<li id="post-100">.*?<\/li>/.exec(list("3-0"))![0];
+      expect(row).toContain("</span> <span aria-hidden");
+      expect(row).toMatch(/<\/span> <span class="text-fg-soft">Launch\.<\/span>/);
+      expect(row.replace(/<[^>]+>/g, "")).toBe("Nov 7, 2024 · @primereact · Launch.");
     });
 
     it("links an @w00f post to X, named from 'Post on X'", () => {
-      expect(out).toContain('href="https://x.com/w00f/status/200"');
-      expect(out).toContain('aria-label="Post on X, Nov 9, 2024, @w00f: Onur on the launch."');
+      const entry = list("3-0");
+      expect(entry).toContain('href="https://x.com/w00f/status/200"');
+      expect(entry).toContain('aria-label="Post on X, Nov 9, 2024, @w00f: Onur on the launch."');
     });
 
     it("renders a post from another account as plain text, with no link", () => {
@@ -232,7 +239,14 @@ describe("ArchiveLog", () => {
   const archive = buildArchiveView(
     [
       { id: "aura", org: "primetek", date: "2024-01", title: "Aura", note: "A theme.", source: "https://x.com/primevue/status/1", credits: [{ name: "Bo" }], media: { id: "aura", caption: "Aura" } },
-    { id: "saga", org: "primetek", date: "2020-08", title: "Saga", note: "Themes.", source: "https://www.primefaces.org/blog/primeng-10-begins/" },
+    {
+      id: "saga",
+      org: "primetek",
+      date: "2020-08",
+      title: "Saga",
+      note: "Themes.",
+      source: "https://www.primefaces.org/blog/primeng-10-begins/",
+    },
       { id: "gallery", org: "primetek", date: "2023-09", title: "Gallery", note: "A gallery.", source: "https://x.com/w00f/status/2" },
     ],
     () => undefined,

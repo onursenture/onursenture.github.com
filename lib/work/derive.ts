@@ -60,7 +60,6 @@ export interface YearGroup<T> {
 
 export interface PostView {
   id: string;
-  date: string;
   // "Nov 7, 2024"
   display: string;
   // "@primevue"
@@ -225,7 +224,6 @@ export function buildStudyView(study: CaseStudy, lookup: ImageLookup, options: V
         .filter((post) => post.entryId === entry.id)
         .map((post) => ({
           id: post.id,
-          date: post.date,
           display: formatDay(post.date),
           account: `@${post.account}`,
           summary: post.summary,

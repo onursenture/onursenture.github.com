@@ -62,41 +62,41 @@ function EntryBlock({ entry, onOpen }: { entry: EntryView; onOpen?: (id: string)
   const count = entry.media.length;
   return (
     <article className={cx("grid gap-4", count > 0 && "lg:grid-cols-[minmax(0,480px)_1fr] lg:grid-rows-[auto_1fr] lg:gap-x-7")}>
-        <div className="flex flex-col gap-2 lg:col-start-1 lg:row-start-1">
-          <h3 className="type-body">
-            <span className="font-medium">{entry.heading}</span> <span className="text-fg-muted">· {entry.month}</span>
-          </h3>
-          {entry.frameworks.length > 0 ? (
-            <ul aria-label="Frameworks" className="flex flex-wrap gap-1.5">
-              {entry.frameworks.map((framework) => (
-                <li key={framework} className="border px-1.5 type-label text-fg-muted">
-                  {framework}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-          <p className="type-body text-fg-soft">{entry.note}</p>
-          <CreditLine credits={entry.credits} />
-          {entry.source ? (
-            <p className="type-meta">
-              <TextLink href={entry.source} ariaLabel={`Post on X, ${entry.heading}, ${entry.month} ${entry.year}`} className="text-accent">
-                post
-              </TextLink>
-            </p>
-          ) : null}
-        </div>
-        {count > 0 ? (
-          <div
-            data-entry-media={count}
-            data-columns={entry.columns}
-            className={cx("grid content-start gap-3 lg:col-start-2 lg:row-span-2 lg:row-start-1", COLUMNS[entry.columns])}
-          >
-            {entry.media.map((media) => (
-              <MediaButton key={media.id} media={media} onOpen={onOpen} sizes={figureSizes(entry.columns)} />
+      <div className="flex flex-col gap-2 lg:col-start-1 lg:row-start-1">
+        <h3 className="type-body">
+          <span className="font-medium">{entry.heading}</span> <span className="text-fg-muted">· {entry.month}</span>
+        </h3>
+        {entry.frameworks.length > 0 ? (
+          <ul aria-label="Frameworks" className="flex flex-wrap gap-1.5">
+            {entry.frameworks.map((framework) => (
+              <li key={framework} className="border px-1.5 type-label text-fg-muted">
+                {framework}
+              </li>
             ))}
-          </div>
+          </ul>
         ) : null}
-      {entry.posts.length > 0 ? <PostList posts={entry.posts} /> : null}
+        <p className="type-body text-fg-soft">{entry.note}</p>
+        <CreditLine credits={entry.credits} />
+        {entry.source ? (
+          <p className="type-meta">
+            <TextLink href={entry.source} ariaLabel={`Post on X, ${entry.heading}, ${entry.month} ${entry.year}`} className="text-accent">
+              post
+            </TextLink>
+          </p>
+        ) : null}
+      </div>
+      {count > 0 ? (
+        <div
+          data-entry-media={count}
+          data-columns={entry.columns}
+          className={cx("grid content-start gap-3 lg:col-start-2 lg:row-span-2 lg:row-start-1", COLUMNS[entry.columns])}
+        >
+          {entry.media.map((media) => (
+            <MediaButton key={media.id} media={media} onOpen={onOpen} sizes={figureSizes(entry.columns)} />
+          ))}
+        </div>
+      ) : null}
+    {entry.posts.length > 0 ? <PostList posts={entry.posts} /> : null}
     </article>
   );
 }
@@ -112,10 +112,10 @@ function PostList({ posts }: { posts: PostView[] }) {
         <li key={post.id} id={`post-${post.id}`}>
           <span className="block text-fg-muted md:inline">
             {post.display} · {post.account}
-          </span>
+          </span>{" "}
           <span aria-hidden="true" className="hidden text-fg-muted md:inline">
-            {" · "}
-          </span>
+            ·
+          </span>{" "}
           {post.url ? (
             <a
               href={post.url}

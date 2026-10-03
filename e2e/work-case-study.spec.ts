@@ -76,12 +76,13 @@ test("the server HTML is the same Log whatever the query", async ({ request }) =
   expect(html).not.toContain('data-view="grid"');
 });
 
-for (const path of ["/work/primeone/", "/work/templates/", "/work/archive/"]) {
+// Pages with no @w00f post (the index) have no external links at all.
+for (const [path, minimum] of [["/work/", 0], ["/work/primeone/", 1], ["/work/templates/", 1], ["/work/archive/", 1]] as const) {
   test(`${path} links out only to @w00f posts`, async ({ page }) => {
     await page.goto(path);
     await expect(page.locator("main")).toBeVisible();
     const hrefs = await page.locator('main a[href^="http"]').evaluateAll((els) => els.map((el) => (el as HTMLAnchorElement).href));
-    expect(hrefs.length).toBeGreaterThan(0);
+    expect(hrefs.length).toBeGreaterThanOrEqual(minimum);
     for (const href of hrefs) expect(href).toMatch(/^https:\/\/(x|twitter)\.com\/w00f\/status\//);
   });
 }

@@ -7,12 +7,10 @@ export interface Org {
   name: string;
   monogram: string;
   logo?: string;
-  // The org's public site, shown on /work/.
-  site?: string;
 }
 
 export const ORGS: Record<OrgId, Org> = {
-  primetek: { name: "PrimeTek", monogram: "P", site: "https://primefaces.org" },
+  primetek: { name: "PrimeTek", monogram: "P" },
   orkestra: { name: "Orkestra Studios", monogram: "O" },
   etiya: { name: "Etiya", monogram: "e" },
   bilkent: { name: "Bilkent", monogram: "B" },

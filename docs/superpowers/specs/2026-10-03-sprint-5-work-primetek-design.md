@@ -13,11 +13,11 @@ Onur has no time to prepare visuals. Three things make the pages complete withou
 
 The decisions below came out of a brainstorm on 2026-10-03, including two rounds of Mobbin research. Mockups are in `2026-10-03-sprint-5-mockups/`:
 - `case-study-layout.html`: layout B is chosen.
-- `media-sets.html` and `media-sets-v2.html`: direction 2, Log · Grid · Index.
+- `media-sets.html` and `media-sets-v2.html`: direction 2, Log · Grid · Index (Grid and Index were later dropped, see the §3 revision).
 - `figma-options.html`: 4a, 4b and 4c are all in.
 - `work-index.html`: A is chosen.
 
-Every mockup line is draft copy. The Mobbin references are Studio Freight (Grid / List / Zoom and 1X / 2X / ∞ switches), Base (file-like media cards), MOUTHWASH Studio (coded archive thumbnails) and GetYourGuide (viewer counter plus grid toggle).
+Every mockup line is draft copy. The Mobbin references are Studio Freight (Grid / List / Zoom and 1X / 2X / ∞ switches, later dropped, see the §3 revision), Base (file-like media cards), MOUTHWASH Studio (coded archive thumbnails) and GetYourGuide (viewer counter plus grid toggle, also dropped).
 
 ## Decisions
 
@@ -246,7 +246,7 @@ The hero and every Log figure open the viewer on the full set.
 ### 3.7 Credits
 
 Credits are the same on every case study and in the Archive:
-- **Entry credits:** a muted line under the note, "Design: Name, Name". It reads "<role>: …" when a role is set. Names are plain text (a credit's `href` is not rendered, §3.5).
+- **Entry credits:** a muted line under the note, "Design: Name, Name". It reads "<role>: …" when a role is set. Names are plain text, not links: a credit's `href` is not rendered (§3.5; Onur 2026-10-03 confirmed credit names stay unlinked).
 - **Media credits:** in the viewer, "Design: Name" follows the caption.
 - **Inheritance:** an item with no credits of its own inherits nothing visible. Entry credits show once, on the entry.
 
@@ -320,7 +320,7 @@ Each entry lists the X posts about it, directly under it in the Log. There is no
 - **One row group per org that has ready work.** In Sprint 5 that is PrimeTek only. Orkestra renders nothing until Sprint 6.
   - **Label:** `OrgMark` and org name, then the role and span from `content/experience.ts`.
   - **Content:** a hairline table. Each line is `[years] [title link] [kind] [→]`, in registry order; the Archive line comes last as "Archive · everything else".
-  - **Action:** the org's public site (`primefaces.org ↗`).
+  - **Action:** none. The org's public site is not linked (Onur 2026-10-03: no external links except @w00f posts), so `/work/` has no external links at all.
 - **Mobile.** The table drops the kind column under 480px.
 
 ## 6. Figma pipeline
@@ -394,7 +394,6 @@ This is the first work in the sprint. The plan schedules it before the content t
 - **Vitest:**
   - registry validation (§2);
   - FIG labels;
-  - chip keys and counts;
   - year grouping and ordering;
   - `?fig=` URL parsing and serialising (defaults, unknown values, the removed params ignored);
   - posts under their entries, the @w00f link rule and the `columns` classes and validation;

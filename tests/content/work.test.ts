@@ -37,7 +37,11 @@ describe("content/work", () => {
     const posts = entries.flatMap((e) => e.posts);
     expect(posts).toHaveLength(12);
     expect(entries.filter((e) => e.posts.length > 0).map((e) => e.id)).toEqual(["4-0", "3-0", "2-2", "2-1", "2-0", "kit-2022"]);
-    for (const entry of entries) expect(entry.posts.map((p) => p.date), entry.id).toEqual([...entry.posts.map((p) => p.date)].sort());
+    const dateOf = new Map((primeone.posts ?? []).map((p) => [p.id, p.date]));
+    for (const entry of entries) {
+      const dates = entry.posts.map((p) => dateOf.get(p.id)!);
+      expect(dates, entry.id).toEqual([...dates].sort());
+    }
     for (const post of posts) {
       expect(post.url, post.id).toBe(post.account === "@w00f" ? `https://x.com/w00f/status/${post.id}` : null);
     }
