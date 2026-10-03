@@ -8,7 +8,7 @@ export const primeblocksPosts: Post[] = [
     date: "2025-09-10",
     account: "prime_ng",
     id: "1965754057638953432",
-    summary: "PrimeBlocks for Angular released on PrimeNG v20 with 490-plus Tailwind-styled blocks.",
+    summary: "Angular joined PrimeBlocks, with 490-plus blocks in a Tailwind style.",
     entryId: "angular",
   },
   {
@@ -42,7 +42,7 @@ export const primeblocksPosts: Post[] = [
     date: "2025-05-12",
     account: "primevue",
     id: "1921867582123991257",
-    summary: "Q2 2025 release remastered the Application UI blocks for speed.",
+    summary: "The Application UI blocks got a Q2 2025 remaster focused on speed.",
     entryId: "q2-2025",
   },
   {
@@ -63,7 +63,7 @@ export const primeblocksPosts: Post[] = [
     date: "2024-09-12",
     account: "primevue",
     id: "1834174688471175368",
-    summary: "Next-gen PrimeBlocks launched for Vue: 480 components on Tailwind CSS and PrimeVue v4.",
+    summary: "Next-gen PrimeBlocks launched for Vue with 480 components.",
     entryId: "next-gen",
   },
   {

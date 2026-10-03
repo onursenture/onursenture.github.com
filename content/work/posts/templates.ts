@@ -8,7 +8,7 @@ export const templatesPosts: Post[] = [
     date: "2025-04-21",
     account: "primevue",
     id: "1914327500659830814",
-    summary: "Remastered Avalon for PrimeVue, built with Vite, with 7 menu modes and several color schemes.",
+    summary: "Avalon returned in a remastered edition for PrimeVue, offering seven menu modes.",
     entryId: "avalon-remastered",
   },
   {
@@ -22,21 +22,21 @@ export const templatesPosts: Post[] = [
     date: "2025-03-06",
     account: "prime_ng",
     id: "1897609155575201936",
-    summary: "Diamond remastered for PrimeNG: Angular 19, multiple theme presets and 7 menu layouts.",
+    summary: "Diamond remastered for PrimeNG, with seven menu layouts to choose from.",
     entryId: "diamond-remastered",
   },
   {
     date: "2025-02-17",
     account: "primevue",
     id: "1891483427955687549",
-    summary: "Poseidon Remastered Edition for PrimeVue, redesigned from scratch with 7 menu layouts and several palettes.",
+    summary: "Poseidon Remastered Edition for PrimeVue, redesigned from the ground up.",
     entryId: "poseidon-remastered",
   },
   {
     date: "2025-01-07",
     account: "primevue",
     id: "1876588477774803394",
-    summary: "Genesis for PrimeVue, with several landing pages, dark and light modes and themes.",
+    summary: "Genesis for PrimeVue, billed as that library's first multipurpose premium template.",
     entryId: "genesis",
   },
   {
@@ -50,7 +50,7 @@ export const templatesPosts: Post[] = [
     date: "2024-12-12",
     account: "primereact",
     id: "1867141278775058664",
-    summary: "Genesis, Prime's first multipurpose premium template, built with React and Next.js.",
+    summary: "Genesis launched for PrimeReact on Next.js as Prime's first multipurpose premium template.",
     entryId: "genesis",
   },
   {
@@ -85,7 +85,7 @@ export const templatesPosts: Post[] = [
     date: "2022-12-08",
     account: "primereact",
     id: "1600777904069156864",
-    summary: "All-new Apollo for PrimeReact, a Next.js template with light, dark and dim modes and menu themes.",
+    summary: "All-new Apollo for PrimeReact, built on Next.js, with three color modes.",
     entryId: "apollo-2022",
   },
   {
@@ -211,14 +211,14 @@ export const templatesPosts: Post[] = [
     date: "2020-09-10",
     account: "prime_ng",
     id: "1304078971571757056",
-    summary: "Diamond for PrimeNG 10, billed as the first next-gen premium Angular CLI template.",
+    summary: "Diamond for PrimeNG 10, positioned as the next-generation premium Angular template.",
     entryId: "diamond",
   },
   {
     date: "2020-08-26",
     account: "primefaces",
     id: "1298580203741089793",
-    summary: "Roma for PrimeFaces updated with the PrimeOne themes, new demos and PrimeIcons 4.0.",
+    summary: "Roma for PrimeFaces moved to the PrimeOne themes.",
     entryId: "roma",
   },
   {
@@ -288,7 +288,7 @@ export const templatesPosts: Post[] = [
     date: "2020-01-06",
     account: "primevue",
     id: "1214192045088223240",
-    summary: "Apollo for PrimeVue, with dark mode across the entire layout.",
+    summary: "Apollo for PrimeVue extended dark mode to the whole layout.",
     entryId: "apollo",
   },
   {
@@ -351,7 +351,7 @@ export const templatesPosts: Post[] = [
     date: "2019-05-08",
     account: "prime_ng",
     id: "1126111697712947208",
-    summary: "Sapphire for PrimeNG, a fully customizable Material Design Angular CLI template.",
+    summary: "Sapphire for PrimeNG, a customizable Material-style template for Angular CLI.",
     entryId: "sapphire",
   },
   {
@@ -477,7 +477,7 @@ export const templatesPosts: Post[] = [
     date: "2018-01-25",
     account: "prime_ng",
     id: "956451059169456128",
-    summary: "Apollo, an Angular CLI template for PrimeNG, with its first dark mode and 16 themes.",
+    summary: "Apollo for PrimeNG brought a dark mode for the first time, alongside 16 themes.",
     entryId: "apollo",
   },
   {

@@ -176,7 +176,7 @@ export const templates: CaseStudy = {
       id: "apollo",
       date: "2018-01",
       title: "Apollo",
-      frameworks: ["Angular"],
+      frameworks: ["JSF", "Angular", "Vue"],
       note: "An Angular CLI template for PrimeNG, with dark mode for the first time and 16 themes.",
       source: "https://x.com/prime_ng/status/956451059169456128",
       media: [
@@ -423,7 +423,7 @@ export const templates: CaseStudy = {
       remaster: true,
       date: "2022-06",
       title: "Apollo (all-new)",
-      frameworks: ["Angular", "React"],
+      frameworks: ["Angular", "React", "Vue"],
       note: "An all-new application template for PrimeNG with light, dark and dim modes; the Next.js version for PrimeReact followed in December 2022.",
       source: "https://x.com/prime_ng/status/1542510180499304449",
       links: [

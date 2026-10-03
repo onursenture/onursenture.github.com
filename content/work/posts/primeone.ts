@@ -36,14 +36,14 @@ export const primeonePosts: Post[] = [
     date: "2024-11-07",
     account: "primereact",
     id: "1854528709304205531",
-    summary: "PrimeOne 3.0 announced, rebuilt for the new theming engine, with tokens synced to Figma variables.",
+    summary: "PrimeOne 3.0 announced as a full rebuild around the new theming engine.",
     entryId: "3-0",
   },
   {
     date: "2024-07-26",
     account: "primevue",
     id: "1816796495674266046",
-    summary: "Progress update on the PrimeVue v4 Figma UI kit, which mentions seamless sync.",
+    summary: "Status update: the Figma UI kit for the PrimeVue v4 release had advanced considerably.",
     entryId: "3-0",
   },
   {
@@ -57,7 +57,7 @@ export const primeonePosts: Post[] = [
     date: "2023-12-11",
     account: "primevue",
     id: "1734150958567903417",
-    summary: "PrimeOne 2.2 reworked the Figma tokens, adding typography tokens and linked theme and component colors.",
+    summary: "PrimeOne 2.2 for Figma linked theme and component colors, so one palette change carries through.",
     entryId: "2-2",
   },
   {
