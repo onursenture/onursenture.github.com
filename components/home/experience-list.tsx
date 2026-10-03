@@ -13,7 +13,7 @@ export function ExperienceList({ entries }: { entries: ExperienceEntry[] }) {
           <div className="flex items-baseline justify-between gap-4">
             <span>
               <OrgMark org={entry.org} /> <span className="text-fg">{ORGS[entry.org].name}</span>{" "}
-              <span className="text-fg-muted">· {entry.role}</span>
+              <span className="whitespace-nowrap text-fg-muted">· {entry.role}</span>
             </span>
             <span className="shrink-0 type-meta text-fg-muted">{formatSpan(entry.start, entry.end)}</span>
           </div>
