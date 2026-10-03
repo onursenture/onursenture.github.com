@@ -18,6 +18,11 @@ export interface Credit {
   href?: string;
 }
 
+// A link to a Figma frame, shown as "Open in Figma" and the click-to-load
+// embed when workSettings.figmaLinks is on. No content sets it: Figma refs
+// stay out of the public repo, and `npm run figma` reads its frames from the
+// gitignored figma.local.json instead. The type remains for the day links are
+// turned on with refs committed deliberately.
 export interface FigmaRef {
   // From figma.com/design/<fileKey>/…
   fileKey: string;
@@ -38,6 +43,7 @@ export interface Media {
   // An image manifest key. Leave unset: lib/work/ finds work/<slug>/<id>
   // when `npm run figma` (or a hand-placed file) has produced it.
   image?: string;
+  // Unused by the content (see FigmaRef).
   figma?: FigmaRef;
   // Defaults to "16/10".
   aspect?: MediaAspect;

@@ -1,20 +1,23 @@
-// Exports the Figma frames named in content/work/ into images-src/work/, then
-// `npm run images` optimises them (the npm script chains both).
+// Exports the Figma frames listed in figma.local.json into images-src/work/,
+// then `npm run images` optimises them (the npm script chains both).
 //
 //   npm run figma
 //
 // Runs on Onur's machine only. It needs FIGMA_TOKEN in .env.local, a Figma
 // personal access token with the file_content:read scope (Figma → Settings →
-// Security). CI, builds and production never call Figma. Commit the PNGs,
-// the renditions, lib/images/manifest.json and lib/images/figma-lock.json.
+// Security), and figma.local.json (copy figma.example.json). Both files, and
+// the figma.lock.local.json this writes, are gitignored: no Figma ref reaches
+// the public repo. CI, builds and production never call Figma. Commit the
+// PNGs, the renditions and lib/images/manifest.json.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { archive, caseStudies } from "../content/work";
 import { exportFrames } from "../lib/work/figma-export";
-import { type FigmaLock, collectTargets } from "../lib/work/figma-plan";
+import { type FigmaLock, collectTargets, parseFigmaConfig } from "../lib/work/figma-plan";
 
 const ROOT = process.cwd();
-const LOCK = join(ROOT, "lib", "images", "figma-lock.json");
+const CONFIG = join(ROOT, "figma.local.json");
+const LOCK = join(ROOT, "figma.lock.local.json");
 
 async function main(): Promise<number> {
   try {
@@ -30,9 +33,21 @@ async function main(): Promise<number> {
     return 1;
   }
 
-  const targets = collectTargets(caseStudies, archive);
+  if (!existsSync(CONFIG)) {
+    console.error(
+      'figma.local.json is missing. Copy figma.example.json to figma.local.json and list your frames: { "frames": { "work/<slug>/<media id>": { "fileKey": "...", "nodeId": "12:345" } } }. The file is gitignored, so no Figma ref reaches the public repo.',
+    );
+    return 1;
+  }
+  let targets: ReturnType<typeof collectTargets>;
+  try {
+    targets = collectTargets(parseFigmaConfig(JSON.parse(readFileSync(CONFIG, "utf8"))), caseStudies, archive);
+  } catch (error) {
+    console.error((error as Error).message);
+    return 1;
+  }
   if (targets.length === 0) {
-    console.log("No Figma frames in content/work/.");
+    console.log("No frames in figma.local.json.");
     return 0;
   }
 

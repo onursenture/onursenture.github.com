@@ -26,7 +26,7 @@ Every mockup line is draft copy. The Mobbin references are Studio Freight (Grid 
 | Narrative spine | **Release log.** A short summary on top, then the product's evolution as dated entries (version · month · one or two sentences · source post). It needs little prose, and each entry can be checked against an X post. |
 | Page layout | **B, wide showcase with sticky years.** A grid header, a full-width hero figure, then year groups whose Doto year stays stuck while the group scrolls. |
 | Media | **Sets, not single figures.** Each entry carries 0–N media items. A page shows its media in three views, **Log · Grid · Index**, and they all open one shared full-screen viewer. Media never gets a page of its own. |
-| Figma | Every media item may carry a Figma frame reference. It is used three ways: an "Open in Figma ↗" link (4a), a click-to-load embed (4b), and the local export script that fills the image (4c). A site-wide switch, `workSettings.figmaLinks` in `content/work/settings.ts`, defaults to **off** (decided 2026-10-03: PrimeTek may not want its files linked): off hides 4a and 4b and keeps Figma refs out of the client payload, while 4c keeps working. |
+| Figma | Every media item may carry a Figma frame reference. It is used three ways: an "Open in Figma ↗" link (4a), a click-to-load embed (4b), and the local export script that fills the image (4c). A site-wide switch, `workSettings.figmaLinks` in `content/work/settings.ts`, defaults to **off** (decided 2026-10-03: PrimeTek may not want its files linked): off hides 4a and 4b and keeps Figma refs out of the client payload. **Update (final review, 2026-10-03):** Onur also keeps the refs out of the public repo. No content file sets `figma`; the frames for 4c live in the gitignored `figma.local.json` (§6.1). The `Media.figma` type stays for the day links are turned on with committed refs. |
 | `/work/` index | **A, index table.** One row group per org: years · title · type · →. |
 | Archive | Our own hairline log: date · title · one-line note · `post ↗`, plus an optional media slot. **X embeds are never used.** |
 | PrimeIcons | Its Grid view is a **live icon grid** from the `primeicons` package, with search and copy-to-clipboard. The icon count comes from the package. |
@@ -323,12 +323,12 @@ A fourth view, shown only when a case study has posts, listing the X posts about
 
 A new script, `scripts/figma.ts` (tsx), runs on Onur's machine only:
 
-1. Load the work registry and collect every `Media` with `figma` whose `image` is either unset or equal to the derived key `work/<slug>/<media id>`. Hand-set images win over Figma.
+1. Read the frames from `figma.local.json` at the repo root (gitignored; `figma.example.json` shows the shape): `{ "frames": { "work/<slug>/<media id>": { "fileKey": "…", "nodeId": "12:345" } } }`. The key is the manifest key of the slot it fills. Load the work registry and skip any key whose media has a hand-set `image` other than that key. Hand-set images win over Figma. A missing file prints how to create it and exits 1.
 2. Read `FIGMA_TOKEN` from `.env.local`. If it is missing, exit with an explanation and change nothing.
-3. **Check what changed.** Group the nodes by `fileKey`. For each file, call `GET https://api.figma.com/v1/files/<fileKey>/nodes?ids=<ids>&depth=1` to read the file's `lastModified`, and to confirm that each node exists. Figma reports `lastModified` per file, not per node. Skip a node when the file's `lastModified` and the `nodeId` match its entry in `lib/images/figma-lock.json`.
+3. **Check what changed.** Group the nodes by `fileKey`. For each file, call `GET https://api.figma.com/v1/files/<fileKey>/nodes?ids=<ids>&depth=1` to read the file's `lastModified`, and to confirm that each node exists. Figma reports `lastModified` per file, not per node. Skip a node when the file's `lastModified` and the `nodeId` match its entry in `figma.lock.local.json` (gitignored, next to `figma.local.json`).
 4. **Export.** For the rest, call `GET /v1/images/<fileKey>?ids=<ids>&format=png&scale=2`, then download each returned URL to `images-src/work/<slug>/<media id>.png`.
 5. **Record.** Update the lock with `{ fileKey, nodeId, lastModified, exportedAt }` per `<slug>/<media id>`.
-6. **Fail soft per node.** A missing node, a null image URL or an HTTP error warns, leaves that node's previous file and lock entry alone, and continues. The exit code is non-zero only when the token is missing or every request failed.
+6. **Fail soft per node and per file.** A missing node, a null image URL, a malformed response, a timeout (30 s per request) or an HTTP error warns, leaves that node's previous file and lock entry alone, and continues with the next frame or file. The exit code is non-zero only when the token or `figma.local.json` is missing (or malformed), or every request failed.
 7. Finish by running the existing image pipeline (`scripts/images.ts`).
 
 **How a slot finds its image.** `lib/work/` resolves a media item's image as:
@@ -339,12 +339,12 @@ A new script, `scripts/figma.ts` (tsx), runs on Onur's machine only:
 So content files never need editing after an export.
 
 **Commits and secrets.**
-- Outputs are committed: the PNG source, the AVIF and JPEG renditions, the manifest and the lock.
+- Outputs are committed: the PNG source, the AVIF and JPEG renditions and the manifest. `figma.local.json` and `figma.lock.local.json` are gitignored: no file key or node id enters the public repo.
 - `.env.local` is already ignored. Add `FIGMA_TOKEN=` to `.env.example` if one exists, otherwise document it in `CLAUDE.md`.
 - No Figma call ever happens in CI, the build or production.
 
 **Tests.** Unit tests, with `fetch` mocked:
-- node collection and the hand-set override;
+- config parsing and node collection from the frames map, with the hand-set override;
 - staleness against the lock;
 - `nodeId` normalisation (`12-345` → `12:345`);
 - the partial-failure behaviour.
@@ -355,7 +355,7 @@ The content workflow, not code:
 1. Onur shares one Figma file link per product.
 2. Claude browses each file with the Figma MCP (`get_metadata`, `get_screenshot`) and proposes frames for the hero and each entry, with ids, captions and tags.
 3. Onur approves.
-4. Claude writes them into `content/work/*.ts`.
+4. Claude writes the captions and tags into `content/work/*.ts`; the file keys and node ids go in Onur's local `figma.local.json`, never in the repo.
 5. Onur (or Claude, with Onur's token already in `.env.local`) runs `npm run figma`.
 
 Embeds need the file shared as "anyone with the link can view". Onur decides per file and sets `embed: true` only on files he has shared.

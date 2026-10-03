@@ -19,7 +19,7 @@ npm run typecheck | lint | test
 npm run e2e            # Playwright on port 3217; run `npm run build` first
 npm run e2e:fixtures   # port 3219; run `SOURCE_FIXTURES=1 npm run build` first
 npm run images         # optimize images-src/ into public/images/ + manifest
-npm run figma          # export Figma frames named in content/work/ (needs FIGMA_TOKEN in .env.local), then npm run images
+npm run figma          # export the Figma frames in figma.local.json (needs FIGMA_TOKEN in .env.local), then npm run images
 npm run db:generate    # drizzle-kit generate; db:migrate applies it (--force)
 npm run screenshots -- <dir> <path>...  # 1440 + 390, both themes (build first)
 ```
@@ -34,6 +34,7 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
 - `GOODREADS_USER_ID`: optional; the code has a default.
 - `SOURCE_FIXTURES=1`: dev/CI only. Serves `tests/fixtures/` through the real parsers. Never set it on Vercel.
 - `FIGMA_TOKEN`: local only (`.env.local`), for `npm run figma`. A Figma personal access token with `file_content:read`. Never set it on Vercel or in CI.
+- `figma.local.json` (repo root, gitignored): the frames `npm run figma` exports, `{ "frames": { "work/<slug>/<media id>": { "fileKey", "nodeId" } } }`. Copy `figma.example.json`. `figma.lock.local.json` (also gitignored) is its export lock.
 
 ## Rules
 
@@ -87,13 +88,13 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
 - **Posts.** A fourth view (`?view=posts`), shown only when a case study has `posts`. Data lives in `content/work/posts/<slug>.ts` (`Post`: date, account, status id, `entryId`); the URL is derived. Summaries are our own one-liners, never PrimeTek's text (Onur's @w00f posts may quote him). The chips filter by entry (`?tag=<entry id>`); verify every id against `.superpowers/research/`.
 - **Credits.** Onur's role is a case-study fact. `credits` on an entry or a media item names colleagues, and Templates uses media-level credits for pages others designed.
 - **Numbers.** Coverage (Templates) and the icon count (PrimeIcons) are computed, never written by hand.
-- **Filling media from Figma.**
-  1. Set `figma: { fileKey, nodeId }` on a media item (`nodeId` "12:345"; the URL's `node-id=12-345`).
-  2. Run `npm run figma`. It writes `images-src/work/<slug>/<id>.png`, updates `lib/images/figma-lock.json` (skipping frames whose file hasn't changed) and runs `npm run images`.
-  3. Commit everything.
+- **Filling media from Figma.** Figma refs stay out of the public repo: no content file sets `figma` (the `Media.figma` type remains for `figmaLinks`, should it ever be turned on with committed refs).
+  1. List each frame in the gitignored `figma.local.json` at the repo root, keyed by the slot's manifest key: `"work/<slug>/<media id>": { "fileKey": "...", "nodeId": "12:345" }` (the URL's `node-id=12-345` works too). `figma.example.json` shows the shape.
+  2. Run `npm run figma`. It writes `images-src/work/<slug>/<id>.png`, records its export lock in the gitignored `figma.lock.local.json` (skipping frames whose file hasn't changed), and runs `npm run images`. A slot with a hand-set `image` is skipped.
+  3. Commit the PNGs, the renditions and `lib/images/manifest.json`; never the two local Figma files.
 
-  `embed: true` adds the click-to-load embed in the viewer. Set it only on files shared as "anyone with the link can view".
-- **Figma switch.** `workSettings.figmaLinks` (`content/work/settings.ts`) is **off by default**: PrimeTek may not want its files linked. Off, `getStudyView` / `getArchiveView` null every `figma` ref, so no "Open in Figma ↗", no embed control and no `fileKey`/`nodeId` in the HTML or RSC payload. The refs stay in `content/work/*.ts` and still drive `npm run figma`.
+  `embed: true` (on a `figma` ref) adds the click-to-load embed in the viewer; it only applies if refs are ever committed and `figmaLinks` is on.
+- **Figma switch.** `workSettings.figmaLinks` (`content/work/settings.ts`) is **off by default**: PrimeTek may not want its files linked. Off, `getStudyView` / `getArchiveView` null every `figma` ref, so no "Open in Figma ↗", no embed control and no `fileKey`/`nodeId` in the HTML or RSC payload.
 
 ## Sources and sync
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ArchiveEntry, CaseStudy } from "@/content/work/types";
-import { collectTargets, groupByFile, isFresh } from "@/lib/work/figma-plan";
+import { type FigmaConfig, collectTargets, groupByFile, isFresh, parseFigmaConfig } from "@/lib/work/figma-plan";
 
 const study = (media: CaseStudy["hero"][]): CaseStudy => ({
   slug: "primeone",
@@ -12,33 +12,64 @@ const study = (media: CaseStudy["hero"][]): CaseStudy => ({
   intro: [],
   facts: [],
   links: [],
-  hero: { id: "cover", caption: "c", figma: { fileKey: "F1", nodeId: "1-2" } },
+  hero: { id: "cover", caption: "c" },
   entries: [{ id: "e", date: "2024-01", note: "n", media }],
 });
 
+describe("parseFigmaConfig", () => {
+  it("reads the frames map and normalises node ids", () => {
+    const config = parseFigmaConfig({ frames: { "work/primeone/cover": { fileKey: "F1", nodeId: "1-2" } } });
+    expect(config.frames).toEqual({ "work/primeone/cover": { fileKey: "F1", nodeId: "1:2" } });
+  });
+
+  it("rejects a missing frames map, bad keys and incomplete frames", () => {
+    expect(() => parseFigmaConfig(null)).toThrow(/frames/);
+    expect(() => parseFigmaConfig({})).toThrow(/frames/);
+    expect(() => parseFigmaConfig({ frames: { "../escape": { fileKey: "F", nodeId: "1:2" } } })).toThrow(/key/);
+    expect(() => parseFigmaConfig({ frames: { "work/primeone/cover": { fileKey: "F" } } })).toThrow(/nodeId/);
+    expect(() => parseFigmaConfig({ frames: { "work/primeone/cover": { fileKey: "F", nodeId: "nope" } } })).toThrow(/nodeId/);
+  });
+});
+
 describe("collectTargets", () => {
-  it("collects Figma-backed media, normalising node ids, and skips hand-set images", () => {
-    const archive: ArchiveEntry[] = [
-      { id: "aura", org: "primetek", date: "2024-01", title: "A", note: "n", source: "https://x.com/1", media: { id: "aura", caption: "a", figma: { fileKey: "F2", nodeId: "9:9" } } },
-    ];
-    const targets = collectTargets(
-      [
-        study([
-          { id: "tokens", caption: "t", figma: { fileKey: "F1", nodeId: "3:4" } },
-          { id: "manual", caption: "m", image: "photos/x", figma: { fileKey: "F1", nodeId: "5:6" } },
-          { id: "derived", caption: "d", image: "work/primeone/derived", figma: { fileKey: "F1", nodeId: "7:8" } },
-          { id: "plain", caption: "p" },
-        ]),
-      ],
-      archive,
-    );
+  const frames: FigmaConfig["frames"] = {
+    "work/primeone/cover": { fileKey: "F1", nodeId: "1:2" },
+    "work/primeone/tokens": { fileKey: "F1", nodeId: "3:4" },
+    "work/primeone/manual": { fileKey: "F1", nodeId: "5:6" },
+    "work/primeone/derived": { fileKey: "F1", nodeId: "7:8" },
+    "work/archive/aura": { fileKey: "F2", nodeId: "9:9" },
+    "work/primeone/not-in-content": { fileKey: "F2", nodeId: "2:2" },
+  };
+  const archive: ArchiveEntry[] = [
+    { id: "aura", org: "primetek", date: "2024-01", title: "A", note: "n", source: "https://x.com/1", media: { id: "aura", caption: "a" } },
+  ];
+  const studies = [
+    study([
+      { id: "tokens", caption: "t" },
+      { id: "manual", caption: "m", image: "photos/x" },
+      { id: "derived", caption: "d", image: "work/primeone/derived" },
+      { id: "plain", caption: "p" },
+    ]),
+  ];
+
+  it("builds targets from the frames map and skips media with a hand-set image", () => {
+    const targets = collectTargets({ frames }, studies, archive);
     expect(targets).toEqual([
       { key: "work/primeone/cover", fileKey: "F1", nodeId: "1:2", out: "images-src/work/primeone/cover.png" },
       { key: "work/primeone/tokens", fileKey: "F1", nodeId: "3:4", out: "images-src/work/primeone/tokens.png" },
       { key: "work/primeone/derived", fileKey: "F1", nodeId: "7:8", out: "images-src/work/primeone/derived.png" },
       { key: "work/archive/aura", fileKey: "F2", nodeId: "9:9", out: "images-src/work/archive/aura.png" },
+      { key: "work/primeone/not-in-content", fileKey: "F2", nodeId: "2:2", out: "images-src/work/primeone/not-in-content.png" },
     ]);
     expect([...groupByFile(targets).keys()]).toEqual(["F1", "F2"]);
+  });
+
+  it("works from the map alone when no content is passed", () => {
+    expect(collectTargets({ frames: { "work/primeone/cover": { fileKey: "F1", nodeId: "1:2" } } })).toHaveLength(1);
+  });
+
+  it("normalises node ids that were not normalised on the way in", () => {
+    expect(collectTargets({ frames: { "work/primeone/cover": { fileKey: "F1", nodeId: "1-2" } } })[0].nodeId).toBe("1:2");
   });
 });
 
