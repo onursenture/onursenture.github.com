@@ -1,40 +1,16 @@
-import { formatDateTime } from "@/lib/format";
-import { readSource } from "@/lib/sources/read";
-import { SOURCE_IDS, type SourceId } from "@/lib/sources/types";
+import { SourcesTable } from "@/components/sources/sources-table";
+import type { SourceStatus } from "@/lib/sources/health";
+import { readSourceStatuses } from "@/lib/sources/status";
 import type { SectionDefinition } from "../types";
 
-type Status = { id: SourceId; lastSuccessAt: string | null }[];
-
-async function load() {
-  const views = await Promise.all(SOURCE_IDS.map((id) => readSource(id)));
-  const data: Status = SOURCE_IDS.map((id, i) => ({
-    id,
-    lastSuccessAt: views[i].lastSuccessAt,
-  }));
-  return { data, lastSuccessAt: null };
-}
-
-function Dashboard({ data }: { data: Status }) {
-  return (
-    <table>
-      <tbody>
-        {data.map((row) => (
-          <tr key={row.id}>
-            <td>{row.id}</td>
-            <td>{row.lastSuccessAt ? formatDateTime(row.lastSuccessAt) : "never"}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
-// Dashboard-only: when each external source last synced.
-export const syncStatus: SectionDefinition<Status> = {
+// Dashboard-only: how fresh each external source is.
+export const syncStatus: SectionDefinition<SourceStatus[]> = {
   id: "sync-status",
   title: "Sources",
   visibility: "dashboard",
-  load,
+  load: async () => ({ data: await readSourceStatuses(), lastSuccessAt: null }),
   Site: () => null,
-  Dashboard,
+  Dashboard: ({ data }) => <SourcesTable statuses={data} />,
+  count: (data) => data.length,
+  span: 4,
 };
