@@ -203,3 +203,27 @@ html[data-side="life"] {
     animation: none;
   }
 }
+
+/* Work media viewer (components/work/media-viewer.tsx): a 150ms fade in and
+   out. display/overlay transition discretely so the closing fade runs before
+   the dialog leaves the top layer. */
+.media-viewer {
+  opacity: 0;
+  transition:
+    opacity 150ms ease-out,
+    overlay 150ms ease-out allow-discrete,
+    display 150ms ease-out allow-discrete;
+}
+.media-viewer[open] {
+  opacity: 1;
+}
+@starting-style {
+  .media-viewer[open] {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .media-viewer {
+    transition: none;
+  }
+}

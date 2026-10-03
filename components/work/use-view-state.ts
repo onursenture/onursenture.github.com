@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { type ValidValues, type ViewState, parseViewState, viewStateQuery } from "@/lib/work/url-state";
 
 export type UpdateViewState = (patch: Partial<ViewState>, mode?: "push" | "replace") => void;
@@ -22,4 +22,31 @@ export function useViewState(valid: ValidValues): readonly [ViewState, UpdateVie
     [state],
   );
   return [state, update] as const;
+}
+
+// Opening a figure pushes a history entry (?fig=id), so Back closes it.
+// Stepping replaces it. Closing goes back when this page pushed the entry,
+// or drops the param when the page was loaded with it.
+export function useViewerHistory(fig: string | null, update: UpdateViewState) {
+  const pushed = useRef(false);
+  useEffect(() => {
+    if (!fig) pushed.current = false;
+  }, [fig]);
+  const open = useCallback(
+    (id: string) => {
+      pushed.current = true;
+      update({ fig: id }, "push");
+    },
+    [update],
+  );
+  const close = useCallback(() => {
+    if (pushed.current) {
+      pushed.current = false;
+      window.history.back();
+    } else {
+      update({ fig: null });
+    }
+  }, [update]);
+  const select = useCallback((id: string) => update({ fig: id }), [update]);
+  return { open, close, select };
 }
