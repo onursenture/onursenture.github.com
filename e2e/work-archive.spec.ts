@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("the Archive lists dated rows, newest first, each linking its post", async ({ page }) => {
+test("the Archive lists dated rows, newest first, linking only @w00f posts", async ({ page }) => {
   await page.goto("/work/archive/");
   await expect(page).toHaveTitle("Archive · Onur Senture");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Archive.");
@@ -8,8 +8,9 @@ test("the Archive lists dated rows, newest first, each linking its post", async 
   const editor = page.locator("#archive-visual-theme-editor");
   await expect(editor).toContainText("Nov 2024");
   await expect(editor.getByRole("link", { name: "Post on X, Visual Theme Editor, Nov 2024" })).toHaveAttribute("href", "https://x.com/w00f/status/1857050715224494345");
-  // Sources that are not X posts say what they are.
-  await expect(page.locator("#archive-saga-vela-arya").getByRole("link", { name: "Blog post, Saga, Vela and Arya themes, Aug 2020" })).toHaveAttribute("href", "https://www.primefaces.org/blog/primeng-10-begins/");
-  await expect(page.locator("#archive-sigma").getByRole("link", { name: "Archived blog post, Sigma, Jun 2019" })).toHaveAttribute("href", /^https:\/\/web\.archive\.org\//);
+  // A source that is not an @w00f post is not linked at all.
+  await expect(page.locator("#archive-saga-vela-arya")).toBeVisible();
+  await expect(page.locator("#archive-saga-vela-arya").getByRole("link")).toHaveCount(0);
+  await expect(page.locator("#archive-sigma").getByRole("link")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "← Work" })).toHaveAttribute("href", "/work/");
 });

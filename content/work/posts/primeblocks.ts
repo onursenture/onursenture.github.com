@@ -16,6 +16,7 @@ export const primeblocksPosts: Post[] = [
     account: "primevue",
     id: "1953079880523858171",
     summary: "PrimeBlocks moved to Tailwind v4.",
+    entryId: "redesign",
   },
   {
     date: "2025-07-23",

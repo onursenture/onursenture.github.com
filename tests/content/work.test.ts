@@ -31,12 +31,26 @@ describe("content/work", () => {
     expect(genesis.credits).toEqual([{ name: "Ümit Çelik", href: "https://x.com/umitceliks" }]);
   });
 
-  it("fills PrimeOne's posts, each in order of the registry's entries and with a derived URL", () => {
+  it("fills PrimeOne's posts under their entries, oldest first, linking only @w00f", () => {
     const primeone = caseStudies.find((s) => s.slug === "primeone")!;
-    const view = getStudyView(primeone);
-    expect(view.postCount).toBe(12);
-    expect(view.postChips.map((c) => c.key)).toEqual(["all", "4-0", "3-0", "2-2", "2-1", "2-0", "kit-2022"]);
-    for (const post of view.posts.flatMap((g) => g.items)) expect(post.url).toBe(`https://x.com/${post.account.slice(1)}/status/${post.id}`);
+    const entries = getStudyView(primeone).groups.flatMap((g) => g.items);
+    const posts = entries.flatMap((e) => e.posts);
+    expect(posts).toHaveLength(12);
+    expect(entries.filter((e) => e.posts.length > 0).map((e) => e.id)).toEqual(["4-0", "3-0", "2-2", "2-1", "2-0", "kit-2022"]);
+    for (const entry of entries) expect(entry.posts.map((p) => p.date), entry.id).toEqual([...entry.posts.map((p) => p.date)].sort());
+    for (const post of posts) {
+      expect(post.url, post.id).toBe(post.account === "@w00f" ? `https://x.com/w00f/status/${post.id}` : null);
+    }
+  });
+
+  it("gives every post an entry, and puts the Tailwind v4 post under the PrimeBlocks redesign", () => {
+    for (const study of caseStudies) for (const post of study.posts ?? []) expect(post.entryId, `${study.slug}/${post.id}`).toBeTruthy();
+    const blocks = caseStudies.find((s) => s.slug === "primeblocks")!;
+    expect(blocks.posts!.find((p) => p.id === "1953079880523858171")?.entryId).toBe("redesign");
+  });
+
+  it("sets no per-entry columns yet (Onur sets them with his images)", () => {
+    for (const study of caseStudies) for (const entry of study.entries) expect(entry.columns, `${study.slug}/${entry.id}`).toBeUndefined();
   });
 
   it("gives every case study posts that are one short line, newest first, with a unique id", () => {

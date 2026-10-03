@@ -20,8 +20,7 @@ function findOpener(id: string): HTMLElement | null {
 // The shared full-screen viewer (spec §3.6): a native modal <dialog> in the
 // Life palette. `current` (the ?fig= id) drives it: a known id opens it, null
 // closes it. The owner keeps the URL in step (useViewerHistory). Keys: ← →
-// step through `items` (wrapping), G toggles single/grid, Esc closes. On
-// close, focus returns to whatever opened it (or, with no opener, to the
+// step through `items` (wrapping), Esc closes. On close, focus returns to whatever opened it (or, with no opener, to the
 // figure's own button).
 export function MediaViewer({
   title,
@@ -41,7 +40,6 @@ export function MediaViewer({
   // Set instead of `returnTo` when nothing was focused at open time (a ?fig=
   // deep link, a reload): close then focuses that figure's button.
   const returnId = useRef<string | null>(null);
-  const [mode, setMode] = useState<"single" | "grid">("single");
   const index = current ? items.findIndex((item) => item.id === current) : -1;
   const item = index >= 0 ? items[index] : null;
   const open = item !== null;
@@ -88,9 +86,6 @@ export function MediaViewer({
     } else if (event.key === "ArrowLeft") {
       event.preventDefault();
       step(-1);
-    } else if (event.key === "g" || event.key === "G") {
-      event.preventDefault();
-      setMode((m) => (m === "single" ? "grid" : "single"));
     }
   }
 
@@ -105,7 +100,6 @@ export function MediaViewer({
         onClose();
       }}
       onClose={() => {
-        setMode("single");
         (returnTo.current ?? (returnId.current ? findOpener(returnId.current) : null))?.focus();
         returnTo.current = null;
         returnId.current = null;
@@ -119,64 +113,32 @@ export function MediaViewer({
             <p className="truncate">
               <span className="text-fg">{title}</span> · {item.context}
             </p>
-            <div className="flex shrink-0 items-center gap-4">
-              <button
-                type="button"
-                aria-pressed={mode === "grid"}
-                onClick={() => setMode(mode === "single" ? "grid" : "single")}
-                className="hover:text-fg"
-              >
-                {mode === "single" ? "Grid" : "Single"}
-              </button>
-              <button type="button" onClick={onClose} aria-label="Close viewer" className="hover:text-fg">
-                Esc ×
-              </button>
-            </div>
+            <button type="button" onClick={onClose} aria-label="Close viewer" className="shrink-0 hover:text-fg">
+              Esc ×
+            </button>
           </div>
-          {mode === "single" ? (
-            <>
-              <ViewerStage
-                key={item.id}
-                item={item}
-                position={`${pad2(index + 1)} / ${pad2(items.length)}`}
-                onPrev={() => step(-1)}
-                onNext={() => step(1)}
-              />
-              <ol aria-label="All figures" className="flex shrink-0 gap-1.5 overflow-x-auto pt-3">
-                {items.map((other) => (
-                  <li key={other.id} className="w-16 shrink-0">
-                    <button
-                      type="button"
-                      aria-label={`Show ${other.label}`}
-                      aria-current={other.id === item.id ? "true" : undefined}
-                      onClick={() => onSelect(other.id)}
-                      className={cx("block w-full border", other.id === item.id ? "border-accent" : "border-transparent")}
-                    >
-                      <MediaFigure media={other} sizes="64px" ratio="aspect-[4/3]" bare className="border-0" />
-                    </button>
-                  </li>
-                ))}
-              </ol>
-            </>
-          ) : (
-            <ul aria-label="All figures" className="mt-4 grid min-h-0 flex-1 auto-rows-min grid-cols-3 gap-2 overflow-y-auto md:grid-cols-6">
-              {items.map((other) => (
-                <li key={other.id}>
-                  <button
-                    type="button"
-                    aria-label={`Show ${other.label}`}
-                    onClick={() => {
-                      onSelect(other.id);
-                      setMode("single");
-                    }}
-                    className={cx("block w-full border", other.id === item.id ? "border-accent" : "border-line")}
-                  >
-                    <MediaFigure media={other} sizes="(min-width: 768px) 16vw, 33vw" ratio="aspect-[4/3]" bare className="border-0" />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+          <ViewerStage
+            key={item.id}
+            item={item}
+            position={`${pad2(index + 1)} / ${pad2(items.length)}`}
+            onPrev={() => step(-1)}
+            onNext={() => step(1)}
+          />
+          <ol aria-label="All figures" className="flex shrink-0 gap-1.5 overflow-x-auto pt-3">
+            {items.map((other) => (
+              <li key={other.id} className="w-16 shrink-0">
+                <button
+                  type="button"
+                  aria-label={`Show ${other.label}`}
+                  aria-current={other.id === item.id ? "true" : undefined}
+                  onClick={() => onSelect(other.id)}
+                  className={cx("block w-full border", other.id === item.id ? "border-accent" : "border-transparent")}
+                >
+                  <MediaFigure media={other} sizes="64px" ratio="aspect-[4/3]" bare className="border-0" />
+                </button>
+              </li>
+            ))}
+          </ol>
         </div>
       ) : null}
     </dialog>

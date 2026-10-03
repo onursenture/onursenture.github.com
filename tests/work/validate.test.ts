@@ -80,39 +80,43 @@ describe("validateWork", () => {
     );
   });
 
-  it("rejects tags that would collide with a chip key", () => {
+  it("rejects tags that aren't kebab-case", () => {
     const errors = validateWork(
-      [study({ entries: [{ id: "3-0", date: "2024-11", note: "n", media: [{ id: "o", caption: "", tags: ["all", "3-0", "Bad Tag"] }] }] })],
+      [study({ entries: [{ id: "3-0", date: "2024-11", note: "n", media: [{ id: "o", caption: "", tags: ["page", "Bad Tag"] }] }] })],
       [],
       noImages,
     );
-    expect(errors).toEqual(
-      expect.arrayContaining([
-        expect.stringContaining('tag "all" collides'),
-        expect.stringContaining('tag "3-0" collides'),
-        expect.stringContaining('tag "Bad Tag" is not kebab-case'),
-      ]),
-    );
+    expect(errors).toEqual([expect.stringContaining('tag "Bad Tag" is not kebab-case')]);
+  });
+
+  it("accepts columns 1, 2 and 3, and rejects any other value", () => {
+    const entry = (columns: unknown) => ({ id: "3-0", date: "2024-11", note: "n", columns: columns as 1, media: [] });
+    for (const ok of [undefined, 1, 2, 3]) expect(validateWork([study({ entries: [entry(ok)] })], [], noImages)).toEqual([]);
+    for (const bad of [0, 4, 1.5, "2"]) {
+      expect(validateWork([study({ entries: [entry(bad)] })], [], noImages), String(bad)).toEqual([expect.stringContaining("columns")]);
+    }
+    expect(validateWork([study({ entries: [entry(4)] })], [], noImages)[0]).toContain("must be 1, 2 or 3");
   });
 
   it("accepts valid posts", () => {
     const posts = [
       { date: "2024-11-07", account: "w00f" as const, id: "1854537901700186303", summary: "s", entryId: "3-0" },
-      { date: "2024-02-29", account: "primevue" as const, id: "2", summary: "s" },
+      { date: "2024-02-29", account: "primevue" as const, id: "2", summary: "s", entryId: "3-0" },
     ];
     expect(validateWork([study({ posts })], [], noImages)).toEqual([]);
   });
 
   it("rejects bad post dates, ids, accounts, duplicate ids and unknown entries", () => {
     const posts = [
-      { date: "2024-11", account: "w00f" as const, id: "1", summary: "s" },
-      { date: "2023-02-29", account: "w00f" as const, id: "2", summary: "s" },
-      { date: "2024-13-01", account: "w00f" as const, id: "3", summary: "s" },
-      { date: "2024-11-07", account: "w00f" as const, id: "12ab", summary: "s" },
-      { date: "2024-11-07", account: "someone" as never, id: "5", summary: "s" },
-      { date: "2024-11-07", account: "w00f" as const, id: "6", summary: "s" },
-      { date: "2024-11-08", account: "primevue" as const, id: "6", summary: "s" },
+      { date: "2024-11", account: "w00f" as const, id: "1", summary: "s", entryId: "3-0" },
+      { date: "2023-02-29", account: "w00f" as const, id: "2", summary: "s", entryId: "3-0" },
+      { date: "2024-13-01", account: "w00f" as const, id: "3", summary: "s", entryId: "3-0" },
+      { date: "2024-11-07", account: "w00f" as const, id: "12ab", summary: "s", entryId: "3-0" },
+      { date: "2024-11-07", account: "someone" as never, id: "5", summary: "s", entryId: "3-0" },
+      { date: "2024-11-07", account: "w00f" as const, id: "6", summary: "s", entryId: "3-0" },
+      { date: "2024-11-08", account: "primevue" as const, id: "6", summary: "s", entryId: "3-0" },
       { date: "2024-11-07", account: "w00f" as const, id: "7", summary: "s", entryId: "9-9" },
+      { date: "2024-11-07", account: "w00f" as const, id: "8", summary: "s" } as never,
     ];
     const errors = validateWork([study({ posts })], [], noImages);
     expect(errors).toEqual(
@@ -124,9 +128,10 @@ describe("validateWork", () => {
         expect.stringContaining('post account "someone" is not one of'),
         expect.stringContaining('duplicate post id "6"'),
         expect.stringContaining('entryId "9-9" is not an entry'),
+        expect.stringContaining("needs an entryId"),
       ]),
     );
-    expect(errors).toHaveLength(7);
+    expect(errors).toHaveLength(8);
   });
 
   it("rejects duplicate slugs", () => {

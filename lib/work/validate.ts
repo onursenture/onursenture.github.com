@@ -33,7 +33,7 @@ export function validateWork(
   const credits = (where: string, list: Credit[] = []) => {
     for (const credit of list) if (credit.href) url(where, credit.href);
   };
-  const media = (where: string, item: Media, seen: Set<string>, chipKeys: Set<string>) => {
+  const media = (where: string, item: Media, seen: Set<string>) => {
     if (!KEBAB.test(item.id)) errors.push(`${where}: media id "${item.id}" is not kebab-case`);
     if (seen.has(item.id)) errors.push(`${where}: duplicate media id "${item.id}"`);
     seen.add(item.id);
@@ -43,7 +43,6 @@ export function validateWork(
     }
     for (const tag of item.tags ?? []) {
       if (!KEBAB.test(tag)) errors.push(`${where}: tag "${tag}" is not kebab-case`);
-      else if (chipKeys.has(tag)) errors.push(`${where}: tag "${tag}" collides with a chip key`);
     }
     credits(where, item.credits);
   };
@@ -62,17 +61,18 @@ export function validateWork(
       if (entry.remaster && entry.update) errors.push(`${where}: an entry cannot be both a remaster and an update`);
       entryIds.add(entry.id);
     }
-    // Tags share the ?tag= namespace with "all" and the entry ids.
-    const chipKeys = new Set(["all", ...entryIds]);
     const mediaIds = new Set<string>();
-    media(`${study.slug} hero`, study.hero, mediaIds, chipKeys);
+    media(`${study.slug} hero`, study.hero, mediaIds);
     for (const entry of study.entries) {
       const where = `${study.slug}/${entry.id}`;
       date(where, entry.date);
+      if (entry.columns !== undefined && ![1, 2, 3].includes(entry.columns)) {
+        errors.push(`${where}: columns ${String(entry.columns)} must be 1, 2 or 3`);
+      }
       if (entry.source) url(where, entry.source);
       for (const link of entry.links ?? []) url(where, link.href);
       credits(where, entry.credits);
-      for (const item of entry.media) media(where, item, mediaIds, chipKeys);
+      for (const item of entry.media) media(where, item, mediaIds);
     }
 
     const postIds = new Set<string>();
@@ -85,7 +85,8 @@ export function validateWork(
       }
       if (postIds.has(post.id)) errors.push(`${where}: duplicate post id "${post.id}"`);
       postIds.add(post.id);
-      if (post.entryId && !entryIds.has(post.entryId)) errors.push(`${where}: entryId "${post.entryId}" is not an entry of ${study.slug}`);
+      if (!post.entryId) errors.push(`${where}: a post needs an entryId`);
+      else if (!entryIds.has(post.entryId)) errors.push(`${where}: entryId "${post.entryId}" is not an entry of ${study.slug}`);
     }
   }
 
@@ -99,7 +100,7 @@ export function validateWork(
     date(where, row.date);
     url(where, row.source);
     credits(where, row.credits);
-    if (row.media) media(where, row.media, archiveMedia, new Set(["all"]));
+    if (row.media) media(where, row.media, archiveMedia);
   }
 
   return errors;

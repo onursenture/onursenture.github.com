@@ -3,12 +3,13 @@
 import { Fragment } from "react";
 import { DitherRule } from "@/components/ui/dither";
 import { TextLink } from "@/components/ui/text-link";
-import { type ArchiveView, sourceLabel } from "@/lib/work/derive";
+import type { ArchiveView } from "@/lib/work/derive";
 import { CreditLine } from "./credit-line";
 import { MediaButton } from "./media-button";
 
 // The Archive (spec §4.3): a hairline log grouped by year, newest first.
-// Each row is month | title, note, credits, optional figure | post ↗.
+// Each row is month | title, note, credits, optional figure | post ↗ (only for
+// an @w00f post; other sources are not linked).
 export function ArchiveLog({ view, onOpen }: { view: ArchiveView; onOpen?: (id: string) => void }) {
   return (
     <div data-view="archive">
@@ -37,11 +38,13 @@ export function ArchiveLog({ view, onOpen }: { view: ArchiveView; onOpen?: (id: 
                       </div>
                     ) : null}
                   </div>
-                  <p className="type-meta lg:text-right">
-                    <TextLink href={row.source} ariaLabel={`${sourceLabel(row.source)}, ${row.title}, ${row.monthYear}`} className="text-accent">
-                      post
-                    </TextLink>
-                  </p>
+                  {row.source ? (
+                    <p className="type-meta lg:text-right">
+                      <TextLink href={row.source} ariaLabel={`Post on X, ${row.title}, ${row.monthYear}`} className="text-accent">
+                        post
+                      </TextLink>
+                    </p>
+                  ) : null}
                 </li>
               ))}
             </ol>

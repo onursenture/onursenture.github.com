@@ -1,13 +1,12 @@
 import { Fragment } from "react";
 import { ItemLink } from "@/components/sections/item-link";
 import { SectionRow } from "@/components/ui/section-row";
-import { TextLink } from "@/components/ui/text-link";
 import { ORGS } from "@/content/orgs";
 import type { CaseStudy, Fact } from "@/content/work/types";
 
 // The grid header (spec §3.1): back link and identity in the label column;
-// lead, intro and facts in the content column; external links in the action
-// column.
+// lead, intro and facts in the content column. `study.links` is provenance
+// and is not rendered (Onur 2026-10-03: no external links except @w00f posts).
 export function CaseStudyHeader({ study, facts }: { study: CaseStudy; facts: Fact[] }) {
   return (
     <SectionRow
@@ -23,17 +22,6 @@ export function CaseStudyHeader({ study, facts }: { study: CaseStudy; facts: Fac
             {ORGS[study.org].name} · {study.years}
           </span>
         </>
-      }
-      action={
-        study.links.length > 0 ? (
-          <ul className="flex flex-col gap-1">
-            {study.links.map((link) => (
-              <li key={link.href}>
-                <TextLink href={link.href}>{link.label}</TextLink>
-              </li>
-            ))}
-          </ul>
-        ) : undefined
       }
     >
       <h1 className="mb-2.5 type-lead">

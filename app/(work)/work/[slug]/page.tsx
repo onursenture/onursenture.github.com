@@ -7,7 +7,6 @@ import { StudyBrowser } from "@/components/work/study-browser";
 import { renditionUrl } from "@/lib/images/plan";
 import { pageMetadata } from "@/lib/metadata";
 import { getPrimeIcons } from "@/lib/work/primeicons";
-import { DEFAULT_VIEW_STATE } from "@/lib/work/url-state";
 import { caseStudyFacts, getCaseStudies, getCaseStudy, getStudyView } from "@/lib/work";
 
 // One page per PrimeTek product (Sprint 5 spec §3). Unknown slugs 404 inside
@@ -44,10 +43,10 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
   return (
     <main className="pb-16">
       <CaseStudyHeader study={study} facts={facts} />
-      {/* The fallback is the prerendered default (Log) view. StudyBrowser
-          reads ?view/tag/density after hydration, so every query shares one
+      {/* The fallback is the prerendered page without a figure open.
+          StudyBrowser reads ?fig after hydration, so every query shares one
           cached HTML (spec §3.2). */}
-      <Suspense fallback={<StudyBody study={view} state={DEFAULT_VIEW_STATE} />}>
+      <Suspense fallback={<StudyBody study={view} />}>
         <StudyBrowser study={view} icons={icons} />
       </Suspense>
     </main>

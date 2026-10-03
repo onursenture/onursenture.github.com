@@ -27,11 +27,11 @@ Every mockup line is draft copy. The Mobbin references are Studio Freight (Grid 
 | Pages in Sprint 5 | PrimeOne, PrimeBlocks, PrimeIcons, Templates (one collection page) and Archive (everything else, curated from X posts). |
 | Narrative spine | **Release log.** A short summary on top, then the product's evolution as dated entries (version · month · one or two sentences · source post). It needs little prose, and each entry can be checked against an X post. |
 | Page layout | **B, wide showcase with sticky years.** A grid header, a full-width hero figure, then year groups whose Doto year stays stuck while the group scrolls. |
-| Media | **Sets, not single figures.** Each entry carries 0–N media items. A page shows its media in three views, **Log · Grid · Index**, and they all open one shared full-screen viewer. Media never gets a page of its own. |
+| Media | **Sets, not single figures.** Each entry carries 0–N media items. A page is one **Log** and every figure opens one shared full-screen viewer (there are no Grid or Index views; see the §3 revision). Media never gets a page of its own. |
 | Figma | Every media item may carry a Figma frame reference. It is used three ways: an "Open in Figma ↗" link (4a), a click-to-load embed (4b), and the local export script that fills the image (4c). A site-wide switch, `workSettings.figmaLinks` in `content/work/settings.ts`, defaults to **off** (decided 2026-10-03: PrimeTek may not want its files linked): off hides 4a and 4b and keeps Figma refs out of the client payload. **Update (final review, 2026-10-03):** Onur also keeps the refs out of the public repo. No content file sets `figma`; the frames for 4c live in the gitignored `figma.local.json` (§6.1). The `Media.figma` type stays for the day links are turned on with committed refs. |
 | `/work/` index | **A, index table.** One row group per org: years · title · type · →. |
-| Archive | Our own hairline log: date · title · one-line note · `post ↗`, plus an optional media slot. **X embeds are never used.** |
-| PrimeIcons | Its Grid view is a **live icon grid** from the `primeicons` package, with search and copy-to-clipboard. The icon count comes from the package. |
+| Archive | Our own hairline log: date · title · one-line note · `post ↗` (only for an @w00f post), plus an optional media slot. **X embeds are never used.** |
+| PrimeIcons | Its page shows a **live icon grid** after the Log from the `primeicons` package, with search and copy-to-clipboard. The icon count comes from the package. |
 | Content storage | Typed TypeScript in `content/work/<slug>.ts`, following the existing `content/*.ts`. No MDX. |
 | Copy | Claude drafts every line from sources. Each entry stores its proof URL. Onur confirms on the preview, and unconfirmed lines are cut or rewritten (see [honest numbers](#copy-and-numbers)). |
 
@@ -75,14 +75,14 @@ export interface FigmaRef {
 export interface Credit {
   name: string;
   role?: string;              // "design", "illustration", "implementation"…
-  href?: string;              // their site or X profile
+  href?: string;              // provenance, NOT rendered
 }
 
 export interface Media {
   id: string;                 // stable, unique per case study, kebab-case; used in ?fig=
   caption: string;
   credits?: Credit[];         // e.g. an inner page a colleague designed
-  tags?: string[];            // free tags for Grid filters, e.g. "components", "tokens"
+  tags?: string[];            // free kebab-case labels; only "page" is read (Templates coverage)
   image?: string;             // image manifest key, e.g. "work/primeone/tokens-overview"
   figma?: FigmaRef;
   aspect?: "16/9" | "16/10" | "4/3" | "1/1";   // default "16/10"
@@ -94,10 +94,11 @@ export interface Entry {
   version?: string;           // "3.0"
   title?: string;             // when there's no version, e.g. a template name
   note: string;               // one or two sentences, draft until confirmed
-  source?: string;            // proof URL (usually an X post)
-  links?: { label: string; href: string }[];   // e.g. a live demo
+  source?: string;            // proof URL; rendered only when it is an @w00f post
+  links?: { label: string; href: string }[];   // provenance, NOT rendered
   frameworks?: string[];      // Templates only: "Vue", "Angular", "React", "JSF"
   credits?: Credit[];         // applies to the whole entry
+  columns?: 1 | 2 | 3;        // media grid columns from md; default 1 (§3.4)
   media: Media[];
 }
 
@@ -110,9 +111,10 @@ export interface CaseStudy {
   lead: { strong: string; rest: string };
   intro: string[];            // 1–2 short paragraphs
   facts: { label: string; value: string }[];   // Role, Years, Tools…
-  links: { label: string; href: string }[];    // action column, external ↗
+  links: { label: string; href: string }[];    // provenance, NOT rendered
   hero: Media;
   entries: Entry[];           // any order in the file; rendered newest first
+  posts?: Post[];             // listed under their entries (§3.9)
 }
 
 export interface ArchiveEntry {
@@ -121,7 +123,7 @@ export interface ArchiveEntry {
   date: string;               // "YYYY-MM"
   title: string;
   note: string;
-  source: string;             // required: the archive is built from posts
+  source: string;             // required: the archive is built from posts; rendered only when it is an @w00f post
   credits?: Credit[];
   media?: Media;
 }
@@ -132,12 +134,9 @@ export interface ArchiveEntry {
   - The hero is `FIG. 01`.
   - Entry media are numbered `FIG. <entry ordinal, 2 digits>.<item ordinal>`, counting from the oldest entry (oldest = 02), so labels stay stable as new entries are added on top.
   - Labels are display-only. URLs use `Media.id`.
-- **Filter chips and counts.**
-  - Versions (or titles) of entries that have media, each with its media count.
-  - Tags, each with its count.
-  - "All", the total.
-  - Counts are always computed from the data, never hand-written.
-- **The Grid set:** all media of a case study in display order, newest entry first.
+- **The viewer set:** the hero, then all media of a case study in display order, newest entry first.
+- **Posts per entry:** each entry's posts, oldest first, with the date formatted `Mon D, YYYY` and a URL only for @w00f posts.
+- **Proof links:** `w00fPostUrl` keeps an entry or archive `source` only when it is an @w00f status URL.
 
 **Validation.** A Vitest suite loads the registry and asserts:
 - ids are unique (media ids within a case study, entry ids within a case study, archive ids globally) and kebab-case;
@@ -152,6 +151,14 @@ A failure breaks CI, not the build.
 
 ## 3. Case study page
 
+> **Revision (2026-10-03, polish).** Onur wants the case studies simpler before he prepares images. Visitors get very few ways to change the view. These decisions supersede the views, filters and links described in the earlier drafts of this section:
+>
+> 1. **No view switching.** Grid, Index and the view bar (segmented control, filter chips, density) are gone. Every case study page is one Log. The URL keeps only `?fig=<media id>`; `?view=`, `?tag=` and `?density=` are ignored.
+> 2. **Viewer.** No Grid/Single toggle and no `G` key. Single mode with the thumbnail strip, arrows, swipe and Esc stays, over all of the study's media.
+> 3. **Posts inline.** There is no Posts view and no post filter. Each entry lists its own posts under it, oldest first, as `Mon D, YYYY · @account · summary`. `Post.entryId` is required.
+> 4. **Links.** The only external links on `/work/**` are Onur's own @w00f posts. Entry `source` is linked only when it is an `x.com/w00f/status/…` URL; entry `links`, case study `links`, credit `href`s and non-@w00f sources stay in the data as provenance and are not rendered.
+> 5. **Columns per release.** `Entry.columns?: 1 | 2 | 3` (default 1) sets the media grid; Onur sets it in content when he delivers images.
+
 ### 3.1 Header
 
 The Sprint 4 section grid, `[200px label] [minmax(0,480px) content] [1fr action]`:
@@ -163,86 +170,84 @@ The Sprint 4 section grid, `[200px label] [minmax(0,480px) content] [1fr action]
   - `lead` in `type-lead` (strong part, then a muted continuation);
   - the `intro` paragraphs in `type-body`;
   - `facts` as a two-column `<dl>`.
-- **Action:** `links`, right-aligned, each with `↗`.
+- There is no action column: `links` is provenance and is not rendered (§3.5).
 
 Under the header, the **hero** sits in the content column (the 480px middle column of the section grid from lg, full width below lg), at 16/10.
 
-### 3.2 View bar
+### 3.2 No view bar; URL state
 
-A hairline-bordered bar under the hero:
-- **Left:** `Log · Grid · Index`, plus `Posts` when the study has posts (§3.9), a segmented control with the active item underlined.
-- **Middle (Grid and Index only):** the filter chips (§2), as `Chip` toggles, with one active at a time.
-- **Right (Grid only):** density `1× · 2× · ∞`.
+Nothing under the hero changes the view: no segmented control, no filter chips and no density control. The page is always the Log.
 
 **URL state.**
-- The URL holds the view state: `?view=grid|index|posts`, `?tag=<chip key>` and `?density=2|inf`. The defaults (Log, All, 1×) are left out of the URL.
-- Changes use `history.replaceState`.
-- The server always renders the Log view, so there is one rendering per URL path and CDN caching is untouched. After hydration, a client component reads the query and switches views, wrapped in `<Suspense>` for `useSearchParams`.
-- Unknown values fall back to the defaults.
+- The URL holds one param, `?fig=<media id>`, for the viewer (§3.6). `?view=`, `?tag=` and `?density=` are ignored, so an old `/work/primeone/?view=grid` renders the Log, and with `?fig=` it still opens the viewer.
+- The server always renders the page without a figure open, so there is one rendering per URL path and CDN caching is untouched. After hydration, a client component reads `?fig=` and opens the viewer, wrapped in `<Suspense>` for `useSearchParams`.
+- An unknown figure id is ignored.
 
-### 3.3 Log view
+### 3.3 Log
 
 - **Year groups.**
   - Entries are grouped by year, newest first.
   - Each group is a row: `[200px year] [content]`.
   - The year is `type-name` (Doto) and `position: sticky; top: <header offset>` inside its group, so it stays visible while the group scrolls.
-- **Entries.** An entry is a two-column block, `[minmax(0,480px) text] [1fr media]`.
-  - **Text:**
+- **Entries.** An entry is a two-column block from lg, `[minmax(0,480px) text] [1fr media]`.
+  - **Text column:**
     - `version · Mon`, or `title · Mon`;
-    - the note;
-    - `post ↗` when a `source` exists;
-    - any `links`.
-  - **Media column:**
-    - all of the entry's media, as an equal-size grid, each cell at its own aspect (default 16/10) and opening the viewer on the full set;
-    - 1 or 2 items use 2 columns from md (a lone figure takes the first cell, at grid-cell width, not the full column), 3 or more are 2 columns from md and 3 from xl. There is no "+N in Grid" link.
+    - the note and the credit line (§3.7);
+    - `post ↗` when the `source` is an @w00f post (§3.5);
+    - the entry's posts, oldest first (§3.9). In the DOM they come after the media; from lg they sit under the note, in the text column.
+  - **Media column:** all of the entry's media as a grid (§3.4), each cell at its own aspect (default 16/10), opening the viewer on the full set.
   - An entry with no media renders only its text, at full width.
 - Section breaks between year groups use the Sprint 4 dither rule.
+- PrimeIcons shows its live icon set after the Log (§4.1). It is page content, not a view.
 
-### 3.4 Grid view
+### 3.4 Columns
 
-- **Cards.** File-like cards in the style of Base:
-  - a header line with the caption (truncated), then a muted `version · first tag`;
-  - the media below it, at its aspect ratio.
-- **Placeholders.** A card with no image shows the dither placeholder with its FIG label. Placeholder cards are not hidden, so a page without images is still complete.
-- **Columns.** Density sets the column count: 1× = 2, 2× = 4, ∞ = 8 at 1024px and up. Under 768px, 1× = 1, 2× = 2, ∞ = 3.
-- Clicking a card opens the viewer at that item, within the filtered set.
+`Entry.columns?: 1 | 2 | 3` sets the media grid from md; below md there is always one column.
 
-### 3.5 Index view
+| `columns` | Grid |
+|---|---|
+| 1 (default) | One column, at the full width of the media column. A lone figure is full width. |
+| 2 | `md:grid-cols-2` |
+| 3 | `md:grid-cols-2 lg:grid-cols-3` |
 
-A mono list. Each row is `FIG label · caption · version · tags`, separated by dashed hairlines. Clicking a row opens the viewer.
+Figures keep their aspect (default 16/10). `validateWork` rejects any other value. No content sets `columns` yet: Onur sets it per release when he delivers images.
+
+### 3.5 Links
+
+The only external links on `/work/**` pages are @w00f posts:
+- A post from `account: "w00f"` links to `x.com/w00f/status/<id>`; its accessible name starts with "Post on X", and its visible text is the summary. Posts from other accounts are plain text.
+- An entry's `source` and an Archive row's `source` render a `post ↗` link only when they are an `x.com/w00f/status/…` URL (twitter.com too). Otherwise nothing is rendered.
+- Entry `links`, case study `links` (the old header action column) and credit `href`s are not rendered. They stay in the data as provenance, each with a comment saying so (Onur 2026-10-03: no external links except @w00f posts).
+- Internal links stay: the `/work/` index rows, the back link and the nav.
 
 ### 3.6 Viewer
 
 A `MediaViewer` client component on a native `<dialog>` (shown with `showModal()`), always in the Life palette (`#0B0B0C`):
-- **Top line:** `<case study> · <version> · <Mon YYYY>` on the left, `Grid` / `Single` (a text toggle, so there's no glyph-coverage risk in Plex) and `Esc ×` on the right.
-- **Single mode:**
+- **Top line:** `<case study> · <version> · <Mon YYYY>` on the left, `Esc ×` on the right.
+- **Stage:**
   - the media is centred, with `←` `→` buttons;
   - under it, `FIG label · caption` on the left and `NN / MM` on the right;
   - a thumbnail strip, with the current item outlined in `accent`.
-- **Grid mode:** the filtered set as thumbnails. Clicking one returns to single mode at that item.
 - **Figma:**
   - When the item has `figma`, the caption line adds "Open in Figma ↗", linking to `https://www.figma.com/design/<fileKey>?node-id=<nodeId with - >`.
   - When `figma.embed` is set, single mode shows a third control, "Figma ▶". It swaps the stage for a poster (dither wash, "Load Figma file · embed.figma.com · interactive"). Activating the poster mounts `<iframe src="https://embed.figma.com/design/<fileKey>?node-id=<id>&embed-host=onursenture">`. The iframe is unmounted when the item changes.
   - Under 768px the embed control is not shown; the link is.
-- **Keys:** `←` `→` move within the filtered set and wrap. `Esc` closes. `G` toggles grid mode.
+- **Keys:** `←` `→` move through all of the study's media and wrap. `Esc` closes. There is no grid mode and no `G` key.
 - **History:**
-  - Opening pushes `?fig=<media id>` (keeping the view params), and moving between items replaces it. Closing calls `history.back()` when the viewer pushed the entry, or removes the param otherwise.
+  - Opening pushes `?fig=<media id>`, and moving between items replaces it. Closing calls `history.back()` when the viewer pushed the entry, or removes the param otherwise.
   - The Back button closes the viewer.
   - Loading a URL with `?fig=` opens the viewer on hydration. An unknown id is ignored.
-- **Focus:** the dialog traps focus. On close, focus returns to the card, row or figure that opened it.
+- **Focus:** the dialog traps focus. On close, focus returns to the figure that opened it.
 - **Motion:** a 150ms fade on open and close. Reduced motion: none.
 - **Images:** the viewer uses `Picture` with `sizes="100vw"`. Placeholders render as a large wash with the FIG label.
 
-The hero and the Log figures also open the viewer, on the full set.
+The hero and every Log figure open the viewer on the full set.
 
 ### 3.7 Credits
 
 Credits are the same on every case study and in the Archive:
-- **Entry credits:** a muted line under the note, "Design: Name, Name". It reads "<role>: …" when a role is set, and names link to `href`.
-- **Media credits:**
-  - in the viewer, "Design: Name" follows the caption;
-  - in Grid, the card header's muted line ends with "· Name";
-  - in Index, a credits column (empty when none).
+- **Entry credits:** a muted line under the note, "Design: Name, Name". It reads "<role>: …" when a role is set. Names are plain text (a credit's `href` is not rendered, §3.5).
+- **Media credits:** in the viewer, "Design: Name" follows the caption.
 - **Inheritance:** an item with no credits of its own inherits nothing visible. Entry credits show once, on the entry.
 
 Unit tests cover the credit line formatting; e2e checks that one credited media item shows its credit in the viewer.
@@ -251,46 +256,45 @@ Unit tests cover the credit line formatting; e2e checks that one credited media 
 
 - Labels stack above content, as on the home page.
 - Years render as group headings, not sticky.
-- The view bar scrolls horizontally.
-- Grid follows §3.4. The viewer is full-screen, with swipe left/right (pointer events) in addition to the buttons.
+- The media grid is one column; posts stack (date and account, then the summary).
+- The viewer is full-screen, with swipe left/right (pointer events) in addition to the buttons.
 
-### 3.9 Posts view
+### 3.9 Posts
 
-A fourth view, shown only when a case study has posts, listing the X posts about the project.
-- **Data.** `posts?: Post[]` on the case study (`content/work/posts/<slug>.ts`). A post is `{ date: "YYYY-MM-DD", account, id, summary, entryId? }`:
+Each entry lists the X posts about it, directly under it in the Log. There is no Posts view and no filter.
+- **Data.** `posts?: Post[]` on the case study (`content/work/posts/<slug>.ts`). A post is `{ date: "YYYY-MM-DD", account, id, summary, entryId }`:
   - the account is one of `w00f`, `primevue`, `prime_ng`, `primereact`, `primefaces`;
   - the URL is derived (`x.com/<account>/status/<id>`);
   - the summary is **our own** one-line wording, never PrimeTek's text (Onur's own @w00f posts may quote him);
-  - `entryId` ties the post to a release or template, and `validateWork` checks the date, id, account, id uniqueness and that entry.
-- **Layout.** Year groups newest first (ties by id, descending), like the Log: Doto year (sticky at lg), dither rule between groups. A row is `day · @account · summary · post ↗`: a four-column grid at md and up (`7ch 12ch 1fr auto`), stacked on mobile. Rows are `li#post-<id>`.
-- **Filter.** The chips are `All` plus each entry that has posts (newest first, label = the entry heading, computed counts), so on Templates a template chip narrows the posts to that template. The filter is `?tag=<entry id>`; there is no density.
-- **Fallback.** `?view=posts` on a study without posts falls back to the Log. The server HTML is still the Log.
+  - `entryId` is required, and `validateWork` checks the date, id, account, id uniqueness and that the entry exists.
+- **Layout.** Under the entry's note, credits and media, a list of its posts, oldest first (ties by id, ascending). A row reads `Mon D, YYYY · @account · summary` in small `type-meta` type: the date and account muted, the summary in the soft text colour. On phones the row stacks (date and account, then the summary). Rows are `li#post-<id>` in a `ul` labelled "Posts".
+- **Links.** Only an @w00f post is a link: the summary is the link text, with the accessible name "Post on X, <date>, @w00f: <summary>". Other accounts render as plain text (§3.5).
 
 ## 4. Special pages
 
 ### 4.1 PrimeIcons
 
 - It is a normal case study (header, hero, release log).
-- Its **Grid view** shows the icon set instead of media cards. The filter chips become a search input; "All N" counts the icons.
+- Its page shows the icon set after the Log, as page content (not a view). A search input narrows it; "N of M icons" counts them.
 - **Icon source.** Add `primeicons` **pinned to exactly `7.0.0`**:
   - **Why 7.0.0.** It is MIT-licensed and ships 313 files under `raw-svg/`. From 8.0.0 (July 2026) the package uses PrimeTek's commercial PrimeUI license, which requires a license key and forbids redistribution. **Never upgrade it past 7.x.** Say so in a comment next to the dependency's use and in `CLAUDE.md`.
   - **Rendering.** A server-only module reads `node_modules/primeicons/raw-svg/*.svg` at build time. It replaces hard-coded `stroke`/`fill` colours (other than `none`) with `currentColor` and renders each icon as inline SVG, 24px in a 96px cell, with the name underneath. The 7.0.0 SVGs have no `fill` on most paths: the root gets `fill="currentColor"`, `fill="black"` becomes `currentColor`, `fill="white"` becomes `style="fill:var(--color-bg)"`, and every `id` attribute is stripped so inline icons can't collide with page ids.
   - The font and `primeicons.css` are not used.
 - **Cells.** Each cell shows the icon and its name (`type-label`). Clicking copies `pi pi-<name>` to the clipboard and shows a 1.2s "copied" state in the cell (with `aria-live`).
-- The Index view lists the icon names. The viewer is not used for icons.
+- The viewer is not used for icons.
 - The icon count comes from the package at build time, and the header shows the version it rendered ("v7.0.0 · N icons"). The version is read from the package's `package.json`.
 - The MIT licence notice ships with the page as a small footer line under the grid: "PrimeIcons 7.0.0 © PrimeTek, MIT License".
-- The Log view and the release media work as on the other pages.
+- The Log and the release media work as on the other pages.
 
 ### 4.2 Templates
 
-- **Entries.** Each template is an `Entry` with `title` (template name), `date` (launch month), `frameworks` (rendered as small chips), `links` (a demo link if it still resolves) and `media` (cover first).
-- **Views.** Log groups the templates by year; Grid shows every template's media; the Templates chips filter by template title.
+- **Entries.** Each template is an `Entry` with `title` (template name), `date` (launch month), `frameworks` (rendered as small chips), `links` (provenance, not rendered) and `media` (cover first).
+- **Log.** The Log groups the templates by year. There are no views or chips.
 - **Inner pages.** A template is many pages: dashboards, landing, auth, errors, apps and so on. They are its media items:
   - the cover comes first;
   - then one item per inner page, each tagged `page`, with the page name as caption ("Dashboard · Sales", "Login");
-  - the Grid filter for a template shows all its pages, and the viewer steps through them;
-  - the Log view shows the cover and every inner page as the entry's grid.
+  - the viewer steps through every page of every template;
+  - the Log shows the cover and every inner page as the entry's grid (§3.4).
 - **Coverage.** The header says how many templates and pages the page covers, both counted from the entries. It never says "25+" unless Onur confirms it.
 - **Initial list.** Built from the X archives and PrimeTek's public template pages: Verona, Paradise, Manhattan, Avalon, Babylon, Diamond (remastered), Genesis… The final list is whatever the sources confirm.
 - **Credits.** Onur led design for every template, so every template can be shown, and his lead role is stated once in the header facts. Where a colleague designed a template or some of its pages (Genesis per Onur's post, or pages added later), the `credits` field names them:
@@ -302,10 +306,10 @@ A fourth view, shown only when a case study has posts, listing the X posts about
 ### 4.3 Archive
 
 - **Header.** The Work grid header, with label "Archive" and the lead "Archive. Other PrimeTek work, from the posts that announced it."
-- **Rows.** One row per entry, newest first: `[200px date "Mon YYYY"] [title, then the note] [action: post ↗]`.
+- **Rows.** One row per entry, newest first: `[200px date "Mon YYYY"] [title, then the note] [action: post ↗]`. The action appears only when the `source` is an @w00f post (§3.5); other sources are not linked.
   - An entry with `media` shows a small figure under the note, which opens the viewer.
   - Rows are grouped by year with the dither rule.
-- No view bar.
+- No view bar and no other view.
 - **Initial candidates** (from the brainstorm, all to be confirmed by sources): Aura theme (2024), Visual Theme Editor (Nov 2024), PrimeVue/PrimeNG Theme Designer (2025), Material theme (2024), the 2022 Figma UI kit, and the Theme Designer gallery (2023).
 
 ## 5. `/work/` index
@@ -392,17 +396,19 @@ This is the first work in the sprint. The plan schedules it before the content t
   - FIG labels;
   - chip keys and counts;
   - year grouping and ordering;
-  - view-state URL parsing and serialising (`view`, `tag`, `density`, `fig`, defaults, unknown values);
+  - `?fig=` URL parsing and serialising (defaults, unknown values, the removed params ignored);
+  - posts under their entries, the @w00f link rule and the `columns` classes and validation;
   - the Figma script units (§6.1);
   - the PrimeIcons icon-list loader (count and name format).
 - **Playwright (production build, no DB, both themes where marked):**
   - `/work/` renders the PrimeTek group, every line links, and the Work nav item shows and is active.
   - Each case study renders the header, hero and Log (both themes).
-  - Deep links: `?view=grid&tag=<chip>`, `?view=index` and `?fig=<id>` each render the right state after hydration.
-  - Viewer: opens from a card; `→`, `←` and `Esc`; Back closes it; focus returns to the card; `G` toggles grid mode.
+  - No view bar; `?view=grid` (and `?tag`, `?density`) render the Log; `?fig=<id>` opens the viewer after hydration.
+  - Viewer: opens from a figure; `→`, `←` and `Esc`; Back closes it; focus returns to the figure; no Grid toggle.
+  - On `/work/primeone/`, `/work/templates/` and `/work/archive/` every external link is an @w00f post.
   - Mobile (375px): stacked layout, no embed control, swipe changes the item.
-  - PrimeIcons: search narrows the grid; click copies (clipboard permission granted in the test context).
-  - Archive renders rows with `post ↗` links.
+  - PrimeIcons: search narrows the icon grid; click copies (clipboard permission granted in the test context).
+  - Archive renders its rows, with `post ↗` only for @w00f posts.
   - Home: Work tiles and the PrimeTek experience rows link to their case studies; "All work →" is present.
   - 404: `/work/unknown/` renders the Work-side 404.
 - **Visual checks:**
@@ -410,7 +416,7 @@ This is the first work in the sprint. The plan schedules it before the content t
   - the viewer frozen mid-fade;
   - sticky years captured mid-scroll;
   - the dither placeholders at all densities.
-- **CDN:** repeat the Sprint 4 curl loop on the preview for `/work/` and `/work/primeone/`, with and without `?view=grid` and `?fig=…`. The second request must be `HIT`/`STALE`.
+- **CDN:** repeat the Sprint 4 curl loop on the preview for `/work/` and `/work/primeone/`, with and without `?fig=…`. The second request must be `HIT`/`STALE`.
 - **Final whole-branch review** (opus), then a follow-ups file, `docs/superpowers/plans/2026-10-03-sprint-5-followups.md`.
 
 ## Carried over

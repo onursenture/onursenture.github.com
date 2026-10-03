@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { byId, entry, media, position, tagged, total } from "./primeone";
+import { byId, entry, media, position, total } from "./primeone";
 
 const viewer = (page: import("@playwright/test").Page) => page.getByRole("dialog");
 
@@ -73,30 +73,28 @@ test("a figure in a Log entry's grid opens the viewer on the full set", async ({
   await expect(cell).toBeFocused();
 });
 
-test("closing a Grid-opened viewer returns focus to the Grid figure", async ({ page }) => {
-  await page.goto("/work/primeone/?view=grid&fig=tokens-3-0");
-  await expect(viewer(page)).toBeVisible();
-  await viewer(page).getByRole("button", { name: "Close viewer" }).click();
-  await expect(viewer(page)).toBeHidden();
-  await expect(page.locator('[data-view="grid"] [data-media="tokens-3-0"]')).toBeFocused();
-});
-
-test("from the Grid the viewer steps through the filtered set", async ({ page }) => {
-  await page.goto("/work/primeone/?view=grid&tag=tokens");
-  const set = tagged("tokens");
-  const index = set.findIndex((item) => item.id === "tokens-3-0");
-  await page.locator('[data-view="grid"] [data-media="tokens-3-0"]').click();
-  await expect(viewer(page)).toContainText(`${String(index + 1).padStart(2, "0")} / ${String(set.length).padStart(2, "0")}`);
-  await expect(page).toHaveURL(/\?view=grid&tag=tokens&fig=tokens-3-0$/);
-});
-
-test("G toggles the grid inside the viewer", async ({ page }) => {
+test("the viewer has no Grid toggle and ignores the G key; the strip steps through every figure", async ({ page }) => {
   await page.goto("/work/primeone/?fig=cover");
+  await expect(viewer(page)).toBeVisible();
+  await expect(viewer(page).getByRole("button", { name: /^(Grid|Single)$/ })).toHaveCount(0);
   await page.keyboard.press("g");
   await expect(viewer(page).getByRole("list", { name: "All figures" }).getByRole("button")).toHaveCount(total);
+  await expect(viewer(page)).toContainText(position(0));
   const other = media[3];
   await viewer(page).getByRole("button", { name: `Show ${other.label}` }).click();
   await expect(viewer(page)).toContainText(`${other.label} · ${other.caption}`);
+  await expect(page).toHaveURL(new RegExp(`\\?fig=${other.id}$`));
+});
+
+test("an old view URL with ?fig= still opens the viewer on the Log's full set, and Back closes it", async ({ page }) => {
+  await page.goto("/work/primeone/?view=grid&tag=tokens&fig=tokens-3-0");
+  await expect(viewer(page)).toBeVisible();
+  await expect(page.locator('[data-view="log"]')).toBeAttached();
+  const index = media.findIndex((item) => item.id === "tokens-3-0");
+  await expect(viewer(page)).toContainText(position(index));
+  await viewer(page).getByRole("button", { name: "Close viewer" }).click();
+  await expect(viewer(page)).toBeHidden();
+  await expect(page.locator('#entry-3-0 [data-media="tokens-3-0"]:visible')).toBeFocused();
 });
 
 test("the viewer's top line names the figure's entry and month", async ({ page }) => {

@@ -12,8 +12,6 @@ const base: MediaView = {
   credits: [],
   image: null,
   figma: null,
-  entryId: "3-0",
-  group: "3.0",
   context: "3.0 · Nov 2024",
 };
 const items: MediaView[] = [
@@ -39,6 +37,15 @@ describe("MediaViewer", () => {
     expect(markup).toContain("01 / 02");
     expect(markup).toContain('aria-label="Show FIG. 02.2"');
     expect(markup).not.toContain("Open in Figma");
+  });
+
+  it("has no Grid toggle: the thumbnail strip is the only way around", () => {
+    const markup = html("a");
+    expect(markup).not.toContain(">Grid<");
+    expect(markup).not.toContain(">Single<");
+    expect(markup).not.toContain("aria-pressed");
+    expect(markup).toContain('aria-label="All figures"');
+    expect(markup).toContain('aria-label="Close viewer"');
   });
 
   it("links to Figma and offers the embed only from md (it's hidden on phones)", () => {

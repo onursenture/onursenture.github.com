@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { type IconSet, filterIcons } from "@/lib/work/icons";
 
-// PrimeIcons' Grid view (spec §4.1): the real set from the pinned package,
-// searchable; a click copies the class name.
+// PrimeIcons' live icon set (spec §4.1): the real set from the pinned package,
+// searchable; a click copies the class name. Page content, not a view.
 export function IconGrid({ set }: { set: IconSet }) {
   const [query, setQuery] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
@@ -25,7 +25,7 @@ export function IconGrid({ set }: { set: IconSet }) {
   }
 
   return (
-    <div data-view="grid" className="px-4 py-6 md:px-10">
+    <div data-icons className="px-4 py-6 md:px-10">
       <label className="flex flex-wrap items-center gap-3 type-meta">
         <span className="text-fg-muted">Search</span>
         <input
@@ -59,18 +59,5 @@ export function IconGrid({ set }: { set: IconSet }) {
       </p>
       <p className="mt-4 type-label text-fg-muted">PrimeIcons {set.version} © PrimeTek, MIT License</p>
     </div>
-  );
-}
-
-// PrimeIcons' Index view: the names in columns.
-export function IconIndex({ set }: { set: IconSet }) {
-  return (
-    <ol data-view="index" className="columns-2 gap-6 px-4 py-6 type-meta md:columns-4 md:px-10 lg:columns-6">
-      {set.icons.map((icon) => (
-        <li key={icon.name} className="truncate">
-          pi-{icon.name}
-        </li>
-      ))}
-    </ol>
   );
 }

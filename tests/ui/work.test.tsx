@@ -2,16 +2,11 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { ArchiveLog } from "@/components/work/archive-log";
 import { CreditLine } from "@/components/work/credit-line";
-import { GridView } from "@/components/work/grid-view";
-import { IndexView } from "@/components/work/index-view";
 import { LogView } from "@/components/work/log-view";
 import { MediaFigure } from "@/components/work/media-figure";
-import { PostsView } from "@/components/work/posts-view";
 import { StudyBody } from "@/components/work/study-body";
-import { ViewBar } from "@/components/work/view-bar";
-import type { CaseStudy } from "@/content/work/types";
+import type { CaseStudy, EntryColumns } from "@/content/work/types";
 import { buildArchiveView, buildStudyView } from "@/lib/work/derive";
-import { DEFAULT_VIEW_STATE } from "@/lib/work/url-state";
 
 const html = renderToStaticMarkup;
 
@@ -59,11 +54,12 @@ describe("MediaFigure", () => {
 });
 
 describe("CreditLine", () => {
-  it("renders nothing without credits, and role-grouped linked names otherwise", () => {
+  it("renders nothing without credits, and role-grouped names (never links) otherwise", () => {
     expect(html(<CreditLine credits={[]} />)).toBe("");
     const markup = html(<CreditLine credits={[{ name: "Ada", href: "https://ada.example" }, { name: "Bo", role: "implementation" }]} />);
     expect(markup).toContain("Design: ");
-    expect(markup).toContain('href="https://ada.example"');
+    expect(markup).toContain("Ada");
+    expect(markup).not.toContain("href=");
     expect(markup).toContain(" · Implementation: ");
     expect(markup).toContain("Bo");
   });
@@ -76,12 +72,37 @@ describe("LogView", () => {
     expect(markup.indexOf(">2026<")).toBeLessThan(markup.indexOf(">2024<"));
   });
 
-  it("shows the heading with its month, the note, the credit and the source", () => {
+  it("shows the heading with its month, the note, the credit and an @w00f source", () => {
     expect(markup).toContain("3.0");
     expect(markup).toContain("· Nov");
     expect(markup).toContain("Rebuilt.");
     expect(markup).toContain("Design: ");
     expect(markup).toContain('href="https://x.com/w00f/status/1"');
+    expect(markup).toContain('aria-label="Post on X, 3.0, Nov 2024"');
+  });
+
+  it("renders no link for a source that is not an @w00f post, and none for entry links", () => {
+    const other = buildStudyView(
+      {
+        ...study,
+        links: [{ label: "Site", href: "https://primevue.org" }],
+        entries: [
+          {
+            id: "e",
+            date: "2024-11",
+            version: "1.0",
+            note: "N.",
+            source: "https://www.primefaces.org/blog/x/",
+            links: [{ label: "Demo", href: "https://demo.example" }],
+            media: [],
+          },
+        ],
+      },
+      () => undefined,
+    );
+    const out = html(<LogView study={other} />);
+    expect(out).not.toContain("href=");
+    expect(out).not.toContain("Demo");
   });
 
   it("shows every figure of an entry, with no link to a Grid", () => {
@@ -90,128 +111,120 @@ describe("LogView", () => {
     expect(markup).not.toContain("in Grid");
   });
 
-  it("lays the figures out as one, two or three-plus equal columns", () => {
+  describe("columns", () => {
     const media = (n: number) => Array.from({ length: n }, (_, i) => ({ id: `m${i}`, caption: `M${i}` }));
-    const entryOf = (n: number): CaseStudy => ({
-      ...study,
-      entries: [{ id: "e", date: "2024-11", version: "1.0", note: "N.", media: media(n) }],
-    });
     // Every slot has an image so the rendered `sizes` can be checked.
-    const render = (n: number) =>
-      html(<LogView study={buildStudyView(entryOf(n), () => ({ width: 1600, height: 1000, widths: [640, 1280, 1600] }))} />);
-    const one = render(1);
-    expect(one.match(/data-media="m/g)).toHaveLength(1);
-    expect(one).toContain("md:grid-cols-2");
-    expect(one).not.toContain("xl:grid-cols-3");
-    expect(one).toContain("(min-width: 1024px) calc((100vw - 816px) / 2)");
-    expect(one).not.toContain("/ 3)");
-    expect(one).not.toContain("calc(100vw - 816px),");
-    const two = render(2);
-    expect(two.match(/data-media="m/g)).toHaveLength(2);
-    expect(two).toContain("md:grid-cols-2");
-    expect(two).not.toContain("xl:grid-cols-3");
-    const three = render(3);
-    expect(three.match(/data-media="m/g)).toHaveLength(3);
-    expect(three).toContain("md:grid-cols-2 xl:grid-cols-3");
-    expect(three).toContain("(min-width: 1280px) calc((100vw - 816px) / 3)");
-    expect(render(7).match(/data-media="m/g)).toHaveLength(7);
-  });
-});
+    const render = (n: number, columns?: EntryColumns) =>
+      html(
+        <LogView
+          study={buildStudyView(
+            { ...study, entries: [{ id: "e", date: "2024-11", version: "1.0", note: "N.", columns, media: media(n) }] },
+            () => ({ width: 1600, height: 1000, widths: [640, 1280, 1600] }),
+          )}
+        />,
+      );
+    const grid = (markup: string) => /<div data-entry-media="\d+" data-columns="(\d)" class="([^"]*)"/.exec(markup)!;
 
-describe("ViewBar", () => {
-  it("presses the current view, and shows chips and density only where they apply", () => {
-    const log = html(<ViewBar chips={view.chips} state={DEFAULT_VIEW_STATE} />);
-    expect(log).toMatch(/aria-pressed="true"[^>]*>Log</);
-    expect(log).not.toContain('aria-label="Filter"');
-    expect(log).not.toContain('aria-label="Density"');
-    const grid = html(<ViewBar chips={view.chips} state={{ ...DEFAULT_VIEW_STATE, view: "grid", tag: "3-0" }} />);
-    expect(grid).toContain('aria-label="Filter"');
-    expect(grid).toContain('aria-label="Density"');
-    expect(grid).toMatch(/aria-pressed="true"[^>]*>3\.0 <span[^>]*>2<\/span>/);
-    const index = html(<ViewBar chips={view.chips} state={{ ...DEFAULT_VIEW_STATE, view: "index" }} />);
-    expect(index).toContain('aria-label="Filter"');
-    expect(index).not.toContain('aria-label="Density"');
-  });
-});
+    it("defaults to one column at every width, however many figures", () => {
+      for (const n of [1, 2, 3, 7]) {
+        const [, columns, classes] = grid(render(n));
+        expect(columns).toBe("1");
+        expect(classes).not.toContain("grid-cols");
+        expect(render(n).match(/data-media="m/g)).toHaveLength(n);
+      }
+      const one = render(1);
+      expect(one).toContain("(min-width: 1024px) calc(100vw - 816px)");
+      expect(one).not.toContain("/ 2)");
+    });
 
-describe("GridView and IndexView", () => {
-  it("renders a file-like card per figure with caption and group", () => {
-    const markup = html(<GridView media={view.media} density="2" />);
-    expect(markup).toContain('data-density="2"');
-    expect(markup.match(/data-media="/g)).toHaveLength(3);
-    expect(markup).toContain("Tokens");
-    expect(markup).toContain("3.0");
+    it("columns: 2 is two columns from md", () => {
+      const [, columns, classes] = grid(render(4, 2));
+      expect(columns).toBe("2");
+      expect(classes).toContain("md:grid-cols-2");
+      expect(classes).not.toContain("lg:grid-cols-3");
+      expect(render(4, 2)).toContain("(min-width: 1024px) calc((100vw - 816px) / 2)");
+    });
+
+    it("columns: 3 is two columns from md and three from lg", () => {
+      const [, columns, classes] = grid(render(4, 3));
+      expect(columns).toBe("3");
+      expect(classes).toContain("md:grid-cols-2 lg:grid-cols-3");
+      expect(render(4, 3)).toContain("(min-width: 1024px) calc((100vw - 816px) / 3)");
+    });
+
+    it("keeps a lone figure at the full media-column width in a one-column entry", () => {
+      expect(render(1, 1)).not.toContain("md:grid-cols-2");
+    });
   });
 
-  it("lists figures with their FIG number", () => {
-    const markup = html(<IndexView media={view.media} />);
-    expect(markup).toContain(">02.1<");
-    expect(markup).toContain(">01<");
+  describe("posts", () => {
+    const withPosts = buildStudyView(
+      {
+        ...study,
+        posts: [
+          { date: "2024-11-09", account: "w00f", id: "200", summary: "Onur on the launch.", entryId: "3-0" },
+          { date: "2024-11-07", account: "primereact", id: "100", summary: "Launch.", entryId: "3-0" },
+          { date: "2026-01-19", account: "primevue", id: "300", summary: "Variables.", entryId: "4-0" },
+        ],
+      },
+      () => undefined,
+    );
+    const out = html(<LogView study={withPosts} />);
+    const entry3 = out.slice(out.indexOf('id="entry-3-0"'));
+    const list = (id: string) => {
+      const start = out.indexOf(`id="entry-${id}"`);
+      const rest = out.slice(start);
+      const next = rest.indexOf('<li id="entry-', 10);
+      return next < 0 ? rest : rest.slice(0, next);
+    };
+
+    it("lists an entry's posts after its note, credits and media, oldest first", () => {
+      const block = list("3-0");
+      expect(block.indexOf("Rebuilt.")).toBeLessThan(block.indexOf('data-media="overview"'));
+      expect(block.indexOf('data-media="tokens"')).toBeLessThan(block.indexOf('id="post-100"'));
+      expect(block.indexOf('id="post-100"')).toBeLessThan(block.indexOf('id="post-200"'));
+      expect(list("4-0")).toContain('id="post-300"');
+      expect(list("4-0")).not.toContain('id="post-100"');
+      expect(entry3).toContain('aria-label="Posts"');
+    });
+
+    it("reads date, account, summary", () => {
+      expect(out).toContain("Nov 7, 2024 · @primereact");
+      expect(out).toContain("Launch.");
+    });
+
+    it("links an @w00f post to X, named from 'Post on X'", () => {
+      expect(out).toContain('href="https://x.com/w00f/status/200"');
+      expect(out).toContain('aria-label="Post on X, Nov 9, 2024, @w00f: Onur on the launch."');
+    });
+
+    it("renders a post from another account as plain text, with no link", () => {
+      const row = /<li id="post-100">.*?<\/li>/.exec(out)![0];
+      expect(row).toContain("Launch.");
+      expect(row).not.toContain("<a");
+      expect(row).not.toContain("href");
+    });
+
+    it("renders no list for an entry without posts", () => {
+      expect(html(<LogView study={view} />)).not.toContain('aria-label="Posts"');
+    });
   });
 });
 
 describe("StudyBody", () => {
-  it("puts the 16/10 hero in the content column", () => {
-    const markup = html(<StudyBody study={view} state={DEFAULT_VIEW_STATE} />);
+  it("puts the 16/10 hero in the content column, over the Log", () => {
+    const markup = html(<StudyBody study={view} />);
     expect(markup).toContain("lg:col-start-2");
     expect(markup).toContain("aspect-[16/10]");
     expect(markup).not.toContain("21/9");
+    expect(markup).toContain('data-view="log"');
   });
 
-  it("renders the view the state asks for", () => {
-    expect(html(<StudyBody study={view} state={DEFAULT_VIEW_STATE} />)).toContain('data-view="log"');
-    expect(html(<StudyBody study={view} state={{ ...DEFAULT_VIEW_STATE, view: "grid" }} />)).toContain('data-view="grid"');
-    expect(html(<StudyBody study={view} state={{ ...DEFAULT_VIEW_STATE, view: "index", tag: "3-0" }} />)).not.toContain(">01<");
-  });
-});
-
-describe("Posts", () => {
-  const withPosts = buildStudyView(
-    {
-      ...study,
-      posts: [
-        { date: "2024-11-07", account: "primereact", id: "100", summary: "Launch.", entryId: "3-0" },
-        { date: "2026-01-19", account: "primevue", id: "200", summary: "Variables.", entryId: "4-0" },
-      ],
-    },
-    () => undefined,
-  );
-
-  it("renders rows newest first, with the day, account, summary and an external post link", () => {
-    const markup = html(<PostsView groups={withPosts.posts} />);
-    expect(markup).toContain('data-view="posts"');
-    expect(markup.indexOf(">2026<")).toBeLessThan(markup.indexOf(">2024<"));
-    expect(markup).toContain('id="post-100"');
-    expect(markup).toContain(">7 Nov<");
-    expect(markup).toContain(">@primereact<");
-    expect(markup).toContain("Launch.");
-    expect(markup).toContain('href="https://x.com/primereact/status/100"');
-    expect(markup).toContain("\u00a0\u2197");
-    expect(markup).toContain('aria-label="Post on X, 7 Nov 2024, @primereact"');
-  });
-
-  it("renders an empty list when the filter leaves nothing", () => {
-    expect(html(<PostsView groups={[]} />)).toContain('data-view="posts"');
-  });
-
-  it("shows Posts in the view bar only when asked, with post chips instead of media chips", () => {
-    const state = { ...DEFAULT_VIEW_STATE, view: "posts" as const, tag: "3-0" };
-    const bar = html(<ViewBar chips={withPosts.chips} postChips={withPosts.postChips} views={["log", "grid", "index", "posts"]} state={state} />);
-    expect(bar).toMatch(/aria-pressed="true"[^>]*>Posts</);
-    expect(bar).toContain('aria-label="Filter"');
-    expect(bar).toMatch(/aria-pressed="true"[^>]*>3\.0 <span[^>]*>1<\/span>/);
-    expect(bar).not.toContain("Tokens");
-    expect(bar).not.toContain('aria-label="Density"');
-    expect(html(<ViewBar chips={withPosts.chips} state={DEFAULT_VIEW_STATE} />)).not.toContain(">Posts<");
-  });
-
-  it("StudyBody renders the filtered Posts view, and no Posts button without posts", () => {
-    const body = html(<StudyBody study={withPosts} state={{ ...DEFAULT_VIEW_STATE, view: "posts", tag: "4-0" }} />);
-    expect(body).toContain('data-view="posts"');
-    expect(body).toContain('id="post-200"');
-    expect(body).not.toContain('id="post-100"');
-    expect(body).toContain(">Posts<");
-    expect(html(<StudyBody study={view} state={DEFAULT_VIEW_STATE} />)).not.toContain(">Posts<");
+  it("has no view bar, filter, density control or grid cards", () => {
+    const markup = html(<StudyBody study={view} />);
+    for (const gone of ['aria-label="View"', 'aria-label="Filter"', 'aria-label="Density"', 'aria-pressed', 'data-view="grid"', 'data-view="index"', 'data-view="posts"', ">Grid<", ">Index<", ">Posts<"]) {
+      expect(markup, gone).not.toContain(gone);
+    }
   });
 });
 
@@ -219,18 +232,26 @@ describe("ArchiveLog", () => {
   const archive = buildArchiveView(
     [
       { id: "aura", org: "primetek", date: "2024-01", title: "Aura", note: "A theme.", source: "https://x.com/primevue/status/1", credits: [{ name: "Bo" }], media: { id: "aura", caption: "Aura" } },
+    { id: "saga", org: "primetek", date: "2020-08", title: "Saga", note: "Themes.", source: "https://www.primefaces.org/blog/primeng-10-begins/" },
       { id: "gallery", org: "primetek", date: "2023-09", title: "Gallery", note: "A gallery.", source: "https://x.com/w00f/status/2" },
     ],
     () => undefined,
   );
   const markup = html(<ArchiveLog view={archive} />);
 
-  it("renders year groups, newest first, with month, title, note and post link", () => {
+  it("renders year groups, newest first, with month, title, note and credit", () => {
     expect(markup.indexOf(">2024<")).toBeLessThan(markup.indexOf(">2023<"));
     expect(markup).toContain("Jan 2024");
     expect(markup).toContain("Aura");
-    expect(markup).toContain('href="https://x.com/primevue/status/1"');
     expect(markup).toContain("Design: ");
+  });
+
+  it("links a source only when it is an @w00f post", () => {
+    expect(markup.match(/href="/g)).toHaveLength(1);
+    expect(markup).toContain('href="https://x.com/w00f/status/2"');
+    expect(markup).toContain('aria-label="Post on X, Gallery, Sep 2023"');
+    expect(markup).not.toContain("primevue/status");
+    expect(markup).not.toContain("primefaces.org");
   });
 
   it("shows a figure only for rows that have one", () => {

@@ -1,5 +1,5 @@
 import { ORGS } from "@/content/orgs";
-import type { ArchiveEntry, CaseStudy, Credit, Entry, FigmaRef, Link, Media, MediaAspect, Post } from "@/content/work/types";
+import type { ArchiveEntry, CaseStudy, Credit, Entry, EntryColumns, FigmaRef, Media, MediaAspect, Post } from "@/content/work/types";
 import type { ImageEntry } from "@/lib/images/plan";
 
 // Pure builders from content (content/work/) to the serialisable views the
@@ -29,10 +29,6 @@ export interface MediaView {
   credits: Credit[];
   image: ResolvedImage | null;
   figma: FigmaRef | null;
-  // The entry (or archive row) it belongs to; null for a case study's hero.
-  entryId: string | null;
-  // Short owner name for cards: "3.0", "Verona", "Cover".
-  group: string;
   // Viewer top line: "3.0 · Nov 2024", or "Cover".
   context: string;
 }
@@ -46,11 +42,15 @@ export interface EntryView {
   // Version, else title, else "Nov 2024".
   heading: string;
   note: string;
+  // The proof URL, only when it is an @w00f post (see w00fPostUrl); else null.
   source: string | null;
-  links: Link[];
   frameworks: string[];
   credits: Credit[];
+  // Media-grid columns from md; 1 unless the entry says otherwise.
+  columns: EntryColumns;
   media: MediaView[];
+  // The entry's posts, oldest first.
+  posts: PostView[];
 }
 
 export interface YearGroup<T> {
@@ -58,24 +58,17 @@ export interface YearGroup<T> {
   items: T[];
 }
 
-export interface ChipView {
-  // "all", an entry id, or a tag.
-  key: string;
-  label: string;
-  count: number;
-}
-
 export interface PostView {
   id: string;
   date: string;
-  year: string;
-  // "7 Nov"
-  day: string;
+  // "Nov 7, 2024"
+  display: string;
   // "@primevue"
   account: string;
   summary: string;
-  url: string;
-  entryId: string | null;
+  // x.com/w00f/status/<id> for an @w00f post; null for any other account
+  // (shown as plain text, with no link).
+  url: string | null;
 }
 
 export interface StudyView {
@@ -85,11 +78,6 @@ export interface StudyView {
   groups: YearGroup<EntryView>[];
   // The hero, then every entry's media, newest entry first.
   media: MediaView[];
-  chips: ChipView[];
-  // Related X posts, newest first; the chips filter them by entry.
-  posts: YearGroup<PostView>[];
-  postCount: number;
-  postChips: ChipView[];
 }
 
 export interface ArchiveRowView {
@@ -99,7 +87,8 @@ export interface ArchiveRowView {
   monthYear: string;
   title: string;
   note: string;
-  source: string;
+  // Only an @w00f post URL (see w00fPostUrl); else null.
+  source: string | null;
   credits: Credit[];
   orgName: string;
   media: MediaView | null;
@@ -121,19 +110,12 @@ function monthOf(ym: string): string {
   return MONTHS[Number(ym.slice(5, 7)) - 1];
 }
 
-// The accessible-name prefix for a proof link, by where it points: X posts,
-// archived blog pages (web.archive.org) or live blog pages (any other host).
-export function sourceLabel(href: string): string {
-  let host = "";
-  try {
-    host = new URL(href).hostname.toLowerCase();
-  } catch {
-    return "Blog post";
-  }
-  const is = (domain: string) => host === domain || host.endsWith(`.${domain}`);
-  if (is("x.com") || is("twitter.com")) return "Post on X";
-  if (is("archive.org")) return "Archived blog post";
-  return "Blog post";
+const W00F_POST = /^https:\/\/(?:x|twitter)\.com\/w00f\/status\/\d+(?:[/?#]|$)/i;
+
+// Onur 2026-10-03: no external links on the work pages except his own @w00f
+// posts. A proof URL is shown only when it is one of those.
+export function w00fPostUrl(href: string | undefined): string | null {
+  return href && W00F_POST.test(href) ? href : null;
 }
 
 // "2024-11" → "Nov 2024"
@@ -165,9 +147,7 @@ function mediaView(
   scope: string,
   media: Media,
   label: string,
-  group: string,
   context: string,
-  entryId: string | null,
   lookup: ImageLookup,
   figmaLinks: boolean,
 ): MediaView {
@@ -180,8 +160,6 @@ function mediaView(
     credits: media.credits ?? [],
     image: resolveImage(scope, media, lookup),
     figma: figmaLinks ? (media.figma ?? null) : null,
-    entryId,
-    group,
     context,
   };
 }
@@ -207,48 +185,25 @@ export function groupByYear<T extends { date: string }>(newestFirst: T[]): YearG
   return groups;
 }
 
-// All, then each entry that has media (newest first), then each tag in
-// first-seen order. Counts are always computed, never written by hand.
-export function chipsFor(media: MediaView[], entries: EntryView[]): ChipView[] {
-  const chips: ChipView[] = [{ key: "all", label: "All", count: media.length }];
-  for (const entry of entries) {
-    if (entry.media.length > 0) chips.push({ key: entry.id, label: entry.heading, count: entry.media.length });
-  }
-  const tags = new Map<string, number>();
-  for (const item of media) for (const tag of item.tags) tags.set(tag, (tags.get(tag) ?? 0) + 1);
-  for (const [tag, count] of tags) chips.push({ key: tag, label: capitalise(tag), count });
-  return chips;
-}
-
 export function postUrl(post: Post): string {
   return `https://x.com/${post.account}/status/${post.id}`;
 }
 
-export function filterPosts(groups: YearGroup<PostView>[], key: string): YearGroup<PostView>[] {
-  if (key === "all") return groups;
-  return groups
-    .map((group) => ({ year: group.year, items: group.items.filter((post) => post.entryId === key) }))
-    .filter((group) => group.items.length > 0);
+// "2024-11-07" → "Nov 7, 2024"
+function formatDay(day: string): string {
+  return `${monthOf(day)} ${Number(day.slice(8, 10))}, ${day.slice(0, 4)}`;
 }
 
-export function filterMedia(media: MediaView[], key: string): MediaView[] {
-  if (key === "all") return media;
-  return media.filter((item) => item.entryId === key || item.tags.includes(key));
-}
-
-// The set the viewer steps through: everything from the Log (hero and Log
-// figures open the full set), the filtered set from Grid and Index. A fig
-// outside the filter (a hand-edited URL) falls back to the full set.
-export function viewerItems(media: MediaView[], view: string, tag: string, fig: string | null): MediaView[] {
-  if (view === "log" || view === "posts") return media;
-  const filtered = filterMedia(media, tag);
-  return fig && !filtered.some((item) => item.id === fig) ? media : filtered;
+// Oldest first; the same day orders by status id ascending.
+function postsOldestFirst(posts: Post[]): Post[] {
+  return [...posts].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id, "en", { numeric: true }));
 }
 
 export function buildStudyView(study: CaseStudy, lookup: ImageLookup, options: ViewOptions = {}): StudyView {
   const figmaLinks = options.figmaLinks ?? true;
   const ordered = oldestFirst(study.entries);
   const ordinal = new Map(ordered.map((entry, index) => [entry.id, pad2(index + 2)]));
+  const posts = postsOldestFirst(study.posts ?? []);
   const entries: EntryView[] = [...ordered].reverse().map((entry) => {
     const heading = entryHeading(entry);
     const context = `${heading} · ${formatYearMonth(entry.date)}`;
@@ -259,44 +214,32 @@ export function buildStudyView(study: CaseStudy, lookup: ImageLookup, options: V
       month: monthOf(entry.date),
       heading,
       note: entry.note,
-      source: entry.source ?? null,
-      links: entry.links ?? [],
+      source: w00fPostUrl(entry.source),
       frameworks: entry.frameworks ?? [],
       credits: entry.credits ?? [],
+      columns: entry.columns ?? 1,
       media: entry.media.map((item, index) =>
-        mediaView(study.slug, item, `FIG. ${ordinal.get(entry.id)}.${index + 1}`, heading, context, entry.id, lookup, figmaLinks),
+        mediaView(study.slug, item, `FIG. ${ordinal.get(entry.id)}.${index + 1}`, context, lookup, figmaLinks),
       ),
+      posts: posts
+        .filter((post) => post.entryId === entry.id)
+        .map((post) => ({
+          id: post.id,
+          date: post.date,
+          display: formatDay(post.date),
+          account: `@${post.account}`,
+          summary: post.summary,
+          url: post.account === "w00f" ? postUrl(post) : null,
+        })),
     };
   });
-  const hero = mediaView(study.slug, study.hero, "FIG. 01", "Cover", "Cover", null, lookup, figmaLinks);
-  const media = [hero, ...entries.flatMap((entry) => entry.media)];
-  const posts: PostView[] = [...(study.posts ?? [])]
-    .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id, "en", { numeric: true }))
-    .map((post) => ({
-      id: post.id,
-      date: post.date,
-      year: post.date.slice(0, 4),
-      day: `${Number(post.date.slice(8, 10))} ${monthOf(post.date)}`,
-      account: `@${post.account}`,
-      summary: post.summary,
-      url: postUrl(post),
-      entryId: post.entryId ?? null,
-    }));
-  const postChips: ChipView[] = posts.length > 0 ? [{ key: "all", label: "All", count: posts.length }] : [];
-  for (const entry of entries) {
-    const count = posts.filter((post) => post.entryId === entry.id).length;
-    if (count > 0) postChips.push({ key: entry.id, label: entry.heading, count });
-  }
+  const hero = mediaView(study.slug, study.hero, "FIG. 01", "Cover", lookup, figmaLinks);
   return {
     slug: study.slug,
     title: study.title,
     hero,
     groups: groupByYear(entries),
-    media,
-    chips: chipsFor(media, entries),
-    posts: groupByYear(posts),
-    postCount: posts.length,
-    postChips,
+    media: [hero, ...entries.flatMap((entry) => entry.media)],
   };
 }
 
@@ -312,11 +255,11 @@ export function buildArchiveView(entries: ArchiveEntry[], lookup: ImageLookup, o
       monthYear,
       title: entry.title,
       note: entry.note,
-      source: entry.source,
+      source: w00fPostUrl(entry.source),
       credits: entry.credits ?? [],
       orgName: ORGS[entry.org].name,
       media: entry.media
-        ? mediaView("archive", entry.media, `FIG. ${ordinal.get(entry.id)}`, entry.title, `${entry.title} · ${monthYear}`, entry.id, lookup, figmaLinks)
+        ? mediaView("archive", entry.media, `FIG. ${ordinal.get(entry.id)}`, `${entry.title} · ${monthYear}`, lookup, figmaLinks)
         : null,
     };
   });

@@ -15,6 +15,8 @@ export interface Credit {
   name: string;
   // "design" (the default), "illustration"… Only designers are credited.
   role?: string;
+  // Kept as provenance, NOT rendered. Onur 2026-10-03: no external links
+  // except @w00f posts.
   href?: string;
 }
 
@@ -38,7 +40,8 @@ export interface Media {
   id: string;
   caption: string;
   credits?: Credit[];
-  // Grid filter tags, kebab-case: "components", "tokens", "page"…
+  // Kebab-case labels: "components", "tokens", "page"… Only "page" is read
+  // (Templates counts pages); there is no tag filter any more.
   tags?: string[];
   // An image manifest key. Leave unset: lib/work/ finds work/<slug>/<id>
   // when `npm run figma` (or a hand-placed file) has produced it.
@@ -53,6 +56,9 @@ export interface Link {
   label: string;
   href: string;
 }
+
+// Media-grid columns for one release (from md). The default is 1.
+export type EntryColumns = 1 | 2 | 3;
 
 export interface Fact {
   label: string;
@@ -69,21 +75,31 @@ export interface Entry {
   title?: string;
   // One or two sentences; must be supported by `source`.
   note: string;
-  // Proof URL, usually an X post.
+  // Proof URL, usually an X post. Kept as provenance. Rendered only when it is
+  // an x.com/w00f/status/... URL (twitter.com/w00f too); anything else is not
+  // shown. Onur 2026-10-03: no external links except @w00f posts.
   source?: string;
+  // Live demos and blog posts. Kept as provenance, NOT rendered.
+  // Onur 2026-10-03: no external links except @w00f posts.
   links?: Link[];
   // Templates only: "Vue", "Angular", "React", "JSF".
   frameworks?: string[];
   remaster?: boolean; // a remastered or all-new edition of an earlier template (Templates Coverage counts these separately)
   update?: boolean; // a major update to an existing template, not a new one (Templates Coverage counts neither a template nor a remaster)
   credits?: Credit[];
+  // How many columns the media grid has from md: 1 (default, one figure per
+  // row at the full width of the media column), 2 or 3 (3 is 2 from md and 3
+  // from lg). Always 1 below md. Onur sets it per release when he delivers
+  // images.
+  columns?: EntryColumns;
   media: Media[];
 }
 
 export const POST_ACCOUNTS = ["w00f", "primevue", "prime_ng", "primereact", "primefaces"] as const;
 export type PostAccount = (typeof POST_ACCOUNTS)[number];
 
-// A post about the project on X. The URL is derived (x.com/<account>/status/<id>).
+// A post about the project on X. The URL is derived (x.com/<account>/status/<id>);
+// only @w00f posts are shown as links.
 export interface Post {
   // "YYYY-MM-DD"
   date: string;
@@ -92,8 +108,8 @@ export interface Post {
   id: string;
   // Our own one-line summary, never the post's text (except @w00f, which may quote Onur).
   summary: string;
-  // The entry it belongs to (a release or a template), for the Posts filter.
-  entryId?: string;
+  // The entry (a release or a template) it is listed under in the Log.
+  entryId: string;
 }
 
 export interface CaseStudy {
@@ -107,12 +123,14 @@ export interface CaseStudy {
   lead: { strong: string; rest: string };
   intro: string[];
   facts: Fact[];
-  // Action column; external links get ↗.
+  // Kept as provenance, NOT rendered. Onur 2026-10-03: no external links
+  // except @w00f posts.
   links: Link[];
   hero: Media;
   // Any order; rendered newest first.
   entries: Entry[];
-  // X posts about the project, any order; rendered newest first.
+  // X posts about the project, any order; each is listed under its entry,
+  // oldest first. Only @w00f posts are links.
   posts?: Post[];
 }
 
@@ -124,6 +142,9 @@ export interface ArchiveEntry {
   title: string;
   note: string;
   // Required: the archive is built from the posts that announced the work.
+  // Kept as provenance. Rendered only when it is an x.com/w00f/status/... URL;
+  // anything else is not shown. Onur 2026-10-03: no external links except
+  // @w00f posts.
   source: string;
   credits?: Credit[];
   media?: Media;

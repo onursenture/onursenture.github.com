@@ -2,19 +2,14 @@
 
 import { useMemo } from "react";
 import type { ArchiveView } from "@/lib/work/derive";
-import type { WorkView } from "@/lib/work/url-state";
 import { ArchiveLog } from "./archive-log";
 import { MediaViewer } from "./media-viewer";
 import { useViewerHistory, useViewState } from "./use-view-state";
 
-const TAGS: ReadonlySet<string> = new Set(["all"]);
-// The Archive is a Log only: no Grid, Index or Posts.
-const VIEWS: ReadonlySet<WorkView> = new Set(["log"]);
-
 // The Archive with its figures in the shared viewer (?fig=).
 export function ArchiveBrowser({ view }: { view: ArchiveView }) {
-  const valid = useMemo(() => ({ tags: TAGS, postTags: TAGS, views: VIEWS, figs: new Set(view.media.map((item) => item.id)) }), [view]);
-  const [state, update] = useViewState(valid);
+  const figs = useMemo(() => new Set(view.media.map((item) => item.id)), [view]);
+  const [state, update] = useViewState(figs);
   const viewer = useViewerHistory(state.fig, update);
   return (
     <>

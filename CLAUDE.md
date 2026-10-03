@@ -73,22 +73,30 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
 - **Content and reads.**
   - Case studies are typed data in `content/work/` (`types.ts`; registry `index.ts`: `caseStudies`, `archive`).
   - Pages read them only through `lib/work/` (`index.ts`). Sprint 7's admin overlay merges in there.
-  - `lib/work/derive.ts` builds serialisable views: FIG labels, year groups, chips, credits and resolved images.
+  - `lib/work/derive.ts` builds serialisable views: FIG labels, year groups, per-entry posts, credits and resolved images.
   - `tests/content/work.test.ts` runs `validateWork` on the registry.
 - **Ids are permanent once published.** They key `?fig=` URLs and image files.
 - **Images.**
   - A media slot shows `image` when set, otherwise `work/<slug>/<media id>` when the manifest has it, otherwise the dither placeholder.
   - FIG numbers follow date order from the oldest entry (02 upwards; the hero is 01), so adding an older entry renumbers every later one (`?fig=` URLs use media ids and are unaffected).
   - No work images are committed yet: Onur prepares them (the auto-exported Figma frames were removed after PR #27 review), so every slot is a placeholder until they land in `images-src/work/<slug>/<media id>.png`.
-- **Layout.** The hero sits in the content column (480px, 16/10) on the section grid. The Log shows every media item of a release as an equal grid in the media column (1 or 2 items use 2 columns from md, a lone figure at grid-cell width; 3+ items use 2 columns from md and 3 from xl); there is no "+N in Grid" link.
-- **View state.**
-  - It lives in the query (`?view`, `?tag`, `?density`, `?fig`; `lib/work/url-state.ts`).
-  - The server always renders the default Log as a `<Suspense>` fallback, and `StudyBrowser` (`useSearchParams`) applies the query after hydration. Never read `searchParams` in these pages: one HTML per path keeps the CDN cache.
+- **Layout.** The hero sits in the content column (480px, 16/10) on the section grid. Every case study page is one Log: there is no Grid, Index or Posts view and no view bar, filter or density control (Onur 2026-10-03). Each release shows its media grid in the media column; `Entry.columns?: 1 | 2 | 3` (default 1) sets it: 1 is one column at the full width of the media column, 2 is `md:grid-cols-2`, 3 is `md:grid-cols-2 lg:grid-cols-3`, always 1 below md. `validateWork` rejects other values. No content sets `columns` yet; Onur sets it when he delivers images.
+- **Query state.**
+  - The only param is `?fig=<media id>` for the viewer (`lib/work/url-state.ts`). `?view`, `?tag` and `?density` are ignored, so `/work/primeone/?view=grid` renders the Log.
+  - The server always renders the page without a figure open as a `<Suspense>` fallback, and `StudyBrowser` (`useSearchParams`) applies `?fig` after hydration. Never read `searchParams` in these pages: one HTML per path keeps the CDN cache.
 - **Viewer.**
-  - `MediaViewer` is a native `<dialog>` in the Life palette.
+  - `MediaViewer` is a native `<dialog>` in the Life palette: thumbnail strip, arrows, swipe, Esc. There is no Grid toggle and no `G` key; it steps through all of the study's media.
   - Opening pushes `?fig=`, so Back closes it; stepping replaces it.
-- **Posts.** A fourth view (`?view=posts`), shown only when a case study has `posts`. Data lives in `content/work/posts/<slug>.ts` (`Post`: date, account, status id, `entryId`); the URL is derived. Summaries are our own one-liners, never PrimeTek's text (Onur's @w00f posts may quote him). The chips filter by entry (`?tag=<entry id>`); verify every id against `.superpowers/research/`.
-- **Credits.** Onur's role is a case-study fact. `credits` on an entry or a media item names colleagues who *designed* it (never developers), and Templates uses media-level credits for pages others designed.
+- **Posts.**
+  - Posts are listed inline under their release in the Log, oldest first, as `Mon D, YYYY · @account · summary` (`li#post-<id>`). There is no Posts view.
+  - Data lives in `content/work/posts/<slug>.ts` (`Post`: date, account, status id, summary, `entryId`, which is required and checked by `validateWork`). Summaries are our own one-liners, never PrimeTek's text (Onur's @w00f posts may quote him); verify every id against `.superpowers/research/`.
+- **Links.**
+  - The only external links on `/work/**` are @w00f posts (Onur 2026-10-03). A `w00f` post links to its `x.com/w00f/status/<id>` URL (accessible name "Post on X, …", the summary is the text); other accounts are plain text.
+  - An entry or Archive `source` renders `post ↗` only when it is an @w00f status URL (`w00fPostUrl` in `derive.ts`).
+  - Entry `links`, case study `links`, credit `href`s and non-@w00f sources stay in the data as provenance and are never rendered (each type field says so).
+  - Internal links (index rows, back links, nav) stay.
+- **Credits.** Onur's role is a case-study fact. `credits` on an entry or a media item names colleagues who *designed* it (never developers), and Templates uses media-level credits for pages others designed. Credit names render as plain text (an `href` is provenance, per the links rule).
+- **PrimeIcons.** The live icon grid renders after the Log as page content, not a view.
 - **Numbers.** Coverage (Templates) and the icon count (PrimeIcons) are computed, never written by hand. Coverage counts templates and `remaster` entries; an `update` entry (a major update to an existing template) is in neither count.
 - **Filling media from Figma.** Figma refs stay out of the public repo: no content file sets `figma` (the `Media.figma` type remains for `figmaLinks`, should it ever be turned on with committed refs).
   1. List each frame in the gitignored `figma.local.json` at the repo root, keyed by the slot's manifest key: `"work/<slug>/<media id>": { "fileKey": "...", "nodeId": "12:345" }` (the URL's `node-id=12-345` works too). `figma.example.json` shows the shape.
