@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fragment_Mono } from "next/font/google";
+import { OPEN_GRAPH_DEFAULTS, TWITTER_DEFAULTS } from "@/lib/metadata";
 import { site } from "@/lib/site";
 import { themeScript } from "@/lib/view/theme";
 import "./globals.css";
@@ -19,6 +20,9 @@ const ADOBE_FONTS_KIT = "https://use.typekit.net/jgu1ygn.css";
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: { default: site.title, template: `%s · ${site.title}` },
+  // Pages that set their own openGraph/twitter use pageMetadata() to keep these.
+  openGraph: { ...OPEN_GRAPH_DEFAULTS, title: site.title },
+  twitter: { ...TWITTER_DEFAULTS, title: site.title },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

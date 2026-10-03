@@ -19,15 +19,13 @@ import { StatusGlyph } from "@/components/ui/status-glyph";
 import { TextLink } from "@/components/ui/text-link";
 import { type Photo, getPhotos } from "@/lib/content/photos";
 import { formatDate } from "@/lib/format";
+import { pageMetadata } from "@/lib/metadata";
 import { assertView } from "@/lib/view/params";
 
 // The in-code style tile and the S3 review surface. Not in the nav, not
 // indexed. Every primitive renders here in whichever view and theme is
 // active. Sample values are deliberately generic: no invented facts.
-export const metadata: Metadata = {
-  title: "System",
-  robots: { index: false, follow: false },
-};
+export const metadata: Metadata = pageMetadata("System", { robots: { index: false, follow: false } });
 
 const TYPE_STYLES = [
   ["type-display-160", "Aa"],

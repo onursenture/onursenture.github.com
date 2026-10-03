@@ -4,9 +4,10 @@ import { SectionBlock } from "@/components/sections/section-block";
 import { visibleSections } from "@/components/sections/types";
 import { PageHeader } from "@/components/shell/page-header";
 import { PanelGrid } from "@/components/ui/panel";
+import { pageMetadata } from "@/lib/metadata";
 import { assertView } from "@/lib/view/params";
 
-export const metadata: Metadata = { title: "Life" };
+export const metadata: Metadata = pageMetadata("Life");
 
 export default async function LifePage({ params }: PageProps<"/[view]/life">) {
   const view = assertView((await params).view);

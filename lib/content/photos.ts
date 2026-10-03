@@ -51,3 +51,14 @@ export async function getPhotos(): Promise<Photo[]> {
 export async function getPhoto(slug: string): Promise<Photo | undefined> {
   return (await getPhotos()).find((p) => p.slug === slug);
 }
+
+// The neighbours of a photo in index order (newest first): previous is the
+// newer one, next the older one.
+export function adjacentPhotos(
+  photos: Photo[],
+  slug: string,
+): { previous: Photo | null; next: Photo | null } {
+  const index = photos.findIndex((p) => p.slug === slug);
+  if (index === -1) return { previous: null, next: null };
+  return { previous: photos[index - 1] ?? null, next: photos[index + 1] ?? null };
+}
