@@ -52,13 +52,13 @@ test("Contributions shows the empty state without data, and links to GitHub", as
   await expect(contributions.getByRole("link", { name: "GitHub" })).toHaveAttribute("href", "https://github.com/onursenture");
 });
 
-test("Lab lists text rows without avatars; only linked entries link", async ({ page }) => {
+test("Lab lists text rows without glyphs or avatars; only linked entries link", async ({ page }) => {
   await page.goto("/");
   const lab = page.locator("#lab");
   await expect(lab).toContainText("onursenture.com");
   await expect(lab).not.toContainText("Project 0");
   await expect(lab.getByRole("link")).toHaveCount(1);
-  await expect(lab.getByRole("img", { name: "in progress" })).toHaveCount(1);
+  await expect(lab.getByRole("img")).toHaveCount(0);
   await expect(lab.locator("canvas")).toHaveCount(0);
 });
 

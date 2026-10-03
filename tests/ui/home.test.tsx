@@ -83,8 +83,8 @@ describe("LabGrid", () => {
     const markup = html(
       <LabGrid
         entries={[
-          { title: "Linked", description: "d", href: "https://example.com", status: "wip" },
-          { title: "Plain", description: "d", status: "wip" },
+          { title: "Linked", description: "d", href: "https://example.com" },
+          { title: "Plain", description: "d" },
         ]}
       />,
     );
@@ -100,7 +100,6 @@ describe("LabGrid", () => {
             title: "onursenture.com",
             description: "This site.",
             year: "2026",
-            status: "wip",
             href: "https://github.com/onursenture/onursenture.github.com",
           },
         ]}
@@ -109,10 +108,9 @@ describe("LabGrid", () => {
     expect(markup).toContain("onursenture.com");
     expect(markup).toContain("This site.");
     expect(markup).toContain("2026");
-    // The row starts with its status glyph, then the title; no aria-hidden avatar leads it.
-    const row = markup.slice(markup.indexOf("<li"));
-    expect(row.replace(/^<li[^>]*>/, "")).toMatch(/^<span[^>]*><span[^>]*role="img"[^>]*aria-label="in progress"/);
-    expect(markup).not.toMatch(/<li[^>]*><span[^>]*aria-hidden="true"/);
+    // The row starts with the title link: no status glyph, no avatar.
+    expect(markup).not.toContain('role="img"');
+    expect(markup).toMatch(/<li[^>]*><span[^>]*><a /);
   });
 });
 
