@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { ArchiveLog } from "@/components/work/archive-log";
 import { CreditLine } from "@/components/work/credit-line";
 import { GridView } from "@/components/work/grid-view";
 import { IndexView } from "@/components/work/index-view";
@@ -8,7 +9,7 @@ import { MediaFigure } from "@/components/work/media-figure";
 import { StudyBody } from "@/components/work/study-body";
 import { ViewBar } from "@/components/work/view-bar";
 import type { CaseStudy } from "@/content/work/types";
-import { buildStudyView } from "@/lib/work/derive";
+import { buildArchiveView, buildStudyView } from "@/lib/work/derive";
 import { DEFAULT_VIEW_STATE } from "@/lib/work/url-state";
 
 const html = renderToStaticMarkup;
@@ -126,5 +127,28 @@ describe("StudyBody", () => {
     expect(html(<StudyBody study={view} state={DEFAULT_VIEW_STATE} />)).toContain('data-view="log"');
     expect(html(<StudyBody study={view} state={{ ...DEFAULT_VIEW_STATE, view: "grid" }} />)).toContain('data-view="grid"');
     expect(html(<StudyBody study={view} state={{ ...DEFAULT_VIEW_STATE, view: "index", tag: "3-0" }} />)).not.toContain(">01<");
+  });
+});
+
+describe("ArchiveLog", () => {
+  const archive = buildArchiveView(
+    [
+      { id: "aura", org: "primetek", date: "2024-01", title: "Aura", note: "A theme.", source: "https://x.com/primevue/status/1", credits: [{ name: "Bo" }], media: { id: "aura", caption: "Aura" } },
+      { id: "gallery", org: "primetek", date: "2023-09", title: "Gallery", note: "A gallery.", source: "https://x.com/w00f/status/2" },
+    ],
+    () => undefined,
+  );
+  const markup = html(<ArchiveLog view={archive} />);
+
+  it("renders year groups, newest first, with month, title, note and post link", () => {
+    expect(markup.indexOf(">2024<")).toBeLessThan(markup.indexOf(">2023<"));
+    expect(markup).toContain("Jan 2024");
+    expect(markup).toContain("Aura");
+    expect(markup).toContain('href="https://x.com/primevue/status/1"');
+    expect(markup).toContain("Design: ");
+  });
+
+  it("shows a figure only for rows that have one", () => {
+    expect(markup.match(/data-media="/g)).toHaveLength(1);
   });
 });
