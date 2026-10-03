@@ -10,6 +10,11 @@
 
 **Spec:** `docs/superpowers/specs/2026-10-03-s3-design-system-shell-design.md` (with `2026-10-02-s1-visual-direction-design.md` for token values). Figma style tile: file `GJAOUY4DJdPgvPgfNZRsst`.
 
+## Errata (applied during execution)
+
+- **Task 6 (2026-10-03).** The nav morph described below was replaced by a whole-page cross-fade, at Onur's decision after the task review. React sets `view-transition-name: none` on `<html>` when no boundary covers the root, so the content never cross-faded, and the nav snapshot stretched between the bar and the list. `ShellMorph` / `shell-morph.tsx` / the `shell-nav` name became `ShellFade` / `shell-fade.tsx` / the `shell` name, which wraps each shell's outer element. Where the text below says "morph", `shell-nav` or `ShellMorph`, read the cross-fade. See the S1 and S3 specs' revised motion lines and commit 0d6963b.
+- **Task 5 (2026-10-03).** A review fix (8a9facc) moved the site bar height onto the bordered `<header>`, added a matchMedia close to `MenuDialog`, and changed the slide-over header padding, the wash and the footer separators. Later tasks that "Replace" those files keep these fixes.
+
 ## Notes from the planning spike (record these in the spec)
 
 Every code block below was run in a throwaway worktree of `v2`, task by task, with the full verification at each step.
@@ -7078,30 +7083,6 @@ npm run screenshots -- <dir> <path>...  # 1440 + 390, both views, both themes (b
 and replace:
 
 ```markdown
-
-### Task 13: Approved design tweaks — collapse empty index columns, numeric ratings
-
-Onur approved two changes after the plan was verified. They land last, so Tasks 1–12 stay verbatim.
-
-1. **Collapse empty index columns.** If no entry in a list has a value for a column (`years`, `role` in the work index; `year` in the Lab index), that column is not rendered at all: no empty grid track, no header. Titles then start in the first column. The column comes back on its own when any entry gets a value.
-   - Apply this in the site-view index rows (`IndexRow` and its list) and in the dashboard `DataTable`s for Work and Lab, by filtering the column config.
-   - Add a pure helper, `visibleColumns(entries, keys)`, in `lib/index-columns.ts`. It returns the keys that at least one entry has a non-empty value for. Unit-test it: none present, some present, all present.
-2. **Numeric ratings instead of stars.** Neither Neue Haas Grotesk nor Fragment Mono has `★`, so star strings fall back to a small system glyph.
-   - Wherever a rating is shown (the "Off the clock" film tile, the `/life` films and books bands, and the films and books dashboard tables), render the number in mono: `3.5` for `ratingValue`, and Goodreads `numRating` as `4`.
-   - Unrated items show nothing.
-   - Replace `lib/sources/stars.ts` and its usages with `lib/sources/rating.ts`, exporting `formatRating(value: number | null): string`. It returns `""` for null or 0, drops trailing `.0` (`4` → "4", `3.5` → "3.5"), and never invents stars. Update its tests accordingly, and delete `stars.ts` and its test.
-   - `/system/` shows the numeric rating instead of stars.
-
-**Files:** Create `lib/index-columns.ts`, `lib/sources/rating.ts`, `tests/index-columns.test.ts`, `tests/sources/rating.test.ts`. Delete `lib/sources/stars.ts` and its test. Modify the index/table components and the pages from Tasks 3, 8, 9 and 10 that render these.
-
-- [ ] **Step 1:** Write the failing unit tests for `visibleColumns` and `formatRating`. Run `npm test` and expect FAIL.
-- [ ] **Step 2:** Implement both helpers. Run `npm test` and expect PASS.
-- [ ] **Step 3:** Wire both helpers into the components and pages. Remove `stars.ts` and every usage. `grep -rn "★" app components lib` must return nothing; fixtures may still contain ★.
-- [ ] **Step 4:** Update any e2e assertions that expected stars, or that expected an empty year column, so they assert the numeric rating and the collapsed columns.
-- [ ] **Step 5:** Verify with `npm run typecheck && npm run lint && npm test && npm run build && npm run e2e`, then `SOURCE_FIXTURES=1 npm run build && npm run e2e:fixtures`, then a plain `npm run build`. The e2e counts stay 53 / 4 unless you added assertions, in which case report the new counts.
-- [ ] **Step 6:** Visual check. Run `npm run screenshots` for home and `/life` in both views and both themes. Confirm that work-index titles start in the first column and that ratings render as mono numbers.
-- [ ] **Step 7:** Commit with "Collapse empty index columns and show ratings as numbers", then a blank line, then the trailer.
-
 ## Sources and sync
 ```
 
@@ -7116,8 +7097,8 @@ with:
 - No icons. Glyphs only: `→` (every link, internal or external; never `↗`), `●` ok, `○` empty, `◐` late or partial, `×` close. Status glyphs go through `<StatusGlyph>`.
 - Primitives are in `components/ui/`. `/system/` renders all of them (not in the nav, `noindex`); check it in both views and themes after UI changes.
 - Shells are in `components/shell/`. The nav comes from `lib/nav.ts`: flip `ready` when a section ships.
-- The view switch animates through React `<ViewTransition>` (`ShellMorph`) and the `view-switch` transition type that `ViewToggle` adds; reduced motion skips it.
-- Unknown URLs 404 inside the shell (`app/[view]/[...missing]`). Under Cache Components these 404s are served as an error shell that React renders on the client, so the inline theme script never runs there; `ThemeToggle` re-applies the cookie.
+- The view switch cross-fades the whole page through React `<ViewTransition>` (`ShellFade`: each shell's outer element shares the name `shell`) and the `view-switch` transition type that `ViewToggle` adds; reduced motion skips it.
+- Unknown URLs 404 inside the shell (`app/[view]/[...missing]`). Under Cache Components these 404s are served as an error shell that React renders on the client, so the inline theme script never runs there; `ThemeToggle` re-applies the cookie, and `ThemeSync` does the same on the root 404 (`app/not-found.tsx`).
 - After a client navigation or a view switch, Next keeps the previous tree mounted but hidden. In e2e, prefer role locators (they skip hidden elements) or filter with `:visible`.
 - Only confirmed facts go in `content/profile.ts`, `content/work-index.ts` and `content/lab-index.ts`.
 
@@ -7158,6 +7139,38 @@ git commit -m "Cover theme × view, back/forward and invalid views in e2e
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
+
+### Task 13: Approved design tweaks — collapse empty index columns, numeric ratings
+
+Onur approved two changes after the plan was verified. They land last, so Tasks 1–12 stay verbatim.
+
+1. **Collapse empty index columns.** If no entry in a list has a value for a column (`years`, `role` in the work index; `year` in the Lab index), that column is not rendered at all: no empty grid track, no header. Titles then start in the first column. The column comes back on its own when any entry gets a value.
+   - Apply this in the site-view index rows (`IndexRow` and its list) and in the dashboard `DataTable`s for Work and Lab, by filtering the column config.
+   - Add a pure helper, `visibleColumns(entries, keys)`, in `lib/index-columns.ts`. It returns the keys that at least one entry has a non-empty value for. Unit-test it: none present, some present, all present.
+2. **Numeric ratings instead of stars.** Neither Neue Haas Grotesk nor Fragment Mono has `★`, so star strings fall back to a small system glyph.
+   - Wherever a rating is shown (the "Off the clock" film tile, the `/life` films and books bands, and the films and books dashboard tables), render the number in mono: `3.5` for `ratingValue`, and Goodreads `numRating` as `4`.
+   - Unrated items show nothing.
+   - Replace `lib/sources/stars.ts` and its usages with `lib/sources/rating.ts`, exporting `formatRating(value: number | null): string`. It returns `""` for null or 0, drops trailing `.0` (`4` → "4", `3.5` → "3.5"), and never invents stars. Update its tests accordingly, and delete `stars.ts` and its test.
+   - `/system/` shows the numeric rating instead of stars.
+
+3. **Index-row arrow at phone widths** (Task 8 review, inherited from Task 3). `components/ui/index-row.tsx` puts the `→` in a `col-span-1` cell of a 12-column grid. At 390px that cell is about 8px wide, so the glyph (about 20px) overhangs the 16px gutter by about 12px. Below about 344px it causes horizontal page scroll. Below `md`, give the arrow a content-sized track (for example `grid-cols-[minmax(0,1fr)_auto]`, with year and role spanning the row) or move it into the title cell. Acceptance: `scrollWidth === clientWidth` at 320px, and the `→` right edge stays inside the gutter at 390px. Add an e2e assertion for both.
+4. **No-wrap fixes** (Task 8 review). In `components/home/meta-line.tsx`, add `whitespace-nowrap` to each segment span, so the line wraps between segments and never inside "OPEN TO ROLES". In `components/home/off-the-clock.tsx`, keep the Saved caption's reading time together ("13 min" must not break).
+
+5. **Dashboard panel spans at tablet widths** (Task 9 review). `components/ui/panel.tsx` applies `span` from `md:`, but the dashboard already gives 240px to the sidebar. Between 768px and about 1300px the 8/4 pairs are too narrow: the Status rows wrap and spill, and Sources clips its columns. Apply spans from the lowest breakpoint at which every 4-column panel fits its content, and stack panels full width below it. Expect `xl:` or a custom `min-[1360px]:`. 1440px must keep the 8/4 layout. Acceptance: at 768, 1024, 1280 and 1440px, no panel content wraps out of its panel or is clipped, on `/` and `/life/` in the dashboard view. DataTable sideways scroll below `md` is still allowed. Record the widths you checked in the report.
+6. **Honest stat tiles** (Onur, 2026-10-03). The dashboard home `StatRow` shows exactly two tiles: "Contributions · 12 mo" (GitHub `totalContributions`) and "Reading now" (the Goodreads currently-reading count). Drop the "Films synced" tile, because the feed is capped at 6 and would always read 6. Drop "Books", because reading plus the last 5 read isn't a library total. `profile.metrics` entries are still appended when present. Anywhere else a contributions figure appears, its label must name the period ("12 mo" or "last year"). That includes the `/life` GitHub band, and the dashboard GitHub panel's three tiles in `components/sections/github/index.tsx`: "Contributions · 12 mo", "Active days · 12 mo" and "Longest streak · 12 mo". All three are windowed, so a streak that crosses the window start is truncated. When GitHub has no data (no weeks), hide those tiles instead of showing 0. Update the unit and e2e assertions on these tiles, including the exact `dt` assertion in `e2e-fixtures/life.spec.ts`.
+7. **Lab table without a Status column** (Onur, 2026-10-03). The dashboard `LabPanel` `DataTable` drops its Status column. The status glyph in the Project cell already carries it, with its "in progress" / "live" aria-label. The remaining columns are Project, Description and Year, and Year collapses through `visibleColumns` when empty.
+8. **Lock the home → `/life` fragments** (Task 10 review). Add an e2e test asserting that `/life/#books`, `#films`, `#photos` and `#articles` each resolve to exactly one element, in both views. The home "Off the clock" tiles link there.
+9. **Dashboard page header at phone width** (Task 11 review). In `components/shell/page-header.tsx`, a long dashboard title such as "Bazı Kötü Alışkanlıkların Politik Tarihi" wraps to two lines inside the fixed 40px bar. Give the dashboard h1 `truncate` (single line, `min-w-0`), and keep the meta from squeezing the title: `shrink-0`, or hide the meta below `md` when space runs out. Check `/photos/bazi-kotu-aliskanliklarin-politik-tarihi/` in the dashboard view at 390px.
+
+**Files:** Modify `components/ui/index-row.tsx`, `components/ui/panel.tsx`, `components/home/meta-line.tsx`, `components/home/off-the-clock.tsx`, `components/home/home-dashboard.tsx`, `components/home/lab-index.tsx`, `components/sections/github/index.tsx`, `components/shell/page-header.tsx`. Create `lib/index-columns.ts`, `lib/sources/rating.ts`, `tests/index-columns.test.ts`, `tests/sources/rating.test.ts`. Delete `lib/sources/stars.ts` and its test. Modify the index/table components and the pages from Tasks 3, 8, 9 and 10 that render these.
+
+- [ ] **Step 1:** Write the failing unit tests for `visibleColumns` and `formatRating`. Run `npm test` and expect FAIL.
+- [ ] **Step 2:** Implement both helpers. Run `npm test` and expect PASS.
+- [ ] **Step 3:** Wire both helpers into the components and pages. Remove `stars.ts` and every usage. `grep -rn "★" app components lib` must return nothing; fixtures may still contain ★.
+- [ ] **Step 4:** Update any e2e assertions that expected stars, or that expected an empty year column, so they assert the numeric rating and the collapsed columns.
+- [ ] **Step 5:** Verify with `npm run typecheck && npm run lint && npm test && npm run build && npm run e2e`, then `SOURCE_FIXTURES=1 npm run build && npm run e2e:fixtures`, then a plain `npm run build`. The e2e counts stay 53 / 4 unless you added assertions, in which case report the new counts.
+- [ ] **Step 6:** Visual check. Run `npm run screenshots` for home and `/life` in both views and both themes. Confirm that work-index titles start in the first column and that ratings render as mono numbers.
+- [ ] **Step 7:** Commit with "Collapse empty index columns and show ratings as numbers", then a blank line, then the trailer.
 
 ---
 

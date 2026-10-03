@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { PanelSpan } from "@/components/ui/panel";
 import type { SourceView } from "@/lib/sources/snapshot-view";
 import type { View } from "@/lib/view/views";
 
@@ -14,7 +15,17 @@ export interface SectionDefinition<T> {
   visibility: Visibility;
   load: () => Promise<SourceView<T>>;
   Site: (props: { data: T }) => ReactNode;
-  Dashboard: (props: { data: T; lastSuccessAt: string | null }) => ReactNode;
+  Dashboard: (props: { data: T }) => ReactNode;
+  // Upstream name for the band header ("Films · Letterboxd").
+  source?: string;
+  // Fed by a synced source: the dashboard panel header shows the sync time.
+  synced?: boolean;
+  // The band's "All →" link.
+  href?: string;
+  // Item count for the panel header.
+  count?: (data: T) => number;
+  // Dashboard grid columns (default 12).
+  span?: PanelSpan;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

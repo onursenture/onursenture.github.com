@@ -12,16 +12,15 @@ describe("parseLetterboxd", () => {
       link: "https://letterboxd.com/onur/film/love-other-drugs/",
       poster:
         "https://a.ltrbxd.com/resized/film-poster/2/1/8/0/1/21801-love-other-drugs-0-600-0-900-crop.jpg?v=08511b998f",
-      rating: "★★★½",
       ratingValue: 3.5,
       watchedDate: "2026-09-26",
       date: "2026-09-26T14:18:59.000Z",
     });
   });
 
-  it("leaves rating empty for unrated watches", async () => {
+  it("leaves the rating null for unrated watches", async () => {
     const films = await parseLetterboxd(fixture("letterboxd.xml"));
-    expect(films[2]).toMatchObject({ title: "Pickled", rating: "", ratingValue: null });
+    expect(films[2]).toMatchObject({ title: "Pickled", ratingValue: null });
   });
 
   it("validates against its own schema", async () => {

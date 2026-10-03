@@ -19,9 +19,10 @@ npm run e2e            # Playwright on port 3217; run `npm run build` first
 npm run e2e:fixtures   # port 3219; run `SOURCE_FIXTURES=1 npm run build` first
 npm run images         # optimize images-src/ into public/images/ + manifest
 npm run db:generate    # drizzle-kit generate; db:migrate applies it (--force)
+npm run screenshots -- <dir> <path>...  # 1440 + 390, both views, both themes (build first)
 ```
 
-CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixtures`. Finish with a plain `npm run build` so the local `.next` isn't left in fixture mode.
+CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixtures`, and uploads the Playwright traces when a run fails. Finish with a plain `npm run build` so the local `.next` isn't left in fixture mode.
 
 ## Environment
 
@@ -42,6 +43,24 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
 - Faces to avoid: see the S1 spec's "Faces to avoid" list.
 - OG images are always JPEG with an absolute URL (via `metadataBase`). Pages without a real image omit `og:image`.
 - English only.
+
+## Design system (S3)
+
+- Tokens live in `app/globals.css` (`@theme static`), named exactly as the Figma variables (`--color-bg`, `--color-fg-muted`, `--radius-control`, …). `tests/tokens.test.ts` pins them to the S1 values. Tailwind's default palette, text sizes, radii and shadows are cleared, so only token utilities exist: `bg-bg`, `text-fg-muted`, `border` (a `--color-line` rule), `rounded-control`.
+- Type comes only from the `type-*` classes: one per Figma text style (`type-display-{96,64,40}`, `type-sans-{28,20,16,14,13}` plus `-medium`, `type-mono-{13,12,11}`), plus `type-display-160` from the S1 spec.
+- Square corners except form controls (`rounded-control`). No shadows. Monochrome; `--color-danger` only for errors.
+- No icons. Glyphs only: `→` (every link, internal or external; never `↗`), `●` ok, `○` empty, `◐` late or partial, `×` close. Status glyphs go through `<StatusGlyph>`.
+- Primitives are in `components/ui/`. `/system/` renders all of them (not in the nav, `noindex`); check it in both views and themes after UI changes.
+- Shells are in `components/shell/`. The nav comes from `lib/nav.ts`: flip `ready` when a section ships.
+- The view switch cross-fades the whole page through React `<ViewTransition>` (`ShellFade`: each shell's outer element shares the name `shell`) and the `view-switch` transition type that `ViewToggle` adds; reduced motion skips it.
+- Every proxied response is sent with `Cache-Control: public, max-age=0, must-revalidate` (`proxy.ts`), the same header Vercel already gives browsers. The two views share URLs, and Next keys its cached payloads only on its router headers, so under `next start` Chrome would otherwise serve the other view's prefetch after a toggle, and the next link click would mix the two shells (`e2e/matrix.spec.ts`, round trip). Never use `private`/`no-cache`/`no-store` here: Vercel's CDN won't cache those responses.
+- Back/forward to a history entry rendered in the other view must not use Next's restore (it hangs on the stale cache); `ViewHistoryGuard` navigates to the URL instead. It reads Next's private `history.state`, so recheck the back/forward tests in `e2e/matrix.spec.ts` after a Next upgrade.
+- Unknown URLs 404 inside the shell (`app/[view]/[...missing]`). Under Cache Components these 404s are served as an error shell that React renders on the client, so the inline theme script never runs there; `ThemeToggle` re-applies the cookie, and `ThemeSync` does the same on the root 404 (`app/not-found.tsx`).
+- After a client navigation or a view switch, Next keeps the previous tree mounted but hidden. In e2e, prefer role locators (they skip hidden elements) or filter with `:visible`.
+- Optional index columns (`years`, `role` in the work index, `year` in the Lab index) are not rendered at all while no entry has a value (`visibleColumns` in `lib/index-columns.ts`, used by `IndexList`, `workColumns` and `LabPanel`); they return on their own once an entry gets one.
+- Ratings are plain numbers in mono (`formatRating` in `lib/sources/rating.ts`: `3.5`, `4`, unrated shows nothing). Never stars: neither face has `★`. `grep -rn "★" app components lib` must stay empty.
+- Dashboard panel spans start at `xl` (1280px); below it panels stack full width, because the 240px sidebar leaves 4- and 6-column panels too narrow. Contribution figures always name their period ("12 mo").
+- Only confirmed facts go in `content/profile.ts`, `content/work-index.ts` and `content/lab-index.ts`.
 
 ## Sources and sync
 

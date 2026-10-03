@@ -111,13 +111,13 @@ The existing `<Picture>` is unchanged. `Empty` is restyled with tokens.
 
 **Mode-switch transition.**
 - Use React's `<ViewTransition>` with Next 16's view transition support. The toggle wraps `router.refresh()` in `startTransition`.
-- The site top-bar nav and the dashboard sidebar share `view-transition-name: shell-nav`, so one morphs into the other. Content cross-fades. 250ms, ease-out.
+- The whole page cross-fades from one shell to the other. 250ms, ease-out.
 - With `prefers-reduced-motion: reduce`, there is no animation.
-- **Spike result (2026-10-03): it works on Next 16.3.8 with `cacheComponents`.**
-  - Both desktop navs are wrapped in `<ViewTransition name="shell-nav" share={{ "view-switch": "shell-morph", default: "none" }} default="none">`. The toggle runs `startTransition(() => { addTransitionType("view-switch"); router.refresh(); })`.
-  - Each toggle produces exactly one view transition: the nav morph plus the root cross-fade. Page navigations produce none, and none run under reduced motion, where the toggle skips `addTransitionType`.
-  - No config flag is needed.
-  - A separate content `<ViewTransition>` never fired and was dropped; the root snapshot already cross-fades the content.
+- **Spike result (2026-10-03): it works on Next 16.3.8 with `cacheComponents`.** The toggle runs `startTransition(() => { addTransitionType("view-switch"); router.refresh(); })`. Page navigations produce no transition, and none runs under reduced motion, where the toggle skips `addTransitionType`. No config flag is needed.
+- **Revised after the Task 6 review (2026-10-03).**
+  - The first pass wrapped both desktop navs in a shared `<ViewTransition name="shell-nav">` and relied on the root snapshot to cross-fade the content.
+  - React sets `view-transition-name: none` on `<html>` when no boundary covers the root. So only the nav animated, and its snapshot stretched between the bar and list shapes.
+  - Onur chose to drop the nav morph. Each shell's outer element is now wrapped in `<ViewTransition name="shell" share={{ "view-switch": "shell-fade", default: "none" }} default="none">` (`@types/react` requires the `default` key in the per-type map). The outgoing and incoming shells form a shared pair, and their snapshots cross-fade.
 
 **404 inside the shell.** Add `app/[view]/[...missing]/page.tsx`, which calls `notFound()`, plus `app/[view]/not-found.tsx`. Unknown URLs then render inside the view layout, with nav and toggles, in both views. Cache Components needs at least one prerendered param, so `generateStaticParams` returns a single placeholder param.
 

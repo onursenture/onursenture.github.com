@@ -13,12 +13,12 @@ describe("parseGoodreadsShelf", () => {
     expect(books[2].date).toBe("2026-06-21T00:00:00.000Z");
   });
 
-  it("upgrades cover thumbnails and converts ratings to stars", async () => {
+  it("upgrades cover thumbnails and reads the numeric rating", async () => {
     const [first] = await parseGoodreadsShelf(fixture("goodreads-read.xml"), 5);
     expect(first.cover).toBe(
       "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347438784l/663561._SY475_.jpg",
     );
-    expect(first).toMatchObject({ rating: "★★", numRating: 2, author: "Lars Müller" });
+    expect(first).toMatchObject({ numRating: 2, author: "Lars Müller" });
   });
 
   it("extracts review text from user_review only", async () => {
@@ -40,11 +40,17 @@ describe("goodreads.fetch", () => {
 
   it("fetches both shelves", async () => {
     const fetch = fakeFetch({
-      [`${base}?shelf=currently-reading`]: { body: fixture("goodreads-read.xml") },
+      [`${base}?shelf=currently-reading`]: { body: fixture("goodreads-currently-reading.xml") },
       [`${base}?shelf=read`]: { body: fixture("goodreads-read.xml") },
     });
     const books = await goodreads.fetch({ fetch, env: {} });
-    expect(books.currentlyReading).toHaveLength(3);
+    expect(books.currentlyReading.map((b) => b.title)).toEqual([
+      "Harry Potter and the Deathly Hallows (Harry Potter, #7)",
+      "Educated",
+      "Mutluluğun Mimarisi",
+    ]);
+    // Nothing on the shelf is rated yet.
+    expect(books.currentlyReading[0]).toMatchObject({ author: "J.K. Rowling", numRating: 0 });
     expect(books.read).toHaveLength(3);
   });
 

@@ -1,7 +1,16 @@
 "use client";
 
+import { useEffect } from "react";
 import { useSyncExternalStore } from "react";
-import { THEME_COOKIE, THEME_PREFERENCES, type ThemePreference } from "@/lib/view/theme";
+import { Toggle } from "@/components/ui/toggle";
+import { serializeCookie } from "@/lib/view/cookies";
+import { THEME_COOKIE, THEME_COOKIE_PATTERN, THEME_PREFERENCES, type ThemePreference } from "@/lib/view/theme";
+
+const OPTIONS = [
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+  { value: "system", label: "Auto" },
+] as const satisfies readonly { value: ThemePreference; label: string }[];
 
 function readPreference(): ThemePreference {
   const value = document.documentElement.dataset.themePreference;
@@ -21,8 +30,20 @@ function apply(preference: ThemePreference) {
 
 const listeners = new Set<() => void>();
 
+// themeScript sets the theme before first paint, but only in server-rendered
+// HTML. Under Cache Components a 404 is served as an empty error shell that
+// React renders on the client, where inline scripts never run: apply the
+// cookie's theme on mount instead.
+function ensureTheme() {
+  if (document.documentElement.dataset.themePreference) return;
+  const match = document.cookie.match(THEME_COOKIE_PATTERN);
+  apply((match?.[1] as ThemePreference | undefined) ?? "system");
+  listeners.forEach((l) => l());
+}
+
 function subscribe(listener: () => void) {
   listeners.add(listener);
+  ensureTheme();
   // Follow OS changes while the preference is "system".
   const media = window.matchMedia("(prefers-color-scheme: dark)");
   const onChange = () => {
@@ -35,21 +56,24 @@ function subscribe(listener: () => void) {
   };
 }
 
+// Light / Dark / Auto. Theme switches are instant (no transition).
 export function ThemeToggle() {
   // Server render has no preference; "system" matches the script's default.
   const preference = useSyncExternalStore(subscribe, readPreference, () => "system" as const);
 
-  function cycle() {
-    const index = THEME_PREFERENCES.indexOf(preference);
-    const next = THEME_PREFERENCES[(index + 1) % THEME_PREFERENCES.length];
-    document.cookie = `${THEME_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
+  function choose(next: ThemePreference) {
+    document.cookie = serializeCookie(THEME_COOKIE, next);
     apply(next);
     listeners.forEach((l) => l());
   }
 
-  return (
-    <button type="button" onClick={cycle} data-testid="theme-toggle">
-      Theme: {preference}
-    </button>
-  );
+  return <Toggle label="Theme" testId="theme-toggle" options={OPTIONS} value={preference} onChange={choose} />;
+}
+
+// For client-rendered error pages that have no ThemeToggle.
+export function ThemeSync() {
+  useEffect(() => {
+    ensureTheme();
+  }, []);
+  return null;
 }

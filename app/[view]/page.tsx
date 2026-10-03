@@ -1,13 +1,8 @@
-import Link from "next/link";
+import { HomeDashboard } from "@/components/home/home-dashboard";
+import { HomeSite } from "@/components/home/home-site";
+import { assertView } from "@/lib/view/params";
 
-// Placeholder until the two-tier home page lands in S3.
-export default function HomePage() {
-  return (
-    <main className="py-8">
-      <h1 className="text-2xl font-bold">Onur Senture</h1>
-      <p>
-        Site v2 skeleton. See <Link href="/life/">Life</Link> and <Link href="/photos/">Photos</Link>.
-      </p>
-    </main>
-  );
+export default async function HomePage({ params }: PageProps<"/[view]">) {
+  const view = assertView((await params).view);
+  return view === "dashboard" ? <HomeDashboard /> : <HomeSite />;
 }

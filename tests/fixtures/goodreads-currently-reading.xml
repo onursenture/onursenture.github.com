@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" >
+  <channel>
+    <xhtml:meta xmlns:xhtml="http://www.w3.org/1999/xhtml" name="robots" content="noindex" />
+    <title>Onur's bookshelf: currently-reading</title>
+    <copyright><![CDATA[Copyright (C) 2026 Goodreads LLC. All rights reserved.]]>
+    </copyright>
+    <link><![CDATA[https://www.goodreads.com/review/list_rss/8143905?shelf=currently-reading]]></link>
+    <atom:link href="https://www.goodreads.com/review/list_rss/8143905?shelf=currently-reading" rel="self" type="application/rss+xml" />
+    <description><![CDATA[Onur's bookshelf: currently-reading]]></description>
+    <language>en-US</language>
+    <lastBuildDate>Thu, 13 Aug 2026 20:07:23 -0700</lastBuildDate>
+    <ttl>60</ttl>
+    <image>
+      <title>Onur's bookshelf: currently-reading</title>
+      <link><![CDATA[https://www.goodreads.com/review/list_rss/8143905?shelf=currently-reading]]></link>
+      <width>144</width>
+      <height>41</height>
+      <url>https://www.goodreads.com/images/layout/goodreads_logo_144.jpg</url>
+    </image>
+    
+  <item>
+    <guid><![CDATA[https://www.goodreads.com/review/show/8221997918?utm_medium=api&utm_source=rss]]></guid>
+    <pubDate><![CDATA[Thu, 13 Aug 2026 20:07:23 -0700]]></pubDate>
+    <title><![CDATA[Harry Potter and the Deathly Hallows (Harry Potter, #7)]]></title>
+    <link><![CDATA[https://www.goodreads.com/review/show/8221997918?utm_medium=api&utm_source=rss]]></link>
+    <book_id>58613224</book_id>
+    <book_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1627042661l/58613224._SY75_.jpg]]></book_image_url>
+    <book_small_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1627042661l/58613224._SY75_.jpg]]></book_small_image_url>
+    <book_medium_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1627042661l/58613224._SX98_.jpg]]></book_medium_image_url>
+    <book_large_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1627042661l/58613224.jpg]]></book_large_image_url>
+    <book_description></book_description>
+    <book id="58613224">
+      <num_pages>784</num_pages>
+    </book>
+    <author_name>J.K. Rowling</author_name>
+    <isbn>0545010225</isbn>
+    <user_name>Onur</user_name>
+    <user_rating>0</user_rating>
+    <user_read_at></user_read_at>
+    <user_date_added><![CDATA[Thu, 13 Aug 2026 20:07:23 -0700]]></user_date_added>
+    <user_date_created><![CDATA[Sun, 04 Jan 2026 09:35:12 -0800]]></user_date_created>
+    <user_shelves>currently-reading</user_shelves>
+    <user_review></user_review>
+    <average_rating>4.62</average_rating>
+    <book_published>2007</book_published>
+    <description><![CDATA[<a href="https://www.goodreads.com/book/show/1"><img alt="cover" src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1/1._SY75_.jpg" /></a>]]></description>
+  </item>
+<item>
+    <guid><![CDATA[https://www.goodreads.com/review/show/8435637909?utm_medium=api&utm_source=rss]]></guid>
+    <pubDate><![CDATA[Thu, 14 May 2026 21:39:26 -0700]]></pubDate>
+    <title>Educated</title>
+    <link><![CDATA[https://www.goodreads.com/review/show/8435637909?utm_medium=api&utm_source=rss]]></link>
+    <book_id>35133922</book_id>
+    <book_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1774287363l/35133922._SY75_.jpg]]></book_image_url>
+    <book_small_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1774287363l/35133922._SY75_.jpg]]></book_small_image_url>
+    <book_medium_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1774287363l/35133922._SX98_.jpg]]></book_medium_image_url>
+    <book_large_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1774287363l/35133922._SY475_.jpg]]></book_large_image_url>
+    <book_description></book_description>
+    <book id="35133922">
+      <num_pages>352</num_pages>
+    </book>
+    <author_name>Tara Westover</author_name>
+    <isbn>0399590501</isbn>
+    <user_name>Onur</user_name>
+    <user_rating>0</user_rating>
+    <user_read_at></user_read_at>
+    <user_date_added><![CDATA[Thu, 14 May 2026 21:39:26 -0700]]></user_date_added>
+    <user_date_created><![CDATA[Fri, 13 Mar 2026 22:40:35 -0700]]></user_date_created>
+    <user_shelves>currently-reading</user_shelves>
+    <user_review></user_review>
+    <average_rating>4.45</average_rating>
+    <book_published>2018</book_published>
+    <description><![CDATA[<a href="https://www.goodreads.com/book/show/1"><img alt="cover" src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1/1._SY75_.jpg" /></a>]]></description>
+  </item>
+<item>
+    <guid><![CDATA[https://www.goodreads.com/review/show/8152842453?utm_medium=api&utm_source=rss]]></guid>
+    <pubDate><![CDATA[Tue, 12 May 2026 02:34:07 -0700]]></pubDate>
+    <title>Mutluluğun Mimarisi</title>
+    <link><![CDATA[https://www.goodreads.com/review/show/8152842453?utm_medium=api&utm_source=rss]]></link>
+    <book_id>17193828</book_id>
+    <book_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1729764854l/17193828._SX50_.jpg]]></book_image_url>
+    <book_small_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1729764854l/17193828._SX50_.jpg]]></book_small_image_url>
+    <book_medium_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1729764854l/17193828._SX98_.jpg]]></book_medium_image_url>
+    <book_large_image_url><![CDATA[https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1729764854l/17193828._SX318_.jpg]]></book_large_image_url>
+    <book_description></book_description>
+    <book id="17193828">
+      <num_pages>312</num_pages>
+    </book>
+    <author_name>Alain de Botton</author_name>
+    <isbn>9755703055</isbn>
+    <user_name>Onur</user_name>
+    <user_rating>0</user_rating>
+    <user_read_at></user_read_at>
+    <user_date_added><![CDATA[Tue, 12 May 2026 02:34:07 -0700]]></user_date_added>
+    <user_date_created><![CDATA[Tue, 16 Dec 2025 22:53:13 -0800]]></user_date_created>
+    <user_shelves>currently-reading</user_shelves>
+    <user_review></user_review>
+    <average_rating>4.08</average_rating>
+    <book_published>2006</book_published>
+    <description><![CDATA[<a href="https://www.goodreads.com/book/show/1"><img alt="cover" src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1/1._SY75_.jpg" /></a>]]></description>
+  </item>
+
+  </channel>
+</rss>

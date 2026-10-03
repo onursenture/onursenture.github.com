@@ -24,14 +24,13 @@ function readFixture(name: string): Promise<string> {
 
 const loaders: { [K in SourceId]: () => Promise<SourceData<K>> } = {
   letterboxd: async () => parseLetterboxd(await readFixture("letterboxd.xml")),
-  goodreads: async () => {
-    // The fixture is a single "read" shelf; it stands in for both shelves.
-    const xml = await readFixture("goodreads-read.xml");
-    return {
-      currentlyReading: await parseGoodreadsShelf(xml, CURRENTLY_READING_LIMIT),
-      read: await parseGoodreadsShelf(xml, READ_LIMIT),
-    };
-  },
+  goodreads: async () => ({
+    currentlyReading: await parseGoodreadsShelf(
+      await readFixture("goodreads-currently-reading.xml"),
+      CURRENTLY_READING_LIMIT,
+    ),
+    read: await parseGoodreadsShelf(await readFixture("goodreads-read.xml"), READ_LIMIT),
+  }),
   instapaper: async () => parseInstapaper(JSON.parse(await readFixture("instapaper.json"))),
   writing: async () => parseWriting(await readFixture("writing.xml")),
   github: async () => parseGithub(JSON.parse(await readFixture("github.json"))),
