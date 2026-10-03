@@ -1,6 +1,13 @@
 import { expect, test } from "@playwright/test";
 
 const PRIMITIVES = [
+  "DitherStrip",
+  "DitherRule",
+  "MediaPlaceholder",
+  "PrimaryButton",
+  "LabAvatar",
+  "ContributionChart",
+  "FooterWash",
   "MetaLabel",
   "StatusGlyph",
   "Chip",
@@ -34,6 +41,15 @@ test("/system/ renders every primitive, the type scale and the Sources band", as
   await expect(sources).toBeVisible();
   await expect(sources.locator("tbody tr")).toHaveCount(5);
   await expect(sources.locator('[data-health="never"]')).toHaveCount(5);
+});
+
+test("every canvas on /system/ is decorative", async ({ page }) => {
+  await page.goto("/system/");
+  await expect(page.locator("canvas").first()).toBeAttached();
+  const unlabelled = await page.locator("canvas").evaluateAll((canvases) =>
+    canvases.filter((c) => !c.closest('[aria-hidden="true"]')).length,
+  );
+  expect(unlabelled).toBe(0);
 });
 
 test("/system/ is not indexed", async ({ page }) => {

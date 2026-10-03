@@ -7,12 +7,17 @@ import { ToggleDemo } from "@/components/system/toggle-demo";
 import { Band } from "@/components/ui/band";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
+import { ContributionChart } from "@/components/ui/contribution-chart";
 import { Cover } from "@/components/ui/cover";
 import { DataTable } from "@/components/ui/data-table";
+import { DitherRule, DitherStrip, FooterWash } from "@/components/ui/dither";
 import { EraStamp } from "@/components/ui/era-stamp";
 import { IndexRow } from "@/components/ui/index-row";
+import { LabAvatar } from "@/components/ui/lab-avatar";
 import { LiveClock } from "@/components/ui/live-clock";
+import { MediaPlaceholder } from "@/components/ui/media-placeholder";
 import { MetaLabel } from "@/components/ui/meta-label";
+import { PrimaryButton } from "@/components/ui/primary-button";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { StatusGlyph } from "@/components/ui/status-glyph";
 import { TextLink } from "@/components/ui/text-link";
@@ -46,6 +51,12 @@ const SWATCHES = [
   ["--color-danger", "bg-danger"],
   ["--color-danger-bg", "bg-danger-bg"],
 ] as const;
+
+// Generic sample shape for the specimen, not real data.
+const SAMPLE_WEEKS = Array.from({ length: 52 }, (_, i) => ({
+  week: `w${i}`,
+  count: Math.round(20 + 15 * Math.sin(i / 5) + (i % 7) * 2),
+}));
 
 function Specimen({ name, children }: { name: string; children: ReactNode }) {
   return (
@@ -91,6 +102,43 @@ export default async function SystemPage() {
             </div>
           ))}
         </div>
+      </Band>
+
+      <Band label="Dither">
+        <Specimen name="DitherStrip">
+          <div className="w-full">
+            <DitherStrip />
+          </div>
+        </Specimen>
+        <Specimen name="DitherRule">
+          <div className="w-full">
+            <DitherRule />
+          </div>
+        </Specimen>
+        <Specimen name="MediaPlaceholder">
+          <div className="grid w-full max-w-lg grid-cols-2 gap-4">
+            <MediaPlaceholder label="Placeholder" index={1} />
+            <MediaPlaceholder label="Placeholder" index={2} tone="ink" />
+          </div>
+        </Specimen>
+        <Specimen name="PrimaryButton">
+          <PrimaryButton href="/system/">Book a call →</PrimaryButton>
+        </Specimen>
+        <Specimen name="LabAvatar">
+          {["alpha", "beta", "gamma", "delta", "epsilon"].map((name) => (
+            <LabAvatar key={name} name={name} />
+          ))}
+        </Specimen>
+        <Specimen name="ContributionChart">
+          <div className="w-full max-w-120">
+            <ContributionChart weeks={SAMPLE_WEEKS} />
+          </div>
+        </Specimen>
+        <Specimen name="FooterWash">
+          <div className="w-full">
+            <FooterWash />
+          </div>
+        </Specimen>
       </Band>
 
       <Band label="Primitives">
