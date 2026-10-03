@@ -6,11 +6,10 @@ Sprint 5 (Work I: PrimeTek) is complete on branch `sprint-5`: `/work/`, four cas
 
 - **Copy approval.** Read every case study, the Archive and the Posts views. Unconfirmed lines are cut or rewritten before merge. Points to look at:
   - PrimeOne starts in 2022 with the Figma kit; 3.1 has no entry (no public date found; give the month to add it).
-  - Apollo's first release: a Nov 2017 PrimeFaces "remastered Apollo" post exists, so Apollo may predate the 2018 entry.
+  - The blog-walk content pass (Task 11g): new templates Icarus, Omega, Ultima Reloaded and the Diamond for Angular update; Apollo moved to Aug 2016; PrimeIcons first ship (2018) and v4–v6; Archive rows PrimeFaces Showcase redesign, Saga/Vela/Arya, Sigma (Jun 2019) and Sakai.
   - "Apollo (2022)" naming for the all-new 2022 Apollo.
-  - Archive rows that are engineering releases (e.g. Theme Designer updated to Angular 7): keep only if they were your design work.
-  - Grid and Index show credit names next to figures.
-  - Templates coverage reads "26 templates · 8 remasters · 1 page".
+  - Grid and Index show credit names next to figures (designers only).
+  - Templates coverage reads "28 templates · 9 remasters · 1 page".
 - **Images.** Onur prepares the visuals per release (several per release, shown as a grid). Recommended source size 2560×1600 (16:10) PNG or JPG; deliver into `images-src/work/<slug>/<media id>.png` (or via Sprint 7 upload); tell Claude how many images each release has so the slots can be added.
 - **CDN caching check** (preview is behind Vercel Authentication; add the bypass header):
   ```bash
