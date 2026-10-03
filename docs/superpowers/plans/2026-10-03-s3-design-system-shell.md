@@ -7078,6 +7078,30 @@ npm run screenshots -- <dir> <path>...  # 1440 + 390, both views, both themes (b
 and replace:
 
 ```markdown
+
+### Task 13: Approved design tweaks — collapse empty index columns, numeric ratings
+
+Onur approved two changes after the plan was verified. They land last, so Tasks 1–12 stay verbatim.
+
+1. **Collapse empty index columns.** If no entry in a list has a value for a column (`years`, `role` in the work index; `year` in the Lab index), that column is not rendered at all: no empty grid track, no header. Titles then start in the first column. The column comes back on its own when any entry gets a value.
+   - Apply this in the site-view index rows (`IndexRow` and its list) and in the dashboard `DataTable`s for Work and Lab, by filtering the column config.
+   - Add a pure helper, `visibleColumns(entries, keys)`, in `lib/index-columns.ts`. It returns the keys that at least one entry has a non-empty value for. Unit-test it: none present, some present, all present.
+2. **Numeric ratings instead of stars.** Neither Neue Haas Grotesk nor Fragment Mono has `★`, so star strings fall back to a small system glyph.
+   - Wherever a rating is shown (the "Off the clock" film tile, the `/life` films and books bands, and the films and books dashboard tables), render the number in mono: `3.5` for `ratingValue`, and Goodreads `numRating` as `4`.
+   - Unrated items show nothing.
+   - Replace `lib/sources/stars.ts` and its usages with `lib/sources/rating.ts`, exporting `formatRating(value: number | null): string`. It returns `""` for null or 0, drops trailing `.0` (`4` → "4", `3.5` → "3.5"), and never invents stars. Update its tests accordingly, and delete `stars.ts` and its test.
+   - `/system/` shows the numeric rating instead of stars.
+
+**Files:** Create `lib/index-columns.ts`, `lib/sources/rating.ts`, `tests/index-columns.test.ts`, `tests/sources/rating.test.ts`. Delete `lib/sources/stars.ts` and its test. Modify the index/table components and the pages from Tasks 3, 8, 9 and 10 that render these.
+
+- [ ] **Step 1:** Write the failing unit tests for `visibleColumns` and `formatRating`. Run `npm test` and expect FAIL.
+- [ ] **Step 2:** Implement both helpers. Run `npm test` and expect PASS.
+- [ ] **Step 3:** Wire both helpers into the components and pages. Remove `stars.ts` and every usage. `grep -rn "★" app components lib` must return nothing; fixtures may still contain ★.
+- [ ] **Step 4:** Update any e2e assertions that expected stars, or that expected an empty year column, so they assert the numeric rating and the collapsed columns.
+- [ ] **Step 5:** Verify with `npm run typecheck && npm run lint && npm test && npm run build && npm run e2e`, then `SOURCE_FIXTURES=1 npm run build && npm run e2e:fixtures`, then a plain `npm run build`. The e2e counts stay 53 / 4 unless you added assertions, in which case report the new counts.
+- [ ] **Step 6:** Visual check. Run `npm run screenshots` for home and `/life` in both views and both themes. Confirm that work-index titles start in the first column and that ratings render as mono numbers.
+- [ ] **Step 7:** Commit with "Collapse empty index columns and show ratings as numbers", then a blank line, then the trailer.
+
 ## Sources and sync
 ```
 

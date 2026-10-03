@@ -191,7 +191,8 @@ They have no years, roles, eras or links; S4 fills those in.
   - GitHub: a contribution heatmap in five monochrome steps from `--color-line` to `--color-fg`, plus the total
   - Photos: a grid linking to `/photos/`
 - **Dashboard view:** the same data as `Panel`s and `DataTable`s, plus the heatmap with stats (total, active days, longest streak) and the Sources panel.
-- Stars are derived from `ratingValue`, not from the title regex. Writing `lib/sources/stars.ts` closes that S2 follow-up.
+- Ratings are shown as mono numbers (`3.5`), not stars, because neither typeface has `★` (approved 2026-10-03). The number comes from `ratingValue`, not the title regex, which closes that S2 follow-up.
+- Index columns that no entry has a value for (e.g. years before S4) are not rendered (approved 2026-10-03).
 
 **Photos.**
 - `/photos/` and `/photos/[slug]/` are restyled with tokens.
