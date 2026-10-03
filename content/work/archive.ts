@@ -3,14 +3,6 @@ import type { ArchiveEntry } from "./types";
 // Other PrimeTek work, from the posts that announced it (spec §4.3).
 export const archiveEntries: ArchiveEntry[] = [
   {
-    id: "designer-api",
-    org: "primetek",
-    date: "2018-04",
-    title: "Designer API",
-    note: "The Designer API, a SASS-based way of building PrimeFaces themes, announced in April 2018; the PrimeNG version followed in May with over 500 variables and a demo application.",
-    source: "https://web.archive.org/web/20180526/https://www.primefaces.org/blog/",
-  },
-  {
     id: "primefaces-showcase",
     org: "primetek",
     date: "2018-06",
