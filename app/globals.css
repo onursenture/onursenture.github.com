@@ -35,7 +35,7 @@
   --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
   --font-name: var(--font-doto), var(--font-plex-mono), ui-monospace, monospace;
 
-  /* Form controls only (buttons, inputs, toggles). Everything else is square. */
+  /* Form controls only (buttons, inputs, switches). Everything else is square. */
   --radius-control: 4px;
 }
 

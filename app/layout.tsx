@@ -35,13 +35,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    // SideSync sets data-side after hydration, so React must not complain
-    // that the server HTML lacked it.
-    <html
-      lang="en"
-      className={`${plexMono.variable} ${plexSans.variable} ${doto.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang="en" className={`${plexMono.variable} ${plexSans.variable} ${doto.variable}`}>
       <body>{children}</body>
     </html>
   );
