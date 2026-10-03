@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import { DitherRule } from "@/components/ui/dither";
 import { TextLink } from "@/components/ui/text-link";
 import { cx } from "@/lib/cx";
-import type { EntryView, StudyView } from "@/lib/work/derive";
+import { type EntryView, type StudyView, sourceLabel } from "@/lib/work/derive";
 import { CreditLine } from "./credit-line";
 import { MediaButton } from "./media-button";
 
@@ -73,7 +73,7 @@ function EntryBlock({ entry, onOpen }: { entry: EntryView; onOpen?: (id: string)
         {entry.source || entry.links.length > 0 ? (
           <p className="flex flex-wrap gap-x-4 type-meta">
             {entry.source ? (
-              <TextLink href={entry.source} ariaLabel={`Post on X, ${entry.heading}, ${entry.month} ${entry.year}`} className="text-accent">
+              <TextLink href={entry.source} ariaLabel={`${sourceLabel(entry.source)}, ${entry.heading}, ${entry.month} ${entry.year}`} className="text-accent">
                 post
               </TextLink>
             ) : null}

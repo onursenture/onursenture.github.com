@@ -127,7 +127,7 @@ export const templatesPosts: Post[] = [
     date: "2022-02-08",
     account: "prime_ng",
     id: "1491015084847419393",
-    summary: "Atlantis remastered for PrimeNG.",
+    summary: "Atlantis remastered again for PrimeNG.",
     entryId: "atlantis-remastered",
   },
   {

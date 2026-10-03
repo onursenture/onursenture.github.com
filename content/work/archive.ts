@@ -21,17 +21,17 @@ export const archiveEntries: ArchiveEntry[] = [
   {
     id: "sigma",
     org: "primetek",
-    date: "2018-06",
+    date: "2019-06",
     title: "Sigma",
-    note: "A free open-source admin template: first for PrimeReact on create-react-app in June 2018, then for PrimeVue on Vue CLI in June 2019, where it offers two menu modes and a light and a dark scheme.",
-    source: "https://web.archive.org/web/20180706/https://www.primefaces.org/blog/",
+    note: "A free open-source admin template for PrimeVue, built on Vue CLI, with two menu modes, light and dark schemes and a profile menu.",
+    source: "https://web.archive.org/web/20190722/https://www.primefaces.org/blog/",
   },
   {
     id: "nova-luna",
     org: "primetek",
     date: "2018-08",
     title: "Nova and Luna themes",
-    note: "Nova, a free open-source theme in light, dark and colored flavors, debuted in PrimeNG in August 2018; it reached PrimeFaces together with Luna in November 2018.",
+    note: "Nova, a free open-source theme in light, dark and colored flavors, made with the PrimeNG Designer API and debuting in PrimeNG 6.1 RC1 in August 2018.",
     source: "https://web.archive.org/web/20180802/https://www.primefaces.org/blog/",
   },
   {
@@ -47,7 +47,7 @@ export const archiveEntries: ArchiveEntry[] = [
     org: "primetek",
     date: "2020-08",
     title: "Saga, Vela and Arya themes",
-    note: "Three free themes, light (Saga), dim (Vela) and dark (Arya), released with PrimeNG 10 and brought to PrimeFaces 10 in 2021.",
+    note: "Three free core themes, Saga, Vela and Arya, introduced as PrimeNG 10 began, alongside free Bootstrap and Material themes, with dark mode as standard.",
     source: "https://www.primefaces.org/blog/primeng-10-begins/",
   },
   {

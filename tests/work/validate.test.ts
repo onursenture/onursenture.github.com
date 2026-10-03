@@ -29,6 +29,15 @@ describe("validateWork", () => {
     expect(validateWork([study()], [row], noImages)).toEqual([]);
   });
 
+  it("rejects an entry marked both remaster and update", () => {
+    const errors = validateWork(
+      [study({ entries: [{ id: "a", date: "2024-01", note: "n", remaster: true, update: true, media: [] }] })],
+      [row],
+      noImages,
+    );
+    expect(errors).toEqual([expect.stringContaining("cannot be both a remaster and an update")]);
+  });
+
   it("rejects ids that aren't kebab-case or repeat", () => {
     const errors = validateWork(
       [study({ hero: { id: "Cover", caption: "c" }, entries: [

@@ -10,6 +10,7 @@ import {
   groupCredits,
   postUrl,
   resolveImage,
+  sourceLabel,
   viewerItems,
 } from "@/lib/work/derive";
 
@@ -191,6 +192,17 @@ describe("groupCredits", () => {
       { role: "Design", people: [{ name: "A" }, { name: "C", role: "design" }] },
       { role: "Implementation", people: [{ name: "B", role: "implementation" }] },
     ]);
+  });
+});
+
+describe("sourceLabel", () => {
+  it("names a proof link by its host", () => {
+    expect(sourceLabel("https://x.com/w00f/status/1")).toBe("Post on X");
+    expect(sourceLabel("https://twitter.com/w00f/status/1")).toBe("Post on X");
+    expect(sourceLabel("https://web.archive.org/web/20160708162234/http://blog.primefaces.org/?p=3984")).toBe("Archived blog post");
+    expect(sourceLabel("https://www.primefaces.org/blog/primeng-10-begins/")).toBe("Blog post");
+    expect(sourceLabel("https://notx.com/status/1")).toBe("Blog post");
+    expect(sourceLabel("not a url")).toBe("Blog post");
   });
 });
 

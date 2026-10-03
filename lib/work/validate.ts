@@ -59,6 +59,7 @@ export function validateWork(
       const where = `${study.slug}/${entry.id}`;
       if (!KEBAB.test(entry.id)) errors.push(`${where}: entry id "${entry.id}" is not kebab-case`);
       if (entryIds.has(entry.id)) errors.push(`${where}: duplicate entry id "${entry.id}"`);
+      if (entry.remaster && entry.update) errors.push(`${where}: an entry cannot be both a remaster and an update`);
       entryIds.add(entry.id);
     }
     // Tags share the ?tag= namespace with "all" and the entry ids.

@@ -122,6 +122,21 @@ function monthOf(ym: string): string {
 }
 
 // "2024-11" → "Nov 2024"
+// The accessible-name prefix for a proof link, by where it points: X posts,
+// archived blog pages (web.archive.org) or live blog pages (any other host).
+export function sourceLabel(href: string): string {
+  let host = "";
+  try {
+    host = new URL(href).hostname.toLowerCase();
+  } catch {
+    return "Blog post";
+  }
+  const is = (domain: string) => host === domain || host.endsWith(`.${domain}`);
+  if (is("x.com") || is("twitter.com")) return "Post on X";
+  if (is("archive.org")) return "Archived blog post";
+  return "Blog post";
+}
+
 export function formatYearMonth(ym: string): string {
   return `${monthOf(ym)} ${ym.slice(0, 4)}`;
 }
