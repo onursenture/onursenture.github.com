@@ -17,7 +17,7 @@ export function DitherStrip() {
   );
 }
 
-// 4px section separator in the line colour.
+// 4px section separator: the muted ink at half opacity, dissolving downward.
 export function DitherRule({ className }: { className?: string }) {
   const [el, setEl] = useState<HTMLDivElement | null>(null);
   const line = useTokenColor(el, "--color-fg-muted");

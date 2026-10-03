@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { PrimaryButton } from "@/components/ui/primary-button";
 import { MediaPlaceholder } from "@/components/ui/media-placeholder";
 import { SectionRow } from "@/components/ui/section-row";
 import { parseHex } from "@/components/ui/use-token-color";
@@ -25,6 +26,14 @@ describe("MediaPlaceholder", () => {
     const html = renderToStaticMarkup(<MediaPlaceholder label="Stabilo" index={2} image="photos/stabilo" />);
     expect(html).toContain("<picture");
     expect(html).not.toContain("FIG.");
+  });
+});
+
+describe("PrimaryButton", () => {
+  it("switches to the dark ink label in dark mode (white on the dark accent fails AA)", () => {
+    const html = renderToStaticMarkup(<PrimaryButton href="/x/">Go</PrimaryButton>);
+    expect(html).toContain("text-[#fff]");
+    expect(html).toContain("dark:text-bg");
   });
 });
 
