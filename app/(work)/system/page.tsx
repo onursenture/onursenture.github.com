@@ -4,7 +4,6 @@ import { Picture } from "@/components/picture";
 import { Empty } from "@/components/sections/empty";
 import { SourcesTable } from "@/components/sources/sources-table";
 import { ToggleDemo } from "@/components/system/toggle-demo";
-import { Band } from "@/components/ui/band";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
 import { ContributionChart } from "@/components/ui/contribution-chart";
@@ -18,6 +17,7 @@ import { MediaPlaceholder } from "@/components/ui/media-placeholder";
 import { MetaLabel } from "@/components/ui/meta-label";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { RelativeTime } from "@/components/ui/relative-time";
+import { SectionRow } from "@/components/ui/section-row";
 import { StatusGlyph } from "@/components/ui/status-glyph";
 import { TextLink } from "@/components/ui/text-link";
 import { type Photo, getPhotos } from "@/lib/content/photos";
@@ -78,10 +78,10 @@ export default async function SystemPage() {
   const [photo] = photos;
 
   return (
-    <main className="flex flex-col gap-16 px-4 py-16 md:px-10">
-      <h1 className="type-lead">System</h1>
+    <main className="flex flex-col py-16">
+      <h1 className="type-lead px-4 pb-8 md:px-10">System</h1>
 
-      <Band label="Type" source="6 styles">
+      <SectionRow label="Type · 6 styles" wide>
         <div className="flex flex-col">
           {TYPE_STYLES.map(([style, sample]) => (
             <div key={style} data-type={style} className="flex flex-col gap-2 border-b py-4 last:border-b-0">
@@ -90,9 +90,9 @@ export default async function SystemPage() {
             </div>
           ))}
         </div>
-      </Band>
+      </SectionRow>
 
-      <Band label="Color" source="8 tokens">
+      <SectionRow label="Color · 8 tokens" wide>
         <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
           {SWATCHES.map(([token, swatch]) => (
             <div key={token} className="flex flex-col gap-2">
@@ -101,9 +101,9 @@ export default async function SystemPage() {
             </div>
           ))}
         </div>
-      </Band>
+      </SectionRow>
 
-      <Band label="Dither">
+      <SectionRow label="Dither" wide>
         <Specimen name="DitherStrip">
           <div className="w-full">
             <DitherStrip />
@@ -138,9 +138,9 @@ export default async function SystemPage() {
             <FooterWash />
           </div>
         </Specimen>
-      </Band>
+      </SectionRow>
 
-      <Band label="Primitives">
+      <SectionRow label="Primitives" wide>
         <Specimen name="MetaLabel">
           <MetaLabel>Label</MetaLabel>
           <MetaLabel status="ok">With a glyph</MetaLabel>
@@ -197,13 +197,6 @@ export default async function SystemPage() {
             <DataTable columns={photoColumns} rows={[]} rowKey={(p) => p.slug} />
           </div>
         </Specimen>
-        <Specimen name="Band">
-          <div className="w-full">
-            <Band label="Label" source="Source" href="/life/">
-              <p className="type-body">Band content.</p>
-            </Band>
-          </div>
-        </Specimen>
         <Specimen name="Empty">
           <Empty />
         </Specimen>
@@ -214,11 +207,11 @@ export default async function SystemPage() {
             </div>
           ) : null}
         </Specimen>
-      </Band>
+      </SectionRow>
 
-      <Band label="Sources">
+      <SectionRow label="Sources" wide>
         <SourcesTable statuses={statuses} />
-      </Band>
+      </SectionRow>
     </main>
   );
 }

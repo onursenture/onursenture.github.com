@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 // Runs against a build made with SOURCE_FIXTURES=1 (`npm run e2e:fixtures`),
 // so every source carries the rows recorded in tests/fixtures/.
 
-test("bands show real rows from every source", async ({ page }) => {
+test("Life rows show real items from every source", async ({ page }) => {
   await page.goto("/life/");
   const films = page.locator('[data-section="films"]');
   await expect(films.locator("li")).toHaveCount(3);
@@ -25,9 +25,16 @@ test("bands show real rows from every source", async ({ page }) => {
   await expect(articles).toContainText("Jurassic Park computers in excruciating detail");
   await expect(articles).toContainText("fabiensanglard.net · 13 min");
   await expect(page.locator('[data-section="writing"]')).toContainText("Second post");
-  const github = page.locator('[data-section="github"]');
-  await expect(github).toContainText("7 contributions");
-  await expect(github.getByRole("img", { name: "7 contributions in the last year" })).toBeVisible();
   await expect(page.getByText("Nothing here yet.")).toHaveCount(0);
   await expect(page.locator('[data-section="sync-status"]')).toHaveCount(0);
+});
+
+test("the readout shows the newest item from each source", async ({ page }) => {
+  await page.goto("/life/");
+  const now = page.getByRole("region", { name: "Now" });
+  await expect(now).toContainText("last watched: Love & Other Drugs 3.5");
+  await expect(now).toContainText("reading: Harry Potter and the Deathly Hallows (Harry Potter, #7) J.K. Rowling");
+  await expect(now).toContainText("saved: Jurassic Park computers in excruciating detail fabiensanglard.net · 13 min");
+  await expect(now).toContainText("contributions, last 12 months: 7");
+  await expect(now).not.toContainText("★");
 });

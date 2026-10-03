@@ -20,6 +20,8 @@ const SRC_DIR = join(ROOT, "images-src");
 const OUT_DIR = join(ROOT, "public", "images");
 const MANIFEST = join(ROOT, "lib", "images", "manifest.json");
 const EXTENSIONS = /\.(jpe?g|png)$/i;
+const PORTRAIT_OUT = join(OUT_DIR, "portrait-dither.png");
+const PORTRAIT_JSON = join(ROOT, "lib", "images", "portrait.json");
 
 function walk(dir: string): string[] {
   if (!existsSync(dir)) return [];
@@ -34,6 +36,40 @@ function computeSourceHash(source: string): string {
   return createHash("sha256").update(data).digest("hex");
 }
 
+const BAYER4 = [
+  [0, 8, 2, 10],
+  [12, 4, 14, 6],
+  [3, 11, 1, 9],
+  [15, 7, 13, 5],
+].map((row) => row.map((v) => (v + 0.5) / 16));
+
+// Light-on-transparent 1-bit Bayer dither at 120×150 cells, scaled 2× with
+// nearest-neighbour so each cell stays a crisp 2px block.
+async function ditherPortrait(source: string, out: string) {
+  const W = 120;
+  const H = 150;
+  const { data } = await sharp(source)
+    .rotate()
+    .resize(W, H, { fit: "cover", position: "attention" })
+    .greyscale()
+    .normalise()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const rgba = Buffer.alloc(W * H * 4);
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const lit = data[y * W + x] / 255 > BAYER4[y & 3][x & 3];
+      const i = (y * W + x) * 4;
+      rgba[i] = rgba[i + 1] = rgba[i + 2] = 237;
+      rgba[i + 3] = lit ? 255 : 0;
+    }
+  }
+  await sharp(rgba, { raw: { width: W, height: H, channels: 4 } })
+    .resize(W * 2, H * 2, { kernel: "nearest" })
+    .png()
+    .toFile(out);
+}
+
 async function main() {
   const previous: ImageManifest = existsSync(MANIFEST)
     ? JSON.parse(readFileSync(MANIFEST, "utf8"))
@@ -42,6 +78,8 @@ async function main() {
 
   for (const source of walk(SRC_DIR).sort()) {
     const key = relative(SRC_DIR, source).replace(EXTENSIONS, "").split("\\").join("/");
+    // The portrait gets its own 1-bit treatment below, not the rendition set.
+    if (key === "portrait") continue;
     // rotate() applies EXIF orientation so width/height match what is shown.
     const meta = await sharp(source).rotate().metadata();
     const sourceWidth = meta.autoOrient?.width ?? meta.width;
@@ -87,6 +125,16 @@ async function main() {
   }
 
   writeFileSync(MANIFEST, `${JSON.stringify(manifest, null, 2)}\n`);
+
+  const portrait = ["jpg", "jpeg", "png"].map((ext) => join(SRC_DIR, `portrait.${ext}`)).find((p) => existsSync(p));
+  if (portrait) {
+    mkdirSync(OUT_DIR, { recursive: true });
+    await ditherPortrait(portrait, PORTRAIT_OUT);
+    writeFileSync(PORTRAIT_JSON, `${JSON.stringify({ src: "/images/portrait-dither.png", width: 240, height: 300 }, null, 2)}\n`);
+    console.log("wrote portrait-dither.png");
+  } else {
+    writeFileSync(PORTRAIT_JSON, "null\n");
+  }
 }
 
 main().catch((e) => {

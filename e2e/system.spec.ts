@@ -20,7 +20,6 @@ const PRIMITIVES = [
   "Rating",
   "Cover",
   "DataTable",
-  "Band",
   "Empty",
   "Picture",
 ];

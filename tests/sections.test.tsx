@@ -13,7 +13,7 @@ const section: AnySectionDefinition = {
 };
 
 describe("SectionBlock", () => {
-  it("renders the section as a band with its label, source, link and content", async () => {
+  it("renders the section as a row with its label, source, link and content", async () => {
     const html = renderToStaticMarkup(await SectionBlock({ section }));
     expect(html).toContain('data-section="films"');
     expect(html).toContain('id="films"');

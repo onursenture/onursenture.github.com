@@ -2,15 +2,15 @@ import type { ReactNode } from "react";
 import type { SourceView } from "@/lib/sources/snapshot-view";
 
 // A section is one data loader plus one renderer. Pages hand sections to
-// SectionBlock, which loads the data and wraps the renderer in a band.
+// SectionBlock, which loads the data and wraps the renderer in a SectionRow.
 export interface SectionDefinition<T> {
   id: string;
   title: string;
   load: () => Promise<SourceView<T>>;
   Render: (props: { data: T }) => ReactNode;
-  // Upstream name for the band header ("Films · Letterboxd").
+  // Upstream name for the row label ("Films · Letterboxd").
   source?: string;
-  // The band's "All" link.
+  // The row's "All" link.
   href?: string;
 }
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ItemLink } from "@/components/sections/item-link";
 import { Picture } from "@/components/picture";
 import { MetaLabel } from "@/components/ui/meta-label";
 import { TextLink } from "@/components/ui/text-link";
@@ -41,9 +42,9 @@ function Neighbour({ label, photo, align }: { label: string; photo: Photo | null
   return (
     <div className={align === "right" ? "flex flex-col items-end gap-1 text-right" : "flex flex-col gap-1"}>
       <MetaLabel>{label}</MetaLabel>
-      <TextLink href={`/life/photos/${photo.slug}/`} className="type-body">
+      <ItemLink href={`/life/photos/${photo.slug}/`} className="type-body">
         {photo.title}
-      </TextLink>
+      </ItemLink>
     </div>
   );
 }
@@ -56,18 +57,21 @@ export default async function PhotoPage({ params }: PageProps<"/life/photos/[slu
   const { previous, next } = adjacentPhotos(photos, slug);
 
   return (
-    <main className="flex flex-col gap-8 px-4 pt-8 pb-24 md:px-10 md:pt-12">
+    <main className="flex flex-col gap-8 px-4 pt-8 pb-16 md:px-10 md:pt-12">
       <Picture image={photo.image} alt={photo.title} sizes={SIZES} priority />
       <div className="flex flex-col gap-3">
-        <h1 className="type-lead">{photo.title}</h1>
+        <h1 className="type-name uppercase">{photo.title}</h1>
         <p className="type-meta text-fg-muted">
           <time dateTime={photo.date}>{formatDate(photo.date)}</time>
           {photo.camera ? ` · ${photo.camera}` : null}
         </p>
+        <p className="type-meta">
+          <TextLink href="/life/photos/">All photos</TextLink>
+        </p>
       </div>
       <nav aria-label="More photos" className="grid grid-cols-2 gap-6 border-t pt-4">
-        <Neighbour label="Previous" photo={previous} align="left" />
-        <Neighbour label="Next" photo={next} align="right" />
+        <Neighbour label="← Previous" photo={previous} align="left" />
+        <Neighbour label="Next →" photo={next} align="right" />
       </nav>
     </main>
   );

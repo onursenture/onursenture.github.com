@@ -1,6 +1,5 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { Band } from "@/components/ui/band";
 import { Cover } from "@/components/ui/cover";
 import { DataTable } from "@/components/ui/data-table";
 
@@ -38,18 +37,5 @@ describe("Cover", () => {
     const markup = html(<Cover src="" alt="" />);
     expect(markup).not.toContain("<img");
     expect(markup).toContain("bg-line");
-  });
-});
-
-describe("Band", () => {
-  it("shows label · source and an All → link only with an href", () => {
-    expect(html(<Band label="Films" source="Letterboxd">x</Band>)).not.toContain("<a");
-    const linked = html(
-      <Band label="Films" source="Letterboxd" href="https://letterboxd.com/onur/">
-        x
-      </Band>,
-    );
-    expect(linked).toContain("· Letterboxd");
-    expect(linked).toContain('rel="noopener noreferrer"');
   });
 });

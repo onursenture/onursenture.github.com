@@ -50,4 +50,14 @@ describe("SectionRow", () => {
     expect(html).toContain("<p>content</p>");
     expect(html).toContain("<span>All</span>");
   });
+
+  it("puts the action under the label on a wide row", () => {
+    const html = renderToStaticMarkup(
+      <SectionRow label="Films" wide action={<span>All</span>}>
+        <p>content</p>
+      </SectionRow>,
+    );
+    expect(html).toMatch(/<h2[^>]*>Films<\/h2><div class="mt-1[^"]*"><span>All<\/span><\/div>/);
+    expect(html).not.toContain("lg:text-right");
+  });
 });

@@ -27,7 +27,11 @@ test("photo pages emit an absolute JPEG og:image on top of the shared defaults",
 test("photo pages link to the previous and next photo", async ({ page }) => {
   await page.goto("/life/photos/stabilo/");
   const more = page.getByRole("navigation", { name: "More photos" });
-  await expect(more.getByRole("link")).toHaveText(["Bold, Vakıf Building →", "Kızılcıklı →"]);
+  await expect(more.getByRole("link")).toHaveText(["Bold, Vakıf Building", "Kızılcıklı"]);
+  await expect(more).toContainText("← Previous");
+  await expect(more).toContainText("Next →");
+  await expect(more.getByRole("link", { name: "Bold, Vakıf Building" })).toHaveAttribute("href", /^\/life\/photos\/[a-z0-9-]+\/$/);
+  await expect(more.getByRole("link", { name: "Kızılcıklı" })).toHaveAttribute("href", "/life/photos/kizilcikli/");
   await more.getByRole("link", { name: "Kızılcıklı" }).click();
   await expect(page).toHaveURL(/\/life\/photos\/kizilcikli\/$/);
   // The oldest photo has no next.

@@ -188,3 +188,18 @@ html[data-side="life"] {
   letter-spacing: 0;
   font-weight: 400;
 }
+
+/* Life readout cursor: a 1s step blink; still under reduced motion. */
+.boot-cursor {
+  animation: boot-blink 1s steps(1, end) infinite;
+}
+@keyframes boot-blink {
+  50% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .boot-cursor {
+    animation: none;
+  }
+}
