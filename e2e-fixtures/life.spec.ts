@@ -6,7 +6,6 @@ import { expect, test } from "@playwright/test";
 test("site view shows real rows from every source", async ({ page }) => {
   await page.goto("/life/");
   await expect(page.locator('[data-section="films"]')).toContainText("Love & Other Drugs");
-  // The fixture stands in for both Goodreads shelves, so the title appears twice.
   await expect(page.locator('[data-section="books"]')).toContainText("Hacı Komünist");
   await expect(page.locator('[data-section="articles"]')).toContainText("Leaving Mozilla");
   await expect(page.locator('[data-section="writing"]')).toContainText("Second post");

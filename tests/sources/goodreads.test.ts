@@ -40,11 +40,17 @@ describe("goodreads.fetch", () => {
 
   it("fetches both shelves", async () => {
     const fetch = fakeFetch({
-      [`${base}?shelf=currently-reading`]: { body: fixture("goodreads-read.xml") },
+      [`${base}?shelf=currently-reading`]: { body: fixture("goodreads-currently-reading.xml") },
       [`${base}?shelf=read`]: { body: fixture("goodreads-read.xml") },
     });
     const books = await goodreads.fetch({ fetch, env: {} });
-    expect(books.currentlyReading).toHaveLength(3);
+    expect(books.currentlyReading.map((b) => b.title)).toEqual([
+      "Harry Potter and the Deathly Hallows (Harry Potter, #7)",
+      "Educated",
+      "Mutluluğun Mimarisi",
+    ]);
+    // Nothing on the shelf is rated yet.
+    expect(books.currentlyReading[0]).toMatchObject({ author: "J.K. Rowling", numRating: 0, rating: "" });
     expect(books.read).toHaveLength(3);
   });
 
