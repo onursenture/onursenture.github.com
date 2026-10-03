@@ -110,6 +110,31 @@ html[data-side="life"] {
   }
 }
 
+/* Life switch (components/shell/side-fade.tsx). Into Life: the Work page
+   dims to black (250ms), then Life fades in. Back: a 200ms cross-fade. */
+::view-transition-old(.life-enter) {
+  animation: 250ms ease-in both side-dim;
+}
+::view-transition-new(.life-enter) {
+  animation: 200ms ease-out 250ms both side-appear;
+}
+::view-transition-group(.life-exit),
+::view-transition-old(.life-exit),
+::view-transition-new(.life-exit) {
+  animation-duration: 200ms;
+  animation-timing-function: ease-out;
+}
+@keyframes side-dim {
+  to {
+    filter: brightness(0);
+  }
+}
+@keyframes side-appear {
+  from {
+    opacity: 0;
+  }
+}
+
 /* Any view transition is skipped under reduced motion. */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),

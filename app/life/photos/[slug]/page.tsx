@@ -56,7 +56,7 @@ export default async function PhotoPage({ params }: PageProps<"/life/photos/[slu
   const { previous, next } = adjacentPhotos(photos, slug);
 
   return (
-    <main className="flex flex-col gap-8 pt-8 pb-24 md:pt-12">
+    <main className="flex flex-col gap-8 px-4 pt-8 pb-24 md:px-10 md:pt-12">
       <Picture image={photo.image} alt={photo.title} sizes={SIZES} priority />
       <div className="flex flex-col gap-3">
         <h1 className="type-lead">{photo.title}</h1>

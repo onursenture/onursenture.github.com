@@ -8,7 +8,7 @@ export const metadata: Metadata = pageMetadata("Life");
 
 export default function LifePage() {
   return (
-    <main className="flex flex-col gap-16 pb-24 md:gap-24">
+    <main className="flex flex-col gap-16 px-4 pb-24 md:gap-24 md:px-10">
       <PageHeader title="Life" />
       {lifeSections.map((section) => (
         <SectionBlock key={section.id} section={section} />

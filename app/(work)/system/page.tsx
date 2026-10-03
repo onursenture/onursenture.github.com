@@ -79,7 +79,7 @@ export default async function SystemPage() {
   const [photo] = photos;
 
   return (
-    <main className="flex flex-col gap-16 py-16">
+    <main className="flex flex-col gap-16 px-4 py-16 md:px-10">
       <h1 className="type-lead">System</h1>
 
       <Band label="Type" source="6 styles">

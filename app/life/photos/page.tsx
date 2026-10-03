@@ -9,7 +9,7 @@ export const metadata: Metadata = pageMetadata("Photos");
 export default async function PhotosPage() {
   const photos = await getPhotos();
   return (
-    <main className="flex flex-col gap-12 pb-24">
+    <main className="flex flex-col gap-12 px-4 pb-24 md:px-10">
       <PageHeader title="Photos" />
       <PhotoGrid photos={photos} />
     </main>

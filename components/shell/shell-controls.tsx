@@ -1,6 +1,6 @@
 import { ThemeToggle } from "@/components/theme-toggle";
 
-// The labelled Theme row of the mobile menu.
+// The labelled Theme row of the Work menu dialog.
 export function ShellControls() {
   return (
     <div className="flex items-center justify-between gap-3 pl-3">

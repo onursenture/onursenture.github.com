@@ -1,11 +1,13 @@
 import { expect, test } from "@playwright/test";
 
-test("the site shell has the top bar and the footer", async ({ page }) => {
-  await page.goto("/life/");
+test("the Work shell has the top bar, the switch and the footer", async ({ page }) => {
+  await page.goto("/");
   // No nav item is ready yet, so the list is empty.
   await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Onur Senture" })).toHaveAttribute("href", "/");
   await expect(page.getByRole("link", { name: /Book a call/ })).toHaveCount(0);
+  await expect(page.getByRole("group", { name: "Theme" }).filter({ visible: true })).toBeVisible();
+  await expect(page.getByRole("switch", { name: "Life" }).filter({ visible: true })).toBeVisible();
 
   const footer = page.locator("footer");
   await expect(footer).toContainText(`© ${new Date().getFullYear()} Onur Senture`);
@@ -15,12 +17,21 @@ test("the site shell has the top bar and the footer", async ({ page }) => {
   await expect(footer.locator('[data-slot="paddle"]')).toHaveCount(1);
 });
 
+test("the Life shell has the name linking to /life/ and no theme toggle", async ({ page }) => {
+  await page.goto("/life/");
+  await expect(page.getByRole("link", { name: "Onur Senture" })).toHaveAttribute("href", "/life/");
+  await expect(page.getByRole("group", { name: "Theme" })).toHaveCount(0);
+  await expect(page.getByRole("switch", { name: "Life" })).toHaveAttribute("aria-checked", "true");
+});
+
 test.describe("at 390px", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test("the site menu opens full-screen and closes", async ({ page }) => {
+  test("the header shows the name, the Life switch and Menu; the menu holds the theme toggle", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("navigation", { name: "Main" })).toBeHidden();
+    await expect(page.getByRole("link", { name: "Onur Senture" })).toBeVisible();
+    await expect(page.getByRole("switch", { name: "Life" }).filter({ visible: true })).toBeVisible();
     await page.getByRole("button", { name: "Menu" }).click();
     const menu = page.getByRole("dialog", { name: "Menu" });
     await expect(menu.getByRole("group", { name: "Theme" })).toBeVisible();
