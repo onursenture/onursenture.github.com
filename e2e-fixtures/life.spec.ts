@@ -27,13 +27,54 @@ test("Life rows show real items from every source", async ({ page }) => {
   await expect(page.locator('[data-section="sync-status"]')).toHaveCount(0);
 });
 
+test("Books Reading lists every book being read, in compact covers", async ({ page }) => {
+  await page.goto("/life/");
+  const titles = [
+    "Harry Potter and the Deathly Hallows (Harry Potter, #7)",
+    "Educated",
+    "Mutluluğun Mimarisi",
+    "The Design of Everyday Things",
+    "Piranesi",
+  ];
+  const reading = page.locator('[data-section="books"] ul').first();
+  await expect(reading.locator("li")).toHaveCount(titles.length);
+  for (const title of titles) await expect(reading).toContainText(title);
+  // The readout's reading line names every one of them.
+  const line = page.getByRole("region", { name: "Now" }).locator("li", { hasText: "reading:" });
+  for (const title of titles) await expect(line).toContainText(title);
+  // Compact: ten columns at 1440, four at 390, one truncated caption line each.
+  for (const [width, columns] of [
+    [1440, 10],
+    [390, 4],
+  ] as const) {
+    await page.setViewportSize({ width, height: 900 });
+    const tracks = await reading.evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
+    expect(tracks, `${width}px: columns`).toBe(columns);
+    const cover = await reading.locator("li").first().locator("img, span").first().boundingBox();
+    expect(cover!.width, `${width}px: cover is small`).toBeLessThanOrEqual(width === 1440 ? 100 : 90);
+  }
+});
+
+test("the Life photos row is compact", async ({ page }) => {
+  for (const [width, columns] of [
+    [1440, 10],
+    [390, 4],
+  ] as const) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/life/");
+    const row = page.locator('[data-section="photos"] ul').first();
+    const tracks = await row.evaluate((el) => getComputedStyle(el).gridTemplateColumns.split(" ").length);
+    expect(tracks, `${width}px: columns`).toBe(columns);
+  }
+});
+
 test("the readout shows the newest item from each source", async ({ page }) => {
   await page.goto("/life/");
   const now = page.getByRole("region", { name: "Now" });
   await expect(now).toContainText("last watched: Love & Other Drugs");
   await expect(now).not.toContainText("3.5");
   await expect(now).toContainText(
-    "reading: Harry Potter and the Deathly Hallows (Harry Potter, #7), Educated, Mutluluğun Mimarisi",
+    "reading: Harry Potter and the Deathly Hallows (Harry Potter, #7), Educated, Mutluluğun Mimarisi, The Design of Everyday Things, Piranesi",
   );
   await expect(now.getByText(/^reading:/)).toHaveCount(1);
   await expect(now).toContainText("saved: Jurassic Park computers in excruciating detail · fabiensanglard.net · 13 min");
@@ -46,7 +87,7 @@ test("a long reading line is one visual line but keeps its full text", async ({ 
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/life/");
     const line = page.getByRole("region", { name: "Now" }).locator("li", { hasText: "reading:" });
-    await expect(line).toContainText("Educated, Mutluluğun Mimarisi");
+    await expect(line).toContainText("The Design of Everyday Things, Piranesi");
     const { cut, height, lineHeight } = await line.evaluate((el) => ({
       cut: el.scrollWidth > el.clientWidth,
       height: el.getBoundingClientRect().height,

@@ -100,6 +100,60 @@
     <book_published>2006</book_published>
     <description><![CDATA[<a href="https://www.goodreads.com/book/show/1"><img alt="cover" src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1/1._SY75_.jpg" /></a>]]></description>
   </item>
+<item>
+    <guid><![CDATA[https://www.goodreads.com/review/show/8100000001?utm_medium=api&utm_source=rss]]></guid>
+    <pubDate><![CDATA[Sat, 09 May 2026 10:00:00 -0700]]></pubDate>
+    <title>The Design of Everyday Things</title>
+    <link><![CDATA[https://www.goodreads.com/review/show/8100000001?utm_medium=api&utm_source=rss]]></link>
+    <book_id>840</book_id>
+    <book_image_url></book_image_url>
+    <book_small_image_url></book_small_image_url>
+    <book_medium_image_url></book_medium_image_url>
+    <book_large_image_url></book_large_image_url>
+    <book_description></book_description>
+    <book id="840">
+      <num_pages>300</num_pages>
+    </book>
+    <author_name>Don Norman</author_name>
+    <isbn>0000000000</isbn>
+    <user_name>Onur</user_name>
+    <user_rating>0</user_rating>
+    <user_read_at></user_read_at>
+    <user_date_added><![CDATA[Sat, 09 May 2026 10:00:00 -0700]]></user_date_added>
+    <user_date_created><![CDATA[Sat, 09 May 2026 10:00:00 -0700]]></user_date_created>
+    <user_shelves>currently-reading</user_shelves>
+    <user_review></user_review>
+    <average_rating>4.00</average_rating>
+    <book_published>2010</book_published>
+    <description></description>
+  </item>
+<item>
+    <guid><![CDATA[https://www.goodreads.com/review/show/8100000002?utm_medium=api&utm_source=rss]]></guid>
+    <pubDate><![CDATA[Wed, 06 May 2026 10:00:00 -0700]]></pubDate>
+    <title>Piranesi</title>
+    <link><![CDATA[https://www.goodreads.com/review/show/8100000002?utm_medium=api&utm_source=rss]]></link>
+    <book_id>50202953</book_id>
+    <book_image_url></book_image_url>
+    <book_small_image_url></book_small_image_url>
+    <book_medium_image_url></book_medium_image_url>
+    <book_large_image_url></book_large_image_url>
+    <book_description></book_description>
+    <book id="50202953">
+      <num_pages>300</num_pages>
+    </book>
+    <author_name>Susanna Clarke</author_name>
+    <isbn>0000000000</isbn>
+    <user_name>Onur</user_name>
+    <user_rating>0</user_rating>
+    <user_read_at></user_read_at>
+    <user_date_added><![CDATA[Wed, 06 May 2026 10:00:00 -0700]]></user_date_added>
+    <user_date_created><![CDATA[Wed, 06 May 2026 10:00:00 -0700]]></user_date_created>
+    <user_shelves>currently-reading</user_shelves>
+    <user_review></user_review>
+    <average_rating>4.00</average_rating>
+    <book_published>2010</book_published>
+    <description></description>
+  </item>
 
   </channel>
 </rss>

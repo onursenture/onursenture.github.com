@@ -20,6 +20,8 @@ describe("loadFixtureData", () => {
       "Harry Potter and the Deathly Hallows (Harry Potter, #7)",
       "Educated",
       "Mutluluğun Mimarisi",
+      "The Design of Everyday Things",
+      "Piranesi",
     ]);
     expect(books.read.map((b) => b.title)).toContain("Hacı Komünist");
     const reading = new Set(books.currentlyReading.map((b) => b.link));

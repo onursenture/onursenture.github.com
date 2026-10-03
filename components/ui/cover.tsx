@@ -1,12 +1,16 @@
 import { cx } from "@/lib/cx";
 
+// The dense grid for covers and for the /life/ photo row: 4 columns on mobile,
+// 10 from md.
+export const COVER_GRID = "grid grid-cols-4 gap-x-3 gap-y-4 md:grid-cols-10 md:gap-x-4";
+
 // A remote film poster or book cover, always 2:3 and square-cornered. Remote
 // images skip the image pipeline, so the explicit size only reserves space.
 // Without a src it renders a --color-line block of the same shape.
 export function Cover({
   src,
   alt,
-  width = 240,
+  width = 96,
   className,
 }: {
   src: string;

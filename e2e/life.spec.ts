@@ -65,12 +65,16 @@ test("every canvas on /life/ is decorative", async ({ page }) => {
   expect(unlabelled).toBe(0);
 });
 
-test("the photos row sizes its thumbnails for the wide row beside the label column", async ({ page }) => {
+test("the photos row sizes its compact thumbnails for the wide row beside the label column", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/life/");
   await expect(page.locator('[data-section="photos"] picture source').first()).toHaveAttribute(
     "sizes",
-    "(min-width: 1024px) calc((100vw - 356px) / 3), (min-width: 768px) calc((100vw - 128px) / 3), calc((100vw - 48px) / 2)",
+    "(min-width: 1024px) calc((100vw - 308px - 9 * 16px) / 10), (min-width: 768px) calc((100vw - 80px - 9 * 16px) / 10), calc((100vw - 32px - 3 * 12px) / 4)",
   );
+  // The 308px in `sizes` is the real gap between the grid and the viewport edge.
+  const grid = await page.locator('[data-section="photos"] ul').first().boundingBox();
+  expect(Math.round(1440 - grid!.width)).toBe(308);
 });
 
 test("entering Life through the switch types the readout every time, not only the first", async ({ page }) => {
