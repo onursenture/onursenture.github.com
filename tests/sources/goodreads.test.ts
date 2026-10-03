@@ -13,12 +13,12 @@ describe("parseGoodreadsShelf", () => {
     expect(books[2].date).toBe("2026-06-21T00:00:00.000Z");
   });
 
-  it("upgrades cover thumbnails and converts ratings to stars", async () => {
+  it("upgrades cover thumbnails and reads the numeric rating", async () => {
     const [first] = await parseGoodreadsShelf(fixture("goodreads-read.xml"), 5);
     expect(first.cover).toBe(
       "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347438784l/663561._SY475_.jpg",
     );
-    expect(first).toMatchObject({ rating: "★★", numRating: 2, author: "Lars Müller" });
+    expect(first).toMatchObject({ numRating: 2, author: "Lars Müller" });
   });
 
   it("extracts review text from user_review only", async () => {
@@ -50,7 +50,7 @@ describe("goodreads.fetch", () => {
       "Mutluluğun Mimarisi",
     ]);
     // Nothing on the shelf is rated yet.
-    expect(books.currentlyReading[0]).toMatchObject({ author: "J.K. Rowling", numRating: 0, rating: "" });
+    expect(books.currentlyReading[0]).toMatchObject({ author: "J.K. Rowling", numRating: 0 });
     expect(books.read).toHaveLength(3);
   });
 

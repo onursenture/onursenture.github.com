@@ -13,7 +13,6 @@ export const bookSchema = z.object({
   title: z.string(),
   author: z.string(),
   cover: z.string(),
-  rating: z.string(),
   numRating: z.number(),
   review: z.string(),
   link: z.string(),
@@ -76,7 +75,6 @@ export async function parseGoodreadsShelf(
       title: (item.title ?? "").trim(),
       author: (item.authorName ?? "").trim(),
       cover: rawCover ? upgradeCover(rawCover) : "",
-      rating: "\u2605".repeat(numRating),
       numRating,
       // Only the explicit review field; the old description-scraping
       // fallback picked up book blurbs and is intentionally gone.

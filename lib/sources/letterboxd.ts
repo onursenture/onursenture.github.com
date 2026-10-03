@@ -12,9 +12,6 @@ export const filmSchema = z.object({
   year: z.number().nullable(),
   link: z.string(),
   poster: z.string(),
-  // Star string as Letterboxd renders it in the title. Empty when unrated.
-  // Display uses ratingValue; this is kept as recorded.
-  rating: z.string(),
   // Numeric rating 0.5–5, null when unrated.
   ratingValue: z.number().nullable(),
   // YYYY-MM-DD the film was watched, empty if missing.
@@ -51,7 +48,6 @@ export async function parseLetterboxd(xml: string): Promise<Film[]> {
   return feed.items.slice(0, LIMIT).map((item) => {
     const $ = cheerio.load(item.content ?? "");
     const titleRaw = item.title ?? "";
-    const starsMatch = titleRaw.match(STARS_SUFFIX);
     // Prefer the structured field; fall back to stripping the star suffix and
     // ", 2024" from the display title.
     const title =
@@ -67,7 +63,6 @@ export async function parseLetterboxd(xml: string): Promise<Film[]> {
       year: Number.isNaN(year) ? null : year,
       link: item.link ?? "",
       poster: $("img").attr("src") ?? "",
-      rating: starsMatch ? starsMatch[1] : "",
       ratingValue: Number.isNaN(ratingValue) ? null : ratingValue,
       watchedDate: item.watchedDate ?? "",
       date: toIso(item.pubDate),

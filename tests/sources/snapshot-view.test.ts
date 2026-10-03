@@ -8,7 +8,6 @@ const film = {
   year: 2020,
   link: "https://letterboxd.com/onur/film/a/",
   poster: "",
-  rating: "★★★",
   ratingValue: 3,
   watchedDate: "2026-10-01",
   date: "2026-10-01T10:00:00.000Z",
@@ -32,6 +31,10 @@ describe("toSourceView", () => {
       data: [film],
       lastSuccessAt: "2026-10-02T12:00:00.000Z",
     });
+  });
+
+  it("still reads snapshots stored with the dropped star-string rating", () => {
+    expect(toSourceView(letterboxd, snapshot([{ ...film, rating: "★★★" }])).data).toEqual([film]);
   });
 
   it("fails soft when the payload no longer matches the schema", () => {
