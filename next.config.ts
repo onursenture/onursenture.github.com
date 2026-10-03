@@ -19,6 +19,12 @@ const nextConfig: NextConfig = {
     return [
       { source: "/photos/", destination: "/life/photos/", permanent: true },
       { source: "/photos/:slug/", destination: "/life/photos/:slug/", permanent: true },
+      // The work index and the Archive were removed in the work rethink (part
+      // 2): the home's Selected work replaces them. With trailingSlash, Next
+      // first sends /work to /work/, so the sources carry the slash, like the
+      // photo redirects above.
+      { source: "/work/", destination: "/", permanent: true },
+      { source: "/work/archive/", destination: "/", permanent: true },
     ];
   },
 };

@@ -1,129 +1,44 @@
-import { primeblocksPosts } from "./posts/primeblocks";
-import type { CaseStudy } from "./types";
+import type { ProductPage } from "./types";
 
-// Every entry is backed by the post in its `source`; see primeone.ts.
-export const primeblocks: CaseStudy = {
+// Copy reuses the Sprint 5 case study's lead, intro and facts; no new claims.
+export const primeblocks: ProductPage = {
   slug: "primeblocks",
   org: "primetek",
   title: "PrimeBlocks",
   kind: "UI blocks",
-  years: "2021–2025",
   lead: {
     strong: "PrimeBlocks.",
     rest: "Ready-made UI blocks for the Prime libraries, designed in Figma and kept in sync with the code.",
   },
-  intro: ["Application and marketing blocks, relaunched in 2024 on Tailwind CSS and redesigned block by block."],
+  intro: "Application and marketing blocks, relaunched in 2024 on Tailwind CSS and redesigned block by block.",
   facts: [
     { label: "Role", value: "Design lead" },
     { label: "Years", value: "2021–2025" },
-    { label: "Tools", value: "Figma, Tailwind CSS" },
+    { label: "At", value: "PrimeTek" },
   ],
-  links: [{ label: "primeblocks.org", href: "https://primeblocks.org" }],
-  hero: { id: "cover", caption: "PrimeBlocks" },
-  entries: [
+  blocks: [
     {
-      id: "launch",
-      date: "2021-07",
-      title: "Launch",
-      note: "Launched with 150+ UI blocks meant to be copied and pasted into a project; the Vue and React versions followed in August.",
-      source: "https://x.com/prime_ng/status/1417116182965018626",
-      links: [
-        { label: "Vue post", href: "https://x.com/primevue/status/1423560641005109248" },
-        { label: "React post", href: "https://x.com/primereact/status/1427969400565637130" },
-        { label: "JSF post", href: "https://x.com/primefaces/status/1433395958985990149" },
+      kind: "text",
+      id: "what-i-did",
+      heading: "What I did",
+      body: [
+        "I led the design of PrimeBlocks, ready-made application and marketing blocks for the Prime libraries, designed in Figma and kept in sync with the code. In 2024 they were relaunched on Tailwind CSS and redesigned block by block.",
       ],
-      media: [],
     },
     {
-      id: "2-0",
-      date: "2021-10",
-      version: "2.0",
-      note: "Version 2 for Angular added 130+ new blocks, bringing it to 280-plus blocks in total.",
-      source: "https://x.com/prime_ng/status/1450787551065907205",
-      links: [
-        { label: "Vue post", href: "https://x.com/primevue/status/1455500261397520386" },
-        { label: "React post", href: "https://x.com/primereact/status/1458802542264172552" },
+      kind: "images",
+      id: "highlights",
+      heading: "Highlights",
+      columns: 3,
+      images: [
+        {
+          id: "application-blocks",
+          caption: "Application blocks",
+          pin: { order: 2, title: "Application blocks", note: "Relaunched in 2024 on Tailwind CSS" },
+        },
+        { id: "marketing-blocks", caption: "Marketing blocks" },
+        { id: "design-file", caption: "Design file" },
       ],
-      media: [],
-    },
-    {
-      id: "3-0",
-      date: "2022-03",
-      version: "3.0",
-      note: "Version 3, the E-Commerce Edition, brought 70+ new blocks and 350+ in total to Angular in March 2022; the Vue edition followed in April and React in May.",
-      source: "https://x.com/prime_ng/status/1508415120086646790",
-      links: [
-        { label: "Blog post", href: "https://www.primefaces.org/blog/introducing-primeblocks-v3-e-commerce-edition/" },
-        { label: "Vue post", href: "https://x.com/primevue/status/1510883802884808716" },
-        { label: "React post", href: "https://x.com/primereact/status/1527632682108215299" },
-      ],
-      media: [],
-    },
-    {
-      id: "3-1-1",
-      date: "2022-12",
-      version: "3.1.1",
-      note: "The Figma file fully synced with the code.",
-      source: "https://x.com/w00f/status/1602656029464006658",
-      media: [{ id: "figma-sync", caption: "Figma file" }],
-    },
-    {
-      id: "jsf-ecommerce",
-      date: "2023-05",
-      title: "E-commerce for JSF",
-      note: "PrimeBlocks for JSF grew by 120+ blocks, with a whole E-Commerce category among them.",
-      source: "https://x.com/primefaces/status/1655900374950195201",
-      media: [],
-    },
-    {
-      id: "tailwind-move",
-      date: "2024-02",
-      title: "Moving to Tailwind CSS",
-      note: "Announced that PrimeBlocks were moving to Tailwind CSS, with an initial release planned for March.",
-      source: "https://x.com/primevue/status/1757763510979699186",
-      media: [],
-    },
-    {
-      id: "next-gen",
-      date: "2024-09",
-      title: "Next-gen PrimeBlocks",
-      note: "Relaunched on Tailwind CSS, starting with Vue: PrimeTek's first SaaS product.",
-      source: "https://x.com/w00f/status/1834178438665576753",
-      media: [{ id: "next-gen", caption: "Next-gen launch" }],
-    },
-    {
-      id: "q1-2025",
-      date: "2025-02",
-      title: "Q1 2025 update",
-      note: "Added 30 blocks and overhauled the whole marketing category: each block redesigned and rebuilt.",
-      source: "https://x.com/primevue/status/1890067025189585349",
-      media: [],
-    },
-    {
-      id: "q2-2025",
-      date: "2025-05",
-      title: "Q2 2025 update",
-      note: "The Application UI blocks remastered, with a rebuild aimed at speed.",
-      source: "https://x.com/primevue/status/1921867582123991257",
-      media: [],
-    },
-    {
-      id: "redesign",
-      date: "2025-07",
-      title: "Full redesign",
-      note: "The e-commerce update completed the redesign of every block.",
-      source: "https://x.com/w00f/status/1948024774577287515",
-      media: [{ id: "ecommerce", caption: "E-commerce blocks" }],
-    },
-    {
-      id: "angular",
-      date: "2025-09",
-      title: "Angular support",
-      note: "Angular support arrived for PrimeNG v20, announced as 490+ blocks styled with Tailwind CSS, fully online and updated automatically each quarter.",
-      source: "https://x.com/prime_ng/status/1965754057638953432",
-      links: [{ label: "Blog post", href: "https://www.primefaces.org/blog/transform-your-angular-development-with-the-new-primeblocks" }],
-      media: [],
     },
   ],
-  posts: primeblocksPosts,
 };

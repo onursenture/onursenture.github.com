@@ -1,112 +1,72 @@
 import { describe, expect, it } from "vitest";
-import { archive, caseStudies } from "@/content/work";
-import { workSettings } from "@/content/work/settings";
+import { productPages } from "@/content/work";
 import { hasImage } from "@/lib/images/manifest";
-import { getArchiveView, getCaseStudies, getStudyView } from "@/lib/work";
+import { getPins, getProductPage, getProductSlugs } from "@/lib/work";
+import { pageImages } from "@/lib/work/derive";
 import { validateWork } from "@/lib/work/validate";
 
 describe("content/work", () => {
   it("passes every registry check", () => {
-    expect(validateWork(caseStudies, archive, hasImage)).toEqual([]);
+    expect(validateWork(productPages, hasImage)).toEqual([]);
   });
 
-  it("lists the four PrimeTek case studies in display order", () => {
-    expect(caseStudies.map((s) => s.slug)).toEqual(["primeone", "primeblocks", "primeicons", "templates"]);
-    for (const study of caseStudies) expect(study.org).toBe("primetek");
+  it("lists the four PrimeTek product pages in order", () => {
+    expect(getProductSlugs()).toEqual(["primeone", "primeblocks", "primeicons", "templates"]);
+    for (const page of productPages) expect(page.org).toBe("primetek");
   });
 
-  it("gives every entry a source, so each note can be checked", () => {
-    for (const study of caseStudies) {
-      expect(study.entries.length).toBeGreaterThan(0);
-      for (const entry of study.entries) expect(entry.source, `${study.slug}/${entry.id}`).toMatch(/^https:\/\//);
+  it("states Role, Years and At on every page, with Onur's role", () => {
+    for (const page of productPages) {
+      expect(page.facts.map((fact) => fact.label), page.slug).toEqual(["Role", "Years", "At"]);
+      expect(page.facts[0].value).toBe("Design lead");
+      expect(page.facts[2].value).toBe("PrimeTek");
     }
   });
 
-  it("states Onur's role on every case study", () => {
-    for (const study of caseStudies) expect(study.facts.find((f) => f.label === "Role")?.value).toBe("Design lead");
-  });
-
-  it("credits Genesis to its designer only", () => {
-    const genesis = caseStudies.find((s) => s.slug === "templates")!.entries.find((e) => e.id === "genesis")!;
-    expect(genesis.credits).toEqual([{ name: "Ümit Çelik", href: "https://x.com/umitceliks" }]);
-  });
-
-  it("fills PrimeOne's posts under their entries, oldest first, linking only @w00f", () => {
-    const primeone = caseStudies.find((s) => s.slug === "primeone")!;
-    const entries = getStudyView(primeone).groups.flatMap((g) => g.items);
-    const posts = entries.flatMap((e) => e.posts);
-    expect(posts).toHaveLength(12);
-    expect(entries.filter((e) => e.posts.length > 0).map((e) => e.id)).toEqual(["4-0", "3-0", "2-2", "2-1", "2-0", "kit-2022"]);
-    const dateOf = new Map((primeone.posts ?? []).map((p) => [p.id, p.date]));
-    for (const entry of entries) {
-      const dates = entry.posts.map((p) => dateOf.get(p.id)!);
-      expect(dates, entry.id).toEqual([...dates].sort());
-    }
-    for (const post of posts) {
-      expect(post.url, post.id).toBe(post.account === "@w00f" ? `https://x.com/w00f/status/${post.id}` : null);
+  it("gives every page a What I did text block, then a three-column highlights block", () => {
+    for (const page of productPages) {
+      const [text, images] = page.blocks;
+      expect(text, page.slug).toMatchObject({ kind: "text", id: "what-i-did", heading: "What I did" });
+      expect(images, page.slug).toMatchObject({ kind: "images", id: "highlights", columns: 3 });
     }
   });
 
-  it("gives every post an entry, and puts the Tailwind v4 post under the PrimeBlocks redesign", () => {
-    for (const study of caseStudies) for (const post of study.posts ?? []) expect(post.entryId, `${study.slug}/${post.id}`).toBeTruthy();
-    const blocks = caseStudies.find((s) => s.slug === "primeblocks")!;
-    expect(blocks.posts!.find((p) => p.id === "1953079880523858171")?.entryId).toBe("redesign");
+  it("adds the icon set after the images block on PrimeIcons only", () => {
+    const icons = getProductPage("primeicons")!;
+    expect(icons.blocks.map((block) => block.kind)).toEqual(["text", "images", "icons"]);
+    for (const page of productPages.filter((p) => p.slug !== "primeicons")) {
+      expect(page.blocks.some((block) => block.kind === "icons"), page.slug).toBe(false);
+    }
   });
 
-  it("sets no per-entry columns yet (Onur sets them with his images)", () => {
-    for (const study of caseStudies) for (const entry of study.entries) expect(entry.columns, `${study.slug}/${entry.id}`).toBeUndefined();
+  it("shows the six named templates and credits Genesis to its designer only", () => {
+    const templates = productPages.find((p) => p.slug === "templates")!;
+    expect(pageImages(templates).map((image) => image.caption)).toEqual(["Apollo", "Diamond", "Ultima", "Verona", "Atlantis", "Genesis"]);
+    const genesis = pageImages(templates).find((image) => image.id === "genesis")!;
+    expect(genesis.credits).toEqual([{ name: "Ümit Çelik" }]);
   });
 
-  it("gives every case study posts that are one short line, newest first, with a unique id", () => {
-    for (const study of caseStudies) {
-      const posts = study.posts ?? [];
-      expect(posts.length, study.slug).toBeGreaterThan(0);
-      expect(new Set(posts.map((p) => p.id)).size, study.slug).toBe(posts.length);
-      for (const post of posts) {
-        expect(post.summary.length, `${study.slug}/${post.id}`).toBeLessThanOrEqual(110);
-        expect(post.summary, `${study.slug}/${post.id}`).not.toMatch(/[!#]/u);
-        expect(post.date >= "2016-05", `${study.slug}/${post.id}`).toBe(true);
-      }
-      const dates = posts.map((p) => p.date);
-      expect(dates, study.slug).toEqual([...dates].sort().reverse());
+  it("pins the first highlight of each page, in registry order", () => {
+    const pins = getPins();
+    expect(pins.map((pin) => [pin.pin.order, pin.slug, pin.blockId])).toEqual([
+      [1, "primeone", "highlights"],
+      [2, "primeblocks", "highlights"],
+      [3, "primeicons", "highlights"],
+      [4, "templates", "highlights"],
+    ]);
+    for (const pin of pins) {
+      const first = pageImages(productPages.find((p) => p.slug === pin.slug)!)[0];
+      expect(pin.image.id).toBe(first.id);
+      expect(pin.pin.title.split(" ").length).toBeLessThanOrEqual(4);
     }
   });
 
   it("never states an unconfirmed headline number", () => {
-    const text = JSON.stringify({ caseStudies, archive });
-    for (const claim of ["80+", "500 blocks", "25+"]) expect(text).not.toContain(claim);
+    const text = JSON.stringify(productPages);
+    for (const claim of ["80+", "500 blocks", "25+", "80 components"]) expect(text).not.toContain(claim);
   });
 
-  it("ships the Figma links switch off", () => {
-    expect(workSettings.figmaLinks).toBe(false);
-  });
-
-  it("exposes no figma refs through lib/work while figmaLinks is off", () => {
-    if (workSettings.figmaLinks) return;
-    const media = [...getCaseStudies().flatMap((study) => getStudyView(study).media), ...getArchiveView().media];
-    expect(media.length).toBeGreaterThan(0);
-    for (const item of media) expect(item.figma, item.id).toBeNull();
-  });
-
-  it("marks exactly the nine remastered or all-new templates", () => {
-    const templates = caseStudies.find((s) => s.slug === "templates")!;
-    expect(
-      templates.entries
-        .filter((e) => e.remaster)
-        .map((e) => e.id)
-        .sort(),
-    ).toEqual(
-      [
-        "poseidon-remastered-2020",
-        "ultima-definitive",
-        "verona-remastered",
-        "atlantis-remastered",
-        "apollo-2022",
-        "ultima-reloaded",
-        "diamond-remastered",
-        "poseidon-remastered",
-        "avalon-remastered",
-      ].sort(),
-    );
+  it("sets no external link anywhere in the content", () => {
+    expect(JSON.stringify(productPages)).not.toMatch(/https?:\/\//);
   });
 });

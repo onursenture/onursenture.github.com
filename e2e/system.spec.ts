@@ -4,6 +4,8 @@ const PRIMITIVES = [
   "DitherStrip",
   "DitherRule",
   "MediaPlaceholder",
+  "MediaFigure",
+  "SelectedWorkItem",
   "PrimaryButton",
   "Heatmap",
   "FooterWash",

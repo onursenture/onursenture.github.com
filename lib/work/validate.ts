@@ -1,107 +1,58 @@
-import { type ArchiveEntry, type CaseStudy, type Credit, type Media, POST_ACCOUNTS } from "@/content/work/types";
+import type { Credit, ProductPage } from "@/content/work/types";
 
-// Registry checks, run by tests/content/work.test.ts in CI. Returns every
-// problem as a readable line instead of throwing at the first one.
+// Registry checks. lib/work/index.ts throws on any of them at build time, and
+// tests/content/work.test.ts runs them in CI. Returns every problem as a
+// readable line instead of throwing at the first one.
 
 const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const YEAR_MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
-const DAY = /^(\d{4})-(\d{2})-(\d{2})$/;
-const DIGITS = /^\d+$/;
-const NODE_ID = /^\d+:\d+$/;
+const COLUMNS: readonly number[] = [1, 2, 3];
 
-function isDay(value: string): boolean {
-  const match = DAY.exec(value);
-  if (!match) return false;
-  const [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])];
-  const date = new Date(Date.UTC(year, month - 1, day));
-  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
-}
-
-export function validateWork(
-  studies: CaseStudy[],
-  archive: ArchiveEntry[],
-  hasImage: (key: string) => boolean,
-): string[] {
+export function validateWork(pages: ProductPage[], hasImage: (key: string) => boolean = () => true): string[] {
   const errors: string[] = [];
-
-  const url = (where: string, href: string) => {
-    if (!href.startsWith("https://")) errors.push(`${where}: "${href}" must be https`);
-  };
-  const date = (where: string, value: string) => {
-    if (!YEAR_MONTH.test(value)) errors.push(`${where}: date "${value}" must be YYYY-MM`);
-  };
-  const credits = (where: string, list: Credit[] = []) => {
-    for (const credit of list) if (credit.href) url(where, credit.href);
-  };
-  const media = (where: string, item: Media, seen: Set<string>) => {
-    if (!KEBAB.test(item.id)) errors.push(`${where}: media id "${item.id}" is not kebab-case`);
-    if (seen.has(item.id)) errors.push(`${where}: duplicate media id "${item.id}"`);
-    seen.add(item.id);
-    if (item.image && !hasImage(item.image)) errors.push(`${where}: image "${item.image}" is not in the manifest`);
-    if (item.figma && !NODE_ID.test(item.figma.nodeId)) {
-      errors.push(`${where}: figma nodeId "${item.figma.nodeId}" must look like 12:345`);
-    }
-    for (const tag of item.tags ?? []) {
-      if (!KEBAB.test(tag)) errors.push(`${where}: tag "${tag}" is not kebab-case`);
-    }
-    credits(where, item.credits);
-  };
-
   const slugs = new Set<string>();
-  for (const study of studies) {
-    if (slugs.has(study.slug)) errors.push(`duplicate slug "${study.slug}"`);
-    slugs.add(study.slug);
-    for (const link of study.links) url(`${study.slug} link`, link.href);
+  const pinOrders = new Map<number, string>();
 
-    const entryIds = new Set<string>();
-    for (const entry of study.entries) {
-      const where = `${study.slug}/${entry.id}`;
-      if (!KEBAB.test(entry.id)) errors.push(`${where}: entry id "${entry.id}" is not kebab-case`);
-      if (entryIds.has(entry.id)) errors.push(`${where}: duplicate entry id "${entry.id}"`);
-      if (entry.remaster && entry.update) errors.push(`${where}: an entry cannot be both a remaster and an update`);
-      entryIds.add(entry.id);
+  const credits = (where: string, list: Credit[] = []) => {
+    for (const credit of list) {
+      if (credit.href && !credit.href.startsWith("https://")) errors.push(`${where}: credit "${credit.href}" must be https`);
     }
-    const mediaIds = new Set<string>();
-    media(`${study.slug} hero`, study.hero, mediaIds);
-    for (const entry of study.entries) {
-      const where = `${study.slug}/${entry.id}`;
-      date(where, entry.date);
-      if (entry.columns !== undefined && ![1, 2, 3].includes(entry.columns)) {
-        errors.push(`${where}: columns ${String(entry.columns)} must be 1, 2 or 3`);
-      }
-      if (entry.source) url(where, entry.source);
-      for (const link of entry.links ?? []) url(where, link.href);
-      credits(where, entry.credits);
-      for (const item of entry.media) media(where, item, mediaIds);
-    }
+  };
 
-    const postIds = new Set<string>();
-    for (const post of study.posts ?? []) {
-      const where = `${study.slug}/post ${post.id}`;
-      if (!isDay(post.date)) errors.push(`${where}: post date "${post.date}" must be YYYY-MM-DD`);
-      if (!DIGITS.test(post.id)) errors.push(`${where}: post id "${post.id}" must be digits`);
-      if (!(POST_ACCOUNTS as readonly string[]).includes(post.account)) {
-        errors.push(`${where}: post account "${post.account}" is not one of ${POST_ACCOUNTS.join(", ")}`);
+  for (const page of pages) {
+    const at = page.slug;
+    if (slugs.has(page.slug)) errors.push(`duplicate slug "${page.slug}"`);
+    slugs.add(page.slug);
+    if (!page.intro.trim()) errors.push(`${at}: intro must not be empty`);
+    if (page.blocks.length === 0) errors.push(`${at}: a page needs at least one block`);
+
+    const blockIds = new Set<string>();
+    const imageIds = new Set<string>();
+    for (const block of page.blocks) {
+      const where = `${at}/${block.id}`;
+      if (!KEBAB.test(block.id)) errors.push(`${where}: block id "${block.id}" is not kebab-case`);
+      if (blockIds.has(block.id)) errors.push(`${where}: duplicate block id "${block.id}"`);
+      blockIds.add(block.id);
+
+      if (block.kind === "icons" && page.slug !== "primeicons") {
+        errors.push(`${where}: an icons block is only allowed on primeicons`);
       }
-      if (postIds.has(post.id)) errors.push(`${where}: duplicate post id "${post.id}"`);
-      postIds.add(post.id);
-      if (!post.entryId) errors.push(`${where}: a post needs an entryId`);
-      else if (!entryIds.has(post.entryId)) errors.push(`${where}: entryId "${post.entryId}" is not an entry of ${study.slug}`);
+      if (block.kind !== "images") continue;
+      if (block.columns !== undefined && !COLUMNS.includes(block.columns)) {
+        errors.push(`${where}: columns ${String(block.columns)} must be 1, 2 or 3`);
+      }
+      for (const image of block.images) {
+        if (!KEBAB.test(image.id)) errors.push(`${where}: image id "${image.id}" is not kebab-case`);
+        if (imageIds.has(image.id)) errors.push(`${where}: duplicate image id "${image.id}"`);
+        imageIds.add(image.id);
+        if (image.image && !hasImage(image.image)) errors.push(`${where}: image "${image.image}" is not in the manifest`);
+        credits(`${where}/${image.id}`, image.credits);
+        if (image.pin) {
+          const other = pinOrders.get(image.pin.order);
+          if (other) errors.push(`${where}/${image.id}: duplicate pin order ${image.pin.order} (also ${other})`);
+          else pinOrders.set(image.pin.order, `${where}/${image.id}`);
+        }
+      }
     }
   }
-
-  const archiveIds = new Set<string>();
-  const archiveMedia = new Set<string>();
-  for (const row of archive) {
-    const where = `archive/${row.id}`;
-    if (!KEBAB.test(row.id)) errors.push(`${where}: archive id "${row.id}" is not kebab-case`);
-    if (archiveIds.has(row.id)) errors.push(`${where}: duplicate archive id "${row.id}"`);
-    archiveIds.add(row.id);
-    date(where, row.date);
-    url(where, row.source);
-    credits(where, row.credits);
-    if (row.media) media(where, row.media, archiveMedia);
-  }
-
   return errors;
 }

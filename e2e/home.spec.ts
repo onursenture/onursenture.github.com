@@ -1,4 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { productPages } from "../content/work";
+import { buildPins } from "../lib/work/derive";
+
+const pins = buildPins(productPages, () => undefined);
 
 test("the home leads with the lead line, the role and a live Ankara clock", async ({ page }) => {
   await page.goto("/");
@@ -9,11 +13,14 @@ test("the home leads with the lead line, the role and a live Ankara clock", asyn
   await expect(page.locator("#identity")).toContainText("Open to work");
 });
 
-test("the sections run Lab, Work, Experience, Contributions, each label a heading", async ({ page }) => {
+test("the sections run Lab, Selected work, Experience, Contributions, each label a heading", async ({ page }) => {
   await page.goto("/");
-  const names = ["Lab", "Work", "Experience", "Contributions"];
+  const names = ["Lab", "Selected work", "Experience", "Contributions"];
   for (const name of names) await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Latest work" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Work", exact: true })).toHaveCount(0);
+  const ids = await page.locator("main > section").evaluateAll((sections) => sections.map((s) => s.id));
+  expect(ids).toEqual(["identity", "lab", "selected-work", "experience", "contributions"]);
   await expect(page.locator("main h1, main h2")).toHaveText([/Designer who builds\./, ...names]);
 });
 
@@ -23,15 +30,45 @@ test("the bio names PrimeTek, Orkestra and Bilkent with inline marks", async ({ 
   for (const name of ["PrimeTek", "Orkestra Studios", "Bilkent"]) await expect(identity).toContainText(name);
 });
 
-test("Work shows four numbered tiles, each linking to its case study", async ({ page }) => {
+test("Selected work shows the four pins in order, each linking to its images block", async ({ page }) => {
   await page.goto("/");
-  const work = page.locator("#work");
-  for (const label of ["FIG. 01 · PrimeOne", "FIG. 02 · PrimeBlocks", "FIG. 03 · PrimeIcons", "FIG. 04 · Templates"]) {
-    await expect(work).toContainText(label);
+  const work = page.locator("#selected-work");
+  const items = work.getByRole("listitem");
+  await expect(items).toHaveCount(4);
+  expect(pins.map((pin) => pin.slug)).toEqual(["primeone", "primeblocks", "primeicons", "templates"]);
+  for (const [index, pin] of pins.entries()) {
+    const item = items.nth(index);
+    await expect(item).toContainText(pin.pin.title);
+    await expect(item).toContainText(pin.pin.note);
+    await expect(item).toContainText(`FIG. 0${index + 1} · ${pin.pin.title}`);
+    // One link per item for assistive tech: the source link. The frame links
+    // to the same place, hidden and out of the tab order.
+    const source = item.getByRole("link");
+    await expect(source).toHaveCount(1);
+    await expect(source).toHaveAccessibleName(pin.pageTitle);
+    await expect(source).toHaveAttribute("href", `/work/${pin.slug}/#highlights`);
+    await expect(item.locator('a[aria-hidden="true"][tabindex="-1"]')).toHaveAttribute("href", `/work/${pin.slug}/#highlights`);
   }
-  await expect(work.getByRole("list").getByRole("link")).toHaveCount(4);
-  await expect(work.getByRole("link", { name: /PrimeOne/ })).toHaveAttribute("href", "/work/primeone/");
-  await expect(page.locator("#work").getByRole("link", { name: "All work" })).toHaveAttribute("href", "/work/");
+  await expect(work.getByRole("link", { name: "All work" })).toHaveCount(0);
+});
+
+test("a Selected work source link lands on its product page's images block", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#selected-work").getByRole("link", { name: "PrimeIcons" }).click();
+  await expect(page).toHaveURL(/\/work\/primeicons\/#highlights$/);
+  await expect(page.locator("#highlights")).toBeInViewport();
+});
+
+test("Selected work sizes its frames for three columns in the wide row", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const grid = page.locator("#selected-work ul");
+  const frames = await page.locator("#selected-work li > a").evaluateAll((els) => els.map((el) => el.getBoundingClientRect().width));
+  // The 308px in `sizes` is the real gap between the grid and the viewport edge.
+  const box = await grid.boundingBox();
+  expect(Math.round(1440 - box!.width)).toBe(308);
+  // Three columns, 16px gaps: (100vw - 308px - 32px) / 3.
+  for (const width of frames) expect(Math.round(width)).toBe(Math.round((1440 - 308 - 32) / 3));
 });
 
 test("Experience is a tree with confirmed dates", async ({ page }) => {
@@ -84,4 +121,19 @@ test("a leftover view cookie from the old dashboard view is ignored", async ({ p
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(page.locator("[data-view]")).toHaveCount(0);
+});
+
+test.describe("at 390px", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("Selected work has one column", async ({ page }) => {
+    await page.goto("/");
+    const lefts = await page.locator("#selected-work li").evaluateAll((els) => els.map((el) => Math.round(el.getBoundingClientRect().left)));
+    expect(lefts).toHaveLength(4);
+    expect(new Set(lefts).size).toBe(1);
+    const width = await page.locator("#selected-work li").first().evaluate((el) => el.getBoundingClientRect().width);
+    expect(Math.round(width)).toBe(390 - 32);
+    // The truncated note never widens the page.
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  });
 });

@@ -8,26 +8,25 @@ import { TextLink } from "@/components/ui/text-link";
 import { experience } from "@/content/experience";
 import { labIndex } from "@/content/lab-index";
 import { profile } from "@/content/profile";
-import { workIndex } from "@/content/work-index";
 import { NAV_ITEMS } from "@/lib/nav";
-import { heroImageKey } from "@/lib/work";
+import { getPins } from "@/lib/work";
 import { Bio } from "./bio";
 import { Contributions } from "./contributions-row";
 import { ExperienceTree } from "./experience-tree";
 import { LabGrid } from "./lab-grid";
-import { WorkTiles } from "./work-tiles";
+import { SelectedWork } from "./selected-work";
 
-// An "All →" style action, only once its section ships (/work/ is always
-// there, so its link is written out below). Undefined (not an
+// An "All →" style action, only once its section ships. Undefined (not an
 // element that renders nothing) so SectionRow leaves out the action cell.
 function sectionLink(label: string, href: string) {
   const item = NAV_ITEMS.find((i) => i.href === href);
   return item?.ready ? <TextLink href={href}>{label}</TextLink> : undefined;
 }
 
-// The Work home: identity, Lab, work, experience and contributions, separated
-// by dither rules.
+// The Work home: identity, Lab, Selected work, experience and contributions,
+// separated by dither rules.
 export function HomeSite() {
+  const pins = getPins();
   const rows = [
     <SectionRow
       key="identity"
@@ -65,9 +64,7 @@ export function HomeSite() {
         <LabGrid entries={labIndex} />
       </SectionRow>
     ) : null,
-    <SectionRow key="work" id="work" label="Work" action={<TextLink href="/work/">All work</TextLink>}>
-      <WorkTiles entries={workIndex.map((entry) => ({ ...entry, image: entry.slug ? heroImageKey(entry.slug) : undefined }))} />
-    </SectionRow>,
+    pins.length > 0 ? <SelectedWork key="selected-work" pins={pins} /> : null,
     <SectionRow key="experience" id="experience" label="Experience" action={sectionLink("Resume", "/resume/")}>
       <ExperienceTree entries={experience} />
     </SectionRow>,

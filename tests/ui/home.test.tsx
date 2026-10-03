@@ -3,10 +3,11 @@ import { describe, expect, it } from "vitest";
 import { Bio } from "@/components/home/bio";
 import { ExperienceTree } from "@/components/home/experience-tree";
 import { LabGrid } from "@/components/home/lab-grid";
-import { WorkTiles } from "@/components/home/work-tiles";
+import { SelectedWork, SelectedWorkItem } from "@/components/home/selected-work";
 import { Heatmap } from "@/components/ui/heatmap";
 import { OrgMark } from "@/components/ui/org-mark";
 import { labIndex } from "@/content/lab-index";
+import type { PinView } from "@/lib/work/derive";
 
 const html = renderToStaticMarkup;
 
@@ -62,18 +63,37 @@ describe("ExperienceTree", () => {
   });
 });
 
-describe("WorkTiles", () => {
-  it("renders one numbered placeholder per entry, at most four", () => {
-    const entries = ["A", "B", "C", "D", "E"].map((title) => ({ title, meta: `${title} meta` }));
-    const markup = html(<WorkTiles entries={entries} />);
-    expect(markup).toContain("FIG. 01 · A");
-    expect(markup).toContain("FIG. 04 · D");
-    expect(markup).not.toContain("FIG. 05");
+const pin: PinView = {
+  slug: "primeone",
+  pageTitle: "PrimeOne",
+  blockId: "highlights",
+  image: { id: "components", caption: "Components", credits: [], image: null, fig: 1, label: "FIG. 01", context: "Highlights" },
+  pin: { order: 1, title: "Components", note: "The Figma kit" },
+};
+
+describe("SelectedWork", () => {
+  it("renders the title, the muted note and the source link to the images block", () => {
+    const markup = html(<SelectedWorkItem pin={pin} />);
+    expect(markup).toContain("FIG. 01 · Components");
+    expect(markup).toMatch(/<p class="mt-2 type-body">Components<\/p>/);
+    expect(markup).toMatch(/<p class="truncate type-meta text-fg-muted">The Figma kit<\/p>/);
+    expect(markup).toMatch(/<a [^>]*href="\/work\/primeone\/#highlights"[^>]*><span[^>]*>PrimeOne<\/span><span aria-hidden="true">\u00a0→<\/span><\/a>/);
   });
 
-  it("links a tile to its case study", () => {
-    const markup = html(<WorkTiles entries={[{ title: "PrimeOne", meta: "design system", href: "/work/primeone/" }]} />);
-    expect(markup).toContain('href="/work/primeone/"');
+  it("links the frame too, hidden from assistive tech and the tab order", () => {
+    const markup = html(<SelectedWorkItem pin={pin} />);
+    expect(markup.match(/href="\/work\/primeone\/#highlights"/g)).toHaveLength(2);
+    expect(markup).toMatch(/<a [^>]*aria-hidden="true"[^>]*tabindex="-1"|<a [^>]*tabindex="-1"[^>]*aria-hidden="true"/i);
+  });
+
+  it("is a wide row in a three-column grid, and renders nothing without pins", () => {
+    const markup = html(<SelectedWork pins={[pin, { ...pin, slug: "primeicons", pageTitle: "PrimeIcons" }]} />);
+    expect(markup).toContain('id="selected-work"');
+    expect(markup).toContain("Selected work");
+    expect(markup).toContain("lg:col-span-2");
+    expect(markup).toContain("grid gap-4 md:grid-cols-2 lg:grid-cols-3");
+    expect(markup.match(/<li /g)).toHaveLength(2);
+    expect(html(<SelectedWork pins={[]} />)).toBe("");
   });
 });
 

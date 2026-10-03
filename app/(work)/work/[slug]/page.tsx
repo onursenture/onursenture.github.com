@@ -1,64 +1,46 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import { DitherRule } from "@/components/ui/dither";
-import { CaseStudyHeader } from "@/components/work/case-study-header";
-import { IconGrid } from "@/components/work/icon-grid";
-import { StudyBody } from "@/components/work/study-body";
-import { StudyBrowser } from "@/components/work/study-browser";
+import { ProductBlocks } from "@/components/work/blocks";
+import { ProductBrowser } from "@/components/work/product-browser";
+import { ProductHeader } from "@/components/work/product-header";
 import { renditionUrl } from "@/lib/images/plan";
 import { pageMetadata } from "@/lib/metadata";
+import { getProductPage, getProductSlugs } from "@/lib/work";
 import { getPrimeIcons } from "@/lib/work/primeicons";
-import { caseStudyFacts, getCaseStudies, getCaseStudy, getStudyView } from "@/lib/work";
 
-// One page per PrimeTek product (Sprint 5 spec §3). Unknown slugs 404 inside
-// the Work shell, like unknown photos.
+// One page per product, built from blocks (work rethink spec §4). Unknown
+// slugs 404 inside the Work shell, like unknown photos.
 export function generateStaticParams() {
-  return getCaseStudies().map((study) => ({ slug: study.slug }));
+  return getProductSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/work/[slug]">): Promise<Metadata> {
-  const study = getCaseStudy((await params).slug);
-  if (!study) return {};
-  const description = `${study.lead.strong} ${study.lead.rest}`;
-  const hero = getStudyView(study).hero.image;
-  if (!hero) return pageMetadata(study.title, { description, openGraph: { description } });
+  const page = getProductPage((await params).slug);
+  if (!page) return {};
+  const description = `${page.lead.strong} ${page.lead.rest}`;
+  // The first block image that has a real image; none while all are placeholders.
+  const first = page.images.find((image) => image.image)?.image;
+  if (!first) return pageMetadata(page.title, { description, openGraph: { description } });
   // Social crawlers don't reliably render AVIF: always the largest JPEG.
-  const ogImage = { url: renditionUrl(hero.key, hero.width, "jpg"), width: hero.width, height: hero.height, alt: study.title };
-  return pageMetadata(study.title, {
+  const ogImage = { url: renditionUrl(first.key, first.width, "jpg"), width: first.width, height: first.height, alt: page.title };
+  return pageMetadata(page.title, {
     description,
     openGraph: { type: "article", description, images: [ogImage] },
     twitter: { card: "summary_large_image", images: [ogImage.url] },
   });
 }
 
-export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]">) {
-  const study = getCaseStudy((await params).slug);
-  if (!study) notFound();
-  const view = getStudyView(study);
-  // PrimeIcons shows the real set (spec §4.1); its size and version are facts
-  // counted from the package, not written by hand.
-  const icons = study.slug === "primeicons" ? await getPrimeIcons() : undefined;
-  const facts = icons
-    ? [...caseStudyFacts(study, view), { label: "Set", value: `v${icons.version} · ${icons.icons.length} icons` }]
-    : caseStudyFacts(study, view);
+export default async function ProductPage({ params }: PageProps<"/work/[slug]">) {
+  const page = getProductPage((await params).slug);
+  if (!page) notFound();
+  // The icons block renders PrimeIcons' real set, read from the pinned package.
+  const icons = page.blocks.some((block) => block.kind === "icons") ? await getPrimeIcons() : undefined;
   return (
     <main className="pb-16">
-      <CaseStudyHeader study={study} facts={facts} />
-      {/* The fallback is the prerendered page without a figure open.
-          StudyBrowser reads ?fig after hydration, so every query shares one
-          cached HTML (spec §3.2). */}
-      <Suspense fallback={<StudyBody study={view} />}>
-        <StudyBrowser study={view} />
-      </Suspense>
-      {/* PrimeIcons' live set is page content, not query state: it renders outside
-          the Suspense, so the icons and the licence line are in the static HTML. */}
-      {icons ? (
-        <>
-          <DitherRule className="mx-4 md:mx-10" />
-          <IconGrid set={icons} />
-        </>
-      ) : null}
+      <ProductHeader page={page} />
+      <ProductBrowser title={page.title} images={page.images}>
+        <ProductBlocks page={page} icons={icons} />
+      </ProductBrowser>
     </main>
   );
 }

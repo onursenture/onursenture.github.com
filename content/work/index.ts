@@ -1,11 +1,9 @@
-import { archiveEntries } from "./archive";
 import { primeblocks } from "./primeblocks";
 import { primeicons } from "./primeicons";
 import { primeone } from "./primeone";
 import { templates } from "./templates";
-import type { ArchiveEntry, CaseStudy } from "./types";
+import type { ProductPage } from "./types";
 
-// Case studies in /work/ display order, and the Archive entries.
-export const caseStudies: CaseStudy[] = [primeone, primeblocks, primeicons, templates];
-
-export const archive: ArchiveEntry[] = archiveEntries;
+// Product pages, in registry order (PrimeOne, PrimeBlocks, PrimeIcons,
+// Templates). The home's Selected work orders its pins by `pin.order`.
+export const productPages: ProductPage[] = [primeone, primeblocks, primeicons, templates];

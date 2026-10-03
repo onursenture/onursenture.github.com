@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { SelectedWorkItem } from "@/components/home/selected-work";
 import { LifeSwitch } from "@/components/life-switch";
 import { Picture } from "@/components/picture";
 import { Empty } from "@/components/sections/empty";
@@ -20,11 +21,13 @@ import { RelativeTime } from "@/components/ui/relative-time";
 import { SectionRow } from "@/components/ui/section-row";
 import { StatusGlyph } from "@/components/ui/status-glyph";
 import { TextLink } from "@/components/ui/text-link";
+import { MediaFigure } from "@/components/work/media-figure";
 import { ORGS, type OrgId } from "@/content/orgs";
 import { type Photo, getPhotos } from "@/lib/content/photos";
 import { formatDate } from "@/lib/format";
 import { readSourceStatuses } from "@/lib/sources/status";
 import { pageMetadata } from "@/lib/metadata";
+import { getPins } from "@/lib/work";
 
 // The Sprint 4 style tile: every token, type class, dither specimen and
 // primitive in the light palette, plus a Life palette preview. Not
@@ -98,6 +101,8 @@ export default async function SystemPage() {
   const photos = await getPhotos();
   const statuses = await readSourceStatuses();
   const [photo] = photos;
+  // A real pin (no invented sample), for the work specimens.
+  const [pin] = getPins();
 
   return (
     <main className="pb-8">
@@ -135,6 +140,20 @@ export default async function SystemPage() {
             <MediaPlaceholder label="Placeholder" index={1} />
             <MediaPlaceholder label="Placeholder" index={2} />
           </div>
+        </Specimen>
+        <Specimen name="MediaFigure">
+          {pin ? (
+            <div className="w-full max-w-sm">
+              <MediaFigure media={pin.image} sizes="384px" />
+            </div>
+          ) : null}
+        </Specimen>
+        <Specimen name="SelectedWorkItem">
+          {pin ? (
+            <ul className="w-full max-w-sm">
+              <SelectedWorkItem pin={pin} />
+            </ul>
+          ) : null}
         </Specimen>
         <Specimen name="PrimaryButton">
           <PrimaryButton href="/system/">Book a call →</PrimaryButton>

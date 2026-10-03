@@ -1,140 +1,86 @@
 import { describe, expect, it } from "vitest";
-import type { ArchiveEntry, CaseStudy } from "@/content/work/types";
+import type { Block, ProductPage } from "@/content/work/types";
 import { validateWork } from "@/lib/work/validate";
 
-function study(overrides: Partial<CaseStudy> = {}): CaseStudy {
+function page(overrides: Partial<ProductPage> = {}): ProductPage {
   return {
     slug: "primeone",
     org: "primetek",
     title: "PrimeOne",
     kind: "design system",
-    years: "2023–2026",
     lead: { strong: "PrimeOne.", rest: "A kit." },
-    intro: [],
-    facts: [],
-    links: [{ label: "primevue.org", href: "https://primevue.org" }],
-    hero: { id: "cover", caption: "Cover" },
-    entries: [
-      { id: "3-0", date: "2024-11", version: "3.0", note: "n", source: "https://x.com/w00f/status/1", media: [{ id: "overview", caption: "o", tags: ["tokens"] }] },
+    intro: "A kit.",
+    facts: [{ label: "Role", value: "Design lead" }],
+    blocks: [
+      { kind: "text", id: "what-i-did", heading: "What I did", body: ["Designed it."] },
+      {
+        kind: "images",
+        id: "highlights",
+        columns: 3,
+        images: [{ id: "components", caption: "Components", pin: { order: 1, title: "Components", note: "A kit." } }, { id: "tokens" }],
+      },
     ],
     ...overrides,
   };
 }
 
-const row: ArchiveEntry = { id: "aura", org: "primetek", date: "2024-01", title: "Aura", note: "n", source: "https://x.com/primevue/status/1" };
-const noImages = () => false;
+const images = (id: string, ids: string[], extra: Partial<Extract<Block, { kind: "images" }>> = {}): Block => ({
+  kind: "images",
+  id,
+  images: ids.map((imageId) => ({ id: imageId })),
+  ...extra,
+});
 
 describe("validateWork", () => {
   it("accepts valid content", () => {
-    expect(validateWork([study()], [row], noImages)).toEqual([]);
+    expect(validateWork([page(), page({ slug: "primeicons", blocks: [{ kind: "icons", id: "icon-set" }] })])).toEqual([]);
   });
 
-  it("rejects an entry marked both remaster and update", () => {
-    const errors = validateWork(
-      [study({ entries: [{ id: "a", date: "2024-01", note: "n", remaster: true, update: true, media: [] }] })],
-      [row],
-      noImages,
-    );
-    expect(errors).toEqual([expect.stringContaining("cannot be both a remaster and an update")]);
+  it("rejects a duplicate block id within a page", () => {
+    const errors = validateWork([page({ blocks: [images("highlights", ["a"]), images("highlights", ["b"])] })]);
+    expect(errors).toEqual([expect.stringContaining('duplicate block id "highlights"')]);
   });
 
-  it("rejects ids that aren't kebab-case or repeat", () => {
-    const errors = validateWork(
-      [study({ hero: { id: "Cover", caption: "c" }, entries: [
-        { id: "a", date: "2024-01", note: "n", media: [{ id: "x", caption: "" }] },
-        { id: "a", date: "2024-02", note: "n", media: [{ id: "x", caption: "" }] },
-      ] })],
-      [row, row],
-      noImages,
-    );
-    expect(errors).toEqual(
-      expect.arrayContaining([
-        expect.stringContaining('media id "Cover" is not kebab-case'),
-        expect.stringContaining('duplicate entry id "a"'),
-        expect.stringContaining('duplicate media id "x"'),
-        expect.stringContaining('duplicate archive id "aura"'),
-      ]),
-    );
+  it("rejects a duplicate image id within a page, across blocks", () => {
+    const errors = validateWork([page({ blocks: [images("one", ["a"]), images("two", ["a"])] })]);
+    expect(errors).toEqual([expect.stringContaining('duplicate image id "a"')]);
   });
 
-  it("rejects bad dates, non-https URLs, unknown images and bad node ids", () => {
-    const errors = validateWork(
-      [study({ links: [{ label: "x", href: "http://x.com" }], entries: [
-        { id: "b", date: "2024-13", note: "n", source: "http://x.com", media: [
-          { id: "y", caption: "", image: "work/missing", figma: { fileKey: "k", nodeId: "12-3" }, credits: [{ name: "A", href: "ftp://a" }] },
-        ] },
-      ] })],
-      [{ ...row, date: "2024", source: "x.com/1" }],
-      noImages,
-    );
-    expect(errors).toEqual(
-      expect.arrayContaining([
-        expect.stringContaining('date "2024-13"'),
-        expect.stringContaining('"http://x.com" must be https'),
-        expect.stringContaining('image "work/missing" is not in the manifest'),
-        expect.stringContaining('nodeId "12-3"'),
-        expect.stringContaining('"ftp://a" must be https'),
-        expect.stringContaining('date "2024"'),
-        expect.stringContaining('"x.com/1" must be https'),
-      ]),
-    );
+  it("allows the same image id on two pages", () => {
+    expect(validateWork([page({ blocks: [images("one", ["a"])] }), page({ slug: "primeblocks", blocks: [images("one", ["a"])] })])).toEqual([]);
   });
 
-  it("rejects tags that aren't kebab-case", () => {
-    const errors = validateWork(
-      [study({ entries: [{ id: "3-0", date: "2024-11", note: "n", media: [{ id: "o", caption: "", tags: ["page", "Bad Tag"] }] }] })],
-      [],
-      noImages,
-    );
-    expect(errors).toEqual([expect.stringContaining('tag "Bad Tag" is not kebab-case')]);
+  it("rejects a duplicate pin order across pages", () => {
+    const pinned = (order: number): Block => ({ kind: "images", id: "highlights", images: [{ id: "a", pin: { order, title: "T", note: "N" } }] });
+    const errors = validateWork([page({ blocks: [pinned(1)] }), page({ slug: "primeblocks", blocks: [pinned(1)] })]);
+    expect(errors).toEqual([expect.stringContaining("duplicate pin order 1")]);
   });
 
-  it("accepts columns 1, 2 and 3, and rejects any other value", () => {
-    const entry = (columns: unknown) => ({ id: "3-0", date: "2024-11", note: "n", columns: columns as 1, media: [] });
-    for (const ok of [undefined, 1, 2, 3]) expect(validateWork([study({ entries: [entry(ok)] })], [], noImages)).toEqual([]);
-    for (const bad of [0, 4, 1.5, "2"]) {
-      expect(validateWork([study({ entries: [entry(bad)] })], [], noImages), String(bad)).toEqual([expect.stringContaining("columns")]);
-    }
-    expect(validateWork([study({ entries: [entry(4)] })], [], noImages)[0]).toContain("must be 1, 2 or 3");
+  it("rejects columns other than 1, 2 or 3", () => {
+    const errors = validateWork([page({ blocks: [images("highlights", ["a"], { columns: 4 as 3 })] })]);
+    expect(errors).toEqual([expect.stringContaining("columns 4 must be 1, 2 or 3")]);
   });
 
-  it("accepts valid posts", () => {
-    const posts = [
-      { date: "2024-11-07", account: "w00f" as const, id: "1854537901700186303", summary: "s", entryId: "3-0" },
-      { date: "2024-02-29", account: "primevue" as const, id: "2", summary: "s", entryId: "3-0" },
-    ];
-    expect(validateWork([study({ posts })], [], noImages)).toEqual([]);
+  it("rejects an icons block on any page but PrimeIcons", () => {
+    const errors = validateWork([page({ blocks: [{ kind: "icons", id: "icon-set" }] })]);
+    expect(errors).toEqual([expect.stringContaining("an icons block is only allowed on primeicons")]);
   });
 
-  it("rejects bad post dates, ids, accounts, duplicate ids and unknown entries", () => {
-    const posts = [
-      { date: "2024-11", account: "w00f" as const, id: "1", summary: "s", entryId: "3-0" },
-      { date: "2023-02-29", account: "w00f" as const, id: "2", summary: "s", entryId: "3-0" },
-      { date: "2024-13-01", account: "w00f" as const, id: "3", summary: "s", entryId: "3-0" },
-      { date: "2024-11-07", account: "w00f" as const, id: "12ab", summary: "s", entryId: "3-0" },
-      { date: "2024-11-07", account: "someone" as never, id: "5", summary: "s", entryId: "3-0" },
-      { date: "2024-11-07", account: "w00f" as const, id: "6", summary: "s", entryId: "3-0" },
-      { date: "2024-11-08", account: "primevue" as const, id: "6", summary: "s", entryId: "3-0" },
-      { date: "2024-11-07", account: "w00f" as const, id: "7", summary: "s", entryId: "9-9" },
-      { date: "2024-11-07", account: "w00f" as const, id: "8", summary: "s" } as never,
-    ];
-    const errors = validateWork([study({ posts })], [], noImages);
-    expect(errors).toEqual(
-      expect.arrayContaining([
-        expect.stringContaining('post date "2024-11" must be YYYY-MM-DD'),
-        expect.stringContaining('post date "2023-02-29" must be YYYY-MM-DD'),
-        expect.stringContaining('post date "2024-13-01" must be YYYY-MM-DD'),
-        expect.stringContaining('post id "12ab" must be digits'),
-        expect.stringContaining('post account "someone" is not one of'),
-        expect.stringContaining('duplicate post id "6"'),
-        expect.stringContaining('entryId "9-9" is not an entry'),
-        expect.stringContaining("needs an entryId"),
-      ]),
-    );
-    expect(errors).toHaveLength(8);
+  it("rejects an empty intro", () => {
+    expect(validateWork([page({ intro: "  " })])).toEqual([expect.stringContaining("intro must not be empty")]);
   });
 
-  it("rejects duplicate slugs", () => {
-    expect(validateWork([study(), study()], [], noImages)).toEqual([expect.stringContaining('duplicate slug "primeone"')]);
+  it("rejects a page without blocks", () => {
+    expect(validateWork([page({ blocks: [] })])).toEqual([expect.stringContaining("needs at least one block")]);
+  });
+
+  it("rejects ids that are not kebab-case", () => {
+    const errors = validateWork([page({ blocks: [images("Highlights", ["Tokens"])] })]);
+    expect(errors).toEqual([expect.stringContaining('block id "Highlights"'), expect.stringContaining('image id "Tokens"')]);
+  });
+
+  it("rejects an explicit image key the manifest doesn't have", () => {
+    const errors = validateWork([page({ blocks: [{ kind: "images", id: "highlights", images: [{ id: "a", image: "work/x/y" }] }] })], () => false);
+    expect(errors).toEqual([expect.stringContaining('image "work/x/y" is not in the manifest')]);
   });
 });

@@ -1,117 +1,47 @@
-import { primeiconsPosts } from "./posts/primeicons";
-import type { CaseStudy } from "./types";
+import type { ProductPage } from "./types";
 
-// Every entry is backed by the post in its `source`. The live icon grid comes from
-// the primeicons package (7.0.0, MIT), not from this file.
-export const primeicons: CaseStudy = {
+// Copy reuses the Sprint 5 case study's lead, intro and facts; no new claims.
+// The live icon set (the icons block) comes from the primeicons package
+// (pinned at 7.0.0, MIT), not from this file.
+export const primeicons: ProductPage = {
   slug: "primeicons",
   org: "primetek",
   title: "PrimeIcons",
   kind: "icon set",
-  years: "2018–2024",
   lead: {
     strong: "PrimeIcons.",
     rest: "The icon library of the Prime libraries, drawn to replace Font Awesome.",
   },
-  intro: ["Started in 2018 to drop the Font Awesome dependency; past a million downloads by April 2019."],
+  intro: "Started in 2018 to drop the Font Awesome dependency; past a million downloads by April 2019.",
   facts: [
     { label: "Role", value: "Design lead" },
     { label: "Years", value: "2018–2024" },
-    { label: "Tools", value: "Figma, SVG, icon fonts" },
+    { label: "At", value: "PrimeTek" },
   ],
-  links: [{ label: "GitHub", href: "https://github.com/primefaces/primeicons" }],
-  hero: { id: "cover", caption: "PrimeIcons" },
-  entries: [
+  blocks: [
     {
-      id: "start",
-      date: "2018-02",
-      title: "Work starts",
-      note: "Work started on PrimeIcons, a free in-house icon set meant to drop the Font Awesome dependency.",
-      source: "https://x.com/primereact/status/963322417467789312",
-      media: [],
+      kind: "text",
+      id: "what-i-did",
+      heading: "What I did",
+      body: [
+        "I led the design of PrimeIcons, the icon library of the Prime libraries. It started in 2018 to drop the Font Awesome dependency, and the set was past a million downloads by April 2019.",
+      ],
     },
     {
-      id: "alpha",
-      date: "2018-05",
-      title: "First alpha",
-      note: "Drawing the set that would remove the Font Awesome dependency, three icons short of the first alpha.",
-      source: "https://x.com/w00f/status/991654451231494144",
-      media: [],
+      kind: "images",
+      id: "highlights",
+      heading: "Highlights",
+      columns: 3,
+      images: [
+        {
+          id: "icon-sheet",
+          caption: "Icon sheet",
+          pin: { order: 3, title: "Icon sheet", note: "Drawn to replace Font Awesome" },
+        },
+        { id: "details", caption: "Details" },
+        { id: "in-use", caption: "In use" },
+      ],
     },
-    {
-      id: "primeng-6",
-      date: "2018-06",
-      title: "In PrimeNG 6 and PrimeReact",
-      note: "PrimeIcons first showed up in the PrimeNG 6 beta as the new official icon font, replacing Font Awesome there; PrimeReact 1.6.1 followed later in the month.",
-      source: "https://web.archive.org/web/20180629/https://www.primefaces.org/blog/",
-      media: [],
-    },
-    {
-      id: "150k",
-      date: "2018-09",
-      title: "150,000 downloads",
-      note: "The pre-release passed 150,000 downloads on the way to 1.0.",
-      source: "https://x.com/w00f/status/1039612365258547200",
-      media: [],
-    },
-    {
-      id: "1-0",
-      date: "2018-10",
-      version: "1.0",
-      note: "Version 1.0 released. Drawn in Illustrator.",
-      source: "https://x.com/w00f/status/1052113437382328320",
-      links: [{ label: "Illustrator source", href: "https://github.com/onursenture/primeicons-ai" }],
-      media: [],
-    },
-    {
-      id: "primefaces-6-2-11",
-      date: "2018-11",
-      title: "In PrimeFaces",
-      note: "PrimeFaces 6.2.11 replaced its image-based icons with PrimeIcons.",
-      source: "https://web.archive.org/web/20190722212808/https://www.primefaces.org/primefaces-6-2-11-released-with-modern-themes-and-icons/",
-      media: [],
-    },
-    {
-      id: "1m",
-      date: "2019-04",
-      title: "1M downloads",
-      note: "Past one million downloads.",
-      source: "https://x.com/w00f/status/1123275841079795712",
-      media: [],
-    },
-    {
-      id: "4-0",
-      date: "2020-05",
-      version: "4.0",
-      note: "The set redrawn from scratch: 183 new icons, announced with the PrimeVue 2.0 release candidate.",
-      source: "https://www.primefaces.org/blog/primevue-2-0-0-rc-1-released-with-primeicons-v4/",
-      links: [{ label: "v4.1 with PrimeFaces 10", href: "https://www.primefaces.org/blog/primefaces-x-the-next-generation/" }],
-      media: [],
-    },
-    {
-      id: "5-0",
-      date: "2021-11",
-      version: "5.0",
-      note: "Version 5.0.0 added 35+ icons, mostly community requests, and tidied the names: the old -o suffix went and -fill now marks the filled variant.",
-      source: "https://www.primefaces.org/blog/primeicons-5-0-0-is-out-with-35-new-icons/",
-      media: [],
-    },
-    {
-      id: "6-0",
-      date: "2022-09",
-      version: "6.0",
-      note: "Version 6.0.0 added 22 new icons, improved 29 and gained woff2 support, at 1 million downloads a month.",
-      source: "https://www.primefaces.org/blog/introducing-primeicons-v6/",
-      media: [],
-    },
-    {
-      id: "7-0",
-      date: "2024-03",
-      version: "7.0",
-      note: "Version 7.0.0: 50+ new icons, with more than 2 million downloads a month at the time.",
-      source: "https://x.com/primefaces/status/1773661861151432797",
-      media: [{ id: "set-7-0", caption: "The 7.0 set" }],
-    },
+    { kind: "icons", id: "icon-set", heading: "Icon set" },
   ],
-  posts: primeiconsPosts,
 };

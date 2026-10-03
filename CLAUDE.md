@@ -19,7 +19,6 @@ npm run typecheck | lint | test
 npm run e2e            # Playwright on port 3217; run `npm run build` first
 npm run e2e:fixtures   # port 3219; run `SOURCE_FIXTURES=1 npm run build` first
 npm run images         # optimize images-src/ into public/images/ + manifest
-npm run figma          # export the Figma frames in figma.local.json (needs FIGMA_TOKEN in .env.local), then npm run images
 npm run db:generate    # drizzle-kit generate; db:migrate applies it (--force)
 npm run screenshots -- <dir> <path>...  # 1440 + 390 (build first; Work is light, Life dark)
 ```
@@ -33,8 +32,6 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
 - `GH_PAT`: GitHub GraphQL token for the contributions source.
 - `GOODREADS_USER_ID`: optional; the code has a default.
 - `SOURCE_FIXTURES=1`: dev/CI only. Serves `tests/fixtures/` through the real parsers. Never set it on Vercel.
-- `FIGMA_TOKEN`: local only (`.env.local`), for `npm run figma`. A Figma personal access token with `file_content:read`. Never set it on Vercel or in CI.
-- `figma.local.json` (repo root, gitignored): the frames `npm run figma` exports, `{ "frames": { "work/<slug>/<media id>": { "fileKey", "nodeId" } } }`. Copy `figma.example.json`. `figma.lock.local.json` (also gitignored) is its export lock.
 
 ## Rules
 
@@ -46,7 +43,7 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
 - OG images are always JPEG with an absolute URL (via `metadataBase`). Pages without a real image omit `og:image`.
 - Titles come from one format, `TITLE_TEMPLATE` / `fullTitle()` in `lib/metadata.ts`; build page metadata with `pageMetadata()`.
 - English only.
-- `primeicons` is pinned to exactly `7.0.0`, the last MIT release (the PrimeIcons case study renders it live). 8.x is under PrimeTek's commercial PrimeUI license (license key, no redistribution): never upgrade it, and keep it out of automated dependency bumps.
+- `primeicons` is pinned to exactly `7.0.0`, the last MIT release (the PrimeIcons product page renders it live). 8.x is under PrimeTek's commercial PrimeUI license (license key, no redistribution): never upgrade it, and keep it out of automated dependency bumps.
 
 ## Design system (Sprint 4)
 
@@ -60,55 +57,42 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
 - Glyphs: `→` internal links, `↗` external links (both added by `TextLink`, behind a non-breaking space so the arrow never orphans), `←` for "Previous", `●` ok, `○` empty, `◐` late or partial, `×` close, `├─` / `└─` in the experience tree. Never `★`, and no ratings are rendered anywhere (the parsers keep the rating fields in the data, nothing displays them); `grep -rn "★" app components lib` must stay empty. `ItemLink` (list and table rows) adds no arrow; the Lab rows add their own `↗`. Status glyphs go through `<StatusGlyph>`.
 - The primary button's label is `#fff` on the light accent and the page's dark ink on Life (white on the dark accent is about 3:1).
 - Primitives are in `components/ui/`. `/system/` is the Sprint 4 style tile (not in the nav, `noindex`): every token, type class, dither specimen and primitive, plus a Life palette block that proves the dark tokens and dither repaint inside a Life subtree on a light page. Each specimen has a `data-primitive` attribute; add new primitives there.
-- The Work home (`components/home/home-site.tsx`) runs identity, Lab, Work, Experience, Contributions, with a `DitherRule` between rows. The bio is justified mono with no first-line indent. Lab is a single column of text rows (`title ↗ · year`, the description under it), no status glyph or avatar, new entries appended at the end; the row is hidden while `labIndex` is empty and `labIndex` holds only real projects, no placeholders. Contributions is "N contributions in the last 12 months" over `components/ui/heatmap.tsx`, coloured in five accent steps (the line colour, the accent mixed in at 25/50/75%, then the accent). The GitHub source has no Life section: `/life/` only reads it for the boot readout.
+- The Work home (`components/home/home-site.tsx`) runs identity, Lab, Selected work, Experience, Contributions, with a `DitherRule` between rows. The bio is justified mono with no first-line indent. Lab is a single column of text rows (`title ↗ · year`, the description under it), no status glyph or avatar, new entries appended at the end; the row is hidden while `labIndex` is empty and `labIndex` holds only real projects, no placeholders. Contributions is "N contributions in the last 12 months" over `components/ui/heatmap.tsx`, coloured in five accent steps (the line colour, the accent mixed in at 25/50/75%, then the accent). The GitHub source has no Life section: `/life/` only reads it for the boot readout.
 - `/life/` opens with the "Now" block on the same grid as the home rows (`ROW_GRID` in `components/ui/section-row.tsx`, shared so they cannot drift): the avatar in the 200px label column and the boot readout in the 480px content column, so its left edge matches the home bio. Each readout line is one visual line (`truncate`; the full text stays in the DOM). The reading line lists every book on the currently-reading shelf, comma-separated, with no link; the film line is the title only. No ratings render on Life (films show the year, the Read list shows title and author). Films, the Books Reading shelf and the `/life/` photo row share `COVER_GRID` (`components/ui/cover.tsx`: 4 columns on mobile, 10 from md, 96px `Cover`s, a `type-label` title and a muted year or author, each on one truncated line); `PhotoGrid` takes `density="compact"` for that row with `PHOTO_GRID_COMPACT_SIZES`, and `/life/photos/` keeps the default density. Books Reading maps every `currentlyReading` book (the source keeps up to 10).
-- Shells are in `components/shell/` (`WorkShell`, `LifeShell`). Both headers are the same: the dot-matrix name with the Life switch right after it, in one left group, so the switch sits in the same place on both sides. The Work header adds the nav on the right only when an item in `lib/nav.ts` is `ready` (desktop `NavLinks`, below md a `MenuDialog` Menu button holding the same links); no item is ready yet, so today there is no nav and no Menu button. Flip `ready` when Lab or Resume ships. Work is reached from the home page ("All work"), not the header.
+- Shells are in `components/shell/` (`WorkShell`, `LifeShell`). Both headers are the same: the dot-matrix name with the Life switch right after it, in one left group, so the switch sits in the same place on both sides. The Work header adds the nav on the right only when an item in `lib/nav.ts` is `ready` (desktop `NavLinks`, below md a `MenuDialog` Menu button holding the same links); no item is ready yet, so today there is no nav and no Menu button. Flip `ready` when Lab or Resume ships. The product pages are reached from the home page (Selected work and Experience), not the header.
 - The Life switch (`components/life-switch.tsx`) is a real link with `role="switch"`. A plain click runs `router.push` inside a React transition tagged `life-enter` or `life-exit` (`lib/side.ts`); `SideFade` (a `ViewTransition` named `side` in both shells) animates the pair, and every other navigation stays instant. It works across the two layouts only through `router.push`.
 - Entering Life with the switch sets a boot flag (`components/life/boot-flag.ts`, `sessionStorage`) so the boot readout types itself in. The flag expires after 3s, so a stale one never types on a later direct load; a direct load always gets the final server HTML.
 - Unknown URLs 404 inside the shell (`app/(work)/[...missing]`, `app/life/[...missing]`). `app/not-found.tsx` covers paths outside both layouts.
 - After a client navigation, Next keeps the previous tree mounted but hidden. In e2e, prefer role locators (they skip hidden elements) or filter with `:visible`.
-- Only confirmed facts go in `content/profile.ts`, `content/work-index.ts` and `content/lab-index.ts`. Contribution figures always name their period ("12 months").
+- Only confirmed facts go in `content/profile.ts`, `content/work/` and `content/lab-index.ts`. Contribution figures always name their period ("12 months").
 
-## Work (Sprint 5)
+## Work (product pages)
 
-- Spec: `docs/superpowers/specs/2026-10-03-sprint-5-work-primetek-design.md`.
+- Spec: `docs/superpowers/specs/2026-10-03-work-rethink-design.md` (it replaced Sprint 5's release-log case studies, posts, the `/work/` index, the Archive and the Figma export path).
 - **Content and reads.**
-  - Case studies are typed data in `content/work/` (`types.ts`; registry `index.ts`: `caseStudies`, `archive`).
-  - Pages read them only through `lib/work/` (`index.ts`). Sprint 7's admin overlay merges in there.
-  - `lib/work/derive.ts` builds serialisable views: FIG labels, year groups, per-entry posts, credits and resolved images.
-  - `tests/content/work.test.ts` runs `validateWork` on the registry.
-- **Ids are permanent once published.** They key `?fig=` URLs and image files.
+  - Each product is one typed `ProductPage` in `content/work/<slug>.ts` (`types.ts`; registry `index.ts`: `productPages`): a header (`lead`, one-paragraph `intro`, `facts` Role / Years / At) and ordered `blocks`.
+  - Blocks: `text` (heading + body paragraphs), `images` (optional heading, `columns` 1, 2 or 3, `images: WorkImage[]`) and `icons` (PrimeIcons only: the live set).
+  - Pages read them only through `lib/work/` (`index.ts`: `getProductSlugs`, `getProductPage`, `getPins`). Sprint 7's admin overlay merges in there. `lib/work/derive.ts` builds the serialisable views: resolved images, FIG numbers (1-based, block order across the page), `pageImages`, pins.
+  - `validateWork` (`lib/work/validate.ts`) checks: kebab-case block and image ids, unique within a page; pin `order` unique across all pages; `columns` 1, 2 or 3; `icons` only on `primeicons`; a non-empty `intro`; at least one block; an explicit `image` key exists in the manifest. `lib/work/index.ts` throws on any error at build time, and `tests/content/work.test.ts` runs it in CI.
+  - Copy reuses confirmed facts only: no new claims, no numbers that aren't literally true.
+- **Ids are permanent once published.** Block ids are the anchors Selected work links to (`#highlights`); image ids key `?fig=` URLs and image files.
 - **Images.**
-  - A media slot shows `image` when set, otherwise `work/<slug>/<media id>` when the manifest has it, otherwise the dither placeholder.
-  - FIG numbers follow date order from the oldest entry (02 upwards; the hero is 01), so adding an older entry renumbers every later one (`?fig=` URLs use media ids and are unaffected).
-  - No work images are committed yet: Onur prepares them (the auto-exported Figma frames were removed after PR #27 review), so every slot is a placeholder until they land in `images-src/work/<slug>/<media id>.png`.
-- **Layout.** The hero sits in the content column (480px, 16/10) on the section grid. Every case study page is one Log: there is no Grid, Index or Posts view and no view bar, filter or density control (Onur 2026-10-03). Each release shows its media grid in the media column; `Entry.columns?: 1 | 2 | 3` (default 1) sets it: 1 is one column at the full width of the media column, 2 is `md:grid-cols-2`, 3 is `md:grid-cols-2 lg:grid-cols-3`, always 1 below md. `validateWork` rejects other values. No content sets `columns` yet; Onur sets it when he delivers images.
-- **Query state.**
-  - The only param is `?fig=<media id>` for the viewer (`lib/work/url-state.ts`). `?view`, `?tag` and `?density` are ignored, so `/work/primeone/?view=grid` renders the Log.
-  - The server always renders the page without a figure open as a `<Suspense>` fallback, and `StudyBrowser` (`useSearchParams`) applies `?fig` after hydration. Never read `searchParams` in these pages: one HTML per path keeps the CDN cache.
-- **Viewer.**
-  - `MediaViewer` is a native `<dialog>` in the Life palette: thumbnail strip, arrows, swipe, Esc. There is no Grid toggle and no `G` key; it steps through all of the study's media.
-  - Opening pushes `?fig=`, so Back closes it; stepping replaces it.
-- **Posts.**
-  - Posts are listed inline under their release in the Log, oldest first, as `Mon D, YYYY · @account · summary` (`li#post-<id>`). There is no Posts view.
-  - Data lives in `content/work/posts/<slug>.ts` (`Post`: date, account, status id, summary, `entryId`, which is required and checked by `validateWork`). Summaries are our own one-liners, never PrimeTek's text (Onur's @w00f posts may quote him); verify every id against `.superpowers/research/`.
-- **Links.**
-  - The only external links on `/work/**` are @w00f posts (Onur 2026-10-03). A `w00f` post links to its `x.com/w00f/status/<id>` URL (accessible name "Post on X, …", the summary is the text); other accounts are plain text.
-  - An entry or Archive `source` renders `post ↗` only when it is an @w00f status URL (`w00fPostUrl` in `derive.ts`).
-  - Entry `links`, case study `links`, credit `href`s and non-@w00f sources stay in the data as provenance and are never rendered (each type field says so).
-  - Internal links (index rows, back links, nav) stay.
-- **Credits.** Onur's role is a case-study fact. `credits` on an entry or a media item names colleagues who *designed* it (never developers), and Templates uses media-level credits for pages others designed. Credit names render as plain text (an `href` is provenance, per the links rule).
-- **PrimeIcons.** The live icon grid renders after the Log as page content, not a view.
-- **Numbers.** Coverage (Templates) and the icon count (PrimeIcons) are computed, never written by hand. Coverage counts templates and `remaster` entries; an `update` entry (a major update to an existing template) is in neither count.
-- **Filling media from Figma.** Figma refs stay out of the public repo: no content file sets `figma` (the `Media.figma` type remains for `figmaLinks`, should it ever be turned on with committed refs).
-  1. List each frame in the gitignored `figma.local.json` at the repo root, keyed by the slot's manifest key: `"work/<slug>/<media id>": { "fileKey": "...", "nodeId": "12:345" }` (the URL's `node-id=12-345` works too). `figma.example.json` shows the shape.
-  2. Run `npm run figma`. It writes `images-src/work/<slug>/<id>.png`, records its export lock in the gitignored `figma.lock.local.json` (skipping frames whose file hasn't changed), and runs `npm run images`. A slot with a hand-set `image` is skipped.
-  3. Commit the PNGs, the renditions and `lib/images/manifest.json`; never the two local Figma files.
-
-  Some sources were hand-processed (cropped tall pages, JPEG for large frames). Remove their entries from `figma.local.json`, or re-crop afterwards, before running `npm run figma`: a refresh writes an uncropped PNG next to them.
-
-  `embed: true` (on a `figma` ref) adds the click-to-load embed in the viewer; it only applies if refs are ever committed and `figmaLinks` is on.
-- **Figma switch.** `workSettings.figmaLinks` (`content/work/settings.ts`) is **off by default**: PrimeTek may not want its files linked. Off, `getStudyView` / `getArchiveView` null every `figma` ref, so no "Open in Figma ↗", no embed control and no `fileKey`/`nodeId` in the HTML or RSC payload.
+  - All 16:10. Onur delivers them at 2560×1600 into `images-src/work/<slug>/<image id>.(png|jpg)`; `npm run images` builds them. An image shows `image` (a manifest key) when set, otherwise `work/<slug>/<id>` when the manifest has it, otherwise the faint dither placeholder labelled `FIG. 01 · Caption`.
+  - No work images are committed yet, so every slot is a placeholder and no product page has an `og:image`. The OG image is the first block image with a real image (JPEG).
+- **Pins and Selected work.** A `WorkImage.pin` (`order`, a 2–4 word `title`, a one-line `note`) puts that image on the home's Selected work (`components/home/selected-work.tsx`): a wide `SectionRow` with no action, `grid gap-4 md:grid-cols-2 lg:grid-cols-3`, sorted by `order`. Each item is the 16:10 frame (placeholder label `FIG. <order> · <title>`), the title, the muted truncated note, and the source `TextLink` to `/work/<slug>/#<blockId>`. The frame links there too, with `aria-hidden` and `tabIndex={-1}`, so each item has one link for keyboard and screen-reader users. The row is hidden while there are no pins. Today each page pins the first image of its `highlights` block (orders 1–4: PrimeOne, PrimeBlocks, PrimeIcons, Templates).
+- **Layout.** Everything is on `ROW_GRID`, with a `DitherRule` between rows (`components/work/blocks.tsx`, `product-header.tsx`):
+  - Header: `← Home` in the label column; the `h1` lead, the intro and the facts list in the wide content.
+  - `text`: heading in the label column, body in the 480px column (`type-body text-fg-soft`).
+  - `images`: heading in the label column; the grid spans the wide content (`columns` from md; 3 is `md:grid-cols-2 lg:grid-cols-3`; always 1 below md). Each image is a button that opens the viewer, with the caption and the `Design: Name` credit under it in `type-meta`. The row's `id` is the block id. `imageGridSizes(columns)` gives the `sizes` (the wide content is `100vw - 308px` from lg; Selected work uses the 3-column value).
+  - `icons`: the PrimeIcons grid (search, copy, licence line) in a wide row, server-rendered so the icons and the licence line are in the static HTML.
+- **Query state and viewer.**
+  - The only param is `?fig=<image id>` (`lib/work/url-state.ts`); `?view`, `?tag` and unknown ids are ignored. Never read `searchParams` in these pages: one HTML per path keeps the CDN cache.
+  - `ProductBrowser` (client) wraps the server-rendered blocks. It renders `MediaViewer` inside its own `<Suspense fallback={null}>`, reads `?fig=` after hydration (`useViewState`, `useViewerHistory`) and hands `open` to the figure buttons through `OpenFigureContext`. So the static HTML is the whole page with no viewer, and the blocks (and the 313 icons) are rendered once.
+  - `MediaViewer` is a native `<dialog>` with `data-side="life"` (dark): thumbnail strip, arrows, swipe, Esc. It steps through every image on the page in block order. Opening pushes `?fig=`, so Back closes it; stepping replaces it; focus returns to the opener.
+- **Links.** No external links on `/work/**` except x.com/w00f status posts (there are none today). A credit's `href` is provenance and never rendered.
+- **Credits.** Onur's role is a fact. `credits` on an image names colleagues who *designed* it (never developers), rendered as plain text.
+- **Routes.** `/work/<slug>/` from the registry; unknown slugs 404 in the Work shell. `/work/` and `/work/archive/` redirect permanently to `/` (`next.config.ts`; the sources carry the trailing slash, and `/work` reaches them through Next's trailing-slash redirect).
+- **PrimeIcons.** The icon count and version come from the pinned package, never written by hand.
 
 ## Sources and sync
 

@@ -49,6 +49,6 @@ next-env.d.ts
 /plans/
 .superpowers/
 
-# Figma frame refs and export lock for `npm run figma`: kept out of the public repo
+# Local Figma frame refs and export lock from the removed `npm run figma` path: still kept out of the public repo
 /figma.local.json
 /figma.lock.local.json

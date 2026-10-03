@@ -37,6 +37,10 @@ export function SectionRow({
             <LabelTag className="type-body font-normal text-fg">{label}</LabelTag>
             <div className="mt-1 hidden type-meta text-fg-muted lg:block">{action}</div>
           </div>
+        ) : label == null ? (
+          // No label: keep the label column from lg, and leave no empty cell
+          // (and gap) below lg.
+          <div aria-hidden="true" className="hidden lg:block" />
         ) : (
           <LabelTag className="type-body font-normal text-fg">{label}</LabelTag>
         )}

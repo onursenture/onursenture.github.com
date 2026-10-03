@@ -1,59 +1,46 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { MediaViewer } from "@/components/work/media-viewer";
-import type { MediaView } from "@/lib/work/derive";
+import type { ImageView } from "@/lib/work/derive";
 
-const base: MediaView = {
+const base: ImageView = {
   id: "a",
-  label: "FIG. 02.1",
   caption: "Tokens",
-  aspect: "16/10",
-  tags: [],
   credits: [],
   image: null,
-  figma: null,
-  context: "3.0 · Nov 2024",
+  fig: 1,
+  label: "FIG. 01",
+  context: "Highlights",
 };
-const items: MediaView[] = [
-  base,
-  { ...base, id: "b", label: "FIG. 02.2", caption: "Button", credits: [{ name: "Ada" }], figma: { fileKey: "K", nodeId: "1:2", embed: true } },
-];
+const items: ImageView[] = [base, { ...base, id: "b", fig: 2, label: "FIG. 02", caption: "Button", credits: [{ name: "Ada" }] }];
 const noop = () => {};
 const html = (current: string | null) =>
   renderToStaticMarkup(<MediaViewer title="PrimeOne" items={items} current={current} onSelect={noop} onClose={noop} />);
 
 describe("MediaViewer", () => {
-  it("renders an empty dialog while closed", () => {
+  it("renders an empty dialog in the Life palette while closed", () => {
     const markup = html(null);
     expect(markup).toContain("<dialog");
-    expect(markup).not.toContain("FIG. 02.1");
+    expect(markup).toContain('data-side="life"');
+    expect(markup).not.toContain("FIG. 01");
   });
 
-  it("shows the context, caption, position and the thumbnail strip", () => {
+  it("shows the block, caption, position and the thumbnail strip", () => {
     const markup = html("a");
-    expect(markup).toContain('aria-label="PrimeOne, FIG. 02.1"');
-    expect(markup).toContain("3.0 · Nov 2024");
-    expect(markup).toContain("FIG. 02.1</span> · Tokens");
+    expect(markup).toContain('aria-label="PrimeOne, FIG. 01"');
+    expect(markup).toContain("PrimeOne</span> · Highlights");
+    expect(markup).toContain("FIG. 01</span> · Tokens");
     expect(markup).toContain("01 / 02");
-    expect(markup).toContain('aria-label="Show FIG. 02.2"');
-    expect(markup).not.toContain("Open in Figma");
-  });
-
-  it("has no Grid toggle: the thumbnail strip is the only way around", () => {
-    const markup = html("a");
-    expect(markup).not.toContain(">Grid<");
-    expect(markup).not.toContain(">Single<");
-    expect(markup).not.toContain("aria-pressed");
+    expect(markup).toContain('aria-label="Show FIG. 02"');
     expect(markup).toContain('aria-label="All figures"');
     expect(markup).toContain('aria-label="Close viewer"');
   });
 
-  it("links to Figma and offers the embed only from md (it's hidden on phones)", () => {
+  it("credits the designer, and has no Figma link or embed", () => {
     const markup = html("b");
-    expect(markup).toContain('href="https://www.figma.com/design/K?node-id=1-2"');
-    expect(markup).toContain("Open in Figma");
-    expect(markup).toMatch(/class="hidden[^"]*md:inline[^"]*"[^>]*>Load Figma file/);
     expect(markup).toContain("Design: ");
+    expect(markup).not.toMatch(/figma/i);
     expect(markup).not.toContain("<iframe");
+    expect(markup).not.toContain("href=");
   });
 });

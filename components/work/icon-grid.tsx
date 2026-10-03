@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { type IconSet, filterIcons } from "@/lib/work/icons";
 
-// PrimeIcons' live icon set (spec §4.1): the real set from the pinned package,
-// searchable; a click copies the class name. Page content, not a view.
+// PrimeIcons' live icon set: the real set from the pinned package (7.0.0, MIT),
+// searchable; a click copies the class name. The icons block of the PrimeIcons
+// page, in a wide row (components/work/blocks.tsx).
 export function IconGrid({ set }: { set: IconSet }) {
   const [query, setQuery] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
@@ -25,7 +26,7 @@ export function IconGrid({ set }: { set: IconSet }) {
   }
 
   return (
-    <div data-icons className="px-4 py-6 md:px-10">
+    <div data-icons>
       <label className="flex flex-wrap items-center gap-3 type-meta">
         <span className="text-fg-muted">Search</span>
         <input
