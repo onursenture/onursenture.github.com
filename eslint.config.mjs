@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "playwright-report/**",
     "test-results/**",
+    // Vendored third-party code (Dither Kit, MIT).
+    "components/dither-kit/**",
   ]),
 ]);
 
