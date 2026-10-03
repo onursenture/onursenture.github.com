@@ -67,9 +67,19 @@ export interface FigmaRef {
   embed?: boolean;            // offer the click-to-load embed in the viewer
 }
 
+// A collaborator credited on an entry or a single media item. Onur led all
+// PrimeTek design, so his role is stated once per case study (facts); credits
+// name the others where they designed a piece.
+export interface Credit {
+  name: string;
+  role?: string;              // "design", "illustration", "implementation"…
+  href?: string;              // their site or X profile
+}
+
 export interface Media {
   id: string;                 // stable, unique per case study, kebab-case; used in ?fig=
   caption: string;
+  credits?: Credit[];         // e.g. an inner page a colleague designed
   tags?: string[];            // free tags for Grid filters, e.g. "components", "tokens"
   image?: string;             // image manifest key, e.g. "work/primeone/tokens-overview"
   figma?: FigmaRef;
@@ -85,6 +95,7 @@ export interface Entry {
   source?: string;            // proof URL (usually an X post)
   links?: { label: string; href: string }[];   // e.g. a live demo
   frameworks?: string[];      // Templates only: "Vue", "Angular", "React", "JSF"
+  credits?: Credit[];         // applies to the whole entry
   media: Media[];
 }
 
@@ -109,6 +120,7 @@ export interface ArchiveEntry {
   title: string;
   note: string;
   source: string;             // required: the archive is built from posts
+  credits?: Credit[];
   media?: Media;
 }
 ```
@@ -221,7 +233,19 @@ A `MediaViewer` client component on a native `<dialog>` (shown with `showModal()
 
 The hero and the Log figures also open the viewer, on the full set.
 
-### 3.7 Mobile (<768px)
+### 3.7 Credits
+
+Credits are the same on every case study and in the Archive:
+- **Entry credits:** a muted line under the note, "Design: Name, Name". It reads "<role>: …" when a role is set, and names link to `href`.
+- **Media credits:**
+  - in the viewer, "Design: Name" follows the caption;
+  - in Grid, the card header's muted line ends with "· Name";
+  - in Index, a credits column (empty when none).
+- **Inheritance:** an item with no credits of its own inherits nothing visible. Entry credits show once, on the entry.
+
+Unit tests cover the credit line formatting; e2e checks that one credited media item shows its credit in the viewer.
+
+### 3.8 Mobile (<768px)
 
 - Labels stack above content, as on the home page.
 - Years render as group headings, not sticky.
@@ -248,9 +272,18 @@ The hero and the Log figures also open the viewer, on the full set.
 
 - **Entries.** Each template is an `Entry` with `title` (template name), `date` (launch month), `frameworks` (rendered as small chips), `links` (a demo link if it still resolves) and `media` (cover first).
 - **Views.** Log groups the templates by year; Grid shows every template's media; the Templates chips filter by template title.
-- **Coverage.** The header says how many templates the page covers, counted from the entries. It never says "25+" unless Onur confirms it.
+- **Inner pages.** A template is many pages: dashboards, landing, auth, errors, apps and so on. They are its media items:
+  - the cover comes first;
+  - then one item per inner page, each tagged `page`, with the page name as caption ("Dashboard · Sales", "Login");
+  - the Grid filter for a template shows all its pages, and the viewer steps through them;
+  - the Log view shows the cover with "+N pages in Grid →". Templates use "pages" where other case studies say "in Grid".
+- **Coverage.** The header says how many templates and pages the page covers, both counted from the entries. It never says "25+" unless Onur confirms it.
 - **Initial list.** Built from the X archives and PrimeTek's public template pages: Verona, Paradise, Manhattan, Avalon, Babylon, Diamond (remastered), Genesis… The final list is whatever the sources confirm.
-- **Shared work.** Genesis was designed by a colleague (per Onur's post). Every entry must make Onur's role clear, and templates he didn't design are left out or credited.
+- **Credits.** Onur led design for every template, so every template can be shown, and his lead role is stated once in the header facts. Where a colleague designed a template or some of its pages (Genesis per Onur's post, or pages added later), the `credits` field names them:
+  - on the entry, when the whole template is theirs;
+  - on the media item, when a single page is theirs.
+
+  §3.7 says how credits render.
 
 ### 4.3 Archive
 
@@ -335,7 +368,7 @@ This is the first work in the sprint. The plan schedules it before the content t
   - "80+ components", "500 blocks" and "25+ templates" stay off the pages unless Onur confirms them.
   - This follows the honest-numbers rule from Sprint 4.
 - **Years.** `years` on each case study and in the index are Onur's to confirm. Until then, use the span the sources show (first and last dated entry).
-- **Credit.** Onur's role is stated on every case study. Shared work credits the others when a source names them.
+- **Credit.** Onur's role is stated on every case study. Shared work credits the others, at entry or page level (§3.7), whenever a source or Onur names them.
 - **Pre-merge check.** Onur reviews all copy on the preview. Unconfirmed lines are cut or rewritten before merge.
 
 ## Testing and review
