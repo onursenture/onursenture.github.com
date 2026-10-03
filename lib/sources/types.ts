@@ -10,6 +10,15 @@ export const SOURCE_IDS = [
 
 export type SourceId = (typeof SOURCE_IDS)[number];
 
+// Display names, e.g. in the Sources panel.
+export const SOURCE_LABELS: Record<SourceId, string> = {
+  letterboxd: "Letterboxd",
+  goodreads: "Goodreads",
+  instapaper: "Instapaper",
+  writing: "w00f.org",
+  github: "GitHub",
+};
+
 export function isSourceId(value: string): value is SourceId {
   return (SOURCE_IDS as readonly string[]).includes(value);
 }
