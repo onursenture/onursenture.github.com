@@ -8,12 +8,15 @@ import { readSourceStatuses } from "@/lib/sources/status";
 import { MenuDialog } from "./menu-dialog";
 import { NavLinks } from "./nav-links";
 import { ShellControls } from "./shell-controls";
+import { ShellMorph } from "./shell-morph";
 
-// Nav on top; toggles and the sync line at the foot.
-function SidebarBody({ statuses }: { statuses: SourceStatus[] }) {
+// Nav on top; toggles and the sync line at the foot. Only the desktop
+// sidebar's nav morphs; the mobile slide-over's copy must not share the name.
+function SidebarBody({ statuses, morph = false }: { statuses: SourceStatus[]; morph?: boolean }) {
+  const nav = <NavLinks items={[OVERVIEW, ...readyItems()]} placement="list" />;
   return (
     <div className="flex min-h-0 flex-1 flex-col justify-between gap-8 overflow-y-auto p-4">
-      <NavLinks items={[OVERVIEW, ...readyItems()]} placement="list" />
+      {morph ? <ShellMorph>{nav}</ShellMorph> : nav}
       <div className="flex flex-col gap-4 border-t pt-4">
         <ShellControls view="dashboard" />
         <div className="pl-3">
@@ -41,7 +44,7 @@ export async function DashboardShell({ children }: { children: ReactNode }) {
       <div className="hidden border-r bg-surface md:block">
         <aside className="sticky top-0 flex h-dvh flex-col">
           <div className="flex h-12 shrink-0 items-center border-b pr-4 pl-7">{name}</div>
-          <SidebarBody statuses={statuses} />
+          <SidebarBody statuses={statuses} morph />
         </aside>
       </div>
       <div className="flex h-12 items-center justify-between border-b bg-surface pr-1 pl-4 md:hidden">

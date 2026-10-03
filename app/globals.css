@@ -100,6 +100,28 @@
   }
 }
 
+/* View switch (components/shell/shell-morph.tsx): the navs morph, the rest
+   of the page cross-fades through the root snapshot. 250ms, ease-out. Theme
+   switches and navigations don't animate. */
+::view-transition-group(.shell-morph),
+::view-transition-old(.shell-morph),
+::view-transition-new(.shell-morph),
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 250ms;
+  animation-timing-function: ease-out;
+}
+
+/* The toggle skips the transition under reduced motion; this guards any
+   other view transition. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
 /* Type scale: one class per Figma text style (display/96 → type-display-96,
    sans/14-medium → type-sans-14-medium, mono/11 → type-mono-11), plus
    display-160 from the S1 spec. Adobe shifts the Display weights: 65 Medium

@@ -8,6 +8,7 @@ import { readyItems } from "@/lib/nav";
 import { MenuDialog } from "./menu-dialog";
 import { NavLinks } from "./nav-links";
 import { ShellControls } from "./shell-controls";
+import { ShellMorph } from "./shell-morph";
 import { SiteFooter } from "./site-footer";
 
 function BookACall() {
@@ -30,7 +31,9 @@ export function SiteShell({ children }: { children: ReactNode }) {
         <div className="mx-auto flex h-full max-w-312 items-center justify-between pr-1 pl-4 md:grid md:grid-cols-12 md:gap-x-6 md:px-6">
           <div className="md:col-span-3">{name}</div>
           <div className="hidden md:col-span-5 md:block">
-            <NavLinks items={readyItems()} placement="bar" />
+            <ShellMorph>
+              <NavLinks items={readyItems()} placement="bar" />
+            </ShellMorph>
           </div>
           <div className="hidden items-center justify-end gap-3 md:col-span-4 md:flex">
             <BookACall />
