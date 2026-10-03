@@ -23,7 +23,6 @@ import { TextLink } from "@/components/ui/text-link";
 import { ORGS, type OrgId } from "@/content/orgs";
 import { type Photo, getPhotos } from "@/lib/content/photos";
 import { formatDate } from "@/lib/format";
-import { formatRating } from "@/lib/sources/rating";
 import { readSourceStatuses } from "@/lib/sources/status";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -197,12 +196,6 @@ export default async function SystemPage() {
           <span className="type-meta">
             ANKARA <LiveClock timeZone="Europe/Istanbul" place="Ankara" />
           </span>
-        </Specimen>
-        <Specimen name="Rating">
-          <span className="type-meta">
-            {formatRating(3.5)} · {formatRating(4)}
-          </span>
-          <span className="type-meta text-fg-muted">unrated shows nothing: [{formatRating(null)}]</span>
         </Specimen>
         <Specimen name="Cover">
           <div className="w-24">

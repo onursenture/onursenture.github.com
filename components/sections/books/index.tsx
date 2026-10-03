@@ -3,7 +3,6 @@ import { MetaLabel } from "@/components/ui/meta-label";
 import { profile } from "@/content/profile";
 import type { Book, Books } from "@/lib/sources/goodreads";
 import { readSource } from "@/lib/sources/read";
-import { formatRating } from "@/lib/sources/rating";
 import { Empty } from "../empty";
 import { ItemLink } from "../item-link";
 import type { SectionDefinition } from "../types";
@@ -36,15 +35,14 @@ function Read({ books }: { books: Book[] }) {
           <ItemLink href={book.link} className="col-span-12 type-body md:col-span-6">
             {book.title}
           </ItemLink>
-          <span className="col-span-8 type-meta text-fg-muted md:col-span-4">{book.author}</span>
-          <span className="col-span-4 text-right type-meta md:col-span-2">{formatRating(book.numRating)}</span>
+          <span className="col-span-12 type-meta text-fg-muted md:col-span-6">{book.author}</span>
         </li>
       ))}
     </ul>
   );
 }
 
-// Covers for the reading shelf, then the read list with ratings.
+// Covers for the reading shelf, then the read list.
 function Render({ data }: { data: Books }) {
   return (
     <div className="flex flex-col gap-12">

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Fragment } from "react";
 import { BootReadout } from "@/components/life/boot-readout";
-import { DitherPortrait } from "@/components/life/dither-portrait";
+import { Avatar } from "@/components/life/avatar";
 import { lifeSections } from "@/components/sections/life";
 import { SectionBlock } from "@/components/sections/section-block";
 import { DitherRule } from "@/components/ui/dither";
+import { ROW_GRID } from "@/components/ui/section-row";
 import { getPhotos } from "@/lib/content/photos";
 import { buildReadout } from "@/lib/life/readout";
 import { pageMetadata } from "@/lib/metadata";
@@ -23,7 +24,7 @@ export default async function LifePage() {
   ]);
   const lines = buildReadout({
     film: films.data[0],
-    book: books.data.currentlyReading[0],
+    books: books.data.currentlyReading,
     article: articles.data[0],
     photo: photos[0],
     post: writing.data[0],
@@ -32,8 +33,8 @@ export default async function LifePage() {
   return (
     <main className="pb-8">
       <h1 className="sr-only">Life</h1>
-      <section aria-label="Now" className="mx-auto grid max-w-[640px] gap-6 px-4 py-10 sm:grid-cols-[96px_1fr] md:py-14">
-        <DitherPortrait />
+      <section aria-label="Now" className={`${ROW_GRID} grid-cols-1`}>
+        <Avatar />
         <BootReadout lines={lines} />
       </section>
       {lifeSections.map((section) => (

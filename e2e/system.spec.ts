@@ -15,7 +15,6 @@ const PRIMITIVES = [
   "Button",
   "RelativeTime",
   "LiveClock",
-  "Rating",
   "Cover",
   "DataTable",
   "Empty",
@@ -31,9 +30,6 @@ test("/system/ renders every primitive, the type scale and the Sources row", asy
     await expect(page.locator(`[data-primitive="${name}"]`)).toBeVisible();
   }
   await expect(page.locator("[data-type]")).toHaveCount(6);
-  // Ratings are numbers in mono, never stars.
-  await expect(page.locator('[data-primitive="Rating"]')).toContainText("3.5 · 4");
-  await expect(page.locator('[data-primitive="Rating"]')).not.toContainText("\u2605");
   // This run has no database, so every source is never synced.
   const sources = page.locator("section", { has: page.getByRole("heading", { name: "Sources", exact: true }) });
   await expect(sources).toBeVisible();

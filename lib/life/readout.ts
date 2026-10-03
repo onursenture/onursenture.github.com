@@ -3,7 +3,6 @@ import type { Contributions } from "@/lib/sources/github";
 import type { Book } from "@/lib/sources/goodreads";
 import type { Article } from "@/lib/sources/instapaper";
 import type { Film } from "@/lib/sources/letterboxd";
-import { formatRating } from "@/lib/sources/rating";
 import type { Post } from "@/lib/sources/writing";
 
 export interface ReadoutLine {
@@ -11,8 +10,7 @@ export interface ReadoutLine {
   label: string;
   value: string;
   detail?: string;
-  // What sits between value and detail (default " "): ", " after a book title,
-  // " · " after an article title.
+  // What sits between value and detail (default " "): " · " after an article title.
   separator?: string;
   href?: string;
 }
@@ -23,39 +21,24 @@ export function readoutText(line: ReadoutLine): string {
 }
 
 export interface ReadoutInput {
-  film?: Pick<Film, "title" | "link" | "ratingValue">;
-  book?: Pick<Book, "title" | "author" | "link">;
+  film?: Pick<Film, "title" | "link">;
+  // Every book on the currently-reading shelf.
+  books?: Pick<Book, "title" | "link">[];
   article?: Pick<Article, "title" | "link" | "domain" | "minutes">;
   photo?: Pick<Photo, "title" | "slug">;
   post?: Pick<Post, "title" | "link">;
   contributions?: Contributions;
 }
 
-// The Life boot readout: the newest item from each source. A source with no
-// data drops its line (Sprint 4 spec §5); nothing is faked.
+// The Life boot readout: the newest item from each source, and every book
+// being read on one line. No ratings. A source with no data drops its line
+// (Sprint 4 spec §5); nothing is faked.
 export function buildReadout(input: ReadoutInput): ReadoutLine[] {
   const lines: ReadoutLine[] = [];
-  const { film, book, article, photo, post, contributions } = input;
-  if (film) {
-    const rating = formatRating(film.ratingValue);
-    lines.push({
-      key: "film",
-      label: "last watched",
-      value: film.title,
-      detail: rating || undefined,
-      separator: " ",
-      href: film.link,
-    });
-  }
-  if (book) {
-    lines.push({
-      key: "book",
-      label: "reading",
-      value: book.title,
-      detail: book.author || undefined,
-      separator: ", ",
-      href: book.link,
-    });
+  const { film, books, article, photo, post, contributions } = input;
+  if (film) lines.push({ key: "film", label: "last watched", value: film.title, href: film.link });
+  if (books && books.length > 0) {
+    lines.push({ key: "books", label: "reading", value: books.map((b) => b.title).join(", ") });
   }
   if (article) {
     const detail = [article.domain, article.minutes ? `${article.minutes} min` : ""].filter(Boolean).join(" · ");

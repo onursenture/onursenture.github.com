@@ -2,11 +2,10 @@ import { Cover } from "@/components/ui/cover";
 import { profile } from "@/content/profile";
 import type { Film } from "@/lib/sources/letterboxd";
 import { readSource } from "@/lib/sources/read";
-import { formatRating } from "@/lib/sources/rating";
 import { Empty } from "../empty";
 import type { SectionDefinition } from "../types";
 
-// A row of posters with rating and year.
+// A row of posters with the year.
 function Render({ data }: { data: Film[] }) {
   if (data.length === 0) return <Empty />;
   return (
@@ -18,9 +17,7 @@ function Render({ data }: { data: Film[] }) {
             <span className="type-body group-hover:underline group-hover:underline-offset-[0.2em]">
               {film.title}
             </span>
-            <span className="type-meta text-fg-muted">
-              {[formatRating(film.ratingValue), film.year].filter(Boolean).join(" · ")}
-            </span>
+            <span className="type-meta text-fg-muted">{film.year}</span>
           </a>
         </li>
       ))}

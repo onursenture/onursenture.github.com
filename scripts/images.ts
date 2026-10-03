@@ -20,8 +20,11 @@ const SRC_DIR = join(ROOT, "images-src");
 const OUT_DIR = join(ROOT, "public", "images");
 const MANIFEST = join(ROOT, "lib", "images", "manifest.json");
 const EXTENSIONS = /\.(jpe?g|png)$/i;
-const PORTRAIT_OUT = join(OUT_DIR, "portrait-dither.png");
-const PORTRAIT_JSON = join(ROOT, "lib", "images", "portrait.json");
+const AVATAR_SRC = join(SRC_DIR, "avatar.webp");
+const AVATAR_JSON = join(ROOT, "lib", "images", "avatar.json");
+// The avatar shows at 96 CSS px; 192px is its 2x rendition.
+const AVATAR_SIZE = 96;
+const AVATAR_PX = AVATAR_SIZE * 2;
 
 function walk(dir: string): string[] {
   if (!existsSync(dir)) return [];
@@ -36,39 +39,21 @@ function computeSourceHash(source: string): string {
   return createHash("sha256").update(data).digest("hex");
 }
 
-const BAYER4 = [
-  [0, 8, 2, 10],
-  [12, 4, 14, 6],
-  [3, 11, 1, 9],
-  [15, 7, 13, 5],
-].map((row) => row.map((v) => (v + 0.5) / 16));
-
-// Light-on-transparent 1-bit Bayer dither at 96×120 cells, scaled 2× with
-// nearest-neighbour so each cell is a crisp 2px block on retina. The page
-// shows it at 96×120 CSS px, so the scale is an exact 2 device pixels per cell.
-async function ditherPortrait(source: string, out: string) {
-  const W = 96;
-  const H = 120;
-  const { data } = await sharp(source)
-    .rotate()
-    .resize(W, H, { fit: "cover", position: "attention" })
-    .greyscale()
-    .normalise()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
-  const rgba = Buffer.alloc(W * H * 4);
-  for (let y = 0; y < H; y++) {
-    for (let x = 0; x < W; x++) {
-      const lit = data[y * W + x] / 255 > BAYER4[y & 3][x & 3];
-      const i = (y * W + x) * 4;
-      rgba[i] = rgba[i + 1] = rgba[i + 2] = 237;
-      rgba[i + 3] = lit ? 255 : 0;
-    }
+// The illustrated avatar (images-src/avatar.webp, full colour) as a fixed
+// 192x192 WebP + AVIF pair, written next to a small JSON the Avatar component
+// imports. `null` when there is no source.
+async function writeAvatar() {
+  if (!existsSync(AVATAR_SRC)) {
+    writeFileSync(AVATAR_JSON, "null\n");
+    return;
   }
-  await sharp(rgba, { raw: { width: W, height: H, channels: 4 } })
-    .resize(W * 2, H * 2, { kernel: "nearest" })
-    .png()
-    .toFile(out);
+  mkdirSync(OUT_DIR, { recursive: true });
+  const resized = sharp(AVATAR_SRC).rotate().resize(AVATAR_PX, AVATAR_PX, { fit: "cover" });
+  await resized.clone().webp({ quality: 80 }).toFile(join(OUT_DIR, `avatar-${AVATAR_PX}.webp`));
+  await resized.clone().avif({ quality: 80 }).toFile(join(OUT_DIR, `avatar-${AVATAR_PX}.avif`));
+  const data = { webp: `/images/avatar-${AVATAR_PX}.webp`, avif: `/images/avatar-${AVATAR_PX}.avif`, size: AVATAR_SIZE };
+  writeFileSync(AVATAR_JSON, `${JSON.stringify(data, null, 2)}\n`);
+  console.log(`wrote avatar-${AVATAR_PX}.{webp,avif}`);
 }
 
 async function main() {
@@ -79,8 +64,6 @@ async function main() {
 
   for (const source of walk(SRC_DIR).sort()) {
     const key = relative(SRC_DIR, source).replace(EXTENSIONS, "").split("\\").join("/");
-    // The portrait gets its own 1-bit treatment below, not the rendition set.
-    if (key === "portrait") continue;
     // rotate() applies EXIF orientation so width/height match what is shown.
     const meta = await sharp(source).rotate().metadata();
     const sourceWidth = meta.autoOrient?.width ?? meta.width;
@@ -127,15 +110,7 @@ async function main() {
 
   writeFileSync(MANIFEST, `${JSON.stringify(manifest, null, 2)}\n`);
 
-  const portrait = ["jpg", "jpeg", "png"].map((ext) => join(SRC_DIR, `portrait.${ext}`)).find((p) => existsSync(p));
-  if (portrait) {
-    mkdirSync(OUT_DIR, { recursive: true });
-    await ditherPortrait(portrait, PORTRAIT_OUT);
-    writeFileSync(PORTRAIT_JSON, `${JSON.stringify({ src: "/images/portrait-dither.png", width: 192, height: 240 }, null, 2)}\n`);
-    console.log("wrote portrait-dither.png");
-  } else {
-    writeFileSync(PORTRAIT_JSON, "null\n");
-  }
+  await writeAvatar();
 }
 
 main().catch((e) => {

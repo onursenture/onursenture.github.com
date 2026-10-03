@@ -86,3 +86,24 @@ test("entering Life through the switch types the readout every time, not only th
     await expect.poll(() => new URL(page.url()).pathname).toBe("/");
   }
 });
+
+test("the Now block starts at the same left edge as the home bio", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const bio = await page.locator("#identity h1").boundingBox();
+  await page.goto("/life/");
+  const readout = await page.locator('section[aria-label="Now"] .type-boot').boundingBox();
+  expect(Math.abs(bio!.x - readout!.x)).toBeLessThan(1);
+});
+
+test("the avatar is the 96px illustration, decorative, at the start of the label column", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/life/");
+  const avatar = page.locator('section[aria-label="Now"] picture img');
+  await expect(avatar).toHaveAttribute("alt", "");
+  await expect(avatar).toHaveAttribute("src", "/images/avatar-192.webp");
+  const box = await avatar.boundingBox();
+  expect([box!.width, box!.height]).toEqual([96, 96]);
+  // The label column starts at the md:px-10 gutter.
+  expect(box!.x).toBe(40);
+});
