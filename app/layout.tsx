@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Doto, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
-import { OPEN_GRAPH_DEFAULTS, TWITTER_DEFAULTS } from "@/lib/metadata";
+import { OPEN_GRAPH_DEFAULTS, TITLE_TEMPLATE, TWITTER_DEFAULTS } from "@/lib/metadata";
 import { site } from "@/lib/site";
 import { themeScript } from "@/lib/theme/theme";
 import "./globals.css";
@@ -28,7 +28,7 @@ const doto = Doto({
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: site.title, template: `%s · ${site.title}` },
+  title: { default: site.title, template: TITLE_TEMPLATE },
   // Pages that set their own openGraph/twitter use pageMetadata() to keep these.
   openGraph: { ...OPEN_GRAPH_DEFAULTS, title: site.title },
   twitter: { ...TWITTER_DEFAULTS, title: site.title },

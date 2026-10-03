@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { LifeSwitch } from "@/components/life-switch";
 import { Picture } from "@/components/picture";
 import { Empty } from "@/components/sections/empty";
 import { SourcesTable } from "@/components/sources/sources-table";
@@ -15,19 +16,23 @@ import { LabAvatar } from "@/components/ui/lab-avatar";
 import { LiveClock } from "@/components/ui/live-clock";
 import { MediaPlaceholder } from "@/components/ui/media-placeholder";
 import { MetaLabel } from "@/components/ui/meta-label";
+import { OrgMark } from "@/components/ui/org-mark";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { SectionRow } from "@/components/ui/section-row";
 import { StatusGlyph } from "@/components/ui/status-glyph";
 import { TextLink } from "@/components/ui/text-link";
+import { ORGS, type OrgId } from "@/content/orgs";
 import { type Photo, getPhotos } from "@/lib/content/photos";
 import { formatDate } from "@/lib/format";
 import { formatRating } from "@/lib/sources/rating";
 import { readSourceStatuses } from "@/lib/sources/status";
 import { pageMetadata } from "@/lib/metadata";
 
-// The in-code style tile and the S3 review surface. Not in the nav, not
-// indexed. Every primitive renders here in whichever theme is active. Sample values are deliberately generic: no invented facts.
+// The Sprint 4 style tile: every token, type class, dither specimen and
+// primitive, in whichever theme is active, plus a Life palette preview. Not
+// in the nav, not indexed. Sample values are deliberately generic: no invented
+// facts.
 export const metadata: Metadata = pageMetadata("System", { robots: { index: false, follow: false } });
 
 const TYPE_STYLES = [
@@ -57,6 +62,19 @@ const SAMPLE_WEEKS = Array.from({ length: 52 }, (_, i) => ({
   count: Math.round(20 + 15 * Math.sin(i / 5) + (i % 7) * 2),
 }));
 
+function Swatches() {
+  return (
+    <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+      {SWATCHES.map(([token, swatch]) => (
+        <div key={token} className="flex flex-col gap-2">
+          <span className={`h-12 border ${swatch}`} />
+          <span className="type-meta">{token}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Specimen({ name, children }: { name: string; children: ReactNode }) {
   return (
     <div data-primitive={name} className="flex flex-col gap-3 border-b py-6 last:border-b-0">
@@ -78,8 +96,9 @@ export default async function SystemPage() {
   const [photo] = photos;
 
   return (
-    <main className="flex flex-col py-16">
-      <h1 className="type-lead px-4 pb-8 md:px-10">System</h1>
+    <main className="pb-8">
+      <h1 className="type-lead px-4 pt-16 pb-6 md:px-10">System</h1>
+      <DitherRule className="mx-4 md:mx-10" />
 
       <SectionRow label="Type · 6 styles" wide>
         <div className="flex flex-col">
@@ -91,18 +110,11 @@ export default async function SystemPage() {
           ))}
         </div>
       </SectionRow>
-
+      <DitherRule className="mx-4 md:mx-10" />
       <SectionRow label="Color · 8 tokens" wide>
-        <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-          {SWATCHES.map(([token, swatch]) => (
-            <div key={token} className="flex flex-col gap-2">
-              <span className={`h-12 border ${swatch}`} />
-              <span className="type-meta">{token}</span>
-            </div>
-          ))}
-        </div>
+        <Swatches />
       </SectionRow>
-
+      <DitherRule className="mx-4 md:mx-10" />
       <SectionRow label="Dither" wide>
         <Specimen name="DitherStrip">
           <div className="w-full">
@@ -139,7 +151,7 @@ export default async function SystemPage() {
           </div>
         </Specimen>
       </SectionRow>
-
+      <DitherRule className="mx-4 md:mx-10" />
       <SectionRow label="Primitives" wide>
         <Specimen name="MetaLabel">
           <MetaLabel>Label</MetaLabel>
@@ -166,6 +178,17 @@ export default async function SystemPage() {
           <Button variant="primary">Primary</Button>
           <Button variant="ghost">Ghost →</Button>
           <Button variant="text">Text</Button>
+        </Specimen>
+        <Specimen name="OrgMark">
+          {(Object.keys(ORGS) as OrgId[]).map((org) => (
+            <span key={org} className="type-body">
+              <OrgMark org={org} /> {ORGS[org].name}
+            </span>
+          ))}
+        </Specimen>
+        <Specimen name="LifeSwitch">
+          <LifeSwitch on={false} />
+          <LifeSwitch on />
         </Specimen>
         <Specimen name="Toggle">
           <ToggleDemo />
@@ -208,7 +231,19 @@ export default async function SystemPage() {
           ) : null}
         </Specimen>
       </SectionRow>
-
+      <DitherRule className="mx-4 md:mx-10" />
+      <SectionRow label="Life palette" wide>
+        {/* Proves the dark tokens and the dither repaint inside a Life subtree on a light page. */}
+        <div data-side="life" data-testid="life-palette" className="flex flex-col gap-6 bg-bg p-6 text-fg">
+          <Swatches />
+          <p className="type-boot">last watched: Love & Other Drugs 3.5</p>
+          <div className="grid max-w-lg grid-cols-2 gap-4">
+            <MediaPlaceholder label="Placeholder" index={1} />
+            <MediaPlaceholder label="Placeholder" index={2} tone="ink" />
+          </div>
+        </div>
+      </SectionRow>
+      <DitherRule className="mx-4 md:mx-10" />
       <SectionRow label="Sources" wide>
         <SourcesTable statuses={statuses} />
       </SectionRow>

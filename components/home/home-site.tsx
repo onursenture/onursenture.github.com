@@ -67,11 +67,7 @@ export function HomeSite() {
       key="latest"
       id="latest"
       label="Latest work"
-      action={
-        <a href={`https://github.com/${profile.social.github}`} rel="noopener noreferrer" className="hover:text-fg hover:underline">
-          GitHub ↗
-        </a>
-      }
+      action={<TextLink href={`https://github.com/${profile.social.github}`}>GitHub</TextLink>}
     >
       <Contributions />
     </SectionRow>,

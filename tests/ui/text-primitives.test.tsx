@@ -55,17 +55,19 @@ describe("Chip and EraStamp", () => {
 });
 
 describe("TextLink", () => {
-  it("ends with → and keeps internal links internal", () => {
+  it("ends internal links with a non-breaking → and keeps them internal", () => {
     const markup = html(<TextLink href="/life/">Life</TextLink>);
     expect(markup).toMatch(/^<a [^>]*href="\/life\/"/);
     expect(markup).not.toContain("rel=");
-    expect(markup).toContain(" →</span>");
+    // U+00A0 before the arrow, so it never wraps onto its own line.
+    expect(markup).toContain("\u00a0\u2192</span>");
   });
 
-  it("adds rel=noopener noreferrer to external links and never uses ↗", () => {
+  it("ends external links with ↗ and adds rel=noopener noreferrer", () => {
     const markup = html(<TextLink href="https://letterboxd.com/onur/">Letterboxd</TextLink>);
     expect(markup).toContain('rel="noopener noreferrer"');
-    expect(markup).not.toContain("↗");
+    expect(markup).toContain("\u00a0\u2197</span>");
+    expect(markup).not.toContain("\u2192");
   });
 });
 

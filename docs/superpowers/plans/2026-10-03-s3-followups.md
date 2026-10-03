@@ -1,5 +1,18 @@
 # S3 Follow-ups
 
+## Status after Sprint 4
+
+Closed in Sprint 4:
+- `TextLink` no longer orphans its arrow (non-breaking space), and its test names say what they check.
+- Photo detail "Previous" is "← Previous" (Plex has `←`).
+- The title format has one source (`TITLE_TEMPLATE` / `fullTitle` in `lib/metadata.ts`).
+- `PageHeader`'s site-branch test is moot: it lost its view branch.
+- Closed by removing the dashboard view: the scrolled dashboard to site slide, the cross-tab stale view, the `ViewHistoryGuard` private-API risk, the "Known trade-offs" below, and the dashboard density items under S7.
+
+Moved to Sprint 8 (launch): DataTable at 390px, the ThemeToggle hydration flash, 404 titles, menu dialog tests and CSP. The rest of the S6 list below (Lab placeholders, token-test gaps, font preconnect and focus ring) goes with them. The remaining items under the old S7 and S8 headings stay open for the sprints that now own them (Sprint 7 admin, Sprint 10 personal layer). "Before merge" is the historical `s3` checklist.
+
+The sections below keep their original S-numbers from the S3 plan; read them against this status.
+
 S3 (design system and shell) is complete on branch `s3`. The per-task reviews and the final whole-branch review deferred the items below, each labelled with the sprint that should pick it up. Items fixed before merge are not listed. The S2 follow-ups for S3 are all closed except the Adobe kit domains, which are covered under "Before merge" below.
 
 ## Before merge (Onur, on the Vercel preview of `s3`)

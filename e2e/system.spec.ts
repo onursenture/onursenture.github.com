@@ -22,6 +22,8 @@ const PRIMITIVES = [
   "DataTable",
   "Empty",
   "Picture",
+  "OrgMark",
+  "LifeSwitch",
 ];
 
 test("/system/ renders every primitive, the type scale and the Sources row", async ({ page }) => {
@@ -39,6 +41,17 @@ test("/system/ renders every primitive, the type scale and the Sources row", asy
   await expect(sources).toBeVisible();
   await expect(sources.locator("tbody tr")).toHaveCount(5);
   await expect(sources.locator('[data-health="never"]')).toHaveCount(5);
+});
+
+test("the Life palette block is dark under the light theme", async ({ page, context, baseURL }) => {
+  await context.addCookies([{ name: "theme", value: "light", url: baseURL! }]);
+  await page.goto("/system/");
+  await expect(page.locator("html")).not.toHaveAttribute("data-theme", "dark");
+  const palette = page.getByTestId("life-palette");
+  await expect(palette).toBeVisible();
+  await expect(palette).toHaveCSS("background-color", "rgb(11, 11, 12)");
+  await expect(palette.locator("canvas").first()).toBeAttached();
+  await expect(palette.locator(".type-boot")).toBeVisible();
 });
 
 test("every canvas on /system/ is decorative", async ({ page }) => {

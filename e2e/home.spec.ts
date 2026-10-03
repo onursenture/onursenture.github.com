@@ -45,7 +45,7 @@ test("Latest work shows the empty state without data, and links to GitHub", asyn
   await page.goto("/");
   const latest = page.locator("#latest");
   await expect(latest).toContainText("Nothing here yet.");
-  await expect(latest.getByRole("link", { name: "GitHub ↗" })).toHaveAttribute("href", "https://github.com/onursenture");
+  await expect(latest.getByRole("link", { name: "GitHub" })).toHaveAttribute("href", "https://github.com/onursenture");
 });
 
 test("Lab lists every entry with a decorative avatar; only linked entries link", async ({ page }) => {
