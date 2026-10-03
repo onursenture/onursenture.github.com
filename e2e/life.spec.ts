@@ -55,3 +55,34 @@ test("arriving from the switch types the readout in", async ({ page }) => {
   await expect(now).not.toContainText("Human detected.", { timeout: 200 });
   await expect(now).toContainText("Human detected.", { timeout: 3000 });
 });
+
+test("every canvas on /life/ is decorative", async ({ page }) => {
+  await page.goto("/life/");
+  await expect(page.locator("canvas").first()).toBeAttached();
+  const unlabelled = await page
+    .locator("canvas")
+    .evaluateAll((canvases) => canvases.filter((c) => !c.closest('[aria-hidden="true"]')).length);
+  expect(unlabelled).toBe(0);
+});
+
+test("the photos row sizes its thumbnails for the wide row beside the label column", async ({ page }) => {
+  await page.goto("/life/");
+  await expect(page.locator('[data-section="photos"] picture source').first()).toHaveAttribute(
+    "sizes",
+    "(min-width: 1024px) calc((100vw - 356px) / 3), (min-width: 768px) calc((100vw - 128px) / 3), calc((100vw - 48px) / 2)",
+  );
+});
+
+test("entering Life through the switch types the readout every time, not only the first", async ({ page }) => {
+  await page.goto("/");
+  const toggle = () => page.getByRole("switch", { name: "Life" }).filter({ visible: true });
+  for (const entry of [1, 2, 3]) {
+    await toggle().click();
+    await expect(page).toHaveURL(/\/life\/$/);
+    const now = page.getByRole("region", { name: "Now" }).filter({ visible: true });
+    await expect(now, `entry ${entry} starts typing`).not.toContainText("Human detected.", { timeout: 200 });
+    await expect(now, `entry ${entry} finishes`).toContainText("Human detected.", { timeout: 3000 });
+    await toggle().click();
+    await expect.poll(() => new URL(page.url()).pathname).toBe("/");
+  }
+});

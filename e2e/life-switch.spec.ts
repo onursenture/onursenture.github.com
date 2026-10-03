@@ -19,7 +19,8 @@ test("the Work side has the switch off; it navigates to the always-dark Life sid
   await expect(page.getByRole("switch", { name: "Life" }).filter({ visible: true })).toHaveAttribute("aria-checked", "true");
 
   await page.goBack();
-  await expect(page).toHaveURL(/\/$/);
+  // The pathname must be exactly "/": a bare /\/$/ also matches /life/.
+  await expect.poll(() => new URL(page.url()).pathname).toBe("/");
   await expect(page.locator("html")).not.toHaveAttribute("data-side", "life");
 });
 

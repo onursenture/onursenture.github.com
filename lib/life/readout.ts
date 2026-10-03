@@ -11,7 +11,15 @@ export interface ReadoutLine {
   label: string;
   value: string;
   detail?: string;
+  // What sits between value and detail (default " "): ", " after a book title,
+  // " · " after an article title.
+  separator?: string;
   href?: string;
+}
+
+// The line as one string: `label: value<separator>detail`.
+export function readoutText(line: ReadoutLine): string {
+  return `${line.label}: ${line.value}${line.detail ? `${line.separator ?? " "}${line.detail}` : ""}`;
 }
 
 export interface ReadoutInput {
@@ -30,12 +38,35 @@ export function buildReadout(input: ReadoutInput): ReadoutLine[] {
   const { film, book, article, photo, post, contributions } = input;
   if (film) {
     const rating = formatRating(film.ratingValue);
-    lines.push({ key: "film", label: "last watched", value: film.title, detail: rating || undefined, href: film.link });
+    lines.push({
+      key: "film",
+      label: "last watched",
+      value: film.title,
+      detail: rating || undefined,
+      separator: " ",
+      href: film.link,
+    });
   }
-  if (book) lines.push({ key: "book", label: "reading", value: book.title, detail: book.author || undefined, href: book.link });
+  if (book) {
+    lines.push({
+      key: "book",
+      label: "reading",
+      value: book.title,
+      detail: book.author || undefined,
+      separator: ", ",
+      href: book.link,
+    });
+  }
   if (article) {
     const detail = [article.domain, article.minutes ? `${article.minutes} min` : ""].filter(Boolean).join(" · ");
-    lines.push({ key: "article", label: "saved", value: article.title, detail: detail || undefined, href: article.link });
+    lines.push({
+      key: "article",
+      label: "saved",
+      value: article.title,
+      detail: detail || undefined,
+      separator: " · ",
+      href: article.link,
+    });
   }
   if (photo) lines.push({ key: "photo", label: "last photo", value: photo.title, href: `/life/photos/${photo.slug}/` });
   if (post) lines.push({ key: "post", label: "writing", value: post.title, href: post.link });

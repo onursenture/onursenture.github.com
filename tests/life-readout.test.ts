@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildReadout } from "@/lib/life/readout";
+import { buildReadout, readoutText } from "@/lib/life/readout";
 
 describe("buildReadout", () => {
   it("builds one line per source that has data, in readout order", () => {
@@ -11,10 +11,10 @@ describe("buildReadout", () => {
       post: { title: "Hello", link: "https://w00f.org/hello" },
       contributions: { total: 2133, weeks: [{ days: [{ count: 1, date: "2026-01-04", level: 1 }] }] },
     });
-    expect(lines.map((l) => `${l.label}: ${l.value}${l.detail ? ` ${l.detail}` : ""}`)).toEqual([
+    expect(lines.map(readoutText)).toEqual([
       "last watched: Love & Other Drugs 3.5",
-      "reading: Educated Tara Westover",
-      "saved: Taste for Makers paulgraham.com · 18 min",
+      "reading: Educated, Tara Westover",
+      "saved: Taste for Makers · paulgraham.com · 18 min",
       "last photo: Night Boulevard",
       "writing: Hello",
       "contributions, last 12 months: 2,133",

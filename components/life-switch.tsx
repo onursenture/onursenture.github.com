@@ -30,7 +30,8 @@ export function LifeSwitch({ on }: { on: boolean }) {
 
   // role="switch" toggles on Space; Enter follows the link (onClick).
   function onKeyDown(event: KeyboardEvent<HTMLAnchorElement>) {
-    if (event.key !== " ") return;
+    // Ignore key repeat (holding Space would toggle back and forth) and chords.
+    if (event.key !== " " || event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
     event.preventDefault();
     go();
   }
@@ -48,12 +49,12 @@ export function LifeSwitch({ on }: { on: boolean }) {
       <span>Life</span>
       <span
         aria-hidden="true"
-        className={cx("relative h-[22px] w-10 rounded-full border transition-colors", on ? "border-accent bg-accent" : "bg-line")}
+        className={cx("relative h-[22px] w-10 rounded-full border transition-colors", on ? "border-accent bg-accent" : "border-fg-muted bg-line")}
       >
         <span
           className={cx(
             "absolute top-px size-[18px] rounded-full border bg-[#fff] transition-[left]",
-            on ? "left-[19px]" : "left-px",
+            on ? "left-[19px]" : "left-px border-fg-muted",
           )}
         />
       </span>

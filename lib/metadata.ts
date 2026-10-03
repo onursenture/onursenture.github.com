@@ -16,7 +16,8 @@ export const TWITTER_DEFAULTS = { card: "summary" } as const;
 export const TITLE_TEMPLATE = `%s · ${site.title}`;
 
 export function fullTitle(title: string): string {
-  return TITLE_TEMPLATE.replace("%s", title);
+  // A replacer function keeps "$&" and friends in a title literal.
+  return TITLE_TEMPLATE.replace("%s", () => title);
 }
 
 // Next replaces a parent's `openGraph` / `twitter` with the page's instead of

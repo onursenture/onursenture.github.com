@@ -33,8 +33,8 @@ test("the readout shows the newest item from each source", async ({ page }) => {
   await page.goto("/life/");
   const now = page.getByRole("region", { name: "Now" });
   await expect(now).toContainText("last watched: Love & Other Drugs 3.5");
-  await expect(now).toContainText("reading: Harry Potter and the Deathly Hallows (Harry Potter, #7) J.K. Rowling");
-  await expect(now).toContainText("saved: Jurassic Park computers in excruciating detail fabiensanglard.net · 13 min");
+  await expect(now).toContainText("reading: Harry Potter and the Deathly Hallows (Harry Potter, #7), J.K. Rowling");
+  await expect(now).toContainText("saved: Jurassic Park computers in excruciating detail · fabiensanglard.net · 13 min");
   await expect(now).toContainText("contributions, last 12 months: 7");
   await expect(now).not.toContainText("★");
 });

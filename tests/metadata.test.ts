@@ -26,6 +26,8 @@ describe("title format", () => {
   it("has one source for the root template and page metadata", () => {
     expect(TITLE_TEMPLATE).toBe("%s · Onur Senture");
     expect(fullTitle("Life")).toBe("Life · Onur Senture");
+    // Replacement patterns in a title are literal text.
+    expect(fullTitle("Q&A $& $1 $$")).toBe("Q&A $& $1 $$ · Onur Senture");
     expect(pageMetadata("Life").openGraph).toMatchObject({ title: fullTitle("Life") });
   });
 });

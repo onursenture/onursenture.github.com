@@ -1,43 +1,66 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { LiveClock } from "@/components/ui/live-clock";
 import { isExternal } from "@/components/ui/text-link";
-import type { ReadoutLine } from "@/lib/life/readout";
+import { profile } from "@/content/profile";
+import { type ReadoutLine, readoutText } from "@/lib/life/readout";
 import { runTypewriter } from "@/lib/life/typewriter";
 import { peekBoot, takeBoot } from "./boot-flag";
 
 const BOOT = ["Booting w00f...", "Human detected."];
 const DURATION = 1500;
 
-function lineText(line: ReadoutLine): string {
-  return `${line.label}: ${line.value}${line.detail ? ` ${line.detail}` : ""}`;
-}
-
 function reducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+const noopSubscribe = () => () => {};
+
+// Whether a fresh boot flag asks for typing. Hydration uses the server
+// snapshot (false), so a flag left over on a direct load is ignored and the
+// markup matches the server HTML; only a client render reads sessionStorage.
+function useBootPending(): boolean {
+  return useSyncExternalStore(
+    noopSubscribe,
+    () => peekBoot() && !reducedMotion(),
+    () => false,
+  );
+}
+
 // The Life boot readout. Server HTML is the complete, static text. After a
 // client navigation from the Life switch (boot flag set), the boot and data
-// lines type in over ~1.5s, ending on a blinking cursor. Reduced motion:
+// lines type in over ~1.5s, ending on a blinking cursor. Next keeps a left
+// route's tree mounted (hidden), so entering Life again re-runs the effect on
+// the same instance: a fresh flag then restarts the typing. Reduced motion:
 // static, no blink.
 export function BootReadout({ lines }: { lines: ReadoutLine[] }) {
-  const texts = useMemo(() => [...BOOT, ...lines.map(lineText)], [lines]);
+  const texts = useMemo(() => [...BOOT, ...lines.map(readoutText)], [lines]);
   const total = texts.reduce((sum, t) => sum + t.length, 0);
+  const bootPending = useBootPending();
   // null = show everything. A client navigation (no hydration) starts at 0
   // when the flag is set, so the full text never flashes first.
-  const [shown, setShown] = useState<number | null>(() =>
-    typeof window !== "undefined" && peekBoot() && !reducedMotion() ? 0 : null,
-  );
+  const [shown, setShown] = useState<number | null>(bootPending ? 0 : null);
 
-  useEffect(() => {
-    // Clear the one-shot flag, but decide from state: Strict Mode (and a
-    // re-shown route) runs this effect again after a cleanup, when the flag is
-    // already gone. A re-run restarts the typing and still completes.
-    takeBoot();
-    if (shown === null) return;
+  const ranBefore = useRef(false);
+
+  // A layout effect, so a re-shown route restarts before it is painted.
+  useLayoutEffect(() => {
+    // Clear the one-shot flag. Strict Mode re-runs this effect after a cleanup,
+    // when the flag is already gone, so a pending typing is decided from state;
+    // a re-run restarts the typing and still completes.
+    const flagged = takeBoot() && !reducedMotion();
+    // Only a later run of the same instance (a re-show) may start typing from
+    // the flag; the first run follows the initial state, so a flag that is
+    // fresh during hydration stays ignored.
+    const reshown = ranBefore.current && flagged;
+    ranBefore.current = true;
+    if (shown === null) {
+      if (!reshown) return;
+      // The kept-alive tree was re-shown by the Life switch: type again.
+      setShown(0);
+    }
     return runTypewriter(total, DURATION, setShown, {
       now: () => performance.now(),
       request: (cb) => requestAnimationFrame(cb),
@@ -59,7 +82,8 @@ export function BootReadout({ lines }: { lines: ReadoutLine[] }) {
   return (
     <div className="type-boot">
       <p>
-        Local time: [<LiveClock timeZone="Europe/Istanbul" place="Ankara" /> GMT+3] Ankara
+        Local time: [<LiveClock timeZone={profile.location.timeZone} place={profile.location.place} /> GMT+3]{" "}
+        {profile.location.place}
       </p>
       <div className="mt-6 text-fg-muted">
         {BOOT.map((t, i) => (
@@ -69,7 +93,7 @@ export function BootReadout({ lines }: { lines: ReadoutLine[] }) {
       <ul className="mt-6">
         {lines.map((line, i) => {
           const n = visible[BOOT.length + i];
-          const full = lineText(line);
+          const full = readoutText(line);
           const head = `${line.label}: `;
           const value = full.slice(head.length, n).slice(0, line.value.length);
           const rest = full.slice(head.length + line.value.length, n);
