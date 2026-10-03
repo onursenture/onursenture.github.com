@@ -13,7 +13,7 @@ export type MediaAspect = "16/9" | "16/10" | "4/3" | "1/1";
 // name the others where they designed a piece.
 export interface Credit {
   name: string;
-  // "design" (the default), "illustration", "implementation"…
+  // "design" (the default), "illustration"… Only designers are credited.
   role?: string;
   href?: string;
 }
@@ -75,6 +75,7 @@ export interface Entry {
   // Templates only: "Vue", "Angular", "React", "JSF".
   frameworks?: string[];
   remaster?: boolean; // a remastered or all-new edition of an earlier template (Templates Coverage counts these separately)
+  update?: boolean; // a major update to an existing template, not a new one (Templates Coverage counts neither a template nor a remaster)
   credits?: Credit[];
   media: Media[];
 }

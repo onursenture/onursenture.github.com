@@ -43,7 +43,7 @@ export const templatesPosts: Post[] = [
     date: "2024-12-12",
     account: "w00f",
     id: "1867143128396058914",
-    summary: "Onur credits Genesis to its designer @umitceliks and its implementer @tanerengiin.",
+    summary: "Onur credits the design of Genesis to @umitceliks.",
     entryId: "genesis",
   },
   {
@@ -164,6 +164,13 @@ export const templatesPosts: Post[] = [
     id: "1440628415762026510",
     summary: "Atlantis for PrimeVue, an admin template, announced.",
     entryId: "atlantis",
+  },
+  {
+    date: "2021-06-11",
+    account: "primefaces",
+    id: "1403312943576535050",
+    summary: "Omega gets a facelift for PrimeFaces, with light and dark menu options and a new topbar.",
+    entryId: "omega",
   },
   {
     date: "2021-05-06",
@@ -691,6 +698,13 @@ export const templatesPosts: Post[] = [
     entryId: "ultima",
   },
   {
+    date: "2017-01-23",
+    account: "prime_ng",
+    id: "823506976730742784",
+    summary: "Omega 2.0 arrives for PrimeNG as an Angular CLI application template.",
+    entryId: "omega",
+  },
+  {
     date: "2017-01-19",
     account: "w00f",
     id: "822039302230212610",
@@ -724,6 +738,13 @@ export const templatesPosts: Post[] = [
     id: "806050632599748609",
     summary: "Atlantis, a modern premium application template for PrimeFaces.",
     entryId: "atlantis",
+  },
+  {
+    date: "2016-11-18",
+    account: "prime_ng",
+    id: "799614859516092416",
+    summary: "A preview of the PrimeFaces Omega template coming to PrimeNG the following week.",
+    entryId: "omega",
   },
   {
     date: "2016-10-19",

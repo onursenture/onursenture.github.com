@@ -30,13 +30,14 @@ function plural(count: number, word: string): string {
 }
 
 // The header facts, plus computed ones. Templates counts its templates and
-// remasters (entries marked `remaster`) and pages (media tagged "page"),
-// so the numbers are always true.
+// remasters (entries marked `remaster`; entries marked `update` are in neither
+// count) and pages (media tagged "page"), so the numbers are always true.
 export function caseStudyFacts(study: CaseStudy, view: StudyView): Fact[] {
   if (study.slug !== "templates") return study.facts;
   const pages = view.media.filter((item) => item.tags.includes("page")).length;
   const remasters = study.entries.filter((entry) => entry.remaster).length;
-  const originals = study.entries.length - remasters;
+  const updates = study.entries.filter((entry) => entry.update).length;
+  const originals = study.entries.length - remasters - updates;
   const value = [
     plural(originals, "template"),
     remasters > 0 ? plural(remasters, "remaster") : null,

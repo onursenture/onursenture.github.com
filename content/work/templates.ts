@@ -2,10 +2,11 @@ import { templatesPosts } from "./posts/templates";
 import type { CaseStudy } from "./types";
 
 // Every template released during Onur's tenure (May 2016 to Apr 2026) that
-// the PrimeTek accounts announced, one entry each, sourced from the first
-// release post; ports to other frameworks are in `links`. Free templates
-// (Sigma, Sakai) are left out. Onur led design on every template; `credits`
-// names colleagues where they designed a template or a page (spec §4.2).
+// PrimeTek announced, one entry each, sourced from the first release post (the
+// PrimeFaces blog or the accounts on X); ports to other frameworks are in
+// `links`. Free templates (Sigma, Sakai) are Archive rows. Onur led design on
+// every template; `credits` names the colleagues who designed a template or a
+// page, never those who built it (spec §4.2).
 export const templates: CaseStudy = {
   slug: "templates",
   org: "primetek",
@@ -25,14 +26,59 @@ export const templates: CaseStudy = {
   hero: { id: "cover", caption: "Templates" },
   entries: [
     {
+      id: "icarus",
+      date: "2016-07",
+      title: "Icarus",
+      frameworks: ["JSF"],
+      note: "The first of the new-generation PrimeFaces templates: responsive, with four themes, ready-made template pages and SASS styling, built in about six weeks from first sketch to release. The PrimeFaces blog's launch post names Onur as its designer.",
+      source: "https://web.archive.org/web/20160708162234/http://blog.primefaces.org/?p=3984",
+      media: [
+        { id: "icarus-cover", caption: "Icarus" },
+      ],
+    },
+    {
+      id: "omega",
+      date: "2016-07",
+      title: "Omega",
+      frameworks: ["JSF", "Angular"],
+      note: "A clean, responsive application template for PrimeFaces, paired with the Omega theme that had become PrimeFaces 6.0's default look the month before. Omega 1.1 in August added a collapsible menu and an interactive profile menu, and the template reached PrimeNG in November 2016.",
+      source: "https://web.archive.org/web/20160722090746/http://blog.primefaces.org/?p=4010",
+      links: [
+        { label: "PrimeFaces 6.0 post", href: "https://web.archive.org/web/20160610024858/http://blog.primefaces.org/?p=3949" },
+        { label: "Omega 1.1 post", href: "https://web.archive.org/web/20160823073419/http://blog.primefaces.org/?p=4055" },
+        { label: "PrimeNG post", href: "https://web.archive.org/web/20161126131108/http://blog.primefaces.org/?p=4204" },
+      ],
+      media: [
+        { id: "omega-cover", caption: "Omega" },
+      ],
+    },
+    {
+      id: "apollo",
+      date: "2016-08",
+      title: "Apollo",
+      frameworks: ["JSF", "Angular", "React", "Vue"],
+      note: "A dark-concept template for PrimeFaces with a horizontal menu bar that turns into a sidebar on small screens, 15 themes and a profile menu. The Angular CLI version for PrimeNG followed in January 2018 with 16 themes, PrimeReact in October 2018 and PrimeVue in January 2020.",
+      source: "https://web.archive.org/web/20160806053448/http://blog.primefaces.org/?p=4035",
+      links: [
+        { label: "PrimeFaces remaster post", href: "https://x.com/primefaces/status/930721983507128320" },
+        { label: "PrimeNG post", href: "https://x.com/prime_ng/status/956451059169456128" },
+        { label: "PrimeReact post", href: "https://web.archive.org/web/20181122/https://www.primefaces.org/primereact-2-0-0-beta-9-released-apollo/" },
+        { label: "PrimeVue post", href: "https://x.com/primevue/status/1214192045088223240" },
+      ],
+      media: [
+        { id: "apollo-cover", caption: "Apollo" },
+      ],
+    },
+    {
       id: "ultima",
       date: "2016-08",
       title: "Ultima",
-      frameworks: ["JSF", "Angular", "Vue"],
-      note: "A material application template for PrimeFaces, offering 120 layout combinations altogether; PrimeNG followed in October 2016 and PrimeVue in March 2020.",
+      frameworks: ["JSF", "Angular", "React", "Vue"],
+      note: "A material application template for PrimeFaces, offering 120 layout combinations altogether; PrimeNG followed in October 2016, a PrimeReact create-react-app version was announced in August 2017 and PrimeVue came in March 2020.",
       source: "https://x.com/primefaces/status/770891393459949568",
       links: [
         { label: "PrimeNG post", href: "https://x.com/prime_ng/status/782891216673316864" },
+        { label: "PrimeReact post", href: "https://x.com/primereact/status/898060608385548288" },
         { label: "PrimeVue post", href: "https://x.com/primevue/status/1242037807427788800" },
       ],
       media: [
@@ -43,11 +89,12 @@ export const templates: CaseStudy = {
       id: "poseidon",
       date: "2016-10",
       title: "Poseidon",
-      frameworks: ["JSF", "Angular"],
-      note: "A premium application template for PrimeFaces; the PrimeNG version arrived with PrimeNG 2.0 in February 2017.",
+      frameworks: ["JSF", "Angular", "Vue"],
+      note: "A premium application template for PrimeFaces; the PrimeNG version arrived with PrimeNG 2.0 in February 2017 and the first PrimeVue version in May 2022.",
       source: "https://x.com/primefaces/status/788650172288999424",
       links: [
         { label: "PrimeNG post", href: "https://x.com/prime_ng/status/828934836584841216" },
+        { label: "PrimeVue blog post", href: "https://www.primefaces.org/blog/meet-poseidon-the-new-application-template-for-primevue/" },
       ],
       media: [
         { id: "poseidon-cover", caption: "Poseidon" },
@@ -77,6 +124,7 @@ export const templates: CaseStudy = {
       note: "A premium application template for PrimeFaces, followed by PrimeNG in October 2017 and PrimeVue in May 2022.",
       source: "https://x.com/w00f/status/821000764709539840",
       links: [
+        { label: "PrimeFaces update post, May 2017", href: "https://x.com/primefaces/status/866614735743197184" },
         { label: "PrimeNG post", href: "https://x.com/prime_ng/status/924929983902044161" },
         { label: "PrimeVue post", href: "https://x.com/primevue/status/1524375511459377153" },
       ],
@@ -132,10 +180,12 @@ export const templates: CaseStudy = {
       date: "2017-07",
       title: "Manhattan",
       frameworks: ["JSF", "Angular"],
-      note: "A premium application template for PrimeFaces, followed by a PrimeNG version in the same month.",
+      note: "A premium application template for PrimeFaces, followed by a PrimeNG version in the same month; a remastered edition with five layout modes came in June 2018 for PrimeFaces and July for PrimeNG.",
       source: "https://x.com/w00f/status/881829683440099330",
       links: [
         { label: "PrimeNG post", href: "https://x.com/prime_ng/status/885118700227047426" },
+        { label: "PrimeFaces remaster (blog listing)", href: "https://web.archive.org/web/20180629/https://www.primefaces.org/blog/" },
+        { label: "PrimeNG remaster (blog listing)", href: "https://web.archive.org/web/20180802/https://www.primefaces.org/blog/" },
       ],
       media: [
         { id: "manhattan-cover", caption: "Manhattan" },
@@ -145,11 +195,12 @@ export const templates: CaseStudy = {
       id: "avalon",
       date: "2017-08",
       title: "Avalon",
-      frameworks: ["JSF", "Angular", "Vue"],
-      note: "Bootstrap meets PrimeFaces: an application template for PrimeFaces, followed by PrimeNG two weeks later and PrimeVue in October 2019.",
+      frameworks: ["JSF", "Angular", "React", "Vue"],
+      note: "Bootstrap meets PrimeFaces: an application template for PrimeFaces, followed by PrimeNG two weeks later and PrimeVue in October 2019. A React edition existed by March 2018, when the PrimeFaces and React editions both received Bootstrap 4 options.",
       source: "https://x.com/w00f/status/894495436509261824",
       links: [
         { label: "PrimeNG post", href: "https://x.com/prime_ng/status/899542381611151361" },
+        { label: "Bootstrap 4 updates (blog listing)", href: "https://web.archive.org/web/20180504/https://www.primefaces.org/blog/" },
         { label: "PrimeVue post", href: "https://x.com/primevue/status/1184065828888731648" },
       ],
       media: [
@@ -161,35 +212,28 @@ export const templates: CaseStudy = {
       date: "2017-09",
       title: "Serenity",
       frameworks: ["JSF", "Angular", "React", "Vue"],
-      note: "A material design application template for PrimeFaces, followed by PrimeNG in October 2017, a PrimeReact create-react-app template in December 2017 and PrimeVue in January 2020.",
+      note: "A material design application template for PrimeFaces, followed by PrimeNG in October 2017, a PrimeReact create-react-app template in December 2017 and PrimeVue in January 2020; the PrimeNG edition gained a dark mode in November 2021.",
       source: "https://x.com/primefaces/status/912998218698575872",
       links: [
         { label: "PrimeNG post", href: "https://x.com/prime_ng/status/918028399423221760" },
         { label: "PrimeReact post", href: "https://x.com/primereact/status/940902974657843200" },
         { label: "PrimeVue post", href: "https://x.com/primevue/status/1215605372377010176" },
+        { label: "PrimeNG dark mode post", href: "https://www.primefaces.org/blog/primeng-serenity-v12-3-0-released-with-dark-mode/" },
       ],
       media: [
         { id: "serenity-cover", caption: "Serenity" },
       ],
     },
     {
-      id: "apollo",
-      date: "2018-01",
-      title: "Apollo",
-      frameworks: ["JSF", "Angular", "Vue"],
-      note: "An Angular CLI template for PrimeNG, with dark mode for the first time and 16 themes.",
-      source: "https://x.com/prime_ng/status/956451059169456128",
-      media: [
-        { id: "apollo-cover", caption: "Apollo" },
-      ],
-    },
-    {
       id: "california",
       date: "2018-01",
       title: "California",
-      frameworks: ["JSF"],
-      note: "California, a new template, arrived with PrimeFaces 6.2.RC1.",
+      frameworks: ["JSF", "Angular"],
+      note: "California arrived with PrimeFaces 6.2 RC1 in January 2018; the PrimeNG version followed in August 2018 with 20 themes across light, dark and gradient looks.",
       source: "https://x.com/primefaces/status/951360929962307584",
+      links: [
+        { label: "PrimeNG release (blog listing)", href: "https://web.archive.org/web/20180913/https://www.primefaces.org/blog/" },
+      ],
       media: [
         { id: "california-cover", caption: "California" },
       ],
@@ -210,22 +254,29 @@ export const templates: CaseStudy = {
     },
     {
       id: "harmony",
-      date: "2018-05",
+      date: "2018-03",
       title: "Harmony",
-      frameworks: ["Angular"],
-      note: "A premium Angular CLI application template for PrimeNG, with 4 menu modes.",
-      source: "https://x.com/prime_ng/status/994165591920529408",
+      frameworks: ["JSF", "Angular"],
+      note: "A premium application template for PrimeFaces, released with PrimeFaces 6.2 in March 2018; the Angular CLI version for PrimeNG followed in May with 4 menu modes.",
+      source: "https://web.archive.org/web/20180315/https://www.primefaces.org/primefaces-6-2-final-released-harmony/",
+      links: [
+        { label: "Harmony 1.0.1 (blog listing)", href: "https://web.archive.org/web/20180330/https://www.primefaces.org/blog/" },
+        { label: "PrimeNG post", href: "https://x.com/prime_ng/status/994165591920529408" },
+      ],
       media: [
         { id: "harmony-cover", caption: "Harmony" },
       ],
     },
     {
       id: "olympia",
-      date: "2018-09",
+      date: "2018-08",
       title: "Olympia",
-      frameworks: ["Angular"],
-      note: "A premium Angular CLI template for PrimeNG, with a relaxing design.",
-      source: "https://x.com/prime_ng/status/1042682337153220608",
+      frameworks: ["JSF", "Angular"],
+      note: "A premium application template for PrimeFaces with a relaxing design, four menu modes, ten topbar colors and ten themes; the Angular CLI version for PrimeNG followed in September 2018.",
+      source: "https://web.archive.org/web/20180824/https://www.primefaces.org/blog/",
+      links: [
+        { label: "PrimeNG post", href: "https://x.com/prime_ng/status/1042682337153220608" },
+      ],
       media: [
         { id: "olympia-cover", caption: "Olympia" },
       ],
@@ -249,11 +300,12 @@ export const templates: CaseStudy = {
       id: "roma",
       date: "2019-01",
       title: "Roma",
-      frameworks: ["JSF", "Angular", "Vue"],
-      note: "A minimalist, clean premium application template for PrimeFaces, followed by PrimeNG in February 2019 and PrimeVue in January 2020.",
+      frameworks: ["JSF", "Angular", "React", "Vue"],
+      note: "A minimalist, clean premium application template for PrimeFaces, followed by PrimeNG in February 2019, a PrimeReact create-react-app version in November 2019 and PrimeVue in January 2020.",
       source: "https://x.com/primefaces/status/1087316644286947328",
       links: [
         { label: "PrimeNG post", href: "https://x.com/prime_ng/status/1093130655926501382" },
+        { label: "PrimeReact post", href: "https://web.archive.org/web/20191210/https://www.primefaces.org/primereact-3-3-3-released-with-the-roma-admin-template/" },
         { label: "PrimeVue post", href: "https://x.com/primevue/status/1214577006064611329" },
       ],
       media: [
@@ -310,8 +362,11 @@ export const templates: CaseStudy = {
       date: "2020-02",
       title: "Siberia",
       frameworks: ["JSF"],
-      note: "A fully customizable admin template for PrimeFaces.",
+      note: "An admin template for PrimeFaces with four menu types, 30 layout themes and 15 component themes, plus a configurator for building custom layouts.",
       source: "https://x.com/primefaces/status/1227513266823450626",
+      links: [
+        { label: "Blog post", href: "https://www.primefaces.org/blog/primefaces-siberia-is-here/" },
+      ],
       media: [
         { id: "siberia-cover", caption: "Siberia" },
       ],
@@ -321,8 +376,11 @@ export const templates: CaseStudy = {
       date: "2020-05",
       title: "Pandora",
       frameworks: ["JSF"],
-      note: "A premium application template for PrimeFaces.",
+      note: "A premium application template for PrimeFaces with 42 component themes, five menu modes including a new slim-plus one, and a layout configurator.",
       source: "https://x.com/primefaces/status/1265260052816035843",
+      links: [
+        { label: "Blog post", href: "https://www.primefaces.org/blog/introducing-primefaces-pandora/" },
+      ],
       media: [
         { id: "pandora-cover", caption: "Pandora" },
       ],
@@ -332,9 +390,10 @@ export const templates: CaseStudy = {
       date: "2020-06",
       title: "Diamond",
       frameworks: ["JSF", "Angular", "Vue"],
-      note: "A premium application template, released for PrimeFaces in June 2020, then for PrimeNG 10 in September and PrimeVue in October.",
+      note: "A premium application template, released for PrimeFaces in June 2020, then for PrimeNG 10 in September and PrimeVue in October. The first template built on PrimeOne, with 30 component themes and three modes: light, dim and dark.",
       source: "https://x.com/primefaces/status/1272501580550586368",
       links: [
+        { label: "PrimeFaces blog post", href: "https://www.primefaces.org/blog/primefaces-diamond-is-here/" },
         { label: "PrimeNG post", href: "https://x.com/prime_ng/status/1304078971571757056" },
         { label: "PrimeVue post", href: "https://x.com/primevue/status/1319550824142561280" },
       ],
@@ -347,8 +406,11 @@ export const templates: CaseStudy = {
       date: "2020-07",
       title: "Rain",
       frameworks: ["JSF"],
-      note: "A PrimeFaces application template with light, dim and dark modes.",
+      note: "A PrimeFaces application template with light, dim and dark modes, 33 component themes and five menu orientations.",
       source: "https://x.com/primefaces/status/1288778825434882049",
+      links: [
+        { label: "Blog post", href: "https://www.primefaces.org/blog/announcing-primefaces-rain/" },
+      ],
       media: [
         { id: "rain-cover", caption: "Rain" },
       ],
@@ -357,11 +419,13 @@ export const templates: CaseStudy = {
       id: "freya",
       date: "2020-09",
       title: "Freya",
-      frameworks: ["JSF", "Vue"],
-      note: "An application template for PrimeFaces; the Vue CLI version for PrimeVue followed in May 2021, with a minimalist look.",
+      frameworks: ["JSF", "Angular", "Vue", "React"],
+      note: "An application template for PrimeFaces; PrimeNG followed in December 2020, then the Vue CLI and React versions in May 2021, all with a minimalist look.",
       source: "https://x.com/primefaces/status/1308379411037786112",
       links: [
+        { label: "PrimeNG blog post", href: "https://www.primefaces.org/blog/announcing-primeng-freya/" },
         { label: "PrimeVue post", href: "https://x.com/primevue/status/1390295819937583113" },
+        { label: "PrimeReact blog post", href: "https://www.primefaces.org/blog/introducing-freya-for-primereact/" },
       ],
       media: [
         { id: "freya-cover", caption: "Freya" },
@@ -370,11 +434,14 @@ export const templates: CaseStudy = {
     {
       id: "poseidon-remastered-2020",
       remaster: true,
-      date: "2020-12",
+      date: "2020-08",
       title: "Poseidon Remastered",
-      frameworks: ["Angular"],
-      note: "A complete remaster of Poseidon for PrimeNG.",
-      source: "https://x.com/prime_ng/status/1334455814099177472",
+      frameworks: ["JSF", "Angular"],
+      note: "Poseidon rebuilt for PrimeFaces with PrimeOne component themes, RTL support and dark, dim and light modes; the PrimeNG remaster followed in December 2020.",
+      source: "https://www.primefaces.org/blog/primefaces-poseidon-remastered/",
+      links: [
+        { label: "PrimeNG post", href: "https://x.com/prime_ng/status/1334455814099177472" },
+      ],
       media: [
         { id: "poseidon-remastered-2020-cover", caption: "Poseidon Remastered" },
       ],
@@ -409,11 +476,11 @@ export const templates: CaseStudy = {
     {
       id: "atlantis-remastered",
       remaster: true,
-      date: "2022-02",
+      date: "2021-05",
       title: "Atlantis Remastered",
       frameworks: ["Angular"],
-      note: "A newly remastered Atlantis template for PrimeNG.",
-      source: "https://x.com/prime_ng/status/1491015084847419393",
+      note: "The PrimeNG edition of Atlantis rebuilt with a dark mode that covers the whole layout, five menu modes and 16 component themes in light and dark.",
+      source: "https://www.primefaces.org/blog/the-remastered-atlantis-for-primeng-you-will-be-amazed/",
       media: [
         { id: "atlantis-remastered-cover", caption: "Atlantis Remastered" },
       ],
@@ -431,6 +498,28 @@ export const templates: CaseStudy = {
       ],
       media: [
         { id: "apollo-2022-cover", caption: "Apollo (2022)" },
+      ],
+    },
+    {
+      id: "diamond-angular-update",
+      update: true,
+      date: "2022-09",
+      title: "Diamond for Angular update",
+      frameworks: ["Angular"],
+      note: "A major update to Diamond for PrimeNG: a quick integration into an existing Angular CLI app, Mail, Chat, Kanban and Calendar sample apps, a new compact menu, a banking dashboard, E-Commerce blocks, user management pages and the Figma design file.",
+      source: "https://www.primefaces.org/blog/diamond-for-angular-gets-a-huge-update/",
+      media: [],
+    },
+    {
+      id: "ultima-reloaded",
+      remaster: true,
+      date: "2022-10",
+      title: "Ultima Reloaded",
+      frameworks: ["JSF"],
+      note: "Ultima rebuilt from the ground up for PrimeFaces, with a new design, dark mode, RTL support and theme sets of 20 topbar, 17 component and 12 menu themes.",
+      source: "https://www.primefaces.org/blog/primefaces-ultima-reloaded/",
+      media: [
+        { id: "ultima-reloaded-cover", caption: "Ultima Reloaded" },
       ],
     },
     {
@@ -461,7 +550,6 @@ export const templates: CaseStudy = {
       ],
       credits: [
         { name: "Ümit Çelik", href: "https://x.com/umitceliks" },
-        { name: "Taner Ergin", role: "implementation", href: "https://x.com/tanerengiin" },
       ],
       media: [
         { id: "genesis-cover", caption: "Genesis" },

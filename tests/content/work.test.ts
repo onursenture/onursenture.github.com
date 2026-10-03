@@ -26,12 +26,9 @@ describe("content/work", () => {
     for (const study of caseStudies) expect(study.facts.find((f) => f.label === "Role")?.value).toBe("Design lead");
   });
 
-  it("credits Genesis to the colleagues who designed and built it", () => {
+  it("credits Genesis to its designer only", () => {
     const genesis = caseStudies.find((s) => s.slug === "templates")!.entries.find((e) => e.id === "genesis")!;
-    expect(genesis.credits).toEqual([
-      { name: "Ümit Çelik", href: "https://x.com/umitceliks" },
-      { name: "Taner Ergin", role: "implementation", href: "https://x.com/tanerengiin" },
-    ]);
+    expect(genesis.credits).toEqual([{ name: "Ümit Çelik", href: "https://x.com/umitceliks" }]);
   });
 
   it("fills PrimeOne's posts, each in order of the registry's entries and with a derived URL", () => {
@@ -73,7 +70,7 @@ describe("content/work", () => {
     for (const item of media) expect(item.figma, item.id).toBeNull();
   });
 
-  it("marks exactly the eight remastered or all-new templates", () => {
+  it("marks exactly the nine remastered or all-new templates", () => {
     const templates = caseStudies.find((s) => s.slug === "templates")!;
     expect(
       templates.entries
@@ -87,6 +84,7 @@ describe("content/work", () => {
         "verona-remastered",
         "atlantis-remastered",
         "apollo-2022",
+        "ultima-reloaded",
         "diamond-remastered",
         "poseidon-remastered",
         "avalon-remastered",

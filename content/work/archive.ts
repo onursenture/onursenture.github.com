@@ -3,12 +3,36 @@ import type { ArchiveEntry } from "./types";
 // Other PrimeTek work, from the posts that announced it (spec §4.3).
 export const archiveEntries: ArchiveEntry[] = [
   {
+    id: "designer-api",
+    org: "primetek",
+    date: "2018-04",
+    title: "Designer API",
+    note: "The Designer API, a SASS-based way of building PrimeFaces themes, announced in April 2018; the PrimeNG version followed in May with over 500 variables and a demo application.",
+    source: "https://web.archive.org/web/20180526/https://www.primefaces.org/blog/",
+  },
+  {
+    id: "primefaces-showcase",
+    org: "primetek",
+    date: "2018-06",
+    title: "PrimeFaces Showcase redesign",
+    note: "The PrimeFaces Showcase redone from the ground up and given a modern look that matches the PrimeNG and PrimeReact showcases.",
+    source: "https://web.archive.org/web/20180706/https://www.primefaces.org/blog/",
+  },
+  {
+    id: "sigma",
+    org: "primetek",
+    date: "2018-06",
+    title: "Sigma",
+    note: "A free open-source admin template: first for PrimeReact on create-react-app in June 2018, then for PrimeVue on Vue CLI in June 2019, where it offers two menu modes and a light and a dark scheme.",
+    source: "https://web.archive.org/web/20180706/https://www.primefaces.org/blog/",
+  },
+  {
     id: "nova-luna",
     org: "primetek",
-    date: "2018-11",
+    date: "2018-08",
     title: "Nova and Luna themes",
-    note: "Nova and Luna, two free open-source themes for PrimeFaces, introduced with the modernized PrimeFaces.",
-    source: "https://x.com/primefaces/status/1061931021355106304",
+    note: "Nova, a free open-source theme in light, dark and colored flavors, debuted in PrimeNG in August 2018; it reached PrimeFaces together with Luna in November 2018.",
+    source: "https://web.archive.org/web/20180802/https://www.primefaces.org/blog/",
   },
   {
     id: "primeng-theme-designer-7",
@@ -17,6 +41,22 @@ export const archiveEntries: ArchiveEntry[] = [
     title: "PrimeNG Theme Designer",
     note: "The PrimeNG Theme Designer upgraded to Angular 7, alongside PrimeNG 7.",
     source: "https://x.com/prime_ng/status/1070961512251080704",
+  },
+  {
+    id: "saga-vela-arya",
+    org: "primetek",
+    date: "2020-08",
+    title: "Saga, Vela and Arya themes",
+    note: "Three free themes, light (Saga), dim (Vela) and dark (Arya), released with PrimeNG 10 and brought to PrimeFaces 10 in 2021.",
+    source: "https://www.primefaces.org/blog/primeng-10-begins/",
+  },
+  {
+    id: "sakai",
+    org: "primetek",
+    date: "2021-09",
+    title: "Sakai",
+    note: "A free admin template with a minimalist design and two menu modes: Vue in September 2021, then React in October 2021, Angular in January 2022 and Next.js in October 2022.",
+    source: "https://www.primefaces.org/blog/sakai-free-vue-admin-template/",
   },
   {
     id: "tailwind-theme",
@@ -31,7 +71,7 @@ export const archiveEntries: ArchiveEntry[] = [
     org: "primetek",
     date: "2021-11",
     title: "Lara themes",
-    note: "New free Lara themes, released with PrimeVue 3.9.0.",
+    note: "New free Lara themes, released with PrimeVue 3.9.0 under the PrimeOne Design 2022 name; PrimeReact 7 and the PrimeNG 13 release candidate had shipped it a few days earlier.",
     source: "https://x.com/primevue/status/1461339072199278594",
   },
   {

@@ -36,11 +36,11 @@ test("the PrimeOne log is newest first and links each entry's post", async ({ pa
   await expect(block.getByRole("button", { name: /in Grid/ })).toHaveCount(0);
 });
 
-test("Templates credits Genesis and counts its coverage from the data", async ({ page }) => {
+test("Templates credits Genesis's designer and counts its coverage from the data", async ({ page }) => {
   await page.goto("/work/templates/");
-  await expect(page.locator("#entry-genesis [data-credits]")).toHaveText("Design: Ümit Çelik · Implementation: Taner Ergin");
+  await expect(page.locator("#entry-genesis [data-credits]")).toHaveText("Design: Ümit Çelik");
   await expect(page.locator("#entry-genesis").getByRole("list", { name: "Frameworks" })).toContainText("React");
-  await expect(page.locator("dl")).toContainText(/Coverage\s*26 templates · 8 remasters · 1 page$/);
+  await expect(page.locator("dl")).toContainText(/Coverage\s*28 templates · 9 remasters · 1 page$/);
   // Verona's cover and its landing page both show in its entry.
   await expect(page.locator("#entry-verona [data-media]")).toHaveCount(2);
   await expect(page.locator('#entry-verona [data-media="verona-landing"]')).toBeVisible();

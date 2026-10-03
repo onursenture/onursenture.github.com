@@ -88,8 +88,8 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
   - `MediaViewer` is a native `<dialog>` in the Life palette.
   - Opening pushes `?fig=`, so Back closes it; stepping replaces it.
 - **Posts.** A fourth view (`?view=posts`), shown only when a case study has `posts`. Data lives in `content/work/posts/<slug>.ts` (`Post`: date, account, status id, `entryId`); the URL is derived. Summaries are our own one-liners, never PrimeTek's text (Onur's @w00f posts may quote him). The chips filter by entry (`?tag=<entry id>`); verify every id against `.superpowers/research/`.
-- **Credits.** Onur's role is a case-study fact. `credits` on an entry or a media item names colleagues, and Templates uses media-level credits for pages others designed.
-- **Numbers.** Coverage (Templates) and the icon count (PrimeIcons) are computed, never written by hand.
+- **Credits.** Onur's role is a case-study fact. `credits` on an entry or a media item names colleagues who *designed* it (never developers), and Templates uses media-level credits for pages others designed.
+- **Numbers.** Coverage (Templates) and the icon count (PrimeIcons) are computed, never written by hand. Coverage counts templates and `remaster` entries; an `update` entry (a major update to an existing template) is in neither count.
 - **Filling media from Figma.** Figma refs stay out of the public repo: no content file sets `figma` (the `Media.figma` type remains for `figmaLinks`, should it ever be turned on with committed refs).
   1. List each frame in the gitignored `figma.local.json` at the repo root, keyed by the slot's manifest key: `"work/<slug>/<media id>": { "fileKey": "...", "nodeId": "12:345" }` (the URL's `node-id=12-345` works too). `figma.example.json` shows the shape.
   2. Run `npm run figma`. It writes `images-src/work/<slug>/<id>.png`, records its export lock in the gitignored `figma.lock.local.json` (skipping frames whose file hasn't changed), and runs `npm run images`. A slot with a hand-set `image` is skipped.
