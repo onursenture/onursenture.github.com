@@ -19,6 +19,7 @@ npm run typecheck | lint | test
 npm run e2e            # Playwright on port 3217; run `npm run build` first
 npm run e2e:fixtures   # port 3219; run `SOURCE_FIXTURES=1 npm run build` first
 npm run images         # optimize images-src/ into public/images/ + manifest
+npm run figma          # export Figma frames named in content/work/ (needs FIGMA_TOKEN in .env.local), then npm run images
 npm run db:generate    # drizzle-kit generate; db:migrate applies it (--force)
 npm run screenshots -- <dir> <path>...  # 1440 + 390, both themes (build first)
 ```
@@ -32,6 +33,7 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
 - `GH_PAT`: GitHub GraphQL token for the contributions source.
 - `GOODREADS_USER_ID`: optional; the code has a default.
 - `SOURCE_FIXTURES=1`: dev/CI only. Serves `tests/fixtures/` through the real parsers. Never set it on Vercel.
+- `FIGMA_TOKEN`: local only (`.env.local`), for `npm run figma`. A Figma personal access token with `file_content:read`. Never set it on Vercel or in CI.
 
 ## Rules
 
@@ -84,6 +86,12 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
   - Opening pushes `?fig=`, so Back closes it; stepping replaces it.
 - **Credits.** Onur's role is a case-study fact. `credits` on an entry or a media item names colleagues, and Templates uses media-level credits for pages others designed.
 - **Numbers.** Coverage (Templates) and the icon count (PrimeIcons) are computed, never written by hand.
+- **Filling media from Figma.**
+  1. Set `figma: { fileKey, nodeId }` on a media item (`nodeId` "12:345"; the URL's `node-id=12-345`).
+  2. Run `npm run figma`. It writes `images-src/work/<slug>/<id>.png`, updates `lib/images/figma-lock.json` (skipping frames whose file hasn't changed) and runs `npm run images`.
+  3. Commit everything.
+
+  `embed: true` adds the click-to-load embed in the viewer. Set it only on files shared as "anyone with the link can view".
 
 ## Sources and sync
 
