@@ -194,7 +194,7 @@ A hairline-bordered bar under the hero:
     - any `links`.
   - **Media column:**
     - all of the entry's media, as an equal-size grid, each cell at its own aspect (default 16/10) and opening the viewer on the full set;
-    - 1 item is a single figure, 2 items are 2 columns from md, 3 or more are 2 columns from md and 3 from xl. There is no "+N in Grid" link.
+    - 1 or 2 items use 2 columns from md (a lone figure takes the first cell, at grid-cell width, not the full column), 3 or more are 2 columns from md and 3 from xl. There is no "+N in Grid" link.
   - An entry with no media renders only its text, at full width.
 - Section breaks between year groups use the Sprint 4 dither rule.
 

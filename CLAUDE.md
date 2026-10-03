@@ -80,7 +80,7 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
   - A media slot shows `image` when set, otherwise `work/<slug>/<media id>` when the manifest has it, otherwise the dither placeholder.
   - FIG numbers count from the oldest entry (02 upwards; the hero is 01), so new entries don't renumber.
   - No work images are committed yet: Onur prepares them (the auto-exported Figma frames were removed after PR #27 review), so every slot is a placeholder until they land in `images-src/work/<slug>/<media id>.png`.
-- **Layout.** The hero sits in the content column (480px, 16/10) on the section grid. The Log shows every media item of a release as an equal grid in the media column (1 item single, 2 items 2 columns, 3+ items 2 columns from md and 3 from xl); there is no "+N in Grid" link.
+- **Layout.** The hero sits in the content column (480px, 16/10) on the section grid. The Log shows every media item of a release as an equal grid in the media column (1 or 2 items use 2 columns from md, a lone figure at grid-cell width; 3+ items use 2 columns from md and 3 from xl); there is no "+N in Grid" link.
 - **View state.**
   - It lives in the query (`?view`, `?tag`, `?density`, `?fig`; `lib/work/url-state.ts`).
   - The server always renders the default Log as a `<Suspense>` fallback, and `StudyBrowser` (`useSearchParams`) applies the query after hydration. Never read `searchParams` in these pages: one HTML per path keeps the CDN cache.

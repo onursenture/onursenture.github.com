@@ -8,17 +8,16 @@ import { MediaButton } from "./media-button";
 
 // Figure column widths: at lg it is what's left after the padding (80), the
 // label (200), the text (480) and two gaps (56), so 100vw - 816px. A grid cell
-// is that width divided by its column count (2 from md, 3 from xl on 3+).
+// is that width divided by its column count (2 from md, 3 from xl on 3+; one figure uses the 2-column width).
 function figureSizes(count: number) {
-  if (count === 1) return "(min-width: 1024px) calc(100vw - 816px), (min-width: 768px) calc(100vw - 80px), calc(100vw - 32px)";
   const xl = count >= 3 ? "(min-width: 1280px) calc((100vw - 816px) / 3), " : "";
   return `${xl}(min-width: 1024px) calc((100vw - 816px) / 2), (min-width: 768px) calc((100vw - 80px) / 2), calc(100vw - 32px)`;
 }
 
-// 1 figure: single. 2: two columns from md. 3+: two from md, three from xl.
+// 1 or 2 figures: two columns from md (a lone figure takes the first cell, so
+// it is the same width as a grid cell). 3+: two from md, three from xl.
 function gridClass(count: number) {
-  if (count === 1) return "";
-  return count === 2 ? "md:grid-cols-2" : "md:grid-cols-2 xl:grid-cols-3";
+  return count >= 3 ? "md:grid-cols-2 xl:grid-cols-3" : "md:grid-cols-2";
 }
 
 // The release log: year groups, newest first. The Doto year sticks while its

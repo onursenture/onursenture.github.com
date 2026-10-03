@@ -99,7 +99,10 @@ describe("LogView", () => {
     const render = (n: number) => html(<LogView study={buildStudyView(entryOf(n), () => undefined)} />);
     const one = render(1);
     expect(one.match(/data-media="m/g)).toHaveLength(1);
-    expect(one).not.toContain("grid-cols-2");
+    expect(one).toContain("md:grid-cols-2");
+    expect(one).not.toContain("xl:grid-cols-3");
+    expect(one).toContain("calc((100vw - 816px) / 2)");
+    expect(one).not.toContain("calc(100vw - 816px),");
     const two = render(2);
     expect(two.match(/data-media="m/g)).toHaveLength(2);
     expect(two).toContain("md:grid-cols-2");
