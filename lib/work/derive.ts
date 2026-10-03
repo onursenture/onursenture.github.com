@@ -121,7 +121,6 @@ function monthOf(ym: string): string {
   return MONTHS[Number(ym.slice(5, 7)) - 1];
 }
 
-// "2024-11" → "Nov 2024"
 // The accessible-name prefix for a proof link, by where it points: X posts,
 // archived blog pages (web.archive.org) or live blog pages (any other host).
 export function sourceLabel(href: string): string {
@@ -137,6 +136,7 @@ export function sourceLabel(href: string): string {
   return "Blog post";
 }
 
+// "2024-11" → "Nov 2024"
 export function formatYearMonth(ym: string): string {
   return `${monthOf(ym)} ${ym.slice(0, 4)}`;
 }
