@@ -10,6 +10,16 @@ Sprint 5 (Work I: PrimeTek) is complete on branch `sprint-5`: `/work/`, four cas
   - "Apollo (2022)" naming for the all-new 2022 Apollo.
   - Grid and Index show credit names next to figures (designers only).
   - Templates coverage reads "28 templates · 9 remasters · 1 page".
+- **Site polish, part 1** (`docs/superpowers/specs/2026-10-03-site-polish-design.md`):
+  - The site is light only, with no theme control.
+  - The Life switch sits next to the name and stays in place across the switch.
+  - Home order is bio, Lab, Work, Experience, Contributions. Contributions shows the green GitHub heatmap, and a full year fits without horizontal scroll.
+  - Lab is text only. Bio has no indent.
+  - Life: the Now block is left-aligned and uses the illustrated avatar. The reading line lists every book. Ratings are gone. Covers and photos are compact.
+- **Part 2 (brainstorm next):**
+  - Home "Selected work", separate from the experience-linked work pages.
+  - A new experience presentation, replacing the tree.
+  - Case study pages rethought from scratch, simpler and without the version-by-version detail.
 - **Images.** Onur prepares the visuals per release (several per release, shown as a grid). Recommended source size 2560×1600 (16:10) PNG or JPG; deliver into `images-src/work/<slug>/<media id>.png` (or via Sprint 7 upload); tell Claude how many images each release has so the slots can be added.
 - **CDN caching check** (preview is behind Vercel Authentication; add the bypass header):
   ```bash

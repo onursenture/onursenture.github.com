@@ -75,6 +75,8 @@ export function HomeSite() {
       key="contributions"
       id="contributions"
       label="Contributions"
+      // A year of weeks is ~690px, wider than the 480px content column.
+      wide
       action={<TextLink href={`https://github.com/${profile.social.github}`}>GitHub</TextLink>}
     >
       <Contributions />
