@@ -26,8 +26,8 @@ export function SiteShell({ children }: { children: ReactNode }) {
   );
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="border-b">
-        <div className="mx-auto flex h-14 max-w-312 items-center justify-between pr-1 pl-4 md:grid md:h-16 md:grid-cols-12 md:gap-x-6 md:px-6">
+      <header className="h-14 border-b md:h-16">
+        <div className="mx-auto flex h-full max-w-312 items-center justify-between pr-1 pl-4 md:grid md:grid-cols-12 md:gap-x-6 md:px-6">
           <div className="md:col-span-3">{name}</div>
           <div className="hidden md:col-span-5 md:block">
             <NavLinks items={readyItems()} placement="bar" />

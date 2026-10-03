@@ -54,6 +54,18 @@ test.describe("at 390px", () => {
     await expect(menu).toBeHidden();
   });
 
+  test("the menu closes when the viewport grows to desktop width", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: "Menu" }).click();
+    await expect(page.getByRole("dialog", { name: "Menu" })).toBeVisible();
+    await page.setViewportSize({ width: 1000, height: 844 });
+    // An open modal <dialog> inside a display:none ancestor would leave the
+    // rest of the page inert.
+    await expect(page.locator("dialog")).toHaveJSProperty("open", false);
+    await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Life" }).click();
+    await expect(page).toHaveURL(/\/life\/$/);
+  });
+
   test("switching view from the menu leaves the new page usable", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: "Menu" }).click();

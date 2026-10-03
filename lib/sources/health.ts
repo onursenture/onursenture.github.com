@@ -41,7 +41,10 @@ export interface HealthSummary {
 export function summarizeHealth(statuses: SourceStatus[], now: number | null): HealthSummary {
   const healths = statuses.map((s) => sourceHealth(s.lastSuccessAt, s.intervalMinutes, now));
   const ok = healths.filter((h) => h === "ok").length;
-  const synced = statuses.map((s) => s.lastSuccessAt).filter((at): at is string => at !== null);
+  // Unparsable times count as never synced (see sourceHealth).
+  const synced = statuses
+    .map((s) => s.lastSuccessAt)
+    .filter((at): at is string => at !== null && !Number.isNaN(Date.parse(at)));
   const latest = synced.length > 0 ? synced.reduce((a, b) => (Date.parse(a) >= Date.parse(b) ? a : b)) : null;
   const overall: Health =
     ok === statuses.length ? "ok" : healths.every((h) => h === "never") ? "never" : "late";

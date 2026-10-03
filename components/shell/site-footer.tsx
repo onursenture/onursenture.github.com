@@ -1,5 +1,4 @@
 import { cacheLife } from "next/cache";
-import { Fragment } from "react";
 import { profile, socialLinks } from "@/content/profile";
 
 // Pages are prerendered and the year changes once a year; a cached read
@@ -21,12 +20,14 @@ export async function SiteFooter() {
           © {year} {profile.name}
         </span>
         {socialLinks().map((link) => (
-          <Fragment key={link.label}>
+          // The separator travels with the link after it, so a wrapped line
+          // starts with "· Goodreads" instead of ending with a stray "·".
+          <span key={link.label} className="flex gap-2 whitespace-nowrap">
             <span aria-hidden="true">·</span>
             <a href={link.href} rel="noopener noreferrer" className="hover:text-fg hover:underline">
               {link.label}
             </a>
-          </Fragment>
+          </span>
         ))}
         <div data-slot="paddle" className="ml-auto" />
       </div>

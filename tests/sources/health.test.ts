@@ -42,6 +42,11 @@ describe("summarizeHealth", () => {
     expect(summary).toEqual({ ok: 1, total: 3, latest: ago(5), overall: "late" });
   });
 
+  it("ignores unparsable sync times when finding the latest", () => {
+    expect(summarizeHealth([status("github", ago(5)), status("writing", "nope")], now).latest).toBe(ago(5));
+    expect(summarizeHealth([status("github", "nope"), status("writing", ago(5))], now).latest).toBe(ago(5));
+  });
+
   it("is ok when all are ok and never when none ever synced", () => {
     expect(summarizeHealth([status("github", ago(5))], now).overall).toBe("ok");
     expect(summarizeHealth([status("github", null), status("writing", null)], now)).toEqual({

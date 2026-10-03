@@ -31,6 +31,18 @@ export function MenuDialog({
     return () => dialog?.close();
   }, []);
 
+  // Growing past md hides this menu (md:hidden), but a modal <dialog> stays
+  // open inside a display:none ancestor and keeps the rest of the page inert.
+  // 48rem is Tailwind's md, so the two switch at the same width.
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 48rem)");
+    const onChange = (event: MediaQueryListEvent) => {
+      if (event.matches) ref.current?.close();
+    };
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
+  }, []);
+
   function onClick(event: MouseEvent<HTMLDialogElement>) {
     const target = event.target as HTMLElement;
     if (target === event.currentTarget || target.closest("a")) ref.current?.close();
@@ -50,12 +62,19 @@ export function MenuDialog({
           "m-0 h-dvh max-h-none p-0 text-fg",
           variant === "full"
             ? "w-full max-w-none bg-bg"
-            : "w-78 max-w-[calc(100%-3rem)] border-r bg-surface backdrop:bg-bg/70",
+            : "w-78 max-w-[calc(100%-3rem)] border-r bg-surface backdrop:bg-bg/72",
         )}
       >
         {open ? (
           <div className="flex h-full flex-col">
-            <div className="flex h-12 shrink-0 items-center justify-between border-b pr-1 pl-4">
+            <div
+              className={cx(
+                "flex h-12 shrink-0 items-center justify-between border-b pr-1",
+                // The slide-over's name lines up with the nav labels and the
+                // desktop sidebar's name.
+                variant === "slide" ? "pl-7" : "pl-4",
+              )}
+            >
               {title}
               <Button variant="text" aria-label="Close menu" onClick={() => ref.current?.close()}>
                 ×
