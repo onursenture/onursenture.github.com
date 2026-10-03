@@ -13,15 +13,17 @@ test("/life/ is the boot readout, then a row for every section, with empty state
   await expect(page.locator('[data-section="films"]')).toContainText("Nothing here yet.");
 });
 
-test("a direct load renders the readout complete, with no typing", async ({ page }) => {
-  await page.goto("/life/");
-  await expect(page.getByRole("region", { name: "Now" })).toContainText("Human detected.");
+test("the server HTML of a direct load has the readout complete, with no typing", async ({ page }) => {
+  const html = await (await page.request.get("/life/")).text();
+  expect(html).toContain("Human detected.");
+  expect(html).toContain("idle");
 });
 
 test("the photos row links every photo and its All link goes to /life/photos/", async ({ page }) => {
   await page.goto("/life/");
   const photos = page.locator('[data-section="photos"]');
   await expect(photos.locator("li a")).toHaveCount(5);
+  await expect(photos.locator('li img[alt=""]')).toHaveCount(5);
   await expect(photos.getByRole("link", { name: "All", exact: true })).toHaveAttribute("href", "/life/photos/");
 });
 

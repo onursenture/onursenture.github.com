@@ -24,7 +24,7 @@ const PRIMITIVES = [
   "Picture",
 ];
 
-test("/system/ renders every primitive, the type scale and the Sources band", async ({ page }) => {
+test("/system/ renders every primitive, the type scale and the Sources row", async ({ page }) => {
   await page.goto("/system/");
   await expect(page.locator("main")).toHaveCount(1);
   for (const name of PRIMITIVES) {

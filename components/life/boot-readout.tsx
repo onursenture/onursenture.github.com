@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { LiveClock } from "@/components/ui/live-clock";
 import { isExternal } from "@/components/ui/text-link";
 import type { ReadoutLine } from "@/lib/life/readout";
+import { runTypewriter } from "@/lib/life/typewriter";
 import { peekBoot, takeBoot } from "./boot-flag";
 
 const BOOT = ["Booting w00f...", "Human detected."];
@@ -32,17 +33,17 @@ export function BootReadout({ lines }: { lines: ReadoutLine[] }) {
   );
 
   useEffect(() => {
-    if (!takeBoot() || shown === null) return;
-    let frame = 0;
-    const start = performance.now();
-    const tick = (now: number) => {
-      const progress = Math.min(1, (now - start) / DURATION);
-      setShown(progress < 1 ? Math.round(progress * total) : null);
-      if (progress < 1) frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-    // Runs once on mount; `shown` is only read for its initial value.
+    // Clear the one-shot flag, but decide from state: Strict Mode (and a
+    // re-shown route) runs this effect again after a cleanup, when the flag is
+    // already gone. A re-run restarts the typing and still completes.
+    takeBoot();
+    if (shown === null) return;
+    return runTypewriter(total, DURATION, setShown, {
+      now: () => performance.now(),
+      request: (cb) => requestAnimationFrame(cb),
+      cancel: (id) => cancelAnimationFrame(id),
+    });
+    // `shown` is only read for whether typing is pending; restart on `total`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [total]);
 

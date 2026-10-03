@@ -43,11 +43,12 @@ const BAYER4 = [
   [15, 7, 13, 5],
 ].map((row) => row.map((v) => (v + 0.5) / 16));
 
-// Light-on-transparent 1-bit Bayer dither at 120×150 cells, scaled 2× with
-// nearest-neighbour so each cell stays a crisp 2px block.
+// Light-on-transparent 1-bit Bayer dither at 96×120 cells, scaled 2× with
+// nearest-neighbour so each cell is a crisp 2px block on retina. The page
+// shows it at 96×120 CSS px, so the scale is an exact 2 device pixels per cell.
 async function ditherPortrait(source: string, out: string) {
-  const W = 120;
-  const H = 150;
+  const W = 96;
+  const H = 120;
   const { data } = await sharp(source)
     .rotate()
     .resize(W, H, { fit: "cover", position: "attention" })
@@ -130,7 +131,7 @@ async function main() {
   if (portrait) {
     mkdirSync(OUT_DIR, { recursive: true });
     await ditherPortrait(portrait, PORTRAIT_OUT);
-    writeFileSync(PORTRAIT_JSON, `${JSON.stringify({ src: "/images/portrait-dither.png", width: 240, height: 300 }, null, 2)}\n`);
+    writeFileSync(PORTRAIT_JSON, `${JSON.stringify({ src: "/images/portrait-dither.png", width: 192, height: 240 }, null, 2)}\n`);
     console.log("wrote portrait-dither.png");
   } else {
     writeFileSync(PORTRAIT_JSON, "null\n");
