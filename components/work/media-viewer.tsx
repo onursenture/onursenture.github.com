@@ -11,11 +11,18 @@ import { MediaFigure } from "./media-figure";
 // Horizontal travel (px) that counts as a swipe on touch screens.
 const SWIPE = 50;
 
+// The button that opens a figure: prefer the one in the active view.
+function findOpener(id: string): HTMLElement | null {
+  const selector = `[data-media="${CSS.escape(id)}"]`;
+  return document.querySelector<HTMLElement>(`[data-view] ${selector}`) ?? document.querySelector<HTMLElement>(selector);
+}
+
 // The shared full-screen viewer (spec §3.6): a native modal <dialog> in the
 // Life palette. `current` (the ?fig= id) drives it: a known id opens it, null
 // closes it. The owner keeps the URL in step (useViewerHistory). Keys: ← →
 // step through `items` (wrapping), G toggles single/grid, Esc closes. On
-// close, focus returns to whatever opened it.
+// close, focus returns to whatever opened it (or, with no opener, to the
+// figure's own button).
 export function MediaViewer({
   title,
   items,
@@ -31,27 +38,42 @@ export function MediaViewer({
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const returnTo = useRef<HTMLElement | null>(null);
+  // Set instead of `returnTo` when nothing was focused at open time (a ?fig=
+  // deep link, a reload): close then focuses that figure's button.
+  const returnId = useRef<string | null>(null);
   const [mode, setMode] = useState<"single" | "grid">("single");
   const index = current ? items.findIndex((item) => item.id === current) : -1;
   const item = index >= 0 ? items[index] : null;
   const open = item !== null;
+  const openId = item?.id ?? null;
 
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
     if (open && !dialog.open) {
-      returnTo.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      const active = document.activeElement;
+      if (active instanceof HTMLElement && active !== document.body) {
+        returnTo.current = active;
+        returnId.current = null;
+      } else {
+        returnTo.current = null;
+        returnId.current = openId;
+      }
       dialog.showModal();
     } else if (!open && dialog.open) {
       dialog.close();
     }
-  }, [open]);
+  }, [open, openId]);
 
   // After a client navigation Next keeps this tree mounted but hidden; an
   // open modal would leave the new page inert.
   useEffect(() => {
     const dialog = ref.current;
-    return () => dialog?.close();
+    return () => {
+      returnTo.current = null;
+      returnId.current = null;
+      dialog?.close();
+    };
   }, []);
 
   function step(delta: number) {
@@ -84,8 +106,9 @@ export function MediaViewer({
       }}
       onClose={() => {
         setMode("single");
-        returnTo.current?.focus();
+        (returnTo.current ?? (returnId.current ? findOpener(returnId.current) : null))?.focus();
         returnTo.current = null;
+        returnId.current = null;
       }}
       onKeyDown={onKeyDown}
       className="media-viewer m-0 h-dvh max-h-none w-full max-w-none bg-bg p-0 text-fg"
