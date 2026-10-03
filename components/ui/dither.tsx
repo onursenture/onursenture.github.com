@@ -39,16 +39,16 @@ export function FooterWash() {
   );
 }
 
-// The wash behind a MediaPlaceholder. Fills its positioned parent. A span, so
-// it is valid inside the buttons that open a figure.
-export function PlaceholderWash({ tone }: { tone: "accent" | "ink" }) {
+// The wash behind a MediaPlaceholder: a faint ink dither rising from the
+// bottom, the same on every slot (Onur 2026-10-03: barely there, vertical,
+// black and white). Fills its positioned parent. A span, so it is valid inside
+// the buttons that open a figure.
+export function PlaceholderWash() {
   const [el, setEl] = useState<HTMLSpanElement | null>(null);
-  const color = useTokenColor(el, tone === "accent" ? "--color-accent" : "--color-fg");
+  const ink = useTokenColor(el, "--color-fg");
   return (
     <span ref={setEl} aria-hidden="true" className="absolute inset-0 block">
-      {color ? (
-        <DitherGradient from={color} direction={tone === "accent" ? "up" : "left"} cell={3} opacity={0.7} />
-      ) : null}
+      {ink ? <DitherGradient from={ink} direction="up" cell={3} opacity={0.14} /> : null}
     </span>
   );
 }

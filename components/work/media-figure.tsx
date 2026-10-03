@@ -53,7 +53,7 @@ export function MediaFigure({ media, sizes, ratio, bare = false, fit = false, pr
         className,
       )}
     >
-      <PlaceholderWash tone="accent" />
+      <PlaceholderWash />
       {bare ? null : (
         <span aria-hidden="true" className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate bg-bg px-1.5 type-label text-fg">
           {media.label} · {media.caption}

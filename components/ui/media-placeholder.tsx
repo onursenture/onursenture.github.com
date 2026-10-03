@@ -11,14 +11,12 @@ export function MediaPlaceholder({
   label,
   index,
   aspect = "4/3",
-  tone = "accent",
   image,
   sizes = "(min-width: 1024px) 234px, 50vw",
 }: {
   label: string;
   index: number;
   aspect?: keyof typeof ASPECT;
-  tone?: "accent" | "ink";
   image?: string;
   sizes?: string;
 }) {
@@ -27,7 +25,7 @@ export function MediaPlaceholder({
   }
   return (
     <div className={cx("relative w-full overflow-hidden border", ASPECT[aspect])}>
-      <PlaceholderWash tone={tone} />
+      <PlaceholderWash />
       <span aria-hidden="true" className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate bg-bg px-1.5 type-label text-fg">
         FIG. {String(index).padStart(2, "0")} · {label}
       </span>

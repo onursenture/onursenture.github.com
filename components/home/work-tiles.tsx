@@ -11,7 +11,7 @@ export function WorkTiles({ entries }: { entries: (WorkEntry & { image?: string 
       {entries.slice(0, 4).map((entry, index) => {
         const tile = (
           <>
-            <MediaPlaceholder label={entry.title} index={index + 1} tone={index % 2 ? "ink" : "accent"} image={entry.image} />
+            <MediaPlaceholder label={entry.title} index={index + 1} image={entry.image} />
             <p className="mt-1.5 type-meta">
               <span className="group-hover:underline group-hover:underline-offset-[0.2em]">{entry.title}</span>
               {entry.meta ? <span className="text-fg-muted"> · {entry.meta}</span> : null}

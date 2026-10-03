@@ -129,7 +129,7 @@ export default async function SystemPage() {
         <Specimen name="MediaPlaceholder">
           <div className="grid w-full max-w-lg grid-cols-2 gap-4">
             <MediaPlaceholder label="Placeholder" index={1} />
-            <MediaPlaceholder label="Placeholder" index={2} tone="ink" />
+            <MediaPlaceholder label="Placeholder" index={2} />
           </div>
         </Specimen>
         <Specimen name="PrimaryButton">
@@ -239,7 +239,7 @@ export default async function SystemPage() {
           <p className="type-boot">last watched: Love & Other Drugs 3.5</p>
           <div className="grid max-w-lg grid-cols-2 gap-4">
             <MediaPlaceholder label="Placeholder" index={1} />
-            <MediaPlaceholder label="Placeholder" index={2} tone="ink" />
+            <MediaPlaceholder label="Placeholder" index={2} />
           </div>
         </div>
       </SectionRow>

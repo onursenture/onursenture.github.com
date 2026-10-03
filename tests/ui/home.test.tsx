@@ -9,9 +9,10 @@ import { OrgMark } from "@/components/ui/org-mark";
 const html = renderToStaticMarkup;
 
 describe("OrgMark", () => {
-  it("falls back to a decorative monogram while there is no logo file", () => {
+  it("renders the org's logo as a decorative 16px image", () => {
     const markup = html(<OrgMark org="primetek" />);
-    expect(markup).toContain(">P<");
+    expect(markup).toContain('src="/logos/primetek.png"');
+    expect(markup).toContain('alt=""');
     expect(markup).toContain('aria-hidden="true"');
   });
 });
@@ -21,7 +22,7 @@ describe("Bio", () => {
     const markup = html(<Bio paragraphs={[["At ", { org: "orkestra" }, " since 2013."]]} />);
     expect(markup).toContain("At ");
     expect(markup).toContain("Orkestra Studios");
-    expect(markup).toContain(">O<");
+    expect(markup).toContain('src="/logos/orkestra.png"');
     expect(markup).toContain(" since 2013.");
   });
 });

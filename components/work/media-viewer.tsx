@@ -195,7 +195,7 @@ function ViewerStage({
               onClick={() => setEmbed("live")}
               className="relative grid aspect-[16/10] w-full max-w-5xl place-items-center overflow-hidden border"
             >
-              <PlaceholderWash tone="accent" />
+              <PlaceholderWash />
               <span className="relative bg-fg px-3 py-2 text-left type-meta text-bg">
                 Load Figma file
                 <span className="block type-label opacity-70">embed.figma.com · interactive</span>
