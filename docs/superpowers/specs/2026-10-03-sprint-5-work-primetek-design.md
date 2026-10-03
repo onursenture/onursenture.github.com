@@ -51,7 +51,7 @@ Every mockup line is draft copy. The Mobbin references are Studio Freight (Grid 
   - `content/work-index.ts` entries gain `href`s to their case studies, and the Work row's "All work →" action turns on.
   - `content/experience.ts`: the PrimeTek children (PrimeOne, PrimeBlocks, PrimeIcons, Templates) get `href`s.
   - Fix the `nebuu` / `Nebuu` casing (use "Nebuu").
-- **Metadata:** each page sets its title, description and canonical URL through the existing `lib/metadata.ts` helpers. If a case study's hero has an image, it becomes the OG image (JPEG, absolute URL). Otherwise there is no `og:image`, following the old site's rule.
+- **Metadata:** each page sets its title and description through the existing `pageMetadata()` helper (the site sets no canonical URLs elsewhere either). If a case study's hero has an image, it becomes the OG image (JPEG, absolute URL). Otherwise there is no `og:image`, following the old site's rule.
 
 ## 2. Content model
 
@@ -212,7 +212,7 @@ A mono list. Each row is `FIG label · caption · version · tags`, separated by
 ### 3.6 Viewer
 
 A `MediaViewer` client component on a native `<dialog>` (shown with `showModal()`), always in the Life palette (`#0B0B0C`):
-- **Top line:** `<case study> · <version> · <Mon YYYY>` on the left, `▦ / ▭` (grid ↔ single) and `Esc ×` on the right.
+- **Top line:** `<case study> · <version> · <Mon YYYY>` on the left, `Grid` / `Single` (a text toggle, so there's no glyph-coverage risk in Plex) and `Esc ×` on the right.
 - **Single mode:**
   - the media is centred, with `←` `→` buttons;
   - under it, `FIG label · caption` on the left and `NN / MM` on the right;
@@ -260,7 +260,7 @@ Unit tests cover the credit line formatting; e2e checks that one credited media 
 - Its **Grid view** shows the icon set instead of media cards. The filter chips become a search input; "All N" counts the icons.
 - **Icon source.** Add `primeicons` **pinned to exactly `7.0.0`**:
   - **Why 7.0.0.** It is MIT-licensed and ships 313 files under `raw-svg/`. From 8.0.0 (July 2026) the package uses PrimeTek's commercial PrimeUI license, which requires a license key and forbids redistribution. **Never upgrade it past 7.x.** Say so in a comment next to the dependency's use and in `CLAUDE.md`.
-  - **Rendering.** A server-only module reads `node_modules/primeicons/raw-svg/*.svg` at build time. It replaces hard-coded `stroke`/`fill` colours (other than `none`) with `currentColor` and renders each icon as inline SVG, 24px in a 64px cell.
+  - **Rendering.** A server-only module reads `node_modules/primeicons/raw-svg/*.svg` at build time. It replaces hard-coded `stroke`/`fill` colours (other than `none`) with `currentColor` and renders each icon as inline SVG, 24px in a 96px cell, with the name underneath. The 7.0.0 SVGs have no `fill` on most paths: the root gets `fill="currentColor"`, `fill="black"` becomes `currentColor`, `fill="white"` becomes `style="fill:var(--color-bg)"`, and every `id` attribute is stripped so inline icons can't collide with page ids.
   - The font and `primeicons.css` are not used.
 - **Cells.** Each cell shows the icon and its name (`type-label`). Clicking copies `pi pi-<name>` to the clipboard and shows a 1.2s "copied" state in the cell (with `aria-live`).
 - The Index view lists the icon names. The viewer is not used for icons.
@@ -313,7 +313,7 @@ A new script, `scripts/figma.ts` (tsx), runs on Onur's machine only:
 
 1. Load the work registry and collect every `Media` with `figma` whose `image` is either unset or equal to the derived key `work/<slug>/<media id>`. Hand-set images win over Figma.
 2. Read `FIGMA_TOKEN` from `.env.local`. If it is missing, exit with an explanation and change nothing.
-3. **Check what changed.** Group the nodes by `fileKey`. For each file, call `GET https://api.figma.com/v1/files/<fileKey>/nodes?ids=<ids>&depth=1` to read each node's `lastModified`. Skip the nodes whose `lastModified` and `nodeId` match `lib/images/figma-lock.json`.
+3. **Check what changed.** Group the nodes by `fileKey`. For each file, call `GET https://api.figma.com/v1/files/<fileKey>/nodes?ids=<ids>&depth=1` to read the file's `lastModified`, and to confirm that each node exists. Figma reports `lastModified` per file, not per node. Skip a node when the file's `lastModified` and the `nodeId` match its entry in `lib/images/figma-lock.json`.
 4. **Export.** For the rest, call `GET /v1/images/<fileKey>?ids=<ids>&format=png&scale=2`, then download each returned URL to `images-src/work/<slug>/<media id>.png`.
 5. **Record.** Update the lock with `{ fileKey, nodeId, lastModified, exportedAt }` per `<slug>/<media id>`.
 6. **Fail soft per node.** A missing node, a null image URL or an HTTP error warns, leaves that node's previous file and lock entry alone, and continues. The exit code is non-zero only when the token is missing or every request failed.
