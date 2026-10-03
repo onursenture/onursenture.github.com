@@ -22,13 +22,15 @@ test("the bio names PrimeTek, Orkestra and Bilkent with inline marks", async ({ 
   for (const name of ["PrimeTek", "Orkestra Studios", "Bilkent"]) await expect(identity).toContainText(name);
 });
 
-test("Work shows four numbered placeholders with captions, unlinked", async ({ page }) => {
+test("Work shows four numbered tiles, each linking to its case study", async ({ page }) => {
   await page.goto("/");
   const work = page.locator("#work");
-  for (const label of ["FIG. 01 · PrimeOne", "FIG. 02 · PrimeBlocks", "FIG. 03 · PrimeIcons", "FIG. 04 · Premium admin dashboards"]) {
+  for (const label of ["FIG. 01 · PrimeOne", "FIG. 02 · PrimeBlocks", "FIG. 03 · PrimeIcons", "FIG. 04 · Templates"]) {
     await expect(work).toContainText(label);
   }
-  await expect(work.getByRole("link")).toHaveCount(0);
+  await expect(work.getByRole("list").getByRole("link")).toHaveCount(4);
+  await expect(work.getByRole("link", { name: /PrimeOne/ })).toHaveAttribute("href", "/work/primeone/");
+  await expect(page.locator("#work").getByRole("link", { name: "All work" })).toHaveAttribute("href", "/work/");
 });
 
 test("Experience is a tree with confirmed dates", async ({ page }) => {
@@ -39,6 +41,7 @@ test("Experience is a tree with confirmed dates", async ({ page }) => {
   await expect(tree).toContainText("Apr 2014–Mar 2016");
   await expect(tree).toContainText("└─");
   await expect(tree.getByRole("list", { name: "PrimeTek work" }).getByRole("listitem")).toHaveCount(4);
+  await expect(tree.getByRole("link", { name: "PrimeIcons" })).toHaveAttribute("href", "/work/primeicons/");
 });
 
 test("Latest work shows the empty state without data, and links to GitHub", async ({ page }) => {

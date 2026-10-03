@@ -37,7 +37,7 @@ test("/system/ renders every primitive, the type scale and the Sources row", asy
   await expect(page.locator('[data-primitive="Rating"]')).toContainText("3.5 · 4");
   await expect(page.locator('[data-primitive="Rating"]')).not.toContainText("\u2605");
   // This run has no database, so every source is never synced.
-  const sources = page.locator("section", { has: page.getByRole("heading", { name: "Sources" }) });
+  const sources = page.locator("section", { has: page.getByRole("heading", { name: "Sources", exact: true }) });
   await expect(sources).toBeVisible();
   await expect(sources.locator("tbody tr")).toHaveCount(5);
   await expect(sources.locator('[data-health="never"]')).toHaveCount(5);

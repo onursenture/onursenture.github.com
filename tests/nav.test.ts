@@ -6,8 +6,8 @@ describe("nav config", () => {
     expect(NAV_ITEMS.map((i) => i.label)).toEqual(["Work", "Lab", "Resume"]);
   });
 
-  it("renders only ready items (none yet in Sprint 4)", () => {
-    expect(readyItems()).toEqual([]);
+  it("renders only ready items (Work from Sprint 5)", () => {
+    expect(readyItems().map((i) => i.label)).toEqual(["Work"]);
     expect(readyItems([{ label: "X", href: "/x/", ready: true }]).map((i) => i.label)).toEqual(["X"]);
   });
 

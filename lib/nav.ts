@@ -8,7 +8,7 @@ export interface NavItem {
 // The Work side's IA order (Sprint 4 spec §1). Life is not a nav item: the
 // Life switch in the header reaches it. Notes returns in Sprint 9.
 export const NAV_ITEMS: NavItem[] = [
-  { label: "Work", href: "/work/", ready: false },
+  { label: "Work", href: "/work/", ready: true },
   { label: "Lab", href: "/lab/", ready: false },
   { label: "Resume", href: "/resume/", ready: false },
 ];

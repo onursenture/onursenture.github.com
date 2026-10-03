@@ -60,6 +60,11 @@ describe("WorkTiles", () => {
     expect(markup).toContain("FIG. 04 · D");
     expect(markup).not.toContain("FIG. 05");
   });
+
+  it("links a tile to its case study", () => {
+    const markup = html(<WorkTiles entries={[{ title: "PrimeOne", meta: "design system", href: "/work/primeone/" }]} />);
+    expect(markup).toContain('href="/work/primeone/"');
+  });
 });
 
 describe("LabGrid", () => {

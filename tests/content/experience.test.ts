@@ -18,5 +18,6 @@ describe("experience", () => {
   it("nests PrimeTek's products under it", () => {
     const primetek = experience.find((e) => e.org === "primetek")!;
     expect(primetek.children.map((c) => c.title)).toEqual(["PrimeOne", "PrimeBlocks", "PrimeIcons", "Templates"]);
+    expect(primetek.children.every((c) => c.href?.startsWith("/work/"))).toBe(true);
   });
 });

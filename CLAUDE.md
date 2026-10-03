@@ -64,6 +64,27 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
 - After a client navigation, Next keeps the previous tree mounted but hidden. In e2e, prefer role locators (they skip hidden elements) or filter with `:visible`.
 - Only confirmed facts go in `content/profile.ts`, `content/work-index.ts` and `content/lab-index.ts`. Contribution figures always name their period ("12 months").
 
+## Work (Sprint 5)
+
+- Spec: `docs/superpowers/specs/2026-10-03-sprint-5-work-primetek-design.md`.
+- **Content and reads.**
+  - Case studies are typed data in `content/work/` (`types.ts`; registry `index.ts`: `caseStudies`, `archive`).
+  - Pages read them only through `lib/work/` (`index.ts`). Sprint 7's admin overlay merges in there.
+  - `lib/work/derive.ts` builds serialisable views: FIG labels, year groups, chips, credits and resolved images.
+  - `tests/content/work.test.ts` runs `validateWork` on the registry.
+- **Ids are permanent once published.** They key `?fig=` URLs and image files.
+- **Images.**
+  - A media slot shows `image` when set, otherwise `work/<slug>/<media id>` when the manifest has it, otherwise the dither placeholder.
+  - FIG numbers count from the oldest entry (02 upwards; the hero is 01), so new entries don't renumber.
+- **View state.**
+  - It lives in the query (`?view`, `?tag`, `?density`, `?fig`; `lib/work/url-state.ts`).
+  - The server always renders the default Log as a `<Suspense>` fallback, and `StudyBrowser` (`useSearchParams`) applies the query after hydration. Never read `searchParams` in these pages: one HTML per path keeps the CDN cache.
+- **Viewer.**
+  - `MediaViewer` is a native `<dialog>` in the Life palette.
+  - Opening pushes `?fig=`, so Back closes it; stepping replaces it.
+- **Credits.** Onur's role is a case-study fact. `credits` on an entry or a media item names colleagues, and Templates uses media-level credits for pages others designed.
+- **Numbers.** Coverage (Templates) and the icon count (PrimeIcons) are computed, never written by hand.
+
 ## Sources and sync
 
 - A source lives in `lib/sources/<id>.ts`: a zod schema plus a `fetch` that **throws** on any failure, so the previous snapshot is kept. Never fetch upstream during render.

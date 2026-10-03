@@ -2,8 +2,10 @@ import { expect, test } from "@playwright/test";
 
 test("the Work shell has the top bar, the switch and the footer", async ({ page }) => {
   await page.goto("/");
-  // No nav item is ready yet, so the list is empty.
-  await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link")).toHaveCount(0);
+  // Work is the first ready section (Sprint 5).
+  const nav = page.getByRole("navigation", { name: "Main" });
+  await expect(nav.getByRole("link")).toHaveCount(1);
+  await expect(nav.getByRole("link", { name: "Work" })).toHaveAttribute("href", "/work/");
   await expect(page.getByRole("link", { name: "Onur Senture" })).toHaveAttribute("href", "/");
   await expect(page.getByRole("link", { name: /Book a call/ })).toHaveCount(0);
   await expect(page.getByRole("group", { name: "Theme" }).filter({ visible: true })).toBeVisible();

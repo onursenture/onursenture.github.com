@@ -10,6 +10,7 @@ import { labIndex } from "@/content/lab-index";
 import { profile } from "@/content/profile";
 import { workIndex } from "@/content/work-index";
 import { NAV_ITEMS } from "@/lib/nav";
+import { heroImageKey } from "@/lib/work";
 import { Bio } from "./bio";
 import { Contributions } from "./contributions-row";
 import { ExperienceTree } from "./experience-tree";
@@ -59,7 +60,7 @@ export function HomeSite() {
       ) : null}
     </SectionRow>,
     <SectionRow key="work" id="work" label="Work" action={sectionLink("All work", "/work/")}>
-      <WorkTiles entries={workIndex} />
+      <WorkTiles entries={workIndex.map((entry) => ({ ...entry, image: entry.slug ? heroImageKey(entry.slug) : undefined }))} />
     </SectionRow>,
     <SectionRow key="experience" id="experience" label="Experience" action={sectionLink("Resume", "/resume/")}>
       <ExperienceTree entries={experience} />

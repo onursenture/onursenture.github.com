@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-// A page's title: a display headline with an optional mono meta line.
+// A page's title: the dot-matrix name style (type-name) with an optional mono meta line.
 export function PageHeader({ title, meta }: { title: string; meta?: ReactNode }) {
   return (
     <header className="flex flex-col gap-4 px-4 pt-10 md:px-10 md:pt-14">
