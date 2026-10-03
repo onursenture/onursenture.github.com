@@ -69,7 +69,7 @@ export const primeicons: CaseStudy = {
       version: "7.0",
       note: "Version 7.0.0: 50+ new icons, with more than 2 million downloads a month at the time.",
       source: "https://x.com/primefaces/status/1773661861151432797",
-      media: [{ id: "set-7-0", caption: "The 7.0 set", aspect: "16/9" }],
+      media: [{ id: "set-7-0", caption: "The 7.0 set" }],
     },
   ],
   posts: primeiconsPosts,
