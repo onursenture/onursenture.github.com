@@ -42,7 +42,7 @@ export const templates: ProductPage = {
         { id: "ultima", caption: "Ultima" },
         { id: "verona", caption: "Verona" },
         { id: "atlantis", caption: "Atlantis" },
-        { id: "genesis", caption: "Genesis", credits: [{ name: "Ümit Çelik" }] },
+        { id: "genesis", caption: "Genesis", credits: [{ name: "Ümit Çelik", href: "https://x.com/umitceliks" }] },
       ],
     },
   ],

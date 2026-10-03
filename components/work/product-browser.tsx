@@ -42,9 +42,22 @@ function ProductViewer({
   const figs = useMemo(() => new Set(images.map((image) => image.id)), [images]);
   const [state, update] = useViewState(figs);
   const viewer = useViewerHistory(state.fig, update);
+  // Hydration signal: data-viewer-ready appears once the figure buttons can
+  // open the viewer (e2e waits for it before clicking).
+  const signal = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     register(viewer.open);
-    return () => register(null);
+    const el = signal.current;
+    el?.setAttribute("data-viewer-ready", "");
+    return () => {
+      register(null);
+      el?.removeAttribute("data-viewer-ready");
+    };
   }, [register, viewer.open]);
-  return <MediaViewer title={title} items={images} current={state.fig} onSelect={viewer.select} onClose={viewer.close} />;
+  return (
+    <>
+      <span ref={signal} hidden />
+      <MediaViewer title={title} items={images} current={state.fig} onSelect={viewer.select} onClose={viewer.close} />
+    </>
+  );
 }

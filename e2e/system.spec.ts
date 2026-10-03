@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 const PRIMITIVES = [
   "DitherStrip",
   "DitherRule",
-  "MediaPlaceholder",
+  "PlaceholderWash",
   "MediaFigure",
   "SelectedWorkItem",
   "PrimaryButton",

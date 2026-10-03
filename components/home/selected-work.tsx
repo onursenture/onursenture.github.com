@@ -16,12 +16,13 @@ export function pinHref(pin: PinView): string {
 // its title as the FIG label), the title, one muted line and the source link
 // to the images block it comes from. The frame links there too, but it is
 // hidden from assistive tech and the tab order, so each item has one link.
-export function SelectedWorkItem({ pin }: { pin: PinView }) {
+// `sizes` defaults to the home grid's; a specimen elsewhere passes its own.
+export function SelectedWorkItem({ pin, sizes = SELECTED_WORK_SIZES }: { pin: PinView; sizes?: string }) {
   const href = pinHref(pin);
   return (
     <li data-pin={pin.slug} className="min-w-0">
       <Link href={href} aria-hidden="true" tabIndex={-1} className="block">
-        <MediaFigure media={pin.image} sizes={SELECTED_WORK_SIZES} label={`FIG. ${pad2(pin.pin.order)} · ${pin.pin.title}`} />
+        <MediaFigure media={pin.image} sizes={sizes} label={`FIG. ${pad2(pin.pin.order)} · ${pin.pin.title}`} />
       </Link>
       <p className="mt-2 type-body">{pin.pin.title}</p>
       <p className="truncate type-meta text-fg-muted">{pin.pin.note}</p>

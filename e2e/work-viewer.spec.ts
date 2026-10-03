@@ -10,9 +10,13 @@ const total = images.length;
 const position = (index: number) => `${pad2(index + 1)} / ${pad2(total)}`;
 const viewer = (page: import("@playwright/test").Page) => page.getByRole("dialog");
 const figure = (page: import("@playwright/test").Page, id: string) => page.locator(`#highlights [data-media="${id}"]`);
+// The figure buttons are inert until ProductViewer hydrates and registers
+// `open`; it then sets data-viewer-ready. Wait for it before clicking.
+const hydrated = (page: import("@playwright/test").Page) => expect(page.locator("[data-viewer-ready]")).toBeAttached();
 
 test("clicking an image opens the viewer with ?fig=, in the Life palette", async ({ page }) => {
   await page.goto("/work/primeone/");
+  await hydrated(page);
   await figure(page, images[1].id).click();
   await expect(viewer(page)).toBeVisible();
   await expect(page).toHaveURL(new RegExp(`\\?fig=${images[1].id}$`));
@@ -25,6 +29,7 @@ test("clicking an image opens the viewer with ?fig=, in the Life palette", async
 
 test("Back closes the viewer and stays on the page", async ({ page }) => {
   await page.goto("/work/primeone/");
+  await hydrated(page);
   await figure(page, images[0].id).click();
   await expect(viewer(page)).toBeVisible();
   await page.goBack();
@@ -35,6 +40,7 @@ test("Back closes the viewer and stays on the page", async ({ page }) => {
 
 test("arrows step and wrap, replacing the URL; Esc closes and returns focus", async ({ page }) => {
   await page.goto("/work/primeone/");
+  await hydrated(page);
   const first = figure(page, images[0].id);
   await first.click();
   await page.keyboard.press("ArrowRight");

@@ -9,11 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
 import { Cover } from "@/components/ui/cover";
 import { DataTable } from "@/components/ui/data-table";
-import { DitherRule, DitherStrip, FooterWash } from "@/components/ui/dither";
+import { DitherRule, DitherStrip, FooterWash, PlaceholderWash } from "@/components/ui/dither";
 import { EraStamp } from "@/components/ui/era-stamp";
 import { Heatmap } from "@/components/ui/heatmap";
 import { LiveClock } from "@/components/ui/live-clock";
-import { MediaPlaceholder } from "@/components/ui/media-placeholder";
 import { MetaLabel } from "@/components/ui/meta-label";
 import { OrgMark } from "@/components/ui/org-mark";
 import { PrimaryButton } from "@/components/ui/primary-button";
@@ -68,6 +67,15 @@ const SAMPLE_CONTRIBUTIONS = {
   total: SAMPLE_WEEKS.flatMap((week) => week.days).reduce((sum, day) => sum + day.count, 0),
   weeks: SAMPLE_WEEKS,
 };
+
+// A 16:10 slot holding only the placeholder wash.
+function WashTile() {
+  return (
+    <span className="relative block aspect-[16/10] overflow-hidden border">
+      <PlaceholderWash />
+    </span>
+  );
+}
 
 function Swatches() {
   return (
@@ -135,10 +143,10 @@ export default async function SystemPage() {
             <DitherRule />
           </div>
         </Specimen>
-        <Specimen name="MediaPlaceholder">
+        <Specimen name="PlaceholderWash">
           <div className="grid w-full max-w-lg grid-cols-2 gap-4">
-            <MediaPlaceholder label="Placeholder" index={1} />
-            <MediaPlaceholder label="Placeholder" index={2} />
+            <WashTile />
+            <WashTile />
           </div>
         </Specimen>
         <Specimen name="MediaFigure">
@@ -151,7 +159,7 @@ export default async function SystemPage() {
         <Specimen name="SelectedWorkItem">
           {pin ? (
             <ul className="w-full max-w-sm">
-              <SelectedWorkItem pin={pin} />
+              <SelectedWorkItem pin={pin} sizes="384px" />
             </ul>
           ) : null}
         </Specimen>
@@ -245,8 +253,8 @@ export default async function SystemPage() {
           <Swatches />
           <p className="type-boot">last watched: Love & Other Drugs 3.5</p>
           <div className="grid max-w-lg grid-cols-2 gap-4">
-            <MediaPlaceholder label="Placeholder" index={1} />
-            <MediaPlaceholder label="Placeholder" index={2} />
+            <WashTile />
+            <WashTile />
           </div>
         </div>
       </SectionRow>

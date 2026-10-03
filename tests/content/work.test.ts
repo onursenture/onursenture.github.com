@@ -43,7 +43,7 @@ describe("content/work", () => {
     const templates = productPages.find((p) => p.slug === "templates")!;
     expect(pageImages(templates).map((image) => image.caption)).toEqual(["Apollo", "Diamond", "Ultima", "Verona", "Atlantis", "Genesis"]);
     const genesis = pageImages(templates).find((image) => image.id === "genesis")!;
-    expect(genesis.credits).toEqual([{ name: "Ümit Çelik" }]);
+    expect(genesis.credits).toEqual([{ name: "Ümit Çelik", href: "https://x.com/umitceliks" }]);
   });
 
   it("pins the first highlight of each page, in registry order", () => {
@@ -66,7 +66,11 @@ describe("content/work", () => {
     for (const claim of ["80+", "500 blocks", "25+", "80 components"]) expect(text).not.toContain(claim);
   });
 
-  it("sets no external link anywhere in the content", () => {
-    expect(JSON.stringify(productPages)).not.toMatch(/https?:\/\//);
+  it("keeps URLs only as credit provenance (Credit.href, https), never anywhere else", () => {
+    const withoutCredits = JSON.stringify(productPages, (key, value) => (key === "credits" ? undefined : value));
+    expect(withoutCredits).not.toMatch(/https?:\/\//);
+    for (const image of productPages.flatMap(pageImages)) {
+      for (const credit of image.credits ?? []) if (credit.href) expect(credit.href).toMatch(/^https:\/\//);
+    }
   });
 });

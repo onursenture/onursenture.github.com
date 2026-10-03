@@ -39,7 +39,8 @@ export function FooterWash() {
   );
 }
 
-// The wash behind a MediaPlaceholder: a faint ink dither rising from the
+// The wash behind a work image placeholder (components/work/media-figure.tsx):
+// a faint ink dither rising from the
 // bottom, the same on every slot (Onur 2026-10-03: barely there, vertical,
 // black and white). Fills its positioned parent. A span, so it is valid inside
 // the buttons that open a figure.

@@ -74,26 +74,31 @@ export function pageImages(page: ProductPage): WorkImage[] {
 }
 
 export function buildProductPage(page: ProductPage, lookup: ImageLookup): ProductPageView {
-  let fig = 0;
+  // FIG numbers and the viewer's order both come from pageImages (block
+  // order); image ids are unique within a page (validateWork).
+  const ordered = pageImages(page);
+  const fig = new Map(ordered.map((image, index) => [image.id, index + 1]));
+  const views = new Map<string, ImageView>();
   const blocks = page.blocks.map((block): BlockView => {
     if (block.kind !== "images") return block;
     const images = block.images.map((image): ImageView => {
-      fig += 1;
-      return {
+      const n = fig.get(image.id)!;
+      const view: ImageView = {
         id: image.id,
         caption: image.caption,
         pin: image.pin,
         credits: image.credits ?? [],
         image: resolveImage(page.slug, image, lookup),
-        fig,
-        label: `FIG. ${pad2(fig)}`,
+        fig: n,
+        label: `FIG. ${pad2(n)}`,
         context: block.heading ?? "",
       };
+      views.set(image.id, view);
+      return view;
     });
     return { ...block, images };
   });
-  const images = blocks.flatMap((block) => (block.kind === "images" ? block.images : []));
-  return { ...page, blocks, images };
+  return { ...page, blocks, images: ordered.map((image) => views.get(image.id)!) };
 }
 
 // Every pinned image across pages, sorted by `pin.order`.

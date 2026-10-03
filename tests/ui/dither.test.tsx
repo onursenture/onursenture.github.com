@@ -1,7 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { PrimaryButton } from "@/components/ui/primary-button";
-import { MediaPlaceholder } from "@/components/ui/media-placeholder";
 import { SectionRow } from "@/components/ui/section-row";
 import { parseHex } from "@/components/ui/use-token-color";
 
@@ -11,21 +10,6 @@ describe("parseHex", () => {
     expect(parseHex(" #fff ")).toEqual([255, 255, 255]);
     expect(parseHex("")).toBeNull();
     expect(parseHex("rgb(1,2,3)")).toBeNull();
-  });
-});
-
-describe("MediaPlaceholder", () => {
-  it("renders a labelled, decorative wash while there is no image", () => {
-    const html = renderToStaticMarkup(<MediaPlaceholder label="PrimeOne" index={1} />);
-    expect(html).toContain("FIG. 01 · PrimeOne");
-    expect(html).toContain('aria-hidden="true"');
-    expect(html).not.toContain("<picture");
-  });
-
-  it("renders the image instead once one is set (the Sprint 7 upload hook)", () => {
-    const html = renderToStaticMarkup(<MediaPlaceholder label="Stabilo" index={2} image="photos/stabilo" />);
-    expect(html).toContain("<picture");
-    expect(html).not.toContain("FIG.");
   });
 });
 
