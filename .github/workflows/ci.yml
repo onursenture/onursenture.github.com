@@ -34,10 +34,12 @@ jobs:
       # The normal e2e above must keep running against the non-fixture build.
       - run: SOURCE_FIXTURES=1 npm run build
       - run: npm run e2e:fixtures
-      # Traces of failed tests (retried once in CI, traced on the retry).
-      - uses: actions/upload-artifact@v4
+      # Traces of failed tests (retried once in CI, traced on the retry). A
+      # failure before e2e (typecheck, lint) leaves no test-results/.
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-traces
           path: test-results/
           retention-days: 7
+          if-no-files-found: ignore

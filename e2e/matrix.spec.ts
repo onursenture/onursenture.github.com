@@ -16,7 +16,9 @@ for (const view of ["site", "dashboard"] as const) {
         { name: "theme", value: theme, url: baseURL! },
       ]);
       for (const path of ["/", "/life/", "/photos/", "/photos/stabilo/", "/system/"]) {
-        await page.goto(path);
+        // A 404 also renders inside the shell, so check the page is real.
+        const response = await page.goto(path);
+        expect(response?.status()).toBe(200);
         await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
         await expect(page.locator("[data-view]")).toHaveAttribute("data-view", view);
         await expect(page.getByRole("navigation", { name: "Main" })).toBeVisible();
@@ -44,25 +46,46 @@ test("the theme is set before the body exists, so the first paint is right", asy
   expect(await page.evaluate(() => (window as unknown as Probe).__themeAtBody)).toBe("dark");
 });
 
-test("back and forward after a view toggle keep the chosen view", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Life" }).click();
-  await expect(page).toHaveURL(/\/life\/$/);
-  await viewButton(page, "Dashboard").click();
-  await expect(page.locator('[data-view="dashboard"]')).toBeVisible();
+const HOME_HEADING = {
+  site: "From components to complete apps, designed and built end to end.",
+  dashboard: "Overview",
+} as const;
 
-  await page.goBack();
-  await expect(page).toHaveURL(/^http:\/\/localhost:\d+\/$/);
-  // Next keeps earlier trees mounted but hidden; check the visible one.
-  await expect(page.locator("[data-view]:visible")).toHaveAttribute("data-view", "dashboard");
+for (const [from, to] of [
+  ["site", "dashboard"],
+  ["dashboard", "site"],
+] as const) {
+  test(`back and forward after a toggle from ${from} to ${to} keep the chosen view`, async ({
+    page,
+    context,
+    baseURL,
+  }) => {
+    await context.addCookies([{ name: "view", value: from, url: baseURL! }]);
+    await page.goto("/");
+    await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Life" }).click();
+    await expect(page).toHaveURL(/\/life\/$/);
+    await viewButton(page, to === "site" ? "Site" : "Dashboard").click();
+    await expect(page.locator(`[data-view="${to}"]`)).toBeVisible();
 
-  await page.goForward();
-  await expect(page).toHaveURL(/\/life\/$/);
-  await expect(page.locator("[data-view]:visible")).toHaveAttribute("data-view", "dashboard");
-});
+    await page.goBack();
+    await expect(page).toHaveURL(/^http:\/\/localhost:\d+\/$/);
+    // The URL alone is not enough: the page itself must be the home page.
+    await expect(page).toHaveTitle("Onur Senture");
+    // Next keeps earlier trees mounted but hidden; check the visible one.
+    await expect(page.getByRole("heading", { level: 1, name: HOME_HEADING[to] })).toBeVisible();
+    await expect(page.locator("[data-view]:visible")).toHaveAttribute("data-view", to);
+
+    await page.goForward();
+    await expect(page).toHaveURL(/\/life\/$/);
+    await expect(page).toHaveTitle("Life · Onur Senture");
+    await expect(page.getByRole("heading", { level: 1, name: "Life" })).toBeVisible();
+    await expect(page.locator("[data-view]:visible")).toHaveAttribute("data-view", to);
+  });
+}
 
 test("an invalid ?view= is ignored: default view, no cookie, URL kept", async ({ page, context }) => {
-  await page.goto("/?view=admin");
+  const response = await page.goto("/?view=admin");
+  expect(response?.status()).toBe(200);
   await expect(page).toHaveURL(/\/\?view=admin$/);
   await expect(page.locator("[data-view]")).toHaveAttribute("data-view", "site");
   expect((await context.cookies()).map((cookie) => cookie.name)).not.toContain("view");
