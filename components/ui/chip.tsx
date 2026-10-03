@@ -13,7 +13,7 @@ export function Chip({
   return (
     <span
       className={cx(
-        "inline-flex h-5 items-center px-2 type-mono-11",
+        "inline-flex h-5 items-center px-2 type-label",
         tone === "inverted" ? "bg-fg text-bg" : "bg-danger-bg text-danger",
       )}
     >

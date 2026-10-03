@@ -17,7 +17,7 @@ export function MetaLabel({
   return (
     <Tag
       className={cx(
-        "inline-flex items-center gap-1.5 type-mono-11 tracking-[0.02em] text-fg-muted uppercase",
+        "inline-flex items-center gap-1.5 type-label tracking-[0.02em] text-fg-muted uppercase",
         className,
       )}
     >

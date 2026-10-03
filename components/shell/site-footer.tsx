@@ -1,5 +1,7 @@
 import { cacheLife } from "next/cache";
+import { FooterWash } from "@/components/ui/dither";
 import { profile, socialLinks } from "@/content/profile";
+import { buildLine } from "@/lib/build-info";
 
 // Pages are prerendered and the year changes once a year; a cached read
 // keeps `new Date()` out of the render (Cache Components requires that).
@@ -9,28 +11,32 @@ async function copyrightYear(): Promise<number> {
   return new Date().getFullYear();
 }
 
-// One mono line: © year, the social links, and a slot reserved for the S9
-// paddle easter egg.
+// One mono line (build metadata, © and the social links) over the accent
+// wash. The paddle slot is reserved for Sprint 11.
 export async function SiteFooter() {
   const year = await copyrightYear();
   return (
-    <footer className="border-t">
-      <div className="mx-auto flex max-w-312 flex-wrap items-center gap-x-2 gap-y-1 px-4 py-6 type-mono-11 text-fg-muted md:px-6">
-        <span>
-          © {year} {profile.name}
-        </span>
-        {socialLinks().map((link) => (
-          // The separator travels with the link after it, so a wrapped line
-          // starts with "· Goodreads" instead of ending with a stray "·".
-          <span key={link.label} className="flex gap-2 whitespace-nowrap">
-            <span aria-hidden="true">·</span>
-            <a href={link.href} rel="noopener noreferrer" className="hover:text-fg hover:underline">
-              {link.label}
-            </a>
+    <footer className="mt-16">
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 pb-4 type-meta text-fg-muted md:px-10">
+        <p data-testid="build-line">{buildLine()}</p>
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span>
+            © {year} {profile.name}
           </span>
-        ))}
-        <div data-slot="paddle" className="ml-auto" />
+          {socialLinks().map((link) => (
+            // The separator travels with the link after it, so a wrapped line
+            // starts with "· Goodreads" instead of ending with a stray "·".
+            <span key={link.label} className="flex gap-2 whitespace-nowrap">
+              <span aria-hidden="true">·</span>
+              <a href={link.href} rel="noopener noreferrer" className="hover:text-fg hover:underline">
+                {link.label}
+              </a>
+            </span>
+          ))}
+        </p>
+        <div data-slot="paddle" className="empty:hidden" />
       </div>
+      <FooterWash />
     </footer>
   );
 }

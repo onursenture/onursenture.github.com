@@ -1,0 +1,192 @@
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Schibsted+Grotesk:wght@500;600&family=Hanken+Grotesk:wght@400;500;700&family=Spectral:ital,wght@0,300;0,400;1,300&family=Doto:wght@800&display=swap" rel="stylesheet">
+<style>@font-face { font-family: 'Departure Mono'; src: url('https://cdn.jsdelivr.net/gh/rektdeckard/departure-mono@main/public/assets/DepartureMono-Regular.woff2') format('woff2'); }</style>
+
+<h2>Dört siteden harman: üç seçenek</h2>
+<p class="subtitle">Alex Carpenter, Edwin, Scott Horsfall ve laurie.fyi. Üçü de aynı ortak tabanı paylaşıyor: dar kolon, logolu bio, logolu deneyim listesi, kolondan taşan iş vitrini, Edwin'in toggle'ından doğan bir <b>Life modu</b> ve canlı veri. Farkları, hangi sitenin sesinin baskın olduğu. En altta Life modunun ortak hali var.</p>
+
+<style>
+  .mk { border: 1px solid rgba(127,127,127,.3); border-radius: 6px; overflow: hidden; margin: 8px 0 6px; }
+  .mk * { box-sizing: border-box; }
+  .src { font-size: 12px; opacity: .75; margin: 2px 0 10px; }
+  .why { font-size: 13px; margin: 6px 0 4px; }
+  .tg { width: 46px; height: 26px; border-radius: 99px; background: #E9E9E6; position: relative; display: inline-block; vertical-align: middle; }
+  .tg::after { content: ''; position: absolute; right: 3px; top: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+  .tg i { position: absolute; left: 7px; top: 5px; font: normal 11px/16px 'IBM Plex Mono'; color: #8A8A85; }
+
+  /* ===== 1: Alex-led ===== */
+  .v1 { background: #FAFAF9; color: #27272A; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; line-height: 1.65; }
+  .v1 .strip { height: 10px; background: repeating-conic-gradient(#EAEAE7 0 25%, #FAFAF9 0 50%) 0 0/10px 10px; }
+  .v1 .s { display: grid; grid-template-columns: 210px 470px 1fr; gap: 28px; padding: 34px 40px; border-bottom: 1px solid #E7E7E4; }
+  .v1 .l { color: #27272A; }
+  .v1 .r { text-align: right; color: #71717A; }
+  .v1 .m { color: #71717A; }
+  .v1 .lead { font-family: 'Schibsted Grotesk', sans-serif; font-size: 20px; line-height: 1.35; font-weight: 600; letter-spacing: -.01em; margin-bottom: 10px; }
+  .v1 .lead span { color: #8B8B93; }
+  .v1 p { margin: 0 0 8px; text-align: justify; text-indent: 3ch; color: #52525B; }
+  .v1 .lg { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 4px; background: #27272A; color: #fff; font-size: 9px; font-weight: 500; vertical-align: -3px; margin-right: 5px; text-indent: 0; }
+  .v1 .xp { display: grid; grid-template-columns: 1fr auto; padding: 7px 0; }
+  .v1 .xp .sub { display: block; color: #71717A; }
+  .v1 .open { margin: 2px 0 6px 21px; color: #52525B; }
+  .v1 .work { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .v1 .tile { aspect-ratio: 4/3; background: repeating-conic-gradient(#EEEEEB 0 25%, #F7F7F5 0 50%) 0 0/14px 14px; border: 1px solid #E7E7E4; display: grid; place-items: center; font-family: 'Doto'; font-weight: 800; font-size: 20px; letter-spacing: .04em; }
+  .v1 .cap { margin-top: 6px; } .v1 .cap span { color: #71717A; }
+  .v1 .hm { display: grid; grid-template-columns: repeat(52, 1fr); grid-template-rows: repeat(7, auto); grid-auto-flow: column; gap: 2px; margin-top: 8px; }
+  .v1 .hm i { aspect-ratio: 1; border-radius: 1.5px; background: #EAEAE7; } .v1 .hm i.a { background: #C7D3FF; } .v1 .hm i.b { background: #7F99FF; } .v1 .hm i.c { background: #2F55F5; }
+  .v1 .pr { margin-top: 10px; } .v1 .pr div { display: flex; gap: 8px; padding: 2px 0; } .v1 .pr b { color: #2F55F5; font-weight: 400; }
+  .v1 .ft { display: flex; justify-content: space-between; padding: 16px 40px; color: #71717A; font-size: 11.5px; } .v1 .ft .p { color: #16A34A; } .v1 .ft .n { color: #DC2626; }
+
+  /* ===== 2: Laurie-led ===== */
+  .v2 { background: #F8F8F7; color: #0A0A0A; font-family: 'Hanken Grotesk', sans-serif; position: relative; }
+  .v2 .cols { position: absolute; inset: 64px 0 0 0; background: repeating-linear-gradient(90deg, transparent 0 calc(12.5% - 1px), #E6E6E3 calc(12.5% - 1px) 12.5%); -webkit-mask: linear-gradient(#000 70%, transparent); mask: linear-gradient(#000 70%, transparent); pointer-events: none; }
+  .v2 .hd { position: relative; display: flex; align-items: center; justify-content: space-between; height: 64px; padding: 0 32px; border-bottom: 1px solid #E2E2DF; background-image: radial-gradient(circle, #D9D9D5 .8px, transparent 1px); background-size: 4px 4px; }
+  .v2 .mono { font-family: 'Doto', monospace; font-weight: 800; font-size: 22px; color: #E8541E; }
+  .v2 .nav { display: flex; gap: 26px; align-items: center; font-weight: 700; font-size: 14px; }
+  .v2 .cta { font-family: 'Departure Mono', monospace; font-size: 12px; letter-spacing: .06em; background: #E8541E; color: #fff; padding: 8px 12px; box-shadow: 3px 3px 0 #0A0A0A; border: 1px solid #0A0A0A; }
+  .v2 .in { position: relative; padding: 46px 96px 40px; }
+  .v2 .hero { display: grid; grid-template-columns: 132px 1fr; gap: 26px; align-items: start; }
+  .v2 .pf { border: 1px solid #CFCFCB; padding: 5px; background: #fff; }
+  .v2 .pic { height: 150px; background-color: #F2F2F0; background-image: radial-gradient(circle, #111 1.05px, transparent 1.35px); background-size: 4px 4px; -webkit-mask: radial-gradient(ellipse 62% 56% at 50% 42%, #000 35%, rgba(0,0,0,.4) 70%, rgba(0,0,0,.12)); mask: radial-gradient(ellipse 62% 56% at 50% 42%, #000 35%, rgba(0,0,0,.4) 70%, rgba(0,0,0,.12)); }
+  .v2 .pf small { display: block; font-family: 'Departure Mono'; font-size: 10px; margin-top: 4px; }
+  .v2 h1 { margin: 0; font-size: 46px; line-height: 1.12; font-weight: 700; letter-spacing: -.02em; }
+  .v2 h1 span { font-family: 'Spectral', serif; font-weight: 300; letter-spacing: -.01em; }
+  .v2 .p { font-size: 19px; line-height: 1.5; color: #444; margin: 22px 0 0; max-width: 760px; }
+  .v2 .p u { color: #0A0A0A; text-underline-offset: 3px; }
+  .v2 .row { display: flex; justify-content: space-between; margin-top: 26px; }
+  .v2 .br { position: relative; padding: 10px 18px; font-weight: 700; font-size: 15px; background: #F1F1EF; }
+  .v2 .br::before, .v2 .br::after { content: ''; position: absolute; inset: -3px; border: 2px solid #0A0A0A; clip-path: polygon(0 0, 10px 0, 10px 2px, 2px 2px, 2px 10px, 0 10px, 0 calc(100% - 10px), 2px calc(100% - 10px), 2px calc(100% - 2px), 10px calc(100% - 2px), 10px 100%, 0 100%, 0 0, 100% 0, 100% 10px, calc(100% - 2px) 10px, calc(100% - 2px) 2px, calc(100% - 10px) 2px, calc(100% - 10px) 0, 100% 0, 100% 100%, calc(100% - 10px) 100%, calc(100% - 10px) calc(100% - 2px), calc(100% - 2px) calc(100% - 2px), calc(100% - 2px) calc(100% - 10px), 100% calc(100% - 10px)); }
+  .v2 .logos { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 38px; border-top: 1px solid #E2E2DF; }
+  .v2 .logos div { padding: 18px 0; text-align: center; font-weight: 700; font-size: 16px; color: #333; }
+  .v2 .mos { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-top: 16px; }
+  .v2 .card { border: 1px solid #E2E2DF; background: #fff; padding: 8px; position: relative; }
+  .v2 .card .ph { height: 190px; background: repeating-linear-gradient(135deg, #F0F0EE 0 9px, #F7F7F6 9px 18px); display: grid; place-items: center; font-family: 'Departure Mono'; font-size: 11px; color: #888; }
+  .v2 .card .c { display: flex; justify-content: space-between; font-size: 12px; margin-top: 7px; } .v2 .card .c span { color: #777; }
+  .v2 .bdg { display: inline-flex; gap: 4px; } .v2 .bdg i { font-style: normal; font-family: 'Departure Mono'; font-size: 10px; border: 1px solid #DDD; padding: 0 4px; }
+  .v2 .card.hv::before { content: ''; position: absolute; inset: -6px; border: 2px solid #0A0A0A; clip-path: polygon(0 0, 14px 0, 14px 2px, 2px 2px, 2px 14px, 0 14px, 0 0, 100% 0, 100% 14px, calc(100% - 2px) 14px, calc(100% - 2px) 2px, calc(100% - 14px) 2px, calc(100% - 14px) 0, 100% 0, 100% 100%, calc(100% - 14px) 100%, calc(100% - 14px) calc(100% - 2px), calc(100% - 2px) calc(100% - 2px), calc(100% - 2px) calc(100% - 14px), 100% calc(100% - 14px), 100% 100%, 0 100%, 0 calc(100% - 14px), 2px calc(100% - 14px), 2px calc(100% - 2px), 14px calc(100% - 2px), 14px 100%, 0 100%); }
+  .v2 .pill { position: absolute; left: 58%; top: 46%; background: #0A0A0A; color: #fff; font-family: 'Departure Mono'; font-size: 11px; padding: 6px 10px; border-radius: 99px; }
+
+  /* ===== 3: Scott + Edwin led ===== */
+  .v3 { background: #FFFFFF; color: rgba(0,0,0,.92); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; padding: 52px 0 36px; }
+  .v3 .col { width: 620px; margin: 0 auto; position: relative; }
+  .v3 .hang { position: absolute; left: -54px; }
+  .v3 .av { width: 38px; height: 38px; border-radius: 50%; background-color: #111; background-image: radial-gradient(circle, #fff .9px, transparent 1.2px); background-size: 3px 3px; }
+  .v3 .top { display: flex; justify-content: space-between; align-items: center; }
+  .v3 h1 { font-size: 36px; font-weight: 650; margin: 0; letter-spacing: -.01em; }
+  .v3 .bio { font-size: 17px; line-height: 1.55; font-weight: 350; margin: 14px 0 0; }
+  .v3 .bio b { font-weight: 560; }
+  .v3 .lg { display: inline-grid; place-items: center; width: 17px; height: 17px; border-radius: 4px; background: #111; color: #fff; font-size: 9.5px; font-weight: 600; vertical-align: -2px; margin-right: 4px; }
+  .v3 .links { display: flex; gap: 18px; margin-top: 18px; font-size: 14px; align-items: center; }
+  .v3 .links .em { background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.14); border-radius: 99px; padding: 7px 14px; font-weight: 600; }
+  .v3 h2 { font-size: 24px; font-weight: 650; margin: 44px 0 18px; }
+  .v3 .job { position: relative; margin-bottom: 26px; }
+  .v3 .job .big { position: absolute; left: -54px; top: 0; width: 34px; height: 34px; border-radius: 8px; background: #111; color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 15px; }
+  .v3 .jt { display: flex; justify-content: space-between; align-items: baseline; } .v3 .jt b { font-size: 19px; font-weight: 620; } .v3 .jt span { font-size: 13px; color: rgba(0,0,0,.45); }
+  .v3 .job p { margin: 4px 0 8px; font-size: 15px; line-height: 1.5; font-weight: 350; }
+  .v3 .faces { display: flex; gap: 5px; } .v3 .faces i { width: 22px; height: 22px; border-radius: 50%; background: #D8D8D8; border: 1.5px solid #fff; }
+  .v3 .car { display: flex; gap: 14px; margin-top: 12px; margin-right: -400px; }
+  .v3 .car div { flex: 0 0 300px; height: 180px; border-radius: 14px; background: rgba(0,0,0,.06); display: grid; place-items: center; font: 400 11px 'IBM Plex Mono'; color: rgba(0,0,0,.45); }
+
+  /* ===== Life mode (shared) ===== */
+  .life { background: #0A0A0A; color: #EDEDED; font-family: 'Departure Mono', monospace; font-size: 14px; line-height: 1.75; padding: 52px 0 46px; }
+  .life .col { width: 620px; margin: 0 auto; }
+  .life .top { display: flex; justify-content: space-between; align-items: center; font-family: -apple-system, system-ui, sans-serif; font-weight: 600; font-size: 15px; margin-bottom: 40px; }
+  .life .tg { background: #E8541E; } .life .tg::after { left: 3px; right: auto; } .life .tg i { left: auto; right: 7px; color: #fff; }
+  .life u { text-underline-offset: 3px; text-decoration-color: #666; }
+  .life .d { color: #8A8A8A; }
+  .life .cur { display: inline-block; width: 9px; height: 16px; background: #EDEDED; vertical-align: -3px; }
+  .life .w { color: #8A8A8A; margin-top: 26px; font-size: 12px; }
+</style>
+
+<!-- ============ 1 ============ -->
+<h3>1 · Sessiz sistem <span style="font-weight:400;opacity:.6">(Alex baskın)</span></h3>
+<p class="src">Alex'in üç kolonlu, ince çizgili iskeleti ve mono gövde metni; Scott'tan logolu bio; laurie'den dot-matrix iş kareleri; Edwin'in toggle'ı sağ üstte. Canlı GitHub ve build künyesi.</p>
+<div class="mk"><div class="v1">
+  <div class="strip"></div>
+  <div class="s"><div class="l">Onur Senture<br><span class="m">Designer who builds<br>Ankara, 10:42</span></div>
+    <div><div class="lead">Designer who builds. <span>Design systems, products and games, from Figma to production.</span></div>
+      <p>For ten years I led design at <span class="lg">P</span>PrimeTek, where I built the PrimeOne design system, PrimeBlocks, PrimeIcons and the templates behind PrimeVue, PrimeNG and PrimeReact.</p>
+      <p>Since 2013 I've also run <span class="lg">O</span>Orkestra Studios with friends; we made Nebuu and eight other games and apps. Computer Science at Bilkent. Open to new work.</p></div>
+    <div class="r"><span class="tg"><i>◐</i></span><br><br>Life mode</div></div>
+  <div class="s"><div class="l">Work</div>
+    <div class="work"><div><div class="tile">PRIMEONE</div><div class="cap">PrimeOne <span>· design system</span></div></div><div><div class="tile">PRIMEBLOCKS</div><div class="cap">PrimeBlocks <span>· UI blocks</span></div></div></div>
+    <div class="r">All work →</div></div>
+  <div class="s"><div class="l">Experience</div>
+    <div>
+      <div class="xp"><span><span class="lg">O</span>Orkestra Studios<span class="sub">&nbsp;&nbsp;&nbsp;&nbsp;↳ Co-founder, designer</span></span><span class="m">Jun 2013–Now ⌄</span></div>
+      <div class="xp"><span><span class="lg">P</span>PrimeTek<span class="sub">&nbsp;&nbsp;&nbsp;&nbsp;↳ Design lead</span></span><span class="m">May 2016–Apr 2026 ⌃</span></div>
+      <div class="open">Led design across the Prime UI ecosystem.<br><span class="m">Figma, design tokens, Vue, Angular, React</span></div>
+      <div class="xp"><span><span class="lg">e</span>Etiya<span class="sub">&nbsp;&nbsp;&nbsp;&nbsp;↳ Design specialist</span></span><span class="m">Apr 2014–Mar 2016 ⌄</span></div>
+    </div>
+    <div class="r">Resume ↗</div></div>
+  <div class="s"><div class="l">Latest work</div>
+    <div><span class="m">2,133 contributions in the last year</span>
+      <div class="hm"><script>document.currentScript.parentElement.innerHTML=Array.from({length:364},(_,i)=>{const r=Math.abs(Math.sin(i*12.9898)*43758.5453)%1;return '<i class="'+(r<.4?'':r<.68?'a':r<.88?'b':'c')+'"></i>'}).join('')</script></div>
+      <div class="pr"><div><b>●</b> feat(life): add theatre log source</div><div><b>●</b> fix(view): keep shell in sync on back</div></div></div>
+    <div class="r">GitHub ↗</div></div>
+  <div class="ft"><span>v2.0.0 · updated 3 Oct 2026 · commit a2c817a <span class="p">+76</span> <span class="n">−52</span></span><span>X · GitHub · Letterboxd · Goodreads</span></div>
+</div></div>
+<p class="why"><b>Karakter:</b> en "mühendis" yön; sakin, kanıt odaklı, okunması kolay. <b>Risk:</b> en sade olan; kişiliği mono ses, canlı veri ve Life modu taşımalı. Mavi tek vurgu.</p>
+
+<!-- ============ 2 ============ -->
+<h3 style="margin-top:28px">2 · Görünür grid <span style="font-weight:400;opacity:.6">(laurie baskın)</span></h3>
+<p class="src">laurie'nin arkadaki kolon çizgileri, dot-matrix başlık dokusu, dithered portresi, köşe parantezli düğmeleri, turuncu "tuş" CTA'sı ve iş mozaiği (hover'da köşe parantezi, imleçle gelen hap, stack rozetleri); Scott'tan logo sırası; Edwin toggle'ı.</p>
+<div class="mk"><div class="v2">
+  <div class="cols"></div>
+  <div class="hd"><span class="mono">OS</span><span class="nav"><span>Work</span><span>Lab</span><span>Resume</span><span class="tg"><i>◐</i></span><span class="cta">BOOK A CALL</span></span></div>
+  <div class="in">
+    <div class="hero"><div class="pf"><div class="pic"></div><small>w00f_001.jpg</small></div>
+      <h1>Onur Senture <span>designs software,<br>then builds it.</span></h1></div>
+    <p class="p">Ten years leading design at <u>PrimeTek</u>, the design system and icons behind PrimeVue, PrimeNG and PrimeReact. Since 2013, co-founder of <u>Orkestra Studios</u>, where we made Nebuu and eight other games and apps.</p>
+    <div class="row"><span class="br">About me</span><span style="display:flex;gap:14px"><span class="br">X</span><span class="br">in</span><span class="br">GH</span></span></div>
+    <div class="logos"><div>PrimeVue</div><div>PrimeNG</div><div>PrimeReact</div><div>Orkestra</div></div>
+    <div class="mos">
+      <div class="card hv"><div class="ph">PRIMEONE · VIDEO LOOP</div><div class="c"><b>PrimeOne <span>Token-driven design system</span></b><span class="bdg"><i>Figma</i><i>Tokens</i></span></div><span class="pill">OPEN CASE →</span></div>
+      <div class="card"><div class="ph">NEBUU · LOOP</div><div class="c"><b>Nebuu <span>Word game</span></b><span class="bdg"><i>iOS</i></span></div></div>
+    </div>
+  </div>
+</div></div>
+<p class="why"><b>Karakter:</b> en "designer + builder" hissini veren, en zengin yön; grid'in kendisi süsleme, X banner'ındaki dot-matrix dili başlıkta ve portrede. Turuncu tek vurgu. <b>Risk:</b> detay çok; laurie'ye fazla benzememesi için kendi imzalarımızı (dot-matrix OS monogramı, w00f) öne çıkarmak gerekiyor.</p>
+
+<!-- ============ 3 ============ -->
+<h3 style="margin-top:28px">3 · Profil <span style="font-weight:400;opacity:.6">(Scott + Edwin baskın)</span></h3>
+<p class="src">Scott'ın temiz profili: kenarda asılı avatar ve logolar, logolu bio, şirket şirket iş anlatımı, ekip yüzleri, kolondan taşan karusel. Edwin'in toggle'ı ismin yanında. Avatar dot-matrix.</p>
+<div class="mk"><div class="v3"><div class="col">
+  <div class="hang" style="top:2px"><div class="av"></div></div>
+  <div class="top"><h1>Onur Senture</h1><span class="tg"><i>◐</i></span></div>
+  <p class="bio">Designer who builds, with a Computer Science degree and a soft spot for design systems. For ten years I led design at <span class="lg">P</span><b>PrimeTek</b>, and since 2013 I've co-run <span class="lg">O</span><b>Orkestra Studios</b>. Based in Ankara, open to new work.</p>
+  <div class="links"><span class="em">✉ Book a call</span><span>LinkedIn</span><span>X</span><span>GitHub</span><span>Dribbble</span></div>
+  <h2>Work</h2>
+  <div class="job"><div class="big">P</div><div class="jt"><b>PrimeTek</b><span>2016 – 2026</span></div><p>Led design across PrimeVue, PrimeNG and PrimeReact: the PrimeOne design system, PrimeBlocks, PrimeIcons and 25+ templates.</p><div class="faces"><i></i><i></i><i></i><i></i></div>
+    <div class="car"><div>PRIMEONE · PLACEHOLDER</div><div>PRIMEBLOCKS · PLACEHOLDER</div><div>PRIMEICONS</div></div></div>
+  <div class="job"><div class="big">O</div><div class="jt"><b>Orkestra Studios</b><span>2013 – Present</span></div><p>Co-founder. Nebuu and eight other iOS games and apps.</p></div>
+</div></div></div>
+<p class="why"><b>Karakter:</b> en temiz ve en "iş" odaklı yön; recruiter için en net okuma. Renk sadece logolardan ve ekran görüntülerinden geliyor. <b>Risk:</b> karakteri en az olan; geek tarafını Life modu ve dot-matrix avatar taşımak zorunda.</p>
+
+<!-- ============ Life ============ -->
+<h3 style="margin-top:28px">Ortak: Life modu (toggle açıkken)</h3>
+<p class="src">Edwin'in "boot" ekranı, ama senin gerçek verinle: sitede zaten olan Letterboxd, Goodreads, Instapaper, fotoğraflar ve GitHub. Fark: mod URL'de kalır (<code>?life</code>), paylaşılabilir; altında life sayfaları (filmler, kitaplar, fotoğraflar) açılır. Bir de <code>onur.md</code>: ajanlar ve insanlar için okunabilir CV.</p>
+<div class="mk"><div class="life"><div class="col">
+  <div class="top"><span>Onur Senture</span><span class="tg"><i>◑</i></span></div>
+  <div>Local time: [10:42:17 GMT+3] Ankara</div>
+  <div>Agent profile: <u>onur.md</u></div>
+  <br>
+  <div class="d">Booting w00f...</div>
+  <div class="d">Human detected.</div>
+  <br>
+  <div>last watched: <u>Love &amp; Other Drugs</u> ★3.5</div>
+  <div>reading: <u>Educated</u>, Tara Westover</div>
+  <div>saved: <u>Taste for Makers</u> · paulgraham.com · 18 min</div>
+  <div>last photo: <u>Night Boulevard</u></div>
+  <div>commits, last 12 months: 2,133</div>
+  <br>
+  <div>idle <span class="cur"></span></div>
+  <div class="w">films · books · reading · photos · theatre →</div>
+</div></div></div>
+<p class="why"><b>Not:</b> Bu, mevcut "site / dashboard" toggle'ının yerini alıyor. Dashboard modu kalkıyor; kişisel katman, işin önüne geçmeden tek tıkla açılıyor.</p>
+
+<h3 style="margin-top:30px">Hangisi?</h3>
+<div class="options" data-multiselect>
+  <div class="option" data-choice="1" onclick="toggleSelect(this)"><div class="letter">1</div><div class="content"><h3>Sessiz sistem</h3><p>Alex baskın: grid, mono ses, canlı veri</p></div></div>
+  <div class="option" data-choice="2" onclick="toggleSelect(this)"><div class="letter">2</div><div class="content"><h3>Görünür grid</h3><p>laurie baskın: dot-matrix, köşe parantezleri, mozaik</p></div></div>
+  <div class="option" data-choice="3" onclick="toggleSelect(this)"><div class="letter">3</div><div class="content"><h3>Profil</h3><p>Scott + Edwin baskın: temiz, logolar, karusel</p></div></div>
+  <div class="option" data-choice="life" onclick="toggleSelect(this)"><div class="letter">L</div><div class="content"><h3>Life modu bu haliyle iyi</h3><p>Dashboard yerine Edwin tarzı toggle</p></div></div>
+</div>

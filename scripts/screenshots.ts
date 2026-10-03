@@ -1,11 +1,11 @@
 // Visual-review helper: full-page screenshots of the production build at
-// 1440 and 390 wide, in both views and both themes.
+// 1440 and 390 wide, in both themes.
 //
 //   npm run build
 //   npm run screenshots -- <outDir> <path> [<path>...]
 //
 // Starts `next start` on SCREENSHOT_PORT (default 3218), saves
-// <outDir>/<page>-<width>-<view>-<theme>.png, then stops the server. For
+// <outDir>/<page>-<width>-<theme>.png, then stops the server. For
 // populated pages, build and run with SOURCE_FIXTURES=1.
 import { type ChildProcess, spawn } from "node:child_process";
 import { mkdirSync } from "node:fs";
@@ -13,7 +13,6 @@ import { join } from "node:path";
 import { chromium } from "@playwright/test";
 
 const WIDTHS = [1440, 390];
-const VIEWS = ["site", "dashboard"];
 const THEMES = ["light", "dark"];
 
 const port = Number(process.env.SCREENSHOT_PORT ?? 3218);
@@ -52,34 +51,31 @@ async function main() {
     await waitForServer(server);
     const browser = await chromium.launch();
     for (const width of WIDTHS) {
-      for (const view of VIEWS) {
-        for (const theme of THEMES) {
-          const context = await browser.newContext({
-            viewport: { width, height: width < 768 ? 844 : 900 },
+      for (const theme of THEMES) {
+        const context = await browser.newContext({
+          viewport: { width, height: width < 768 ? 844 : 900 },
+        });
+        await context.addCookies([
+          { name: "theme", value: theme, url: base },
+        ]);
+        const page = await context.newPage();
+        for (const path of paths) {
+          await page.goto(`${base}${path}`, { waitUntil: "networkidle" });
+          // Scroll through once so lazy images load before the capture.
+          await page.evaluate(async () => {
+            for (let y = 0; y < document.body.scrollHeight; y += window.innerHeight) {
+              window.scrollTo(0, y);
+              await new Promise((resolve) => setTimeout(resolve, 100));
+            }
+            window.scrollTo(0, 0);
+            await document.fonts.ready;
           });
-          await context.addCookies([
-            { name: "view", value: view, url: base },
-            { name: "theme", value: theme, url: base },
-          ]);
-          const page = await context.newPage();
-          for (const path of paths) {
-            await page.goto(`${base}${path}`, { waitUntil: "networkidle" });
-            // Scroll through once so lazy images load before the capture.
-            await page.evaluate(async () => {
-              for (let y = 0; y < document.body.scrollHeight; y += window.innerHeight) {
-                window.scrollTo(0, y);
-                await new Promise((resolve) => setTimeout(resolve, 100));
-              }
-              window.scrollTo(0, 0);
-              await document.fonts.ready;
-            });
-            await page.waitForLoadState("networkidle");
-            const file = join(outDir, `${fileSlug(path)}-${width}-${view}-${theme}.png`);
-            await page.screenshot({ path: file, fullPage: true });
-            console.log(`saved ${file}`);
-          }
-          await context.close();
+          await page.waitForLoadState("networkidle");
+          const file = join(outDir, `${fileSlug(path)}-${width}-${theme}.png`);
+          await page.screenshot({ path: file, fullPage: true });
+          console.log(`saved ${file}`);
         }
+        await context.close();
       }
     }
     await browser.close();

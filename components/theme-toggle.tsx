@@ -3,8 +3,8 @@
 import { useEffect } from "react";
 import { useSyncExternalStore } from "react";
 import { Toggle } from "@/components/ui/toggle";
-import { serializeCookie } from "@/lib/view/cookies";
-import { THEME_COOKIE, THEME_COOKIE_PATTERN, THEME_PREFERENCES, type ThemePreference } from "@/lib/view/theme";
+import { serializeCookie } from "@/lib/theme/cookies";
+import { THEME_COOKIE, THEME_COOKIE_PATTERN, THEME_PREFERENCES, type ThemePreference } from "@/lib/theme/theme";
 
 const OPTIONS = [
   { value: "light", label: "Light" },

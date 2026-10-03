@@ -33,7 +33,7 @@ describe("StatusGlyph", () => {
 describe("MetaLabel", () => {
   it("renders an uppercase mono label with an optional leading glyph", () => {
     const markup = html(<MetaLabel status="ok">Films</MetaLabel>);
-    expect(markup).toMatch(/^<span class="[^"]*type-mono-11[^"]*uppercase/);
+    expect(markup).toMatch(/^<span class="[^"]*type-label[^"]*uppercase/);
     expect(markup).toContain("●</span>Films");
   });
 
@@ -55,17 +55,19 @@ describe("Chip and EraStamp", () => {
 });
 
 describe("TextLink", () => {
-  it("ends with → and keeps internal links internal", () => {
+  it("ends internal links with a non-breaking → and keeps them internal", () => {
     const markup = html(<TextLink href="/life/">Life</TextLink>);
     expect(markup).toMatch(/^<a [^>]*href="\/life\/"/);
     expect(markup).not.toContain("rel=");
-    expect(markup).toContain(" →</span>");
+    // U+00A0 before the arrow, so it never wraps onto its own line.
+    expect(markup).toContain("\u00a0\u2192</span>");
   });
 
-  it("adds rel=noopener noreferrer to external links and never uses ↗", () => {
+  it("ends external links with ↗ and adds rel=noopener noreferrer", () => {
     const markup = html(<TextLink href="https://letterboxd.com/onur/">Letterboxd</TextLink>);
     expect(markup).toContain('rel="noopener noreferrer"');
-    expect(markup).not.toContain("↗");
+    expect(markup).toContain("\u00a0\u2197</span>");
+    expect(markup).not.toContain("\u2192");
   });
 });
 
@@ -83,18 +85,18 @@ describe("Toggle", () => {
   it("marks exactly the current option as pressed", () => {
     const markup = html(
       <Toggle
-        label="View"
-        testId="view-toggle"
-        value="site"
+        label="Layout"
+        testId="layout-toggle"
+        value="list"
         options={[
-          { value: "site", label: "Site" },
-          { value: "dashboard", label: "Dashboard" },
+          { value: "list", label: "List" },
+          { value: "grid", label: "Grid" },
         ]}
       />,
     );
-    expect(markup).toContain('role="group" aria-label="View" data-testid="view-toggle"');
+    expect(markup).toContain('role="group" aria-label="Layout" data-testid="layout-toggle"');
     expect(markup.match(/aria-pressed="true"/g)).toHaveLength(1);
-    expect(markup).toMatch(/aria-pressed="true"[^>]*>Site</);
+    expect(markup).toMatch(/aria-pressed="true"[^>]*>List</);
   });
 });
 

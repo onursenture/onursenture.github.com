@@ -1,0 +1,181 @@
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@500;600&family=Doto:wght@900&display=swap" rel="stylesheet">
+
+<h2>Yön 1 + Dither Kit, sitenin her yerinde</h2>
+<p class="subtitle">Seçtiğin öneriler uygulandı: IBM Plex, ultramarin mavi, dot-matrix isim, dosya ağacı deneyim, gizli katman. Cetvel yerine Dither Kit'in Bayer dither dili: üst şerit, bölüm ayraçları, ısı haritası yerine dither grafik, placeholder'lar, Lab ikonları, CTA ve footer. Aşağıdaki dither'lar Dither Kit'in aynı 4×4 Bayer matrisiyle bu sayfada canlı çiziliyor.</p>
+
+<style>
+  .mk { border: 1px solid rgba(127,127,127,.3); border-radius: 6px; overflow: hidden; margin: 8px 0 6px; }
+  .mk * { box-sizing: border-box; }
+  .why { font-size: 13px; margin: 6px 0 14px; }
+  canvas.d { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+
+  .s1 { --bg: #FAFAF9; --fg: #27272A; --mu: #71717A; --mu2: #52525B; --ln: #E7E7E4; --ac: #2F55F5; background: var(--bg); color: var(--fg); font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; line-height: 1.65; }
+  .s1.dark { --bg: #0B0B0C; --fg: #EDEDED; --mu: #8A8A90; --mu2: #B4B4BA; --ln: #222225; --ac: #6E8BFF; }
+  .s1 .strip { height: 14px; }
+  .s1 .s { display: grid; grid-template-columns: 210px 470px 1fr; gap: 28px; padding: 30px 40px; }
+  .s1 .div { height: 4px; margin: 0 40px; }
+  .s1 .l { color: var(--fg); } .s1 .l .n { color: var(--mu); }
+  .s1 .r { text-align: right; color: var(--mu); }
+  .s1 .m { color: var(--mu); }
+  .s1 .nm { font-family: 'Doto', monospace; font-weight: 900; font-size: 22px; line-height: 1; letter-spacing: .02em; margin-bottom: 6px; }
+  .s1 .lead { font-family: 'IBM Plex Sans', sans-serif; font-size: 20px; line-height: 1.35; font-weight: 600; letter-spacing: -.01em; margin-bottom: 10px; }
+  .s1 .lead span { color: #8B8B93; }
+  .s1 p { margin: 0 0 8px; text-align: justify; text-indent: 3ch; color: var(--mu2); }
+  .s1 .lg { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 4px; background: var(--fg); color: var(--bg); font-size: 9px; font-weight: 500; vertical-align: -3px; margin-right: 5px; text-indent: 0; }
+  .s1 .tg { width: 40px; height: 22px; border-radius: 99px; background: var(--ln); position: relative; display: inline-block; }
+  .s1 .tg::after { content: ''; position: absolute; right: 2px; top: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+  .s1 .work { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .s1 .ph { position: relative; aspect-ratio: 4/3; border: 1px solid var(--ln); overflow: hidden; }
+  .s1 .ph .lab { position: absolute; left: 10px; bottom: 8px; font-size: 10.5px; color: var(--fg); background: var(--bg); padding: 0 5px; }
+  .s1 .cap { margin-top: 6px; } .s1 .cap span { color: var(--mu); }
+  .s1 .tree div { white-space: pre; } .s1 .tree .m a { color: var(--ac); text-decoration: none; }
+  .s1 .chart { height: 96px; margin-top: 8px; }
+  .s1 .pr div { padding: 1px 0; } .s1 .pr b { color: var(--ac); font-weight: 400; }
+  .s1 .lab3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .s1 .lab3 .av { width: 40px; height: 40px; margin-bottom: 6px; }
+  .s1 .btn { position: relative; display: inline-block; height: 34px; padding: 0 14px; line-height: 34px; color: #fff; font-size: 12px; letter-spacing: .02em; border-radius: 4px; overflow: hidden; }
+  .s1 .btn canvas { position: absolute; inset: 0; z-index: 0; } .s1 .btn span { position: relative; z-index: 1; }
+  .s1 .foot { position: relative; height: 150px; overflow: hidden; }
+  .s1 .foot canvas { position: absolute; inset: 0; }
+  .s1 .foot .t { position: absolute; left: 40px; right: 40px; top: 18px; display: flex; justify-content: space-between; color: var(--mu); font-size: 11.5px; }
+  .s1 .foot .t .p { color: #16A34A; } .s1 .foot .t .n { color: #DC2626; }
+
+  .life { background: #0B0B0C; color: #EDEDED; font-family: 'IBM Plex Mono', monospace; font-size: 13.5px; line-height: 1.75; display: grid; grid-template-columns: 1fr 470px 1fr; }
+  .life .c { grid-column: 2; padding: 34px 0 30px; }
+  .life .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; }
+  .life .nm { font-family: 'Doto'; font-weight: 900; font-size: 20px; }
+  .life .tg { width: 40px; height: 22px; border-radius: 99px; background: #6E8BFF; position: relative; } .life .tg::after { content: ''; position: absolute; left: 2px; top: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; }
+  .life .row { display: grid; grid-template-columns: 96px 1fr; gap: 18px; }
+  .life .pic { width: 96px; height: 120px; }
+  .life .d { color: #8A8A90; } .life u { text-decoration-color: #555; text-underline-offset: 3px; }
+  .life .cur { display: inline-block; width: 8px; height: 15px; background: #EDEDED; vertical-align: -3px; }
+  .life .bars { height: 54px; margin-top: 14px; }
+</style>
+
+<div class="mk"><div class="s1" id="light">
+  <div class="strip"><canvas class="d" data-k="strip"></canvas></div>
+  <div class="s"><div class="l"><div class="nm">ONUR SENTURE</div><span class="n">Designer who builds<br>Ankara, 10:42</span></div>
+    <div><div class="lead">Designer who builds. <span>Design systems, products and games, from Figma to production.</span></div>
+      <p>For ten years I led design at <span class="lg">P</span>PrimeTek, where I built the PrimeOne design system, PrimeBlocks, PrimeIcons and the templates behind PrimeVue, PrimeNG and PrimeReact.</p>
+      <p>Since 2013 I've also run <span class="lg">O</span>Orkestra Studios; we made Nebuu and eight other games and apps. Computer Science at Bilkent. Open to new work.</p>
+      <div style="margin-top:14px"><span class="btn"><canvas class="d" data-k="btn"></canvas><span>Book a call →</span></span></div></div>
+    <div class="r"><span class="tg"></span><br><br>Life mode</div></div>
+  <div class="div"><canvas class="d" data-k="rule"></canvas></div>
+  <div class="s"><div class="l">Work</div>
+    <div class="work">
+      <div><div class="ph"><canvas class="d" data-k="ph-up"></canvas><span class="lab">FIG. 01 · PRIMEONE</span></div><div class="cap">PrimeOne <span>· design system</span></div></div>
+      <div><div class="ph"><canvas class="d" data-k="ph-right"></canvas><span class="lab">FIG. 02 · PRIMEBLOCKS</span></div><div class="cap">PrimeBlocks <span>· UI blocks</span></div></div>
+    </div>
+    <div class="r">All work →</div></div>
+  <div class="div"><canvas class="d" data-k="rule"></canvas></div>
+  <div class="s"><div class="l">Experience</div>
+    <div class="tree">
+      <div>Orkestra Studios                      <span class="m">2013–now</span></div>
+      <div class="m">└─ <a>Nebuu</a>          word game, iOS</div>
+      <div style="margin-top:10px">PrimeTek                     <span class="m">May 2016–Apr 2026</span></div>
+      <div class="m">├─ <a>PrimeOne</a>       design system</div>
+      <div class="m">├─ <a>PrimeBlocks</a>    UI blocks</div>
+      <div class="m">├─ <a>PrimeIcons</a>     icon set</div>
+      <div class="m">└─ <a>Templates</a>      25+ admin apps</div>
+      <div style="margin-top:10px">Etiya                        <span class="m">Apr 2014–Mar 2016</span></div>
+    </div>
+    <div class="r">Resume ↗</div></div>
+  <div class="div"><canvas class="d" data-k="rule"></canvas></div>
+  <div class="s"><div class="l">Latest work</div>
+    <div><span class="m">2,133 contributions in the last year · weekly</span>
+      <div class="chart"><canvas class="d" data-k="area"></canvas></div>
+      <div class="pr" style="margin-top:8px"><div><b>●</b> feat(life): add theatre log source</div><div><b>●</b> fix(view): keep shell in sync on back</div></div></div>
+    <div class="r">GitHub ↗</div></div>
+  <div class="div"><canvas class="d" data-k="rule"></canvas></div>
+  <div class="s"><div class="l">Lab</div>
+    <div class="lab3">
+      <div><div class="av"><canvas class="d" data-k="av" data-seed="lab-one"></canvas></div>Lab project 01<br><span class="m">placeholder</span></div>
+      <div><div class="av"><canvas class="d" data-k="av" data-seed="nebuu"></canvas></div>Nebuu<br><span class="m">word game</span></div>
+      <div><div class="av"><canvas class="d" data-k="av" data-seed="onursenture.com"></canvas></div>This site<br><span class="m">v2</span></div>
+    </div>
+    <div class="r">All lab →</div></div>
+  <div class="foot"><canvas class="d" data-k="foot"></canvas><div class="t"><span>v2.0.0 · updated 3 Oct 2026 · commit a2c817a <span class="p">+76</span> <span class="n">−52</span> · ↑↑↓↓←→←→BA</span><span>onur.md · colophon · X · GitHub</span></div></div>
+</div></div>
+<p class="why"><b>Light.</b> Üst şerit ve bölüm ayraçları mürekkep rengi dither; placeholder'lar "FIG. · media soon" etiketli dither yıkamaları (sonradan admin'den görsel yüklenince yerini görsel alır); ısı haritası yerine haftalık katkıların dither alan grafiği; Lab'de proje adından üretilen dither avatarlar; CTA bir DitherButton; footer mavi dither yıkaması üstünde build künyesi.</p>
+
+<div class="mk"><div class="s1 dark" id="dark">
+  <div class="strip"><canvas class="d" data-k="strip"></canvas></div>
+  <div class="s"><div class="l"><div class="nm">ONUR SENTURE</div><span class="n">Designer who builds<br>Ankara, 10:42</span></div>
+    <div><div class="lead">Designer who builds. <span>Design systems, products and games, from Figma to production.</span></div>
+      <p>For ten years I led design at <span class="lg">P</span>PrimeTek, where I built the PrimeOne design system, PrimeBlocks, PrimeIcons and the templates behind PrimeVue, PrimeNG and PrimeReact.</p></div>
+    <div class="r"><span class="tg"></span><br><br>Life mode</div></div>
+  <div class="div"><canvas class="d" data-k="rule"></canvas></div>
+  <div class="s"><div class="l">Latest work</div>
+    <div><span class="m">2,133 contributions in the last year · weekly</span><div class="chart"><canvas class="d" data-k="area"></canvas></div></div>
+    <div class="r">GitHub ↗</div></div>
+</div></div>
+<p class="why"><b>Dark.</b> Aynı dil koyu temada; dither renkleri temaya göre ayarlanıyor (Dither Kit "light ve dark'ta ayakta kalır" diye tasarlanmış).</p>
+
+<div class="mk"><div class="life"><div class="c">
+  <div class="top"><span class="nm">ONUR SENTURE</span><span class="tg"></span></div>
+  <div class="row"><div class="pic"><canvas class="d" data-k="portrait"></canvas></div>
+    <div><div>Local time: [10:42:17 GMT+3] Ankara</div><div>Agent profile: <u>onur.md</u></div><br><div class="d">Booting w00f...</div><div class="d">Human detected.</div></div></div>
+  <br>
+  <div>last watched: <u>Love &amp; Other Drugs</u> ★3.5</div>
+  <div>reading: <u>Educated</u>, Tara Westover</div>
+  <div>saved: <u>Taste for Makers</u> · paulgraham.com · 18 min</div>
+  <div>last photo: <u>Night Boulevard</u></div>
+  <div>films logged, last 12 months:</div>
+  <div class="bars"><canvas class="d" data-k="bars"></canvas></div>
+  <br><div>idle <span class="cur"></span></div>
+</div></div></div>
+<p class="why"><b>Life modu.</b> Boot satırları + dithered portre (gerçek fotoğrafından Bayer dither ile üretilir; bu bir yer tutucu) + aylık film sayısının dither bar grafiği. Sayılar burada temsili; gerçekte Letterboxd verinden gelir.</p>
+
+<script>
+(function () {
+  const B = [[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]].map(r => r.map(v => (v + .5) / 16));
+  const hex = h => [1,3,5].map(i => parseInt(h.slice(i, i + 2), 16));
+  function setup(cv, cell) {
+    const r = cv.getBoundingClientRect();
+    const cols = Math.max(4, Math.round(r.width / cell)), rows = Math.max(2, Math.round(r.height / cell));
+    cv.width = cols; cv.height = rows;
+    const ctx = cv.getContext('2d'); const img = ctx.createImageData(cols, rows);
+    return { ctx, img, cols, rows };
+  }
+  function put(img, x, y, c, a = 255) { const i = (y * img.width + x) * 4; img.data[i] = c[0]; img.data[i+1] = c[1]; img.data[i+2] = c[2]; img.data[i+3] = a; }
+  function field(cv, cell, col, fn) {
+    const { ctx, img, cols, rows } = setup(cv, cell);
+    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) { const t = fn(x / (cols - 1), y / (rows - 1), x, y, cols, rows); if (t > B[y % 4][x % 4]) put(img, x, y, col); }
+    ctx.putImageData(img, 0, 0);
+  }
+  const hash = s => { let h = 0x811c9dc5; for (const ch of s) { h ^= ch.charCodeAt(0); h = Math.imul(h, 0x01000193); } return h >>> 0; };
+  const rnd = seed => { let s = seed || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; };
+  const weekly = Array.from({ length: 52 }, (_, i) => { const r = Math.abs(Math.sin(i * 3.1) * 1000) % 1; return 18 + 30 * r + 22 * Math.sin(i / 6) + (i > 40 ? 20 : 0); });
+
+  function render(root, dark) {
+    const ink = hex(dark ? '#EDEDED' : '#27272A'), ac = hex(dark ? '#6E8BFF' : '#2F55F5'), mu = hex(dark ? '#3A3A40' : '#C9C9CE');
+    root.querySelectorAll('canvas.d').forEach(cv => {
+      const k = cv.dataset.k;
+      if (k === 'strip') field(cv, 2, ink, (u, v) => 0.55 - v * .5 - Math.abs(u - .5) * .25);
+      else if (k === 'rule') field(cv, 2, mu, (u) => 0.4 + 0.15 * Math.sin(u * 40));
+      else if (k === 'ph-up') field(cv, 3, ac, (u, v) => Math.pow(v, 1.8) * .7);
+      else if (k === 'ph-right') field(cv, 3, ink, (u, v) => Math.pow(u, 1.5) * .55);
+      else if (k === 'btn') field(cv, 2, ac, (u, v) => .9 + v * .3 - (v < .25 ? .35 : 0));
+      else if (k === 'foot') field(cv, 3, ac, (u, v) => v < .3 ? 0 : Math.pow((v - .3) / .7, 1.3) * 1.05);
+      else if (k === 'area') field(cv, 2, ac, (u, v, x, y, cols, rows) => {
+        const i = Math.min(51, Math.floor(u * 52)); const hgt = weekly[i] / 110; const top = 1 - hgt;
+        if (v < top) return 0; return .25 + (v - top) / hgt * .75; });
+      else if (k === 'bars') field(cv, 2, hex('#6E8BFF'), (u, v) => {
+        const i = Math.floor(u * 12); if ((u * 12) % 1 > .78) return 0; const h = [.4,.55,.3,.7,.5,.85,.45,.6,.95,.5,.65,.75][i]; return v > 1 - h ? .35 + v * .6 : 0; });
+      else if (k === 'portrait') field(cv, 2, hex('#EDEDED'), (u, v) => {
+        const dx = (u - .5) / .3, dy = (v - .36) / .24, head = 1 - (dx*dx + dy*dy);
+        const sx = (u - .5) / .48, sy = (v - 1.02) / .38, sh = 1 - (sx*sx + sy*sy);
+        return Math.max(head > 0 ? .35 + head * .6 : 0, sh > 0 ? .25 + sh * .5 : 0) * (1 - Math.abs(u - .5) * .3); });
+      else if (k === 'av') {
+        const r = rnd(hash(cv.dataset.seed)); const { ctx, img } = setup(cv, 40 / 10);
+        const hue = hash(cv.dataset.seed) % 2 ? ac : ink;
+        for (let y = 0; y < 10; y++) for (let x = 0; x < 5; x++) if (r() > .5) { for (const xx of [x, 9 - x]) { const t = .55 + r() * .45; if (t > B[y % 4][xx % 4] * .9) put(img, xx, y, hue); } }
+        ctx.putImageData(img, 0, 0);
+      }
+    });
+  }
+  function all() { render(document.getElementById('light'), false); render(document.getElementById('dark'), true); render(document.querySelector('.life'), true); }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(all); else all();
+  window.addEventListener('resize', all);
+})();
+</script>

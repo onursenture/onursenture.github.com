@@ -3,19 +3,19 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cx } from "@/lib/cx";
 import { isExternal } from "./text-link";
 
-// primary: inverted fill. ghost: 1px line-strong outline (Figma "Outline",
+// primary: inverted fill. ghost: 1px line outline (Figma "Outline",
 // e.g. "Book a call →"). text: no frame (Figma "Text", e.g. "Menu").
 export type ButtonVariant = "primary" | "ghost" | "text";
 
 const VARIANTS: Record<ButtonVariant, string> = {
   primary: "bg-fg text-bg hover:underline",
-  ghost: "border border-line-strong text-fg hover:border-fg",
+  ghost: "border border-line text-fg hover:border-fg",
   text: "text-fg hover:underline",
 };
 
 export function buttonClass(variant: ButtonVariant = "ghost", className?: string): string {
   return cx(
-    "inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-control px-3 type-sans-14-medium whitespace-nowrap",
+    "inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-control px-3 type-body font-medium whitespace-nowrap",
     VARIANTS[variant],
     className,
   );

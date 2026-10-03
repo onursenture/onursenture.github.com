@@ -2,15 +2,15 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-// The S1 spec's color table. Changing a token means changing the spec, the
-// Figma variables and app/globals.css together.
-const S1_COLORS = {
-  "--color-bg": { light: "#FFFFFF", dark: "#000000" },
-  "--color-surface": { light: "#FAFAFA", dark: "#0A0A0A" },
-  "--color-fg": { light: "#000000", dark: "#F2F2F2" },
-  "--color-fg-muted": { light: "#737373", dark: "#8A8A8A" },
-  "--color-line": { light: "#E5E5E5", dark: "#262626" },
-  "--color-line-strong": { light: "#D4D4D4", dark: "#404040" },
+// The Sprint 4 spec's colour table (§2). Changing a token means changing the
+// spec and app/globals.css together.
+const COLORS = {
+  "--color-bg": { light: "#FAFAF8", dark: "#0B0B0C" },
+  "--color-fg": { light: "#1F1F22", dark: "#EDEDED" },
+  "--color-fg-muted": { light: "#6E6E73", dark: "#8A8A90" },
+  "--color-fg-soft": { light: "#52525A", dark: "#B4B4BA" },
+  "--color-line": { light: "#E6E6E1", dark: "#222225" },
+  "--color-accent": { light: "#2F55F5", dark: "#6E8BFF" },
   "--color-danger": { light: "#D92D20", dark: "#F97066" },
   "--color-danger-bg": { light: "#FEF3F2", dark: "#2A0F0C" },
 };
@@ -36,23 +36,39 @@ function colorTokens(body: string): Record<string, string> {
 }
 
 const expected = (mode: "light" | "dark") =>
-  Object.fromEntries(Object.entries(S1_COLORS).map(([name, values]) => [name, values[mode]]));
+  Object.fromEntries(Object.entries(COLORS).map(([name, values]) => [name, values[mode]]));
 
 describe("color tokens", () => {
-  it("@theme declares exactly the S1 light values", () => {
+  it("@theme declares exactly the light values", () => {
     expect(colorTokens(block("@theme static {"))).toEqual(expected("light"));
   });
 
-  it('[data-theme="dark"] redefines every token with the S1 dark value', () => {
-    expect(colorTokens(block('[data-theme="dark"] {'))).toEqual(expected("dark"));
+  it('[data-theme="dark"] redefines every token with its dark value', () => {
+    // Line start: the @custom-variant line also contains '[data-theme="dark"],'.
+    expect(colorTokens(block('\n[data-theme="dark"],'))).toEqual(expected("dark"));
   });
 
   it("the no-JS prefers-color-scheme fallback matches the dark values", () => {
     expect(colorTokens(block(":root:not([data-theme]) {"))).toEqual(expected("dark"));
   });
 
+  it("the Life side shares the dark rule, whatever the theme", () => {
+    expect(css).toMatch(/\[data-theme="dark"\],\s*\[data-side="life"\]\s*\{/);
+  });
+
   it("defines no shadows and only the control radius", () => {
     expect(css).not.toMatch(/box-shadow/);
     expect(css.match(/--radius-[a-z]+:/g)).toEqual(["--radius-control:"]);
+  });
+
+  it("defines exactly the six Sprint 4 type classes", () => {
+    expect([...css.matchAll(/@utility (type-[a-z0-9-]+)/g)].map((m) => m[1])).toEqual([
+      "type-name",
+      "type-lead",
+      "type-body",
+      "type-meta",
+      "type-label",
+      "type-boot",
+    ]);
   });
 });

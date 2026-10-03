@@ -211,25 +211,26 @@ Until the admin layer ships, the resume reads only from `content/resume.ts`.
 
 ## Roadmap
 
-There are two parallel tracks. On the **design** track, Onur and Claude work together, using Mobbin MCP, Figma MCP and reference sites Onur shares. On the **platform** track, subagents do the work. The early sprints don't block each other.
+Onur and Claude design together, using Mobbin MCP, Figma MCP and reference sites Onur shares, and subagents build. The sprints in the table below run in order, with no separate design and platform tracks. The early sprints don't block each other.
 
-| Sprint | Track | Goal | Output |
-|---|---|---|---|
-| S1 | Design | **Visual direction** | Mobbin research plus Onur's references → typography, color, density and layout language for both view modes. Has its own brainstorming with visual comparisons. |
-| S2 | Platform | **Skeleton** | `v2` branch: Next.js, Tailwind, Drizzle, Neon; the view/theme middleware; the sync pipeline with all 5 existing sources ported with fixture tests; the GitHub Actions sync workflow; the image script and `<Picture>`; Vercel preview. Unstyled. |
-| S3 | Both | **Design system and shell** | Tokens, primitives, header and footer with toggles, the two-tier home skeleton, `/life` in both modes. |
-| S4 | Both | **Work I: PrimeTek** | A dedicated, detailed portfolio brainstorming first (narrative model, case study template, era-context design, the PrimeOne → PrimeBlocks → PrimeIcons → dashboards connected-system story). Then content gathering. |
-| S5 | Both | **Work II: Orkestra and Lab** | Older Orkestra main projects (some about 13 years old) presented in their historical context; nebuu; Lab projects. |
-| S6 | Platform | **Resume, Book a call, launch** | The dynamic resume (web and PDF), the cal.com embed, the cutover. |
-| S7 | Platform | **Admin and Notes** | Auth, the dashboard write layer, micro posts, resume overrides, the source-health panel. Optional Bluesky cross-posting. |
-| S8 | Both | **Personal layer** | Instapaper cards, the theatre log, dashboard-only panels. |
-| S9 | Both | **Polish** | Changelog, the table tennis paddle-spin effect (footer as fallback placement), a performance and accessibility pass. |
+> Revised 2026-10-03 (Sprint 4): sprints are named "Sprint N"; the S1 direction and the dashboard view were replaced (see `2026-10-03-sprint-4-visual-direction-design.md`).
+
+| Sprint | Contents |
+|---|---|
+| Sprint 4 | This spec |
+| Sprint 5 | Work I: PrimeTek, with placeholder media |
+| Sprint 6 | Work II: Orkestra and Lab |
+| Sprint 7 | Admin: GitHub auth, media upload into placeholder slots, simple page editing |
+| Sprint 8 | Resume, Book a call, launch |
+| Sprint 9 | Notes |
+| Sprint 10 | Personal layer and Life sub-pages |
+| Sprint 11 | Polish: changelog, paddle effect, Konami easter egg, performance and accessibility |
 
 Priority within the roadmap is intentional. The professional core (portfolio, resume, booking) is what the site exists for. Personal touches come last and can always be added later.
 
 ### Content inventory (can start now, in parallel)
 
-S4 and S5 will be blocked by material, not code. For each project, gather:
+Sprint 5 (Work I) and Sprint 6 (Work II) will be blocked by material, not code. Placeholders unblock them: each case study can ship with `MediaPlaceholder` slots, and Sprint 7's upload swaps real media in. For each project, gather:
 - Figma links
 - old screenshots and exports
 - the year(s)

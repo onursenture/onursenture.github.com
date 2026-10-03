@@ -11,14 +11,23 @@ export const OPEN_GRAPH_DEFAULTS = {
 
 export const TWITTER_DEFAULTS = { card: "summary" } as const;
 
+// The one title format: the root layout's template and pageMetadata's Open
+// Graph/Twitter titles both come from here.
+export const TITLE_TEMPLATE = `%s · ${site.title}`;
+
+export function fullTitle(title: string): string {
+  // A replacer function keeps "$&" and friends in a title literal.
+  return TITLE_TEMPLATE.replace("%s", () => title);
+}
+
 // Next replaces a parent's `openGraph` / `twitter` with the page's instead of
 // merging them, so pages build their metadata here, on top of the defaults.
 export function pageMetadata(title: string, extra: Metadata = {}): Metadata {
-  const fullTitle = `${title} · ${site.title}`;
+  const fullTitleText = fullTitle(title);
   return {
     ...extra,
     title,
-    openGraph: { ...OPEN_GRAPH_DEFAULTS, title: fullTitle, ...extra.openGraph },
-    twitter: { ...TWITTER_DEFAULTS, title: fullTitle, ...extra.twitter },
+    openGraph: { ...OPEN_GRAPH_DEFAULTS, title: fullTitleText, ...extra.openGraph },
+    twitter: { ...TWITTER_DEFAULTS, title: fullTitleText, ...extra.twitter },
   };
 }

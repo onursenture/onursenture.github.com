@@ -1,51 +1,88 @@
 import { expect, test } from "@playwright/test";
 
-test("site view renders a band for every section, with empty states", async ({ page }) => {
+test("/life/ is the boot readout, then a row for every section, with empty states", async ({ page }) => {
   await page.goto("/life/");
-  for (const id of ["films", "books", "articles", "writing", "github", "photos"]) {
+  const now = page.getByRole("region", { name: "Now" });
+  await expect(now).toContainText("Booting w00f...");
+  await expect(now).toContainText("Human detected.");
+  await expect(now).toContainText("idle");
+  for (const id of ["films", "books", "articles", "writing", "photos"]) {
     await expect(page.locator(`[data-section="${id}"]`)).toBeVisible();
   }
-  await expect(page.locator('[data-section="sync-status"]')).toHaveCount(0);
+  await expect(page.locator('[data-section="github"]')).toHaveCount(0);
   await expect(page.locator('[data-section="films"]')).toContainText("Nothing here yet.");
 });
 
-test("the photos band links every photo with a decorative thumbnail", async ({ page }) => {
+test("the server HTML of a direct load has the readout complete, with no typing", async ({ page }) => {
+  const html = await (await page.request.get("/life/")).text();
+  expect(html).toContain("Human detected.");
+  expect(html).toContain("idle");
+});
+
+test("the photos row links every photo and its All link goes to /life/photos/", async ({ page }) => {
   await page.goto("/life/");
   const photos = page.locator('[data-section="photos"]');
   await expect(photos.locator("li a")).toHaveCount(5);
   await expect(photos.locator('li img[alt=""]')).toHaveCount(5);
-  await expect(photos.getByRole("link", { name: "All", exact: true })).toHaveAttribute("href", "/photos/");
+  await expect(photos.getByRole("link", { name: "All", exact: true })).toHaveAttribute("href", "/life/photos/");
 });
 
-test("dashboard view shows panels with real table headers", async ({ page }) => {
-  await page.goto("/life/?view=dashboard");
-  await expect(page.locator('[data-section="sync-status"]')).toBeVisible();
-  const films = page.locator('[data-section="films"]');
-  await expect(films).toContainText("Not synced yet");
-  await expect(films.locator('thead th[scope="col"]')).toHaveText(["Title", "Year", "Rating", "Watched"]);
-  await expect(page.locator('[data-section="photos"] tbody tr')).toHaveCount(5);
+test("the home tiles' /life fragments each resolve to one element", async ({ page }) => {
+  for (const id of ["books", "films", "photos", "articles"]) {
+    await page.goto(`/life/#${id}`);
+    await expect(page.locator(`[id="${id}"]`), `#${id}`).toHaveCount(1);
+  }
 });
 
-test("client navigation after a toggle lands on the new view", async ({ page }) => {
+test.describe("reduced motion", () => {
+  test.use({ reducedMotion: "reduce" });
+
+  test("arriving from the switch shows the readout at once", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("switch", { name: "Life" }).filter({ visible: true }).click();
+    await expect(page).toHaveURL(/\/life\/$/);
+    // No typing: the last boot line is complete immediately.
+    await expect(page.getByRole("region", { name: "Now" }).filter({ visible: true })).toContainText("Human detected.", { timeout: 300 });
+  });
+});
+
+test("arriving from the switch types the readout in", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("group", { name: "View" }).getByRole("button", { name: "Dashboard" }).click();
-  await expect(page.locator('[data-view="dashboard"]')).toBeVisible();
-  await page.getByRole("navigation").getByRole("link", { name: "Life" }).click();
+  await page.getByRole("switch", { name: "Life" }).filter({ visible: true }).click();
   await expect(page).toHaveURL(/\/life\/$/);
-  await expect(page.locator('[data-view="dashboard"]')).toBeVisible();
-  await expect(page.locator('[data-section="sync-status"]')).toBeVisible();
+  const now = page.getByRole("region", { name: "Now" }).filter({ visible: true });
+  // Mid-typing the last boot line is not complete yet; by ~1.5s it is.
+  await expect(now).not.toContainText("Human detected.", { timeout: 200 });
+  await expect(now).toContainText("Human detected.", { timeout: 3000 });
 });
 
-test("/dashboard/life/ redirects to /life/", async ({ page }) => {
-  await page.goto("/dashboard/life/");
-  await expect(page).toHaveURL(/^http:\/\/localhost:\d+\/life\/$/);
+test("every canvas on /life/ is decorative", async ({ page }) => {
+  await page.goto("/life/");
+  await expect(page.locator("canvas").first()).toBeAttached();
+  const unlabelled = await page
+    .locator("canvas")
+    .evaluateAll((canvases) => canvases.filter((c) => !c.closest('[aria-hidden="true"]')).length);
+  expect(unlabelled).toBe(0);
 });
 
-test("the home tiles' /life fragments each resolve to one element in both views", async ({ page }) => {
-  for (const suffix of ["", "?view=dashboard"]) {
-    for (const id of ["books", "films", "photos", "articles"]) {
-      await page.goto(`/life/${suffix}#${id}`);
-      await expect(page.locator(`[id="${id}"]`), `#${id} in ${suffix || "site"}`).toHaveCount(1);
-    }
+test("the photos row sizes its thumbnails for the wide row beside the label column", async ({ page }) => {
+  await page.goto("/life/");
+  await expect(page.locator('[data-section="photos"] picture source').first()).toHaveAttribute(
+    "sizes",
+    "(min-width: 1024px) calc((100vw - 356px) / 3), (min-width: 768px) calc((100vw - 128px) / 3), calc((100vw - 48px) / 2)",
+  );
+});
+
+test("entering Life through the switch types the readout every time, not only the first", async ({ page }) => {
+  await page.goto("/");
+  const toggle = () => page.getByRole("switch", { name: "Life" }).filter({ visible: true });
+  for (const entry of [1, 2, 3]) {
+    await toggle().click();
+    await expect(page).toHaveURL(/\/life\/$/);
+    const now = page.getByRole("region", { name: "Now" }).filter({ visible: true });
+    await expect(now, `entry ${entry} starts typing`).not.toContainText("Human detected.", { timeout: 200 });
+    await expect(now, `entry ${entry} finishes`).toContainText("Human detected.", { timeout: 3000 });
+    await toggle().click();
+    await expect.poll(() => new URL(page.url()).pathname).toBe("/");
   }
 });

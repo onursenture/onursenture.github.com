@@ -14,7 +14,7 @@ export function EraStamp({
 }) {
   if (parts.length === 0) return null;
   return (
-    <span className={cx("inline-flex items-center gap-1 type-mono-11 text-fg-muted", className)}>
+    <span className={cx("inline-flex items-center gap-1 type-label text-fg-muted", className)}>
       {dot ? (
         <span aria-hidden="true" className="font-sans">
           ●

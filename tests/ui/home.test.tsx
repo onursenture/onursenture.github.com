@@ -1,109 +1,79 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { LabBand, LabPanel, labIndexEntry } from "@/components/home/lab-index";
-import { MetaLine, visibleSegments } from "@/components/home/meta-line";
-import { workColumns } from "@/components/home/work-index";
-import type { LabEntry } from "@/content/lab-index";
-import type { WorkEntry } from "@/content/work-index";
-import type { MetaSegment } from "@/content/profile";
+import { Bio } from "@/components/home/bio";
+import { ExperienceTree } from "@/components/home/experience-tree";
+import { LabGrid } from "@/components/home/lab-grid";
+import { WorkTiles } from "@/components/home/work-tiles";
+import { OrgMark } from "@/components/ui/org-mark";
 
 const html = renderToStaticMarkup;
 
-describe("Lab index", () => {
-  it("renders neither the band nor the panel while the list is empty", () => {
-    expect(html(<LabBand entries={[]} />)).toBe("");
-    expect(html(<LabPanel entries={[]} />)).toBe("");
+describe("OrgMark", () => {
+  it("falls back to a decorative monogram while there is no logo file", () => {
+    const markup = html(<OrgMark org="primetek" />);
+    expect(markup).toContain(">P<");
+    expect(markup).toContain('aria-hidden="true"');
   });
+});
 
-  it("renders the panel as a table with one row per entry", () => {
-    const markup = html(<LabPanel entries={[{ title: "a", description: "b", status: "live" }]} />);
-    expect(markup).toContain(">Lab</h2>");
-    expect(markup.split("<tbody>")[1].match(/<tr /g)).toHaveLength(1);
-    expect(markup).toContain('aria-label="live"');
+describe("Bio", () => {
+  it("renders text with the org mark and name inline", () => {
+    const markup = html(<Bio paragraphs={[["At ", { org: "orkestra" }, " since 2013."]]} />);
+    expect(markup).toContain("At ");
+    expect(markup).toContain("Orkestra Studios");
+    expect(markup).toContain(">O<");
+    expect(markup).toContain(" since 2013.");
   });
+});
 
-  it("renders the panel without a Status column, and Year only while an entry has one", () => {
-    const withYear = html(
-      <LabPanel entries={[{ title: "a", description: "b", year: "2026", status: "wip" }, { title: "c", description: "d" }]} />,
+describe("ExperienceTree", () => {
+  it("draws products as a tree under their org, last child with └─", () => {
+    const markup = html(
+      <ExperienceTree
+        entries={[
+          {
+            org: "primetek",
+            role: "Design lead",
+            start: "2016-05",
+            end: "2026-04",
+            children: [
+              { title: "PrimeOne", note: "design system" },
+              { title: "PrimeIcons", note: "icon set" },
+            ],
+          },
+        ]}
+      />,
     );
-    expect(withYear).toContain(">Project<");
-    expect(withYear).toContain(">Description<");
-    expect(withYear).toContain(">Year<");
-    expect(withYear).not.toContain(">Status<");
-    const withoutYear = html(<LabPanel entries={[{ title: "a", description: "b", status: "wip" }]} />);
-    expect(withoutYear).not.toContain(">Year<");
-    expect(withoutYear.match(/<th /g)).toHaveLength(2);
-  });
-
-  it("collapses the empty year column in the site band", () => {
-    const markup = html(<LabBand entries={[{ title: "a", description: "b" }]} />);
-    expect(markup).not.toContain("type-mono-13");
-    expect(markup).toContain("md:col-span-11");
-  });
-
-  it("renders one row per entry with its status glyph", () => {
-    const entries: LabEntry[] = [
-      { title: "Shipped thing", description: "Live now.", year: "2025", href: "https://example.com/", status: "live" },
-      { title: "Half-built thing", description: "Not yet.", status: "wip" },
-      { title: "Plain thing", description: "No status." },
-    ];
-    const markup = html(<LabBand entries={entries} />);
-    expect(markup).toContain(">Lab<");
-    expect(markup.match(/class="group grid/g)).toHaveLength(3);
-    expect(markup).toContain('aria-label="live"');
-    expect(markup).toContain('aria-label="in progress"');
-    expect(markup).toContain('rel="noopener noreferrer"');
-    expect(markup).not.toContain(">All<");
-  });
-
-  it("maps description to the inline meta and year to the year column", () => {
-    expect(labIndexEntry({ title: "t", description: "d", year: "2026", status: "wip" })).toEqual({
-      title: "t",
-      meta: "d",
-      years: "2026",
-      href: undefined,
-      status: "late",
-      statusLabel: "in progress",
-    });
+    expect(markup).toContain("PrimeTek");
+    expect(markup).toContain("May 2016–Apr 2026");
+    expect(markup).toContain("├─");
+    expect(markup).toContain("└─");
+    expect(markup.indexOf("├─")).toBeLessThan(markup.indexOf("└─"));
   });
 });
 
-describe("workColumns", () => {
-  const headers = (entries: WorkEntry[]) => workColumns(entries).map((column) => column.header);
-
-  it("leaves out Years and Role while no entry has them", () => {
-    expect(headers([{ title: "a", meta: "m" }])).toEqual(["Project", "Notes"]);
-  });
-
-  it("brings each column back on its own once an entry has a value", () => {
-    expect(headers([{ title: "a" }, { title: "b", years: "2024" }])).toEqual(["Project", "Notes", "Years"]);
-    expect(headers([{ title: "a", role: "Lead" }])).toEqual(["Project", "Notes", "Role"]);
-    expect(headers([{ title: "a", years: "2024", role: "Lead" }])).toEqual(["Project", "Notes", "Years", "Role"]);
+describe("WorkTiles", () => {
+  it("renders one numbered placeholder per entry, at most four", () => {
+    const entries = ["A", "B", "C", "D", "E"].map((title) => ({ title, meta: `${title} meta` }));
+    const markup = html(<WorkTiles entries={entries} />);
+    expect(markup).toContain("FIG. 01 · A");
+    expect(markup).toContain("FIG. 04 · D");
+    expect(markup).not.toContain("FIG. 05");
   });
 });
 
-describe("MetaLine", () => {
-  const segments: MetaSegment[] = [
-    { text: "DESIGNER + BUILDER" },
-    { clock: "Europe/Istanbul", label: "ANKARA" },
-    { availability: true },
-  ];
-
-  it("shows OPEN TO ROLES only while available", () => {
-    expect(visibleSegments(segments, true)).toHaveLength(3);
-    expect(visibleSegments(segments, false)).toEqual(segments.slice(0, 2));
-  });
-
-  it("joins segments with a middle dot and prerenders the clock as --:--", () => {
-    const markup = html(<MetaLine segments={segments} available />);
-    expect(markup).toContain("DESIGNER + BUILDER");
-    expect(markup).toContain('ANKARA <time aria-label="Local time in Ankara">--:--</time>');
-    expect(markup).toContain("OPEN TO ROLES");
-    expect(markup.match(/ · /g)).toHaveLength(2);
-  });
-
-  it("keeps every segment on one line", () => {
-    const markup = html(<MetaLine segments={segments} available />);
-    expect(markup.match(/whitespace-nowrap/g)).toHaveLength(3);
+describe("LabGrid", () => {
+  it("renders nothing while empty and links only entries with a link", () => {
+    expect(html(<LabGrid entries={[]} />)).toBe("");
+    const markup = html(
+      <LabGrid
+        entries={[
+          { title: "Linked", description: "d", href: "https://example.com", status: "wip" },
+          { title: "Plain", description: "d", status: "wip", placeholder: true },
+        ]}
+      />,
+    );
+    expect(markup.match(/<a /g)).toHaveLength(1);
+    expect(markup).toContain("↗");
   });
 });

@@ -2,10 +2,11 @@
 
 # CLAUDE.md
 
-onursenture.com v2: Next.js 16 on Vercel, Postgres (Neon) via Drizzle. Branch `v2` replaces the Eleventy site on `master` at launch.
+onursenture.com v2: Next.js 16 on Vercel, Postgres (Neon) via Drizzle. A professional-first personal site in two sides: Work (the home, and later work, Lab and resume pages) and Life (films, books, photos and the rest). Branch `v2` replaces the Eleventy site on `master` at launch.
 
-- Foundation spec: `docs/superpowers/specs/2026-10-02-site-v2-foundation-design.md`
-- S1 visual direction (typography, color, density, faces to avoid): `docs/superpowers/specs/2026-10-02-s1-visual-direction-design.md`
+- Foundation spec (mechanics, sprint roadmap): `docs/superpowers/specs/2026-10-02-site-v2-foundation-design.md`
+- Sprint 4 visual direction (tokens, type, grid, Dither Kit, Work and Life sides): `docs/superpowers/specs/2026-10-03-sprint-4-visual-direction-design.md`
+- S1 visual direction (only the "Faces to avoid" list still binds): `docs/superpowers/specs/2026-10-02-s1-visual-direction-design.md`
 - Plans: `docs/superpowers/plans/`
 
 ## Commands
@@ -19,7 +20,7 @@ npm run e2e            # Playwright on port 3217; run `npm run build` first
 npm run e2e:fixtures   # port 3219; run `SOURCE_FIXTURES=1 npm run build` first
 npm run images         # optimize images-src/ into public/images/ + manifest
 npm run db:generate    # drizzle-kit generate; db:migrate applies it (--force)
-npm run screenshots -- <dir> <path>...  # 1440 + 390, both views, both themes (build first)
+npm run screenshots -- <dir> <path>...  # 1440 + 390, both themes (build first)
 ```
 
 CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixtures`, and uploads the Playwright traces when a run fails. Finish with a plain `npm run build` so the local `.next` isn't left in fixture mode.
@@ -34,33 +35,33 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
 
 ## Rules
 
-- Next.js 16 differs from older versions. Read `node_modules/next/dist/docs/` before using an API. `proxy.ts` replaces middleware.
+- Next.js 16 differs from older versions. Read `node_modules/next/dist/docs/` before using an API.
 - `cacheComponents` is on: page data comes from `"use cache"` functions; pages never read `cookies()` / `headers()`.
-- Every public page lives under `app/[view]/` and is prerendered for `site` and `dashboard`; `proxy.ts` picks one from the cookie. Never link to `/site/...` or `/dashboard/...`. Branch on the `view` route param (layouts and sections) — never on the cookie. `dashboard:` Tailwind variants are fine for density tweaks.
+- Two sides: Work (`app/(work)/`) and Life (`app/life/`, always dark via `data-side="life"`). The Life switch navigates between them; never link to a removed `/site/` or `/dashboard/` URL.
 - `trailingSlash: true`: internal links and API URLs end with `/` (a POST doesn't survive the redirect).
-- Paths containing a dot bypass the proxy (it treats them as files), so keep slugs dot-free.
-- Don't put a caching proxy or CDN in front of Vercel: responses vary by cookie without a `Vary: Cookie` header.
-- Faces to avoid: see the S1 spec's "Faces to avoid" list.
+- Faces to avoid: see the S1 spec's "Faces to avoid" list. Allowed: IBM Plex Mono, IBM Plex Sans, Doto.
 - OG images are always JPEG with an absolute URL (via `metadataBase`). Pages without a real image omit `og:image`.
+- Titles come from one format, `TITLE_TEMPLATE` / `fullTitle()` in `lib/metadata.ts`; build page metadata with `pageMetadata()`.
 - English only.
 
-## Design system (S3)
+## Design system (Sprint 4)
 
-- Tokens live in `app/globals.css` (`@theme static`), named exactly as the Figma variables (`--color-bg`, `--color-fg-muted`, `--radius-control`, …). `tests/tokens.test.ts` pins them to the S1 values. Tailwind's default palette, text sizes, radii and shadows are cleared, so only token utilities exist: `bg-bg`, `text-fg-muted`, `border` (a `--color-line` rule), `rounded-control`.
-- Type comes only from the `type-*` classes: one per Figma text style (`type-display-{96,64,40}`, `type-sans-{28,20,16,14,13}` plus `-medium`, `type-mono-{13,12,11}`), plus `type-display-160` from the S1 spec.
-- Square corners except form controls (`rounded-control`). No shadows. Monochrome; `--color-danger` only for errors.
-- No icons. Glyphs only: `→` (every link, internal or external; never `↗`), `●` ok, `○` empty, `◐` late or partial, `×` close. Status glyphs go through `<StatusGlyph>`.
-- Primitives are in `components/ui/`. `/system/` renders all of them (not in the nav, `noindex`); check it in both views and themes after UI changes.
-- Shells are in `components/shell/`. The nav comes from `lib/nav.ts`: flip `ready` when a section ships.
-- The view switch cross-fades the whole page through React `<ViewTransition>` (`ShellFade`: each shell's outer element shares the name `shell`) and the `view-switch` transition type that `ViewToggle` adds; reduced motion skips it.
-- Every proxied response is sent with `Cache-Control: public, max-age=0, must-revalidate` (`proxy.ts`), the same header Vercel already gives browsers. The two views share URLs, and Next keys its cached payloads only on its router headers, so under `next start` Chrome would otherwise serve the other view's prefetch after a toggle, and the next link click would mix the two shells (`e2e/matrix.spec.ts`, round trip). Never use `private`/`no-cache`/`no-store` here: Vercel's CDN won't cache those responses.
-- Back/forward to a history entry rendered in the other view must not use Next's restore (it hangs on the stale cache); `ViewHistoryGuard` navigates to the URL instead. It reads Next's private `history.state`, so recheck the back/forward tests in `e2e/matrix.spec.ts` after a Next upgrade.
-- Unknown URLs 404 inside the shell (`app/[view]/[...missing]`). Under Cache Components these 404s are served as an error shell that React renders on the client, so the inline theme script never runs there; `ThemeToggle` re-applies the cookie, and `ThemeSync` does the same on the root 404 (`app/not-found.tsx`).
-- After a client navigation or a view switch, Next keeps the previous tree mounted but hidden. In e2e, prefer role locators (they skip hidden elements) or filter with `:visible`.
-- Optional index columns (`years`, `role` in the work index, `year` in the Lab index) are not rendered at all while no entry has a value (`visibleColumns` in `lib/index-columns.ts`, used by `IndexList`, `workColumns` and `LabPanel`); they return on their own once an entry gets one.
-- Ratings are plain numbers in mono (`formatRating` in `lib/sources/rating.ts`: `3.5`, `4`, unrated shows nothing). Never stars: neither face has `★`. `grep -rn "★" app components lib` must stay empty.
-- Dashboard panel spans start at `xl` (1280px); below it panels stack full width, because the 240px sidebar leaves 4- and 6-column panels too narrow. Contribution figures always name their period ("12 mo").
-- Only confirmed facts go in `content/profile.ts`, `content/work-index.ts` and `content/lab-index.ts`.
+- Tokens live in `app/globals.css` (`@theme static`): `--color-bg`, `fg`, `fg-muted`, `fg-soft`, `line`, `accent`, `danger`, `danger-bg`, each with a light and a dark value (`tests/tokens.test.ts` pins them), plus `--radius-control`. Tailwind's default palette, text sizes, radii and shadows are cleared, so only token utilities exist (`bg-bg`, `text-fg-muted`, `border` = a `--color-line` rule, `rounded-control`). There is no `bg-white` or `text-white`: use a token or an arbitrary value (`text-[#fff]`).
+- Type comes only from six classes: `type-name` (Doto), `type-lead` (Plex Sans 20), `type-body` (Plex Mono 13), `type-meta` (12), `type-label` (11) and `type-boot` (the Life readout, 14). Fonts are IBM Plex Mono, IBM Plex Sans and Doto, loaded with `next/font/google` in `app/layout.tsx`.
+- Square corners except form controls (`rounded-control`). No shadows. Monochrome plus the one accent; `--color-danger` only for errors.
+- The Life side (`[data-side="life"]`) always uses the dark token column, whatever the theme. The same attribute also lands on `<html>` (`SideSync`), so in e2e select the shell with `div[data-side="life"]` or use role locators. There is no theme toggle on Life.
+- Dither Kit is vendored in `components/dither-kit/` (MIT; see its README for the local changes). Re-vendor with `npx tsx scripts/vendor-dither-kit.ts` and reapply those changes. `components/ui/` wrappers (`DitherStrip`, `DitherRule`, `FooterWash`, `MediaPlaceholder`, `PrimaryButton`, `LabAvatar`, `ContributionChart`) read token colours with `useTokenColor`, so canvases repaint when the theme changes and inside a Life subtree. Every canvas is decorative: its wrapper is `aria-hidden="true"` and meaning lives in adjacent text. Reduced motion disables the kit entrances, the typewriter and the Life switch transition.
+- `MediaPlaceholder` renders a dither wash with a `FIG. NN · TITLE` caption. Its `image` prop swaps in a `<Picture>`: that is the hook for Sprint 7 uploads.
+- `SectionRow` (`components/ui/section-row.tsx`) is the grid row for every section: label, content (480px, or `wide`), action. The label is an `h2` by default; pass `labelAs="div"` when the content holds the page `h1` (home identity, the 404s). `SectionRow` renders no rule itself: pages put a `DitherRule` between rows (the home, `/life/`). On a `wide` row the action sits under the label from lg and after the content below lg.
+- Glyphs: `→` internal links, `↗` external links (both added by `TextLink`, behind a non-breaking space so the arrow never orphans), `←` for "Previous", `●` ok, `○` empty, `◐` late or partial, `×` close, `├─` / `└─` in the experience tree. Never `★`: ratings are plain numbers in mono (`formatRating`), and `grep -rn "★" app components lib` must stay empty. `ItemLink` (list and table rows) adds no arrow; the Lab grid adds its own `↗`. Status glyphs go through `<StatusGlyph>`.
+- The primary button's label is `#fff` on the light accent and the page's dark ink in dark mode and on Life (white on the dark accent is about 3:1).
+- Primitives are in `components/ui/`. `/system/` is the Sprint 4 style tile (not in the nav, `noindex`): every token, type class, dither specimen and primitive, plus a Life palette block that proves the dark tokens and dither repaint inside a Life subtree on a light page. Each specimen has a `data-primitive` attribute; add new primitives there and check it in both themes after UI changes.
+- Shells are in `components/shell/` (`WorkShell`, `LifeShell`). The nav comes from `lib/nav.ts`: flip `ready` when a section ships.
+- The Life switch (`components/life-switch.tsx`) is a real link with `role="switch"`. A plain click runs `router.push` inside a React transition tagged `life-enter` or `life-exit` (`lib/side.ts`); `SideFade` (a `ViewTransition` named `side` in both shells) animates the pair, and every other navigation stays instant. It works across the two layouts only through `router.push`.
+- Entering Life with the switch sets a boot flag (`components/life/boot-flag.ts`, `sessionStorage`) so the boot readout types itself in. The flag expires after 3s, so a stale one never types on a later direct load; a direct load always gets the final server HTML.
+- Unknown URLs 404 inside the shell (`app/(work)/[...missing]`, `app/life/[...missing]`). Under Cache Components these 404s are served as an error shell that React renders on the client, so the inline theme script never runs there; `ThemeToggle` re-applies the cookie, and `ThemeSync` does the same on the root 404 (`app/not-found.tsx`, for paths outside both layouts).
+- After a client navigation, Next keeps the previous tree mounted but hidden. In e2e, prefer role locators (they skip hidden elements) or filter with `:visible`.
+- Only confirmed facts go in `content/profile.ts`, `content/work-index.ts` and `content/lab-index.ts`. Contribution figures always name their period ("12 months").
 
 ## Sources and sync
 
@@ -78,6 +79,7 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
 ## Images
 
 - Put sources in `images-src/`, run `npm run images`, commit the outputs and `lib/images/manifest.json`, and render with `<Picture image="dir/name" />`.
+- The Life portrait: put a photo at `images-src/portrait.jpg` (or `.jpeg` / `.png`) and run `npm run images`. It writes `public/images/portrait-dither.png` (a 1-bit dither, 96×120 cells at 2×) and `lib/images/portrait.json`, which `DitherPortrait` reads. Without a source `DitherPortrait` falls back to a framed `LabAvatar` dither avatar seeded "w00f".
 - Deleting a photo: remove its `content/photos/<slug>.mdx`, its `images-src/photos/` file, its renditions `public/images/photos/<slug>-*`, and the legacy `public/images/photos/<slug>.jpeg` and `.avif`, then run `npm run images`. Renditions are not pruned automatically.
 
 ## Tests

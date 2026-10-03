@@ -3,14 +3,13 @@
 /* docs/ holds plans whose code samples would otherwise ship as utilities. */
 @source not "../docs";
 
-/* Theme and view are attributes, not media queries, so both can be toggled.
-   Usage: dark:…, dashboard:… (density tweaks only; colors come from tokens). */
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
-@custom-variant dashboard (&:where([data-view="dashboard"], [data-view="dashboard"] *));
+/* Theme is an attribute, not a media query, so it can be toggled. The Life
+   side forces the dark palette (data-side="life"), whatever the theme. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, [data-side="life"], [data-side="life"] *));
 
-/* Design tokens (S1). Names match the Figma variables exactly. The defaults
-   are cleared first, so only these exist: no palette colors, no shadows, one
-   radius. tests/tokens.test.ts checks the values below against the S1 spec. */
+/* Design tokens (Sprint 4 spec §2). The defaults are cleared first, so only
+   these exist: no palette colours, no shadows, one radius.
+   tests/tokens.test.ts pins the values. */
 @theme static {
   --color-*: initial;
   --font-*: initial;
@@ -21,33 +20,34 @@
   --drop-shadow-*: initial;
   --text-shadow-*: initial;
 
-  --color-bg: #FFFFFF;
-  --color-surface: #FAFAFA;
-  --color-fg: #000000;
-  --color-fg-muted: #737373;
-  --color-line: #E5E5E5;
-  --color-line-strong: #D4D4D4;
+  --color-bg: #FAFAF8;
+  --color-fg: #1F1F22;
+  --color-fg-muted: #6E6E73;
+  --color-fg-soft: #52525A;
+  --color-line: #E6E6E1;
+  --color-accent: #2F55F5;
   --color-danger: #D92D20;
   --color-danger-bg: #FEF3F2;
 
-  /* Neue Haas Grotesk comes from the Adobe Fonts kit (app/layout.tsx);
-     Fragment Mono from next/font, which defines --font-fragment-mono. */
-  --font-display: "neue-haas-grotesk-display", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-sans: "neue-haas-grotesk-text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-mono: var(--font-fragment-mono), ui-monospace, Menlo, monospace;
+  /* next/font (app/layout.tsx) defines the --font-plex-* and --font-doto
+     variables; these fall back to system faces until the files load. */
+  --font-mono: var(--font-plex-mono), ui-monospace, Menlo, monospace;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-name: var(--font-doto), var(--font-plex-mono), ui-monospace, monospace;
 
   /* Form controls only (buttons, inputs, toggles). Everything else is square. */
   --radius-control: 4px;
 }
 
-[data-theme="dark"] {
+[data-theme="dark"],
+[data-side="life"] {
   color-scheme: dark;
-  --color-bg: #000000;
-  --color-surface: #0A0A0A;
-  --color-fg: #F2F2F2;
-  --color-fg-muted: #8A8A8A;
-  --color-line: #262626;
-  --color-line-strong: #404040;
+  --color-bg: #0B0B0C;
+  --color-fg: #EDEDED;
+  --color-fg-muted: #8A8A90;
+  --color-fg-soft: #B4B4BA;
+  --color-line: #222225;
+  --color-accent: #6E8BFF;
   --color-danger: #F97066;
   --color-danger-bg: #2A0F0C;
 }
@@ -57,15 +57,22 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     color-scheme: dark;
-    --color-bg: #000000;
-    --color-surface: #0A0A0A;
-    --color-fg: #F2F2F2;
-    --color-fg-muted: #8A8A8A;
-    --color-line: #262626;
-    --color-line-strong: #404040;
+    --color-bg: #0B0B0C;
+    --color-fg: #EDEDED;
+    --color-fg-muted: #8A8A90;
+    --color-fg-soft: #B4B4BA;
+    --color-line: #222225;
+    --color-accent: #6E8BFF;
     --color-danger: #F97066;
     --color-danger-bg: #2A0F0C;
   }
+}
+
+/* SideSync (Task 7) sets html[data-side] while the Life side is mounted, so
+   overscroll and the area around the page match it. */
+html[data-side="life"] {
+  color-scheme: dark;
+  background-color: #0B0B0C;
 }
 
 @layer base {
@@ -84,37 +91,51 @@
   body {
     background-color: var(--color-bg);
     color: var(--color-fg);
-    font-family: var(--font-sans);
-    font-size: 1rem;
-    line-height: 1.6;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.6154;
     font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
-    background-color: var(--color-fg);
-    color: var(--color-bg);
+    background-color: var(--color-accent);
+    color: #FFFFFF;
   }
 
   :focus-visible {
-    outline: 1px solid var(--color-fg);
+    outline: 1px solid var(--color-accent);
     outline-offset: 2px;
   }
 }
 
-/* View switch (components/shell/shell-fade.tsx): the whole page cross-fades
-   between the two shells. 250ms, ease-out. Theme switches and navigations
-   don't animate. */
-::view-transition-group(.shell-fade),
-::view-transition-old(.shell-fade),
-::view-transition-new(.shell-fade) {
-  animation-duration: 250ms;
+/* Life switch (components/shell/side-fade.tsx). Into Life: the Work page
+   dims to black (250ms), then Life fades in. Back: a 200ms cross-fade. */
+::view-transition-old(.life-enter) {
+  animation: 250ms ease-in both side-dim;
+}
+::view-transition-new(.life-enter) {
+  animation: 200ms ease-out 250ms both side-appear;
+}
+::view-transition-group(.life-exit),
+::view-transition-old(.life-exit),
+::view-transition-new(.life-exit) {
+  animation-duration: 200ms;
   animation-timing-function: ease-out;
 }
+@keyframes side-dim {
+  to {
+    filter: brightness(0);
+  }
+}
+@keyframes side-appear {
+  from {
+    opacity: 0;
+  }
+}
 
-/* The toggle skips the transition under reduced motion; this guards any
-   other view transition. */
+/* Any view transition is skipped under reduced motion. */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*),
   ::view-transition-old(*),
@@ -123,130 +144,62 @@
   }
 }
 
-/* Type scale: one class per Figma text style (display/96 → type-display-96,
-   sans/14-medium → type-sans-14-medium, mono/11 → type-mono-11), plus
-   display-160 from the S1 spec. Adobe shifts the Display weights: 65 Medium
-   is font-weight 600. Display sizes are fluid and reach their nominal size
-   at a 1440px viewport. */
-@utility type-display-160 {
-  font-family: var(--font-display);
-  font-size: clamp(4rem, 11.11vw, 10rem);
-  line-height: 0.95;
-  letter-spacing: -0.035em;
-  font-weight: 600;
+/* Type (Sprint 4 spec §2). Mono carries the page; Plex Sans the lead lines;
+   Doto the name and Life headings. */
+@utility type-name {
+  font-family: var(--font-name);
+  font-size: 1.375rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  font-weight: 900;
 }
-@utility type-display-96 {
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 6.67vw, 6rem);
-  line-height: 0.95;
-  letter-spacing: -0.035em;
-  font-weight: 600;
-}
-@utility type-display-64 {
-  font-family: var(--font-display);
-  font-size: clamp(2.5rem, 4.45vw, 4rem);
-  line-height: 0.95;
-  letter-spacing: -0.03em;
-  font-weight: 600;
-}
-@utility type-display-40 {
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 2.78vw, 2.5rem);
-  line-height: 0.95;
-  letter-spacing: -0.02em;
-  font-weight: 600;
-}
-
-@utility type-sans-28 {
-  font-family: var(--font-sans);
-  font-size: 1.75rem;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  font-weight: 400;
-}
-@utility type-sans-28-medium {
-  font-family: var(--font-sans);
-  font-size: 1.75rem;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  font-weight: 500;
-}
-@utility type-sans-20 {
+@utility type-lead {
   font-family: var(--font-sans);
   font-size: 1.25rem;
-  line-height: 1.3;
-  letter-spacing: 0;
-  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  font-weight: 600;
 }
-@utility type-sans-20-medium {
-  font-family: var(--font-sans);
-  font-size: 1.25rem;
-  line-height: 1.3;
-  letter-spacing: 0;
-  font-weight: 500;
-}
-@utility type-sans-16 {
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  line-height: 1.6;
-  letter-spacing: 0;
-  font-weight: 400;
-}
-@utility type-sans-16-medium {
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  line-height: 1.6;
-  letter-spacing: 0;
-  font-weight: 500;
-}
-@utility type-sans-14 {
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
-  line-height: 1.4;
-  letter-spacing: 0;
-  font-weight: 400;
-}
-@utility type-sans-14-medium {
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
-  line-height: 1.4;
-  letter-spacing: 0;
-  font-weight: 500;
-}
-@utility type-sans-13 {
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  line-height: 1.4;
-  letter-spacing: 0;
-  font-weight: 400;
-}
-@utility type-sans-13-medium {
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  line-height: 1.4;
-  letter-spacing: 0;
-  font-weight: 500;
-}
-
-/* Fragment Mono has one weight; the Figma -medium mono styles map to 400. */
-@utility type-mono-13 {
+@utility type-body {
   font-family: var(--font-mono);
   font-size: 0.8125rem;
-  line-height: 1.4;
+  line-height: 1.6154;
   letter-spacing: 0;
   font-weight: 400;
 }
-@utility type-mono-12 {
+@utility type-meta {
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  line-height: 1.4;
+  line-height: 1.5;
   letter-spacing: 0;
   font-weight: 400;
 }
-@utility type-mono-11 {
+@utility type-label {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
-  line-height: 1.4;
+  line-height: 1.4545;
+  letter-spacing: 0.02em;
+  font-weight: 400;
+}
+@utility type-boot {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7143;
   letter-spacing: 0;
   font-weight: 400;
+}
+
+/* Life readout cursor: a 1s step blink; still under reduced motion. */
+.boot-cursor {
+  animation: boot-blink 1s steps(1, end) infinite;
+}
+@keyframes boot-blink {
+  50% {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .boot-cursor {
+    animation: none;
+  }
 }
