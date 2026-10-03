@@ -39,9 +39,11 @@ test("an unknown photo 404s inside the shell", async ({ page }) => {
 
 // Paths with a dot skip the proxy, so "[view]" receives an invalid value and
 // assertView() 404s before any shell renders.
-test("an invalid view segment 404s", async ({ page }) => {
+test("an invalid view segment 404s", async ({ page, context, baseURL }) => {
+  await context.addCookies([{ name: "theme", value: "dark", url: baseURL! }]);
   const response = await page.goto("/not.a.view/");
   expect(response?.status()).toBe(404);
   await expect(page.locator("[data-view]")).toHaveCount(0);
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.getByRole("heading", { name: "Page not found" })).toBeVisible();
 });

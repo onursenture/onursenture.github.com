@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useSyncExternalStore } from "react";
 import { Toggle } from "@/components/ui/toggle";
 import { serializeCookie } from "@/lib/view/cookies";
@@ -67,4 +68,12 @@ export function ThemeToggle() {
   }
 
   return <Toggle label="Theme" testId="theme-toggle" options={OPTIONS} value={preference} onChange={choose} />;
+}
+
+// For client-rendered error pages that have no ThemeToggle.
+export function ThemeSync() {
+  useEffect(() => {
+    ensureTheme();
+  }, []);
+  return null;
 }
