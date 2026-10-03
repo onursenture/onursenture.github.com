@@ -348,7 +348,7 @@ export const templates: CaseStudy = {
       media: [
         { id: "diamond-cover", caption: "Diamond" },
         { id: "diamond-landing", caption: "Landing", tags: ["page"] },
-        { id: "diamond-crud", caption: "Crud", tags: ["page"] },
+        { id: "diamond-crud", caption: "CRUD", tags: ["page"] },
         { id: "diamond-login", caption: "Login", tags: ["page"] },
       ],
     },
@@ -368,7 +368,7 @@ export const templates: CaseStudy = {
       date: "2020-09",
       title: "Freya",
       frameworks: ["JSF", "Vue"],
-      note: "An application template for PrimeFaces; the Vue CLI version for PrimeVue followed in May 2021, inspired by Scandinavian minimalism.",
+      note: "An application template for PrimeFaces; the Vue CLI version for PrimeVue followed in May 2021, with a minimalist look.",
       source: "https://x.com/primefaces/status/1308379411037786112",
       links: [
         { label: "PrimeVue post", href: "https://x.com/primevue/status/1390295819937583113" },
@@ -376,7 +376,7 @@ export const templates: CaseStudy = {
       media: [
         { id: "freya-cover", caption: "Freya" },
         { id: "freya-landing", caption: "Landing", tags: ["page"] },
-        { id: "freya-crud", caption: "Crud", tags: ["page"] },
+        { id: "freya-crud", caption: "CRUD", tags: ["page"] },
         { id: "freya-login", caption: "Login", tags: ["page"] },
         { id: "freya-update-dashboard", caption: "Later update: dashboard" },
         { id: "freya-update-cms", caption: "Later update: CMS", tags: ["page"] },
@@ -424,7 +424,7 @@ export const templates: CaseStudy = {
       media: [
         { id: "verona-remastered-cover", caption: "Verona Remastered" },
         { id: "verona-remastered-landing", caption: "Landing", tags: ["page"] },
-        { id: "verona-remastered-crud", caption: "Crud", tags: ["page"] },
+        { id: "verona-remastered-crud", caption: "CRUD", tags: ["page"] },
         { id: "verona-remastered-cms", caption: "CMS", tags: ["page"] },
         { id: "verona-remastered-promo", caption: "Promo", tags: ["promo"], aspect: "16/9" },
       ],
@@ -448,15 +448,15 @@ export const templates: CaseStudy = {
       id: "apollo-2022",
       remaster: true,
       date: "2022-06",
-      title: "Apollo (all-new)",
+      title: "Apollo (2022)",
       frameworks: ["Angular", "React", "Vue"],
-      note: "An all-new application template for PrimeNG with light, dark and dim modes; the Next.js version for PrimeReact followed in December 2022.",
+      note: "A new Apollo application template for PrimeNG with light, dark and dim color modes; the Next.js version for PrimeReact followed in December 2022.",
       source: "https://x.com/prime_ng/status/1542510180499304449",
       links: [
         { label: "PrimeReact post", href: "https://x.com/primereact/status/1600777904069156864" },
       ],
       media: [
-        { id: "apollo-2022-cover", caption: "Apollo (all-new)" },
+        { id: "apollo-2022-cover", caption: "Apollo (2022)" },
         { id: "apollo-2022-landing", caption: "Landing", tags: ["page"] },
         { id: "apollo-2022-cms", caption: "CMS", tags: ["page"] },
         { id: "apollo-2022-products", caption: "Product list", tags: ["page"] },
@@ -486,7 +486,7 @@ export const templates: CaseStudy = {
       date: "2024-12",
       title: "Genesis",
       frameworks: ["React", "Vue", "Angular"],
-      note: "A multipurpose premium template, the first PrimeTek offered, built with React and Next.js; PrimeVue followed in January 2025 and PrimeNG in March 2025.",
+      note: "The first multipurpose template in the Prime line-up, on React and Next.js; PrimeVue followed in January 2025 and PrimeNG in March 2025.",
       source: "https://x.com/w00f/status/1867143128396058914",
       links: [
         { label: "PrimeVue post", href: "https://x.com/primevue/status/1876588477774803394" },

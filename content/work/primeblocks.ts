@@ -70,7 +70,7 @@ export const primeblocks: CaseStudy = {
       id: "jsf-ecommerce",
       date: "2023-05",
       title: "E-commerce for JSF",
-      note: "PrimeBlocks for JSF added 120+ new blocks and an all-new E-Commerce category.",
+      note: "PrimeBlocks for JSF grew by 120+ blocks, with a whole E-Commerce category among them.",
       source: "https://x.com/primefaces/status/1655900374950195201",
       media: [],
     },

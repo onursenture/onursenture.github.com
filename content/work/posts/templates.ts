@@ -29,14 +29,14 @@ export const templatesPosts: Post[] = [
     date: "2025-02-17",
     account: "primevue",
     id: "1891483427955687549",
-    summary: "Poseidon Remastered Edition for PrimeVue, redesigned from the ground up.",
+    summary: "Poseidon Remastered Edition for PrimeVue, a complete redesign of the original.",
     entryId: "poseidon-remastered",
   },
   {
     date: "2025-01-07",
     account: "primevue",
     id: "1876588477774803394",
-    summary: "Genesis for PrimeVue, billed as that library's first multipurpose premium template.",
+    summary: "Genesis reaches PrimeVue after React, the first multipurpose template in the Prime line-up.",
     entryId: "genesis",
   },
   {
@@ -85,14 +85,14 @@ export const templatesPosts: Post[] = [
     date: "2022-12-08",
     account: "primereact",
     id: "1600777904069156864",
-    summary: "All-new Apollo for PrimeReact, built on Next.js, with three color modes.",
+    summary: "The 2022 Apollo for PrimeReact, on Next.js, with three color modes.",
     entryId: "apollo-2022",
   },
   {
     date: "2022-06-30",
     account: "prime_ng",
     id: "1542510180499304449",
-    summary: "All-new Apollo for PrimeNG, with light, dark and dim modes.",
+    summary: "The 2022 Apollo for PrimeNG, with light, dark and dim color modes.",
     entryId: "apollo-2022",
   },
   {
@@ -106,7 +106,7 @@ export const templatesPosts: Post[] = [
     date: "2022-03-09",
     account: "primevue",
     id: "1501463821122220032",
-    summary: "Freya for PrimeVue promoted again, a Vue CLI template with a Scandinavian minimalist look.",
+    summary: "Freya for PrimeVue promoted again, a Vue CLI template with a minimalist look.",
     entryId: "freya",
   },
   {
@@ -120,7 +120,7 @@ export const templatesPosts: Post[] = [
     date: "2022-02-21",
     account: "primevue",
     id: "1495690462212112385",
-    summary: "PrimeVue Atlantis promoted again as a best seller among admin templates.",
+    summary: "Atlantis for PrimeVue, the admin template, promoted again.",
     entryId: "atlantis",
   },
   {
@@ -162,14 +162,14 @@ export const templatesPosts: Post[] = [
     date: "2021-09-22",
     account: "primevue",
     id: "1440628415762026510",
-    summary: "Atlantis for PrimeVue, pitched as a best seller among admin templates.",
+    summary: "Atlantis for PrimeVue, an admin template, announced.",
     entryId: "atlantis",
   },
   {
     date: "2021-05-06",
     account: "primevue",
     id: "1390295819937583113",
-    summary: "Freya for PrimeVue, a Vue CLI template with a Scandinavian minimalist look.",
+    summary: "Freya for PrimeVue, a minimalist-looking template for Vue CLI.",
     entryId: "freya",
   },
   {
@@ -190,7 +190,7 @@ export const templatesPosts: Post[] = [
     date: "2020-12-03",
     account: "prime_ng",
     id: "1334455814099177472",
-    summary: "Poseidon rebuilt from the ground up for PrimeNG.",
+    summary: "The remastered Poseidon for PrimeNG, redone end to end.",
     entryId: "poseidon-remastered-2020",
   },
   {

@@ -64,16 +64,6 @@
     "sourceHash": "cf740766a1c885de5bfc290c12528420b3ba9153213a1f87aca949683b829556",
     "settings": "v1 avif:q60:4:2:0 jpg:q82:progressive:mozjpeg widths:640,1280,2560"
   },
-  "work/archive/visual-theme-designer-promo": {
-    "width": 1200,
-    "height": 585,
-    "widths": [
-      640,
-      1200
-    ],
-    "sourceHash": "81fc051237ea4fb7a028e4189574c006684a131fc57cb717a0964e2fb1735b54",
-    "settings": "v1 avif:q60:4:2:0 jpg:q82:progressive:mozjpeg widths:640,1280,2560"
-  },
   "work/primeblocks/application-ui": {
     "width": 1312,
     "height": 904,

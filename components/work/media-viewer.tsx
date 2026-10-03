@@ -217,6 +217,7 @@ function ViewerStage({
         data-stage
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
+        onDragStart={(e) => e.preventDefault()}
         className="grid min-h-0 flex-1 touch-pan-y grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 py-4 md:gap-4 [&_img]:[-webkit-user-drag:none]"
       >
         <button type="button" aria-label="Previous figure" onClick={onPrev} className="px-2 py-4 type-body text-fg-muted hover:text-fg">

@@ -93,6 +93,8 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
   2. Run `npm run figma`. It writes `images-src/work/<slug>/<id>.png`, records its export lock in the gitignored `figma.lock.local.json` (skipping frames whose file hasn't changed), and runs `npm run images`. A slot with a hand-set `image` is skipped.
   3. Commit the PNGs, the renditions and `lib/images/manifest.json`; never the two local Figma files.
 
+  Some sources were hand-processed (cropped tall pages, JPEG for large frames). Remove their entries from `figma.local.json`, or re-crop afterwards, before running `npm run figma`: a refresh writes an uncropped PNG next to them.
+
   `embed: true` (on a `figma` ref) adds the click-to-load embed in the viewer; it only applies if refs are ever committed and `figmaLinks` is on.
 - **Figma switch.** `workSettings.figmaLinks` (`content/work/settings.ts`) is **off by default**: PrimeTek may not want its files linked. Off, `getStudyView` / `getArchiveView` null every `figma` ref, so no "Open in Figma ↗", no embed control and no `fileKey`/`nodeId` in the HTML or RSC payload.
 

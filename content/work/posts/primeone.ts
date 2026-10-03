@@ -8,7 +8,7 @@ export const primeonePosts: Post[] = [
     date: "2026-01-19",
     account: "w00f",
     id: "2013248948748656769",
-    summary: "Onur on the release day: \"4.0 (and 3.2) shipped. Onward.\"",
+    summary: "Onur on release day: \"4.0 (and 3.2) shipped. Onward.\" Both landed together.",
     entryId: "4-0",
   },
   {
@@ -22,7 +22,7 @@ export const primeonePosts: Post[] = [
     date: "2026-01-07",
     account: "w00f",
     id: "2008855709681951191",
-    summary: "Onur previews PrimeOne 4: tokens re-architected around native Figma variable collections.",
+    summary: "Onur previews PrimeOne 4, with the tokens rebuilt on native Figma variable collections.",
     entryId: "4-0",
   },
   {
@@ -78,7 +78,7 @@ export const primeonePosts: Post[] = [
     date: "2022-07-26",
     account: "w00f",
     id: "1551880003134128128",
-    summary: "Onur shares the all-new Figma UI kit, built with variants and auto layout in light and dark modes.",
+    summary: "Onur quote-posts the PrimeOne kit launch with a single \"🔥\".",
     entryId: "kit-2022",
   },
   {

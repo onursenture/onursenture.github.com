@@ -15,7 +15,7 @@ export const primeiconsPosts: Post[] = [
     date: "2024-03-29",
     account: "primefaces",
     id: "1773661861151432797",
-    summary: "PrimeIcons 7.0.0 released: 50-plus new icons and over 2 million monthly downloads.",
+    summary: "PrimeIcons 7.0.0 released: 50-plus new icons, at more than 2 million downloads a month.",
     entryId: "7-0",
   },
   {

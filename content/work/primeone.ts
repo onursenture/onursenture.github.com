@@ -26,7 +26,7 @@ export const primeone: CaseStudy = {
       id: "kit-2022",
       date: "2022-07",
       title: "PrimeOne for Figma",
-      note: "The all-new Figma UI kit, built with variants and auto layout, in light and dark modes.",
+      note: "The first PrimeOne kit: components rebuilt with auto layout and variants, with light and dark modes from the start.",
       source: "https://x.com/w00f/status/1551880003134128128",
       media: [
         { id: "kit-2022", caption: "Figma UI kit" },
@@ -61,8 +61,8 @@ export const primeone: CaseStudy = {
       id: "3-0",
       date: "2024-11",
       version: "3.0",
-      note: "A full rebuild around the new theming engine, with design tokens and Figma variables kept in sync.",
-      source: "https://x.com/w00f/status/1854537901700186303",
+      note: "A full rebuild around the new theming engine.",
+      source: "https://x.com/primereact/status/1854528709304205531",
       media: [
         { id: "overview-3-0", caption: "Overview" },
         { id: "tokens-3-0", caption: "Tokens", tags: ["tokens"] },
@@ -70,10 +70,21 @@ export const primeone: CaseStudy = {
       ],
     },
     {
+      id: "3-2",
+      date: "2026-01",
+      version: "3.2",
+      note: "The last 3.x release and the last one built on Tokens Studio. It shipped the same day as 4.0, with component fixes and tidier naming.",
+      source: "https://www.primefaces.org/blog/primeone-4-0-is-here-native-figma-variables/",
+      media: [
+        { id: "overview-3-2", caption: "Overview" },
+        { id: "tokens-3-2", caption: "Tokens", tags: ["tokens"] },
+      ],
+    },
+    {
       id: "4-0",
       date: "2026-01",
       version: "4.0",
-      note: "Tokens moved to native Figma variables, organised in new variable collections, plus a new Figma plugin that outputs theme code.",
+      note: "Tokens moved to native Figma variables, sorted into new collections, and a Figma plugin now writes the theme code.",
       source: "https://x.com/primevue/status/2013200903923245079",
       media: [
         { id: "overview-4-0", caption: "Overview" },

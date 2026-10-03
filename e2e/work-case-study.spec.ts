@@ -29,7 +29,7 @@ test("the PrimeOne log is newest first and links each entry's post", async ({ pa
   await expect(block).toContainText(e30.heading);
   await expect(block).toContainText(`· ${e30.month}`);
   const post = block.getByRole("link", { name: `Post on X, ${e30.heading}, ${e30.month} ${e30.year}` });
-  await expect(post).toHaveAttribute("href", "https://x.com/w00f/status/1854537901700186303");
+  await expect(post).toHaveAttribute("href", "https://x.com/primereact/status/1854528709304205531");
   await expect(post).toContainText("post");
   await expect(block.locator('[data-media="overview-3-0"]')).toHaveAttribute("aria-label", `Open ${overview.label}: ${overview.caption}`);
   await expect(block.getByRole("button", { name: `+${e30.media.length - 1} in Grid →` })).toBeVisible();
