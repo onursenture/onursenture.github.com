@@ -26,7 +26,7 @@ export const primeicons: CaseStudy = {
       id: "start",
       date: "2018-02",
       title: "Work starts",
-      note: "Work started on PrimeIcons, our own free icon library to replace the Font Awesome dependency.",
+      note: "Work started on PrimeIcons, a free in-house icon set meant to drop the Font Awesome dependency.",
       source: "https://x.com/primereact/status/963322417467789312",
       media: [],
     },

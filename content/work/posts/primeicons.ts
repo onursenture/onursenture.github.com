@@ -64,7 +64,7 @@ export const primeiconsPosts: Post[] = [
     date: "2018-02-13",
     account: "primereact",
     id: "963322417467789312",
-    summary: "Work under way on PrimeIcons, a free icon library to replace the Font Awesome dependency.",
+    summary: "Early word of PrimeIcons, a free icon set meant to drop the Font Awesome dependency.",
     entryId: "start",
   },
 ];

@@ -50,7 +50,7 @@ export const templatesPosts: Post[] = [
     date: "2024-12-12",
     account: "primereact",
     id: "1867141278775058664",
-    summary: "Genesis launched for PrimeReact on Next.js as Prime's first multipurpose premium template.",
+    summary: "Genesis launched for PrimeReact on Next.js, billed as the first of its kind from PrimeTek.",
     entryId: "genesis",
   },
   {
@@ -113,14 +113,14 @@ export const templatesPosts: Post[] = [
     date: "2022-02-23",
     account: "prime_ng",
     id: "1496399118507335683",
-    summary: "Another post on the remastered Verona admin template for Angular CLI.",
+    summary: "Another post on Verona's remaster, the Angular CLI admin template.",
     entryId: "verona-remastered",
   },
   {
     date: "2022-02-21",
     account: "primevue",
     id: "1495690462212112385",
-    summary: "PrimeVue Atlantis promoted again as the best-selling admin template.",
+    summary: "PrimeVue Atlantis promoted again as a best seller among admin templates.",
     entryId: "atlantis",
   },
   {
@@ -162,14 +162,14 @@ export const templatesPosts: Post[] = [
     date: "2021-09-22",
     account: "primevue",
     id: "1440628415762026510",
-    summary: "Atlantis for PrimeVue, described as the best-selling admin template.",
+    summary: "Atlantis for PrimeVue, pitched as a best seller among admin templates.",
     entryId: "atlantis",
   },
   {
     date: "2021-05-06",
     account: "primevue",
     id: "1390295819937583113",
-    summary: "Freya for PrimeVue, a Vue CLI template inspired by Scandinavian minimalism.",
+    summary: "Freya for PrimeVue, a Vue CLI template with a Scandinavian minimalist look.",
     entryId: "freya",
   },
   {
@@ -337,7 +337,7 @@ export const templatesPosts: Post[] = [
     date: "2019-08-22",
     account: "primevue",
     id: "1164474341867831297",
-    summary: "Sapphire for PrimeVue, the first premium Vue CLI template, with a Material look.",
+    summary: "Sapphire for PrimeVue, a Material-style template and the first premium one for Vue CLI.",
     entryId: "sapphire",
   },
   {
@@ -372,7 +372,7 @@ export const templatesPosts: Post[] = [
     date: "2019-03-19",
     account: "prime_ng",
     id: "1107897579025649664",
-    summary: "California updated with horizontal and slim menu options.",
+    summary: "California gained horizontal and slim menus.",
     entryId: "california",
   },
   {
@@ -505,7 +505,7 @@ export const templatesPosts: Post[] = [
     date: "2017-11-01",
     account: "primefaces",
     id: "925729472808128512",
-    summary: "Avalon gained a dashboard alternative for finance applications.",
+    summary: "Avalon gained a new dashboard variant for finance apps.",
     entryId: "avalon",
   },
   {
@@ -568,7 +568,7 @@ export const templatesPosts: Post[] = [
     date: "2017-08-07",
     account: "primefaces",
     id: "894494388956606465",
-    summary: "Avalon, a Bootstrap-based PrimeFaces template with over 4000 layout combinations.",
+    summary: "Avalon, a Bootstrap-based PrimeFaces template offering more than 4000 layout combinations.",
     entryId: "avalon",
   },
   {
@@ -750,7 +750,7 @@ export const templatesPosts: Post[] = [
     date: "2016-08-31",
     account: "primefaces",
     id: "770891393459949568",
-    summary: "Ultima, a material template for PrimeFaces, released with 120 layout combinations.",
+    summary: "Ultima, a material template for PrimeFaces, shipped with 120 layout combinations.",
     entryId: "ultima",
   },
   {

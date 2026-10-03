@@ -7,7 +7,7 @@ export const archiveEntries: ArchiveEntry[] = [
     org: "primetek",
     date: "2018-11",
     title: "Nova and Luna themes",
-    note: "New open source and free Nova and Luna themes for PrimeFaces, announced with the modernized PrimeFaces.",
+    note: "Nova and Luna, two free open-source themes for PrimeFaces, introduced with the modernized PrimeFaces.",
     source: "https://x.com/primefaces/status/1061931021355106304",
   },
   {
@@ -15,7 +15,7 @@ export const archiveEntries: ArchiveEntry[] = [
     org: "primetek",
     date: "2018-12",
     title: "PrimeNG Theme Designer",
-    note: "The PrimeNG Theme Designer updated to Angular 7 and PrimeNG 7.",
+    note: "The PrimeNG Theme Designer upgraded to Angular 7, alongside PrimeNG 7.",
     source: "https://x.com/prime_ng/status/1070961512251080704",
   },
   {
@@ -23,7 +23,7 @@ export const archiveEntries: ArchiveEntry[] = [
     org: "primetek",
     date: "2021-09",
     title: "Free Tailwind theme",
-    note: "A new free Tailwind theme for PrimeVue.",
+    note: "A free Tailwind-based theme for PrimeVue.",
     source: "https://x.com/primevue/status/1434846405818998790",
   },
   {
@@ -39,7 +39,7 @@ export const archiveEntries: ArchiveEntry[] = [
     org: "primetek",
     date: "2023-07",
     title: "Visual Theme Designer for PrimeFaces",
-    note: "The Visual Theme Designer became a free tool for PrimeFaces users.",
+    note: "The Visual Theme Designer opened to PrimeFaces users at no cost.",
     source: "https://x.com/primefaces/status/1684176428512821249",
   },
   {
@@ -71,7 +71,7 @@ export const archiveEntries: ArchiveEntry[] = [
     org: "primetek",
     date: "2025-02",
     title: "PrimeVue Theme Designer",
-    note: "The all-new PrimeVue Theme Designer, with a visual editor, a Figma to code generator, a migration assistant and cloud storage.",
+    note: "A new PrimeVue Theme Designer that adds cloud storage, a migration assistant, a visual editor and Figma-to-code generation.",
     source: "https://x.com/primevue/status/1892887414865011098",
   },
   {
@@ -79,7 +79,7 @@ export const archiveEntries: ArchiveEntry[] = [
     org: "primetek",
     date: "2025-04",
     title: "PrimeNG Theme Designer",
-    note: "The all-new PrimeNG Theme Designer, with a visual editor, a Figma to theme code generator, a migration assistant and cloud storage.",
+    note: "A new PrimeNG Theme Designer that adds cloud storage, a migration assistant, a visual editor and Figma-based theme code generation.",
     source: "https://x.com/prime_ng/status/1912477580525027569",
   },
   {
@@ -87,7 +87,7 @@ export const archiveEntries: ArchiveEntry[] = [
     org: "primetek",
     date: "2025-10",
     title: "Figma to Theme Code pipeline",
-    note: "A CI pipeline for automated conversion from Figma to theme code, announced to launch the following week.",
+    note: "A CI pipeline that automatically converts Figma designs into theme code, announced for the following week.",
     source: "https://x.com/primevue/status/1976629074488619089",
   },
 ];
