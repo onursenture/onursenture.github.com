@@ -4,7 +4,9 @@ import { Bio } from "@/components/home/bio";
 import { ExperienceTree } from "@/components/home/experience-tree";
 import { LabGrid } from "@/components/home/lab-grid";
 import { WorkTiles } from "@/components/home/work-tiles";
+import { Heatmap } from "@/components/ui/heatmap";
 import { OrgMark } from "@/components/ui/org-mark";
+import { labIndex } from "@/content/lab-index";
 
 const html = renderToStaticMarkup;
 
@@ -24,6 +26,13 @@ describe("Bio", () => {
     expect(markup).toContain("Orkestra Studios");
     expect(markup).toContain('src="/logos/orkestra.png"');
     expect(markup).toContain(" since 2013.");
+  });
+});
+
+describe("Bio indent", () => {
+  it("has no first-line indent", () => {
+    const markup = html(<Bio paragraphs={[["Hello."]]} />);
+    expect(markup).not.toContain("indent-[3ch]");
   });
 });
 
@@ -75,11 +84,61 @@ describe("LabGrid", () => {
       <LabGrid
         entries={[
           { title: "Linked", description: "d", href: "https://example.com", status: "wip" },
-          { title: "Plain", description: "d", status: "wip", placeholder: true },
+          { title: "Plain", description: "d", status: "wip" },
         ]}
       />,
     );
     expect(markup.match(/<a /g)).toHaveLength(1);
     expect(markup).toContain("↗");
+  });
+
+  it("renders text rows without avatars", () => {
+    const markup = html(
+      <LabGrid
+        entries={[
+          {
+            title: "onursenture.com",
+            description: "This site.",
+            year: "2026",
+            status: "wip",
+            href: "https://github.com/onursenture/onursenture.github.com",
+          },
+        ]}
+      />,
+    );
+    expect(markup).toContain("onursenture.com");
+    expect(markup).toContain("This site.");
+    expect(markup).toContain("2026");
+    expect(markup).not.toContain("<canvas");
+    // LabAvatar's wrapper (a canvas only mounts after hydration).
+    expect(markup).not.toContain("relative block shrink-0");
+  });
+});
+
+describe("labIndex", () => {
+  it("holds only real projects, no placeholders", () => {
+    expect(labIndex.every((entry) => !("placeholder" in entry))).toBe(true);
+    expect(labIndex.some((entry) => /^Project 0\d$/.test(entry.title))).toBe(false);
+  });
+});
+
+describe("Heatmap", () => {
+  it("colours the heatmap with GitHub's greens", () => {
+    const data = {
+      total: 10,
+      weeks: [
+        {
+          days: [
+            { date: "2026-09-27", count: 0, level: 0 },
+            { date: "2026-09-28", count: 1, level: 1 },
+            { date: "2026-09-29", count: 2, level: 2 },
+            { date: "2026-09-30", count: 3, level: 3 },
+            { date: "2026-10-01", count: 4, level: 4 },
+          ],
+        },
+      ],
+    };
+    const markup = html(<Heatmap data={data} />);
+    for (const hex of ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"]) expect(markup).toContain(hex);
   });
 });

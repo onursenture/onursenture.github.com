@@ -6,12 +6,11 @@ import { Empty } from "@/components/sections/empty";
 import { SourcesTable } from "@/components/sources/sources-table";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
-import { ContributionChart } from "@/components/ui/contribution-chart";
 import { Cover } from "@/components/ui/cover";
 import { DataTable } from "@/components/ui/data-table";
 import { DitherRule, DitherStrip, FooterWash } from "@/components/ui/dither";
 import { EraStamp } from "@/components/ui/era-stamp";
-import { LabAvatar } from "@/components/ui/lab-avatar";
+import { Heatmap } from "@/components/ui/heatmap";
 import { LiveClock } from "@/components/ui/live-clock";
 import { MediaPlaceholder } from "@/components/ui/media-placeholder";
 import { MetaLabel } from "@/components/ui/meta-label";
@@ -55,11 +54,16 @@ const SWATCHES = [
   ["--color-danger-bg", "bg-danger-bg"],
 ] as const;
 
-// Generic sample shape for the specimen, not real data.
-const SAMPLE_WEEKS = Array.from({ length: 52 }, (_, i) => ({
-  week: `w${i}`,
-  count: Math.round(20 + 15 * Math.sin(i / 5) + (i % 7) * 2),
-}));
+// Generic sample for the Heatmap specimen, not real data: 20 weeks, levels 0–4.
+const SAMPLE_CONTRIBUTIONS = {
+  total: 0,
+  weeks: Array.from({ length: 20 }, (_, w) => ({
+    days: Array.from({ length: 7 }, (_, d) => {
+      const date = new Date(Date.UTC(2026, 0, 4 + w * 7 + d)).toISOString().slice(0, 10);
+      return { date, count: 0, level: (w * 3 + d * 2) % 5 };
+    }),
+  })),
+};
 
 function Swatches() {
   return (
@@ -134,15 +138,8 @@ export default async function SystemPage() {
         <Specimen name="PrimaryButton">
           <PrimaryButton href="/system/">Book a call →</PrimaryButton>
         </Specimen>
-        <Specimen name="LabAvatar">
-          {["alpha", "beta", "gamma", "delta", "epsilon"].map((name) => (
-            <LabAvatar key={name} name={name} />
-          ))}
-        </Specimen>
-        <Specimen name="ContributionChart">
-          <div className="w-full max-w-120">
-            <ContributionChart weeks={SAMPLE_WEEKS} />
-          </div>
+        <Specimen name="Heatmap">
+          <Heatmap data={SAMPLE_CONTRIBUTIONS} />
         </Specimen>
         <Specimen name="FooterWash">
           <div className="w-full">

@@ -9,11 +9,12 @@ test("the home leads with the lead line, the role and a live Ankara clock", asyn
   await expect(page.locator("#identity")).toContainText("Open to work");
 });
 
-test("each section's label is a heading", async ({ page }) => {
+test("the sections run Lab, Work, Experience, Contributions, each label a heading", async ({ page }) => {
   await page.goto("/");
-  for (const name of ["Work", "Experience", "Lab"]) {
-    await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
-  }
+  const names = ["Lab", "Work", "Experience", "Contributions"];
+  for (const name of names) await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Latest work" })).toHaveCount(0);
+  await expect(page.locator("main h1, main h2")).toHaveText([/Designer who builds\./, ...names]);
 });
 
 test("the bio names PrimeTek, Orkestra and Bilkent with inline marks", async ({ page }) => {
@@ -44,20 +45,21 @@ test("Experience is a tree with confirmed dates", async ({ page }) => {
   await expect(tree.getByRole("link", { name: "PrimeIcons" })).toHaveAttribute("href", "/work/primeicons/");
 });
 
-test("Latest work shows the empty state without data, and links to GitHub", async ({ page }) => {
+test("Contributions shows the empty state without data, and links to GitHub", async ({ page }) => {
   await page.goto("/");
-  const latest = page.locator("#latest");
-  await expect(latest).toContainText("Nothing here yet.");
-  await expect(latest.getByRole("link", { name: "GitHub" })).toHaveAttribute("href", "https://github.com/onursenture");
+  const contributions = page.locator("#contributions");
+  await expect(contributions).toContainText("Nothing here yet.");
+  await expect(contributions.getByRole("link", { name: "GitHub" })).toHaveAttribute("href", "https://github.com/onursenture");
 });
 
-test("Lab lists every entry with a decorative avatar; only linked entries link", async ({ page }) => {
+test("Lab lists text rows without avatars; only linked entries link", async ({ page }) => {
   await page.goto("/");
   const lab = page.locator("#lab");
   await expect(lab).toContainText("onursenture.com");
-  await expect(lab).toContainText("Project 02");
+  await expect(lab).not.toContainText("Project 0");
   await expect(lab.getByRole("link")).toHaveCount(1);
-  await expect(lab.getByRole("img", { name: "in progress" })).toHaveCount(3);
+  await expect(lab.getByRole("img", { name: "in progress" })).toHaveCount(1);
+  await expect(lab.locator("canvas")).toHaveCount(0);
 });
 
 test("every canvas on the home is decorative", async ({ page }) => {

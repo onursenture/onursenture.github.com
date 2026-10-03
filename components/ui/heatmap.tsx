@@ -1,14 +1,9 @@
 import { cx } from "@/lib/cx";
 import type { Contributions } from "@/lib/sources/github";
 
-// Five monochrome steps from --color-line to --color-fg (GitHub's levels 0–4).
-const LEVELS = [
-  "bg-line",
-  "bg-[color-mix(in_srgb,var(--color-fg)_25%,var(--color-line))]",
-  "bg-[color-mix(in_srgb,var(--color-fg)_50%,var(--color-line))]",
-  "bg-[color-mix(in_srgb,var(--color-fg)_75%,var(--color-line))]",
-  "bg-fg",
-];
+// GitHub's own contribution greens (levels 0–4). The only colours on the Work
+// side outside the palette, on purpose: the audience knows them (Onur 2026-10-03).
+const LEVELS = ["bg-[#ebedf0]", "bg-[#9be9a8]", "bg-[#40c463]", "bg-[#30a14e]", "bg-[#216e39]"];
 
 // One column per week, Sunday on top. The first week is usually partial, so
 // it is padded down to its first day's weekday.

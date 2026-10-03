@@ -25,8 +25,8 @@ function sectionLink(label: string, href: string) {
   return item?.ready ? <TextLink href={href}>{label}</TextLink> : undefined;
 }
 
-// The Work home: identity, work, experience, latest work and Lab, separated
-// by dither rules (Sprint 4 spec §4).
+// The Work home: identity, Lab, work, experience and contributions, separated
+// by dither rules.
 export function HomeSite() {
   const rows = [
     <SectionRow
@@ -60,6 +60,11 @@ export function HomeSite() {
         </div>
       ) : null}
     </SectionRow>,
+    labIndex.length > 0 ? (
+      <SectionRow key="lab" id="lab" label="Lab" action={sectionLink("All lab", "/lab/")}>
+        <LabGrid entries={labIndex} />
+      </SectionRow>
+    ) : null,
     <SectionRow key="work" id="work" label="Work" action={<TextLink href="/work/">All work</TextLink>}>
       <WorkTiles entries={workIndex.map((entry) => ({ ...entry, image: entry.slug ? heroImageKey(entry.slug) : undefined }))} />
     </SectionRow>,
@@ -67,18 +72,13 @@ export function HomeSite() {
       <ExperienceTree entries={experience} />
     </SectionRow>,
     <SectionRow
-      key="latest"
-      id="latest"
-      label="Latest work"
+      key="contributions"
+      id="contributions"
+      label="Contributions"
       action={<TextLink href={`https://github.com/${profile.social.github}`}>GitHub</TextLink>}
     >
       <Contributions />
     </SectionRow>,
-    labIndex.length > 0 ? (
-      <SectionRow key="lab" id="lab" label="Lab" action={sectionLink("All lab", "/lab/")}>
-        <LabGrid entries={labIndex} />
-      </SectionRow>
-    ) : null,
   ].filter(Boolean);
 
   return (
