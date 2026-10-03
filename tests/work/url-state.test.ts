@@ -8,7 +8,7 @@ const parse = (query: string) => parseViewState(new URLSearchParams(query), figs
 describe("parseViewState", () => {
   it("defaults to no figure", () => {
     expect(parse("")).toEqual(NONE);
-    });
+  });
 
   it("reads a known fig", () => {
     expect(parse("fig=tokens")).toEqual({ fig: "tokens" });

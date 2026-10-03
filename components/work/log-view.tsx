@@ -96,7 +96,7 @@ function EntryBlock({ entry, onOpen }: { entry: EntryView; onOpen?: (id: string)
           ))}
         </div>
       ) : null}
-    {entry.posts.length > 0 ? <PostList posts={entry.posts} /> : null}
+      {entry.posts.length > 0 ? <PostList posts={entry.posts} /> : null}
     </article>
   );
 }
