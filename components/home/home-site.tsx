@@ -12,7 +12,7 @@ import { NAV_ITEMS } from "@/lib/nav";
 import { getPins } from "@/lib/work";
 import { Bio } from "./bio";
 import { Contributions } from "./contributions-row";
-import { ExperienceTree } from "./experience-tree";
+import { ExperienceList } from "./experience-list";
 import { LabGrid } from "./lab-grid";
 import { SelectedWork } from "./selected-work";
 
@@ -66,7 +66,7 @@ export function HomeSite() {
     ) : null,
     pins.length > 0 ? <SelectedWork key="selected-work" pins={pins} /> : null,
     <SectionRow key="experience" id="experience" label="Experience" action={sectionLink("Resume", "/resume/")}>
-      <ExperienceTree entries={experience} />
+      <ExperienceList entries={experience} />
     </SectionRow>,
     <SectionRow
       key="contributions"

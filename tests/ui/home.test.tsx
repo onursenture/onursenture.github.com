@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { Bio } from "@/components/home/bio";
-import { ExperienceTree } from "@/components/home/experience-tree";
+import { ExperienceList } from "@/components/home/experience-list";
 import { LabGrid } from "@/components/home/lab-grid";
 import { SelectedWork, SelectedWorkItem } from "@/components/home/selected-work";
 import { Heatmap } from "@/components/ui/heatmap";
@@ -37,10 +37,10 @@ describe("Bio indent", () => {
   });
 });
 
-describe("ExperienceTree", () => {
-  it("draws products as a tree under their org, last child with └─", () => {
+describe("ExperienceList", () => {
+  it("renders each role's products as rows, linked only when they have a page, with no tree glyphs", () => {
     const markup = html(
-      <ExperienceTree
+      <ExperienceList
         entries={[
           {
             org: "primetek",
@@ -48,18 +48,19 @@ describe("ExperienceTree", () => {
             start: "2016-05",
             end: "2026-04",
             children: [
-              { title: "PrimeOne", note: "design system" },
-              { title: "PrimeIcons", note: "icon set" },
+              { title: "PrimeOne", note: "design system", href: "/work/primeone/" },
+              { title: "Nebuu", note: "word game, iOS" },
             ],
           },
+          { org: "etiya", role: "Design specialist", start: "2014-04", end: "2016-03", children: [] },
         ]}
       />,
     );
-    expect(markup).toContain("PrimeTek");
+    expect(markup).toContain('href="/work/primeone/"');
+    expect(markup).toContain("Nebuu");
+    expect(markup.match(/<a /g)).toHaveLength(1);
+    expect(markup).not.toMatch(/[├└]/);
     expect(markup).toContain("May 2016–Apr 2026");
-    expect(markup).toContain("├─");
-    expect(markup).toContain("└─");
-    expect(markup.indexOf("├─")).toBeLessThan(markup.indexOf("└─"));
   });
 });
 

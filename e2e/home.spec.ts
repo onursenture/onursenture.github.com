@@ -71,15 +71,21 @@ test("Selected work sizes its frames for three columns in the wide row", async (
   for (const width of frames) expect(Math.round(width)).toBe(Math.round((1440 - 308 - 32) / 3));
 });
 
-test("Experience is a tree with confirmed dates", async ({ page }) => {
+test("Experience shows product rows with confirmed dates", async ({ page }) => {
   await page.goto("/");
   const tree = page.locator("#experience");
   await expect(tree).toContainText("Jun 2013–now");
   await expect(tree).toContainText("May 2016–Apr 2026");
   await expect(tree).toContainText("Apr 2014–Mar 2016");
-  await expect(tree).toContainText("└─");
-  await expect(tree.getByRole("list", { name: "PrimeTek work" }).getByRole("listitem")).toHaveCount(4);
+  const products = tree.getByRole("list", { name: "PrimeTek work" });
+  await expect(products.getByRole("listitem")).toHaveCount(4);
+  await expect(products.getByRole("link")).toHaveCount(4);
   await expect(tree.getByRole("link", { name: "PrimeIcons" })).toHaveAttribute("href", "/work/primeicons/");
+  // Nebuu has no page: plain text, not a link.
+  await expect(tree).toContainText("Nebuu");
+  await expect(tree.getByRole("link", { name: "Nebuu" })).toHaveCount(0);
+  const text = (await tree.textContent()) ?? "";
+  expect(text).not.toMatch(/[├└]/);
 });
 
 test("Contributions shows the empty state without data, and links to GitHub", async ({ page }) => {
