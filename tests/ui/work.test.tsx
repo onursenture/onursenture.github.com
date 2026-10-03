@@ -96,12 +96,15 @@ describe("LogView", () => {
       ...study,
       entries: [{ id: "e", date: "2024-11", version: "1.0", note: "N.", media: media(n) }],
     });
-    const render = (n: number) => html(<LogView study={buildStudyView(entryOf(n), () => undefined)} />);
+    // Every slot has an image so the rendered `sizes` can be checked.
+    const render = (n: number) =>
+      html(<LogView study={buildStudyView(entryOf(n), () => ({ width: 1600, height: 1000, widths: [640, 1280, 1600] }))} />);
     const one = render(1);
     expect(one.match(/data-media="m/g)).toHaveLength(1);
     expect(one).toContain("md:grid-cols-2");
     expect(one).not.toContain("xl:grid-cols-3");
-    expect(one).toContain("calc((100vw - 816px) / 2)");
+    expect(one).toContain("(min-width: 1024px) calc((100vw - 816px) / 2)");
+    expect(one).not.toContain("/ 3)");
     expect(one).not.toContain("calc(100vw - 816px),");
     const two = render(2);
     expect(two.match(/data-media="m/g)).toHaveLength(2);
@@ -110,6 +113,7 @@ describe("LogView", () => {
     const three = render(3);
     expect(three.match(/data-media="m/g)).toHaveLength(3);
     expect(three).toContain("md:grid-cols-2 xl:grid-cols-3");
+    expect(three).toContain("(min-width: 1280px) calc((100vw - 816px) / 3)");
     expect(render(7).match(/data-media="m/g)).toHaveLength(7);
   });
 });
