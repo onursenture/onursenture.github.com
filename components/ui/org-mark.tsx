@@ -1,12 +1,12 @@
 import { ORGS, type OrgId } from "@/content/orgs";
 
-// A 16px inline mark before an organisation's name. A monogram tile until a
-// logo file exists. Decorative: the name always follows in text.
+// A 16px inline mark before an organisation's name: its logo, or a monogram
+// tile when there is none. Decorative: the name always follows in text.
 export function OrgMark({ org }: { org: OrgId }) {
   const { logo, monogram } = ORGS[org];
   if (logo) {
-    // eslint-disable-next-line @next/next/no-img-element -- tiny local SVG
-    return <img src={logo} alt="" aria-hidden="true" width={16} height={16} className="inline-block size-4 align-[-3px]" />;
+    // eslint-disable-next-line @next/next/no-img-element -- tiny local PNG
+    return <img src={logo} alt="" aria-hidden="true" width={16} height={16} className="inline-block size-4 rounded-[4px] align-[-3px]" />;
   }
   return (
     <span

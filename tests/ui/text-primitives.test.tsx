@@ -8,7 +8,6 @@ import { MetaLabel } from "@/components/ui/meta-label";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { StatusGlyph } from "@/components/ui/status-glyph";
 import { TextLink } from "@/components/ui/text-link";
-import { Toggle } from "@/components/ui/toggle";
 
 const html = renderToStaticMarkup;
 
@@ -78,25 +77,6 @@ describe("Button", () => {
     expect(html(<ButtonLink href="https://cal.com/x">Book a call →</ButtonLink>)).toContain(
       'rel="noopener noreferrer"',
     );
-  });
-});
-
-describe("Toggle", () => {
-  it("marks exactly the current option as pressed", () => {
-    const markup = html(
-      <Toggle
-        label="Layout"
-        testId="layout-toggle"
-        value="list"
-        options={[
-          { value: "list", label: "List" },
-          { value: "grid", label: "Grid" },
-        ]}
-      />,
-    );
-    expect(markup).toContain('role="group" aria-label="Layout" data-testid="layout-toggle"');
-    expect(markup.match(/aria-pressed="true"/g)).toHaveLength(1);
-    expect(markup).toMatch(/aria-pressed="true"[^>]*>List</);
   });
 });
 

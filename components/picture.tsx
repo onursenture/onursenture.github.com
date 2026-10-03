@@ -1,8 +1,9 @@
 import { getImage } from "@/lib/images/manifest";
-import { renditionUrl, srcSet } from "@/lib/images/plan";
+import { PictureView } from "./picture-view";
 
 // Responsive AVIF + JPEG <picture> for an image produced by `npm run images`.
-// `image` is the manifest key, e.g. "photos/stabilo".
+// `image` is the manifest key, e.g. "photos/stabilo". Throws for an unknown
+// key (getImage), so a missing `npm run images` fails the build.
 export function Picture({
   image,
   alt,
@@ -16,22 +17,7 @@ export function Picture({
   priority?: boolean;
   className?: string;
 }) {
-  const entry = getImage(image);
   return (
-    <picture>
-      <source type="image/avif" srcSet={srcSet(image, entry, "avif")} sizes={sizes} />
-      <img
-        src={renditionUrl(image, entry.width, "jpg")}
-        srcSet={srcSet(image, entry, "jpg")}
-        sizes={sizes}
-        width={entry.width}
-        height={entry.height}
-        alt={alt}
-        loading={priority ? "eager" : "lazy"}
-        fetchPriority={priority ? "high" : undefined}
-        decoding="async"
-        className={className}
-      />
-    </picture>
+    <PictureView image={image} entry={getImage(image)} alt={alt} sizes={sizes} priority={priority} className={className} />
   );
 }

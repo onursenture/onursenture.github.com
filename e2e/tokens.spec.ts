@@ -6,14 +6,9 @@ const bodyColors = (page: import("@playwright/test").Page) =>
     return { bg: style.backgroundColor, fg: style.color };
   });
 
-test("the light and dark tokens reach the page", async ({ page, context, baseURL }) => {
-  await context.addCookies([{ name: "theme", value: "light", url: baseURL! }]);
+test("the light tokens reach the page", async ({ page }) => {
   await page.goto("/");
   expect(await bodyColors(page)).toEqual({ bg: "rgb(250, 250, 248)", fg: "rgb(31, 31, 34)" });
-
-  await context.addCookies([{ name: "theme", value: "dark", url: baseURL! }]);
-  await page.reload();
-  expect(await bodyColors(page)).toEqual({ bg: "rgb(11, 11, 12)", fg: "rgb(237, 237, 237)" });
 });
 
 test("body text is IBM Plex Mono, lead lines Plex Sans, and the name Doto", async ({ page }) => {
@@ -33,11 +28,16 @@ test("body text is IBM Plex Mono, lead lines Plex Sans, and the name Doto", asyn
   expect(fonts.name).toContain("Doto");
 });
 
-test.describe("without JavaScript", () => {
-  test.use({ javaScriptEnabled: false, colorScheme: "dark" });
+test.describe("when the OS prefers dark", () => {
+  test.use({ colorScheme: "dark" });
 
-  test("the OS color scheme applies", async ({ page }) => {
+  test("the Work side stays light, with or without JavaScript", async ({ page, browser, baseURL }) => {
     await page.goto("/");
-    expect(await bodyColors(page)).toEqual({ bg: "rgb(11, 11, 12)", fg: "rgb(237, 237, 237)" });
+    expect(await bodyColors(page)).toEqual({ bg: "rgb(250, 250, 248)", fg: "rgb(31, 31, 34)" });
+    const context = await browser.newContext({ javaScriptEnabled: false, colorScheme: "dark" });
+    const plain = await context.newPage();
+    await plain.goto(`${baseURL}/`);
+    expect(await bodyColors(plain)).toEqual({ bg: "rgb(250, 250, 248)", fg: "rgb(31, 31, 34)" });
+    await context.close();
   });
 });

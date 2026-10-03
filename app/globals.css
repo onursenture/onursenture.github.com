@@ -3,9 +3,9 @@
 /* docs/ holds plans whose code samples would otherwise ship as utilities. */
 @source not "../docs";
 
-/* Theme is an attribute, not a media query, so it can be toggled. The Life
-   side forces the dark palette (data-side="life"), whatever the theme. */
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, [data-side="life"], [data-side="life"] *));
+/* The Work side is light only. The Life side (data-side="life") is the one
+   dark context, so `dark:` utilities apply inside it and nowhere else. */
+@custom-variant dark (&:where([data-side="life"], [data-side="life"] *));
 
 /* Design tokens (Sprint 4 spec §2). The defaults are cleared first, so only
    these exist: no palette colours, no shadows, one radius.
@@ -35,11 +35,10 @@
   --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
   --font-name: var(--font-doto), var(--font-plex-mono), ui-monospace, monospace;
 
-  /* Form controls only (buttons, inputs, toggles). Everything else is square. */
+  /* Form controls only (buttons, inputs, switches). Everything else is square. */
   --radius-control: 4px;
 }
 
-[data-theme="dark"],
 [data-side="life"] {
   color-scheme: dark;
   --color-bg: #0B0B0C;
@@ -50,22 +49,6 @@
   --color-accent: #6E8BFF;
   --color-danger: #F97066;
   --color-danger-bg: #2A0F0C;
-}
-
-/* Without JavaScript the theme script never sets data-theme, so follow the
-   OS. Same values as the block above. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    color-scheme: dark;
-    --color-bg: #0B0B0C;
-    --color-fg: #EDEDED;
-    --color-fg-muted: #8A8A90;
-    --color-fg-soft: #B4B4BA;
-    --color-line: #222225;
-    --color-accent: #6E8BFF;
-    --color-danger: #F97066;
-    --color-danger-bg: #2A0F0C;
-  }
 }
 
 /* SideSync (Task 7) sets html[data-side] while the Life side is mounted, so
@@ -201,5 +184,29 @@ html[data-side="life"] {
 @media (prefers-reduced-motion: reduce) {
   .boot-cursor {
     animation: none;
+  }
+}
+
+/* Work media viewer (components/work/media-viewer.tsx): a 150ms fade in and
+   out. display/overlay transition discretely so the closing fade runs before
+   the dialog leaves the top layer. */
+.media-viewer {
+  opacity: 0;
+  transition:
+    opacity 150ms ease-out,
+    overlay 150ms ease-out allow-discrete,
+    display 150ms ease-out allow-discrete;
+}
+.media-viewer[open] {
+  opacity: 1;
+}
+@starting-style {
+  .media-viewer[open] {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .media-viewer {
+    transition: none;
   }
 }

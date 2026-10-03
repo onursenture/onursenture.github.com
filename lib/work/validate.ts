@@ -1,0 +1,58 @@
+import type { Credit, ProductPage } from "@/content/work/types";
+
+// Registry checks. lib/work/index.ts throws on any of them at build time, and
+// tests/content/work.test.ts runs them in CI. Returns every problem as a
+// readable line instead of throwing at the first one.
+
+const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const COLUMNS: readonly number[] = [1, 2, 3];
+
+export function validateWork(pages: ProductPage[], hasImage: (key: string) => boolean = () => true): string[] {
+  const errors: string[] = [];
+  const slugs = new Set<string>();
+  const pinOrders = new Map<number, string>();
+
+  const credits = (where: string, list: Credit[] = []) => {
+    for (const credit of list) {
+      if (credit.href && !credit.href.startsWith("https://")) errors.push(`${where}: credit "${credit.href}" must be https`);
+    }
+  };
+
+  for (const page of pages) {
+    const at = page.slug;
+    if (slugs.has(page.slug)) errors.push(`duplicate slug "${page.slug}"`);
+    slugs.add(page.slug);
+    if (!page.intro.trim()) errors.push(`${at}: intro must not be empty`);
+    if (page.blocks.length === 0) errors.push(`${at}: a page needs at least one block`);
+
+    const blockIds = new Set<string>();
+    const imageIds = new Set<string>();
+    for (const block of page.blocks) {
+      const where = `${at}/${block.id}`;
+      if (!KEBAB.test(block.id)) errors.push(`${where}: block id "${block.id}" is not kebab-case`);
+      if (blockIds.has(block.id)) errors.push(`${where}: duplicate block id "${block.id}"`);
+      blockIds.add(block.id);
+
+      if (block.kind === "icons" && page.slug !== "primeicons") {
+        errors.push(`${where}: an icons block is only allowed on primeicons`);
+      }
+      if (block.kind !== "images") continue;
+      if (block.columns !== undefined && !COLUMNS.includes(block.columns)) {
+        errors.push(`${where}: columns ${String(block.columns)} must be 1, 2 or 3`);
+      }
+      for (const image of block.images) {
+        if (!KEBAB.test(image.id)) errors.push(`${where}: image id "${image.id}" is not kebab-case`);
+        if (imageIds.has(image.id)) errors.push(`${where}: duplicate image id "${image.id}"`);
+        imageIds.add(image.id);
+        if (image.image && !hasImage(image.image)) errors.push(`${where}: image "${image.image}" is not in the manifest`);
+        credits(`${where}/${image.id}`, image.credits);
+        if (image.pin) {
+          const other = pinOrders.get(image.pin.order);
+          if (other) errors.push(`${where}/${image.id}: duplicate pin order ${image.pin.order} (also ${other})`);
+          else pinOrders.set(image.pin.order, `${where}/${image.id}`);
+        }
+      }
+    }
+  }
+  return errors;
+}

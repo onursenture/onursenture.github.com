@@ -48,6 +48,8 @@ describe("goodreads.fetch", () => {
       "Harry Potter and the Deathly Hallows (Harry Potter, #7)",
       "Educated",
       "Mutluluğun Mimarisi",
+      "The Design of Everyday Things",
+      "Piranesi",
     ]);
     // Nothing on the shelf is rated yet.
     expect(books.currentlyReading[0]).toMatchObject({ author: "J.K. Rowling", numRating: 0 });

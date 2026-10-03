@@ -1,0 +1,137 @@
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&family=Doto:wght@900&display=swap" rel="stylesheet">
+
+<h2>Ürün sayfası: üç düzen</h2>
+<p class="subtitle">Hepsinde aynı içerik var: PrimeOne'ın release log'u. Metinler X arşivinden çıkardığım taslaklar, onaylanmadıkça yayına girmeyecek. Görsel slotlar Sprint 4'teki dither placeholder'lar ("FIG. 0n"). Üç düzen, Sprint 4'ün tokenlarını, Plex Mono gövdesini ve label | content | action grid'ini paylaşıyor. Aralarındaki fark, medyanın ne kadar yer kaplaması ve log'un nasıl okunması.</p>
+
+<style>
+  .mk { border: 1px solid rgba(127,127,127,.3); border-radius: 6px; overflow: hidden; margin: 10px 0 6px; }
+  .mk * { box-sizing: border-box; }
+  .why { font-size: 13px; margin: 6px 0 4px; }
+  .pg { background: #FAFAF8; color: #1F1F22; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; line-height: 1.62; }
+  .pg .m { color: #6E6E73; }
+  .pg .soft { color: #52525A; }
+  .pg a { color: #2F55F5; text-decoration: none; }
+  .pg .strip { height: 8px; background-color: #FAFAF8; background-image: radial-gradient(#2F55F5 .9px, transparent 1.1px), radial-gradient(#2F55F5 .9px, transparent 1.1px); background-size: 4px 4px; background-position: 0 0, 2px 2px; opacity: .55; }
+  .pg .hdr { display: flex; justify-content: space-between; align-items: center; padding: 18px 40px; }
+  .pg .name { font-family: 'Doto'; font-weight: 900; font-size: 20px; letter-spacing: .02em; }
+  .pg .nav { display: flex; gap: 22px; align-items: center; color: #6E6E73; }
+  .pg .nav b { color: #1F1F22; font-weight: 400; }
+  .pg .sw { width: 34px; height: 19px; border-radius: 99px; background: #E6E6E1; position: relative; display: inline-block; vertical-align: middle; }
+  .pg .sw::after { content: ''; position: absolute; left: 2px; top: 2px; width: 15px; height: 15px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+  .pg .rule { height: 6px; background-image: radial-gradient(#C9C9C3 .8px, transparent 1px); background-size: 3px 3px; }
+  .pg .row { display: grid; grid-template-columns: 200px minmax(0, 480px) 1fr; gap: 28px; padding: 30px 40px; }
+  .pg .r { text-align: right; color: #6E6E73; }
+  .pg .lead { font-family: 'IBM Plex Sans'; font-weight: 600; font-size: 20px; line-height: 1.35; letter-spacing: -.01em; margin: 0 0 10px; }
+  .pg .lead span { color: #8B8B93; }
+  .pg p { margin: 0 0 8px; color: #52525A; }
+  .pg dl { display: grid; grid-template-columns: 92px 1fr; gap: 2px 12px; margin: 12px 0 0; }
+  .pg dt { color: #6E6E73; } .pg dd { margin: 0; }
+  .fig { position: relative; background-color: #F1F1EE; background-image: radial-gradient(rgba(47,85,245,.55) .9px, transparent 1.15px), radial-gradient(rgba(47,85,245,.28) .9px, transparent 1.15px); background-size: 4px 4px; background-position: 0 0, 2px 2px; -webkit-mask: linear-gradient(115deg, #000 0%, rgba(0,0,0,.55) 55%, rgba(0,0,0,.2) 100%); mask: linear-gradient(115deg, #000 0%, rgba(0,0,0,.55) 55%, rgba(0,0,0,.2) 100%); }
+  .figw { position: relative; border: 1px solid #E6E6E1; }
+  .figw .t { position: absolute; left: 10px; bottom: 8px; font-size: 10.5px; letter-spacing: .04em; color: #1F1F22; background: #FAFAF8; padding: 1px 5px; }
+  .pg .ver { font-weight: 500; }
+  .tag { display: inline-block; font-size: 10.5px; border: 1px solid #E6E6E1; padding: 0 5px; margin-right: 4px; color: #6E6E73; }
+
+  /* A */
+  .a .fig { aspect-ratio: 16/9; }
+  .a .log .fig { aspect-ratio: 16/10; }
+  /* B */
+  .b .full { padding: 0 40px 30px; }
+  .b .full .fig { aspect-ratio: 21/9; }
+  .b .tl { display: grid; grid-template-columns: 200px 1fr; gap: 28px; padding: 26px 40px; }
+  .b .yr { font-family: 'Doto'; font-weight: 900; font-size: 26px; line-height: 1; position: sticky; top: 0; }
+  .b .ent { display: grid; grid-template-columns: minmax(0, 480px) 1fr; gap: 28px; align-items: start; }
+  .b .ent .fig { aspect-ratio: 4/3; }
+  /* C */
+  .c .clog { font-size: 12.5px; }
+  .c .clog .ln { display: grid; grid-template-columns: 74px 52px 1fr auto; gap: 14px; padding: 7px 0; border-bottom: 1px dashed #E6E6E1; }
+  .c .gal { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 40px 30px; }
+  .c .gal .fig { aspect-ratio: 4/3; }
+  .c .hero .fig { aspect-ratio: 16/9; }
+</style>
+
+<!-- ================= A ================= -->
+<h3>A · Grid'in içinde kalan</h3>
+<div class="mk"><div class="pg a">
+  <div class="strip"></div>
+  <div class="hdr"><span class="name">ONUR SENTURE</span><span class="nav"><b>Work</b><span>Lab</span><span>Resume</span><span>◐</span><span class="sw"></span> Life</span></div>
+  <div class="rule"></div>
+  <div class="row">
+    <div><a>← Work</a><br><br><span>PrimeOne</span><br><span class="m">Design system<br>PrimeTek · 2022–2026</span></div>
+    <div><div class="lead">PrimeOne. <span>The Figma design system behind PrimeVue, PrimeNG and PrimeReact.</span></div>
+      <p>One token architecture, mirrored in code. Every component ships in light and dark, across the three frameworks.</p>
+      <dl><dt>Role</dt><dd>Design lead</dd><dt>Years</dt><dd>2022–2026</dd><dt>Tools</dt><dd>Figma Variables, design tokens</dd></dl></div>
+    <div class="r">Figma Community ↗<br>primevue.org ↗</div>
+  </div>
+  <div class="row" style="padding-top:0"><div></div><div class="figw" style="grid-column: 2 / 4"><div class="fig"></div><span class="t">FIG. 01 · PRIMEONE</span></div></div>
+  <div class="rule"></div>
+  <div class="row log"><div>Release log<br><span class="m">4 entries</span></div>
+    <div>
+      <div class="ver">4.0 <span class="m">· Jan 2026</span></div>
+      <p>Tokens re-architected around native Figma Variable collections.</p>
+      <div class="figw" style="margin:10px 0 22px"><div class="fig"></div><span class="t">FIG. 02 · 4.0</span></div>
+      <div class="ver">3.0 <span class="m">· Nov 2024</span></div>
+      <p>Redesigned from the ground up for the new theming engine.</p>
+      <div class="figw" style="margin:10px 0 22px"><div class="fig"></div><span class="t">FIG. 03 · 3.0</span></div>
+      <div class="ver">2.2 <span class="m">· Dec 2023</span></div>
+      <p>Tokens tightened and aligned one-to-one with the code.</p>
+    </div>
+    <div class="r">post ↗<br><br><br><br><br><br><br><br><br><br><br>post ↗</div></div>
+</div></div>
+<p class="why"><b>Karakter:</b> ana sayfanın doğal devamı. Her şey 480px'lik içerik kolonunda kalıyor, yalnızca FIG. 01 action kolonuna taşıyor. Sakin ve okunaklı. <b>Risk:</b> görseller küçük kalıyor, gerçek medya geldiğinde vitrin etkisi zayıf olabilir.</p>
+
+<!-- ================= B ================= -->
+<h3 style="margin-top:30px">B · Geniş vitrin, yapışkan yıllar</h3>
+<div class="mk"><div class="pg b">
+  <div class="strip"></div>
+  <div class="hdr"><span class="name">ONUR SENTURE</span><span class="nav"><b>Work</b><span>Lab</span><span>Resume</span><span>◐</span><span class="sw"></span> Life</span></div>
+  <div class="rule"></div>
+  <div class="row">
+    <div><a>← Work</a><br><br><span>PrimeOne</span><br><span class="m">Design system<br>PrimeTek · 2022–2026</span></div>
+    <div><div class="lead">PrimeOne. <span>The Figma design system behind PrimeVue, PrimeNG and PrimeReact.</span></div>
+      <p>One token architecture, mirrored in code. Every component ships in light and dark, across the three frameworks.</p>
+      <dl><dt>Role</dt><dd>Design lead</dd><dt>Years</dt><dd>2022–2026</dd><dt>Tools</dt><dd>Figma Variables, design tokens</dd></dl></div>
+    <div class="r">Figma Community ↗<br>primevue.org ↗</div>
+  </div>
+  <div class="full"><div class="figw"><div class="fig"></div><span class="t">FIG. 01 · PRIMEONE</span></div></div>
+  <div class="rule"></div>
+  <div class="tl"><div class="yr">2026</div>
+    <div class="ent"><div><span class="ver">4.0</span> <span class="m">· Jan</span><p style="margin-top:4px">Tokens re-architected around native Figma Variable collections.</p><a>post ↗</a></div><div class="figw"><div class="fig"></div><span class="t">FIG. 02 · 4.0</span></div></div></div>
+  <div class="tl"><div class="yr">2024</div>
+    <div class="ent"><div><span class="ver">3.0</span> <span class="m">· Nov</span><p style="margin-top:4px">Redesigned from the ground up for the new theming engine.</p><a>post ↗</a></div><div class="figw"><div class="fig"></div><span class="t">FIG. 03 · 3.0</span></div></div></div>
+  <div class="tl"><div class="yr">2023</div>
+    <div class="ent"><div><span class="ver">2.2</span> <span class="m">· Dec</span><p style="margin-top:4px">Tokens tightened and aligned one-to-one with the code.</p><a>post ↗</a></div><div class="figw"><div class="fig"></div><span class="t">FIG. 04 · 2.2</span></div></div></div>
+</div></div>
+<p class="why"><b>Karakter:</b> gerçek bir case study hissi veriyor. Hero görsel tam genişlikte, her release'in yanında kendi büyük görseli var. Kaydırırken soldaki Doto yıllar yapışık kalıyor (Sprint 4'ün imza fontu). <b>Risk:</b> görseller gelene kadar sayfanın yarısı dither'dan oluşacak. Bunu "bilinçli" gösterecek olan şey, Sprint 4'te tasarladığımız placeholder dili.</p>
+
+<!-- ================= C ================= -->
+<h3 style="margin-top:30px">C · Changelog dosyası + galeri</h3>
+<div class="mk"><div class="pg c">
+  <div class="strip"></div>
+  <div class="hdr"><span class="name">ONUR SENTURE</span><span class="nav"><b>Work</b><span>Lab</span><span>Resume</span><span>◐</span><span class="sw"></span> Life</span></div>
+  <div class="rule"></div>
+  <div class="row">
+    <div><a>← Work</a><br><br><span>PrimeOne</span><br><span class="m">Design system<br>PrimeTek · 2022–2026</span></div>
+    <div><div class="lead">PrimeOne. <span>The Figma design system behind PrimeVue, PrimeNG and PrimeReact.</span></div>
+      <p>One token architecture, mirrored in code. Every component ships in light and dark, across the three frameworks.</p>
+      <div style="margin-top:10px"><span class="tag">Design lead</span><span class="tag">2022–2026</span><span class="tag">Figma Variables</span></div></div>
+    <div class="r">Figma Community ↗<br>primevue.org ↗</div>
+  </div>
+  <div class="row hero" style="padding-top:0"><div></div><div class="figw" style="grid-column: 2 / 4"><div class="fig"></div><span class="t">FIG. 01 · PRIMEONE</span></div></div>
+  <div class="rule"></div>
+  <div class="row"><div>CHANGELOG.md<br><span class="m">from the PrimeTek X accounts</span></div>
+    <div class="clog">
+      <div class="ln"><span class="m">2026-01</span><span class="ver">4.0</span><span>Tokens re-architected around native Variable collections</span><a>↗</a></div>
+      <div class="ln"><span class="m">2024-11</span><span class="ver">3.0</span><span>Redesigned for the new theming engine</span><a>↗</a></div>
+      <div class="ln"><span class="m">2023-12</span><span class="ver">2.2</span><span>Tokens aligned one-to-one with code</span><a>↗</a></div>
+      <div class="ln"><span class="m">2022-07</span><span class="ver">1.0</span><span>All-new UI kit: variants, auto layout, light and dark</span><a>↗</a></div>
+    </div><div></div></div>
+  <div class="gal"><div class="figw"><div class="fig"></div><span class="t">FIG. 02</span></div><div class="figw"><div class="fig"></div><span class="t">FIG. 03</span></div><div class="figw"><div class="fig"></div><span class="t">FIG. 04</span></div></div>
+</div></div>
+<p class="why"><b>Karakter:</b> en "geek" seçenek. Log bir <code>git log</code> / CHANGELOG dosyası gibi sıkı satırlarla okunuyor, görseller altta ayrı bir galeride duruyor. En az metin isteyen düzen bu. <b>Risk:</b> görsellerle log maddeleri birbirinden kopuyor, case study'den çok bir dokümantasyon sayfasına benziyor.</p>
+
+<div class="options" style="margin-top:20px">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)"><div class="letter">A</div><div class="content"><h3>Grid'in içinde kalan</h3><p>Sakin, ana sayfanın devamı</p></div></div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)"><div class="letter">B</div><div class="content"><h3>Geniş vitrin, yapışkan yıllar</h3><p>Önerim: medya geldiğinde en güçlü vitrin bu olur</p></div></div>
+  <div class="option" data-choice="c" onclick="toggleSelect(this)"><div class="letter">C</div><div class="content"><h3>Changelog + galeri</h3><p>En geek, en az metin</p></div></div>
+</div>

@@ -8,13 +8,13 @@ import { TextLink } from "@/components/ui/text-link";
 import { experience } from "@/content/experience";
 import { labIndex } from "@/content/lab-index";
 import { profile } from "@/content/profile";
-import { workIndex } from "@/content/work-index";
 import { NAV_ITEMS } from "@/lib/nav";
+import { getPins } from "@/lib/work";
 import { Bio } from "./bio";
 import { Contributions } from "./contributions-row";
-import { ExperienceTree } from "./experience-tree";
+import { ExperienceList } from "./experience-list";
 import { LabGrid } from "./lab-grid";
-import { WorkTiles } from "./work-tiles";
+import { SelectedWork } from "./selected-work";
 
 // An "All →" style action, only once its section ships. Undefined (not an
 // element that renders nothing) so SectionRow leaves out the action cell.
@@ -23,9 +23,10 @@ function sectionLink(label: string, href: string) {
   return item?.ready ? <TextLink href={href}>{label}</TextLink> : undefined;
 }
 
-// The Work home: identity, work, experience, latest work and Lab, separated
-// by dither rules (Sprint 4 spec §4).
+// The Work home: identity, Lab, Selected work, experience and contributions,
+// separated by dither rules.
 export function HomeSite() {
+  const pins = getPins();
   const rows = [
     <SectionRow
       key="identity"
@@ -58,25 +59,25 @@ export function HomeSite() {
         </div>
       ) : null}
     </SectionRow>,
-    <SectionRow key="work" id="work" label="Work" action={sectionLink("All work", "/work/")}>
-      <WorkTiles entries={workIndex} />
-    </SectionRow>,
-    <SectionRow key="experience" id="experience" label="Experience" action={sectionLink("Resume", "/resume/")}>
-      <ExperienceTree entries={experience} />
-    </SectionRow>,
-    <SectionRow
-      key="latest"
-      id="latest"
-      label="Latest work"
-      action={<TextLink href={`https://github.com/${profile.social.github}`}>GitHub</TextLink>}
-    >
-      <Contributions />
-    </SectionRow>,
     labIndex.length > 0 ? (
       <SectionRow key="lab" id="lab" label="Lab" action={sectionLink("All lab", "/lab/")}>
         <LabGrid entries={labIndex} />
       </SectionRow>
     ) : null,
+    pins.length > 0 ? <SelectedWork key="selected-work" pins={pins} /> : null,
+    <SectionRow key="experience" id="experience" label="Experience" action={sectionLink("Resume", "/resume/")}>
+      <ExperienceList entries={experience} />
+    </SectionRow>,
+    <SectionRow
+      key="contributions"
+      id="contributions"
+      label="Contributions"
+      // A year of weeks is ~690px, wider than the 480px content column.
+      wide
+      action={<TextLink href={`https://github.com/${profile.social.github}`}>GitHub</TextLink>}
+    >
+      <Contributions />
+    </SectionRow>,
   ].filter(Boolean);
 
   return (

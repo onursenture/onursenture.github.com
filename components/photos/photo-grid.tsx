@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Picture } from "@/components/picture";
+import { COVER_GRID } from "@/components/ui/cover";
 import type { Photo } from "@/lib/content/photos";
 
 // `sizes` must describe the grid below: 3 columns (24px gutters) from md, 2
@@ -8,22 +9,47 @@ import type { Photo } from "@/lib/content/photos";
 // grid fills the padded width: (100vw - 80 - 2 * 24) / 3 from md.
 export const PHOTO_GRID_SIZES = "(min-width: 768px) calc((100vw - 128px) / 3), calc((100vw - 48px) / 2)";
 
-// On /life/, the grid is the content of a wide SectionRow. From lg that row
-// puts the grid right of a 200px label column and a 28px gap, so the grid
-// is 228px narrower: (100vw - 80 - 228 - 2 * 24) / 3.
-export const PHOTO_GRID_ROW_SIZES =
-  "(min-width: 1024px) calc((100vw - 356px) / 3), (min-width: 768px) calc((100vw - 128px) / 3), calc((100vw - 48px) / 2)";
+// On /life/, the grid is the content of a wide SectionRow in the compact
+// density: 10 columns (16px gutters) from md, 4 (12px) on mobile. From lg the
+// row puts the grid right of a 200px label column and a 28px gap, so it is
+// 80 + 228 = 308px narrower than the viewport; from md it is 80px narrower,
+// and 32px below.
+export const PHOTO_GRID_COMPACT_SIZES =
+  "(min-width: 1024px) calc((100vw - 308px - 9 * 16px) / 10), (min-width: 768px) calc((100vw - 80px - 9 * 16px) / 10), calc((100vw - 32px - 3 * 12px) / 4)";
 
 // Thumbnails linking to each photo page. The visible title names the link,
-// so the image itself is decorative (alt="").
-export function PhotoGrid({ photos, sizes = PHOTO_GRID_SIZES }: { photos: Photo[]; sizes?: string }) {
+// so the image itself is decorative (alt=""). `compact` is the /life/ row:
+// the same dense grid as the covers and a one-line title.
+export function PhotoGrid({
+  photos,
+  sizes = PHOTO_GRID_SIZES,
+  density = "default",
+}: {
+  photos: Photo[];
+  sizes?: string;
+  density?: "default" | "compact";
+}) {
+  const compact = density === "compact";
   return (
-    <ul className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 md:gap-x-6">
+    <ul className={compact ? COVER_GRID : "grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 md:gap-x-6"}>
       {photos.map((photo) => (
         <li key={photo.slug}>
-          <Link href={`/life/photos/${photo.slug}/`} className="group flex flex-col gap-2">
-            <Picture image={photo.image} alt="" sizes={sizes} className="aspect-[3/2] w-full object-cover" />
-            <span className="type-body group-hover:underline group-hover:underline-offset-[0.2em]">{photo.title}</span>
+          <Link href={`/life/photos/${photo.slug}/`} className={compact ? "group flex flex-col gap-1" : "group flex flex-col gap-2"}>
+            <Picture
+              image={photo.image}
+              alt=""
+              sizes={sizes}
+              className={compact ? "mb-1 aspect-[3/2] w-full object-cover" : "aspect-[3/2] w-full object-cover"}
+            />
+            <span
+              className={
+                compact
+                  ? "type-label truncate text-fg group-hover:underline group-hover:underline-offset-[0.2em]"
+                  : "type-body group-hover:underline group-hover:underline-offset-[0.2em]"
+              }
+            >
+              {photo.title}
+            </span>
           </Link>
         </li>
       ))}

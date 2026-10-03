@@ -1,7 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("the Work side has the switch off; it navigates to the always-dark Life side and back", async ({ page, context, baseURL }) => {
-  await context.addCookies([{ name: "theme", value: "light", url: baseURL! }]);
+test("the Work side has the switch off; it navigates to the always-dark Life side and back", async ({ page }) => {
   await page.goto("/");
   const off = page.getByRole("switch", { name: "Life" }).filter({ visible: true });
   await expect(off).toHaveAttribute("aria-checked", "false");
@@ -11,7 +10,7 @@ test("the Work side has the switch off; it navigates to the always-dark Life sid
   await expect(page).toHaveURL(/\/life\/$/);
   const life = page.locator('div[data-side="life"]').filter({ visible: true });
   await expect(life).toBeVisible();
-  // Dark tokens on the Life side even though the theme is light.
+  // Dark tokens on the Life side; the Work side is light.
   await expect
     .poll(() => life.evaluate((el) => getComputedStyle(el).backgroundColor))
     .toBe("rgb(11, 11, 12)");
@@ -43,4 +42,16 @@ test("Space toggles the focused switch", async ({ page }) => {
 test("the footer carries the build line", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByTestId("build-line")).toHaveText(/^v2\.0\.0 · updated [A-Z][a-z]{2} \d{1,2}, \d{4}/);
+});
+
+test("the Life switch sits next to the name, in the same place on both sides", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const work = await page.getByRole("switch", { name: /life/i }).filter({ visible: true }).boundingBox();
+  await page.goto("/life/");
+  const life = await page.getByRole("switch", { name: /life/i }).filter({ visible: true }).boundingBox();
+  expect(work && life).toBeTruthy();
+  expect(Math.abs(work!.x - life!.x)).toBeLessThan(1);
+  expect(Math.abs(work!.y - life!.y)).toBeLessThan(1);
+  expect(work!.x).toBeLessThan(720); // left half, next to the name
 });

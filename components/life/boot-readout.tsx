@@ -80,7 +80,7 @@ export function BootReadout({ lines }: { lines: ReadoutLine[] }) {
   const typing = shown !== null;
 
   return (
-    <div className="type-boot">
+    <div className="min-w-0 type-boot">
       <p>
         Local time: [<LiveClock timeZone={profile.location.timeZone} place={profile.location.place} /> GMT+3]{" "}
         {profile.location.place}
@@ -119,15 +119,24 @@ export function BootReadout({ lines }: { lines: ReadoutLine[] }) {
               {rest ? <span className="text-fg-muted">{rest}</span> : null}
             </>
           );
-          if (!typing) return <li key={line.key}>{content}</li>;
+          // One line each: a long line is cut with an ellipsis (`truncate`), visually
+          // only; the full text stays in the DOM for screen readers.
+          if (!typing) {
+            return (
+              <li key={line.key} className="truncate">
+                {content}
+              </li>
+            );
+          }
           // While typing, the complete line sits invisible in flow so its wrapped
-          // height is reserved; the typed text is overlaid on it. No layout jump.
+          // height is reserved (one line, like the final text); the typed text is
+          // overlaid on it. No layout jump.
           return (
-            <li key={line.key} className="relative">
+            <li key={line.key} className="relative truncate">
               <span aria-hidden="true" className="invisible">
                 {full}
               </span>
-              <span className="absolute inset-0">{content}</span>
+              <span className="absolute inset-0 truncate">{content}</span>
             </li>
           );
         })}

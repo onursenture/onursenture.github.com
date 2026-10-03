@@ -1,20 +1,18 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { SelectedWorkItem } from "@/components/home/selected-work";
 import { LifeSwitch } from "@/components/life-switch";
 import { Picture } from "@/components/picture";
 import { Empty } from "@/components/sections/empty";
 import { SourcesTable } from "@/components/sources/sources-table";
-import { ToggleDemo } from "@/components/system/toggle-demo";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
-import { ContributionChart } from "@/components/ui/contribution-chart";
 import { Cover } from "@/components/ui/cover";
 import { DataTable } from "@/components/ui/data-table";
-import { DitherRule, DitherStrip, FooterWash } from "@/components/ui/dither";
+import { DitherRule, DitherStrip, FooterWash, PlaceholderWash } from "@/components/ui/dither";
 import { EraStamp } from "@/components/ui/era-stamp";
-import { LabAvatar } from "@/components/ui/lab-avatar";
+import { Heatmap } from "@/components/ui/heatmap";
 import { LiveClock } from "@/components/ui/live-clock";
-import { MediaPlaceholder } from "@/components/ui/media-placeholder";
 import { MetaLabel } from "@/components/ui/meta-label";
 import { OrgMark } from "@/components/ui/org-mark";
 import { PrimaryButton } from "@/components/ui/primary-button";
@@ -22,15 +20,16 @@ import { RelativeTime } from "@/components/ui/relative-time";
 import { SectionRow } from "@/components/ui/section-row";
 import { StatusGlyph } from "@/components/ui/status-glyph";
 import { TextLink } from "@/components/ui/text-link";
+import { MediaFigure } from "@/components/work/media-figure";
 import { ORGS, type OrgId } from "@/content/orgs";
 import { type Photo, getPhotos } from "@/lib/content/photos";
 import { formatDate } from "@/lib/format";
-import { formatRating } from "@/lib/sources/rating";
 import { readSourceStatuses } from "@/lib/sources/status";
 import { pageMetadata } from "@/lib/metadata";
+import { getPins } from "@/lib/work";
 
 // The Sprint 4 style tile: every token, type class, dither specimen and
-// primitive, in whichever theme is active, plus a Life palette preview. Not
+// primitive in the light palette, plus a Life palette preview. Not
 // in the nav, not indexed. Sample values are deliberately generic: no invented
 // facts.
 export const metadata: Metadata = pageMetadata("System", { robots: { index: false, follow: false } });
@@ -56,11 +55,27 @@ const SWATCHES = [
   ["--color-danger-bg", "bg-danger-bg"],
 ] as const;
 
-// Generic sample shape for the specimen, not real data.
-const SAMPLE_WEEKS = Array.from({ length: 52 }, (_, i) => ({
-  week: `w${i}`,
-  count: Math.round(20 + 15 * Math.sin(i / 5) + (i % 7) * 2),
+// Generic sample for the Heatmap specimen, not real data: 20 weeks, levels 0–4.
+const SAMPLE_WEEKS = Array.from({ length: 20 }, (_, w) => ({
+  days: Array.from({ length: 7 }, (_, d) => {
+    const date = new Date(Date.UTC(2026, 0, 4 + w * 7 + d)).toISOString().slice(0, 10);
+    const level = (w * 3 + d * 2) % 5;
+    return { date, count: level, level };
+  }),
 }));
+const SAMPLE_CONTRIBUTIONS = {
+  total: SAMPLE_WEEKS.flatMap((week) => week.days).reduce((sum, day) => sum + day.count, 0),
+  weeks: SAMPLE_WEEKS,
+};
+
+// A 16:10 slot holding only the placeholder wash.
+function WashTile() {
+  return (
+    <span className="relative block aspect-[16/10] overflow-hidden border">
+      <PlaceholderWash />
+    </span>
+  );
+}
 
 function Swatches() {
   return (
@@ -94,6 +109,8 @@ export default async function SystemPage() {
   const photos = await getPhotos();
   const statuses = await readSourceStatuses();
   const [photo] = photos;
+  // A real pin (no invented sample), for the work specimens.
+  const [pin] = getPins();
 
   return (
     <main className="pb-8">
@@ -126,24 +143,31 @@ export default async function SystemPage() {
             <DitherRule />
           </div>
         </Specimen>
-        <Specimen name="MediaPlaceholder">
+        <Specimen name="PlaceholderWash">
           <div className="grid w-full max-w-lg grid-cols-2 gap-4">
-            <MediaPlaceholder label="Placeholder" index={1} />
-            <MediaPlaceholder label="Placeholder" index={2} tone="ink" />
+            <WashTile />
+            <WashTile />
           </div>
+        </Specimen>
+        <Specimen name="MediaFigure">
+          {pin ? (
+            <div className="w-full max-w-sm">
+              <MediaFigure media={pin.image} sizes="384px" />
+            </div>
+          ) : null}
+        </Specimen>
+        <Specimen name="SelectedWorkItem">
+          {pin ? (
+            <ul className="w-full max-w-sm">
+              <SelectedWorkItem pin={pin} sizes="384px" />
+            </ul>
+          ) : null}
         </Specimen>
         <Specimen name="PrimaryButton">
           <PrimaryButton href="/system/">Book a call →</PrimaryButton>
         </Specimen>
-        <Specimen name="LabAvatar">
-          {["alpha", "beta", "gamma", "delta", "epsilon"].map((name) => (
-            <LabAvatar key={name} name={name} />
-          ))}
-        </Specimen>
-        <Specimen name="ContributionChart">
-          <div className="w-full max-w-120">
-            <ContributionChart weeks={SAMPLE_WEEKS} />
-          </div>
+        <Specimen name="Heatmap">
+          <Heatmap data={SAMPLE_CONTRIBUTIONS} />
         </Specimen>
         <Specimen name="FooterWash">
           <div className="w-full">
@@ -190,9 +214,6 @@ export default async function SystemPage() {
           <LifeSwitch on={false} />
           <LifeSwitch on />
         </Specimen>
-        <Specimen name="Toggle">
-          <ToggleDemo />
-        </Specimen>
         <Specimen name="RelativeTime">
           <span className="type-meta">
             {photo ? <RelativeTime iso={`${photo.date}T00:00:00.000Z`} /> : null}
@@ -202,12 +223,6 @@ export default async function SystemPage() {
           <span className="type-meta">
             ANKARA <LiveClock timeZone="Europe/Istanbul" place="Ankara" />
           </span>
-        </Specimen>
-        <Specimen name="Rating">
-          <span className="type-meta">
-            {formatRating(3.5)} · {formatRating(4)}
-          </span>
-          <span className="type-meta text-fg-muted">unrated shows nothing: [{formatRating(null)}]</span>
         </Specimen>
         <Specimen name="Cover">
           <div className="w-24">
@@ -238,8 +253,8 @@ export default async function SystemPage() {
           <Swatches />
           <p className="type-boot">last watched: Love & Other Drugs 3.5</p>
           <div className="grid max-w-lg grid-cols-2 gap-4">
-            <MediaPlaceholder label="Placeholder" index={1} />
-            <MediaPlaceholder label="Placeholder" index={2} tone="ink" />
+            <WashTile />
+            <WashTile />
           </div>
         </div>
       </SectionRow>

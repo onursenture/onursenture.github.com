@@ -1,9 +1,8 @@
-import { Cover } from "@/components/ui/cover";
+import { COVER_GRID, Cover } from "@/components/ui/cover";
 import { MetaLabel } from "@/components/ui/meta-label";
 import { profile } from "@/content/profile";
 import type { Book, Books } from "@/lib/sources/goodreads";
 import { readSource } from "@/lib/sources/read";
-import { formatRating } from "@/lib/sources/rating";
 import { Empty } from "../empty";
 import { ItemLink } from "../item-link";
 import type { SectionDefinition } from "../types";
@@ -11,15 +10,15 @@ import type { SectionDefinition } from "../types";
 function Reading({ books }: { books: Book[] }) {
   if (books.length === 0) return <Empty />;
   return (
-    <ul className="grid grid-cols-3 gap-x-4 gap-y-8 md:grid-cols-6 md:gap-x-6">
+    <ul className={COVER_GRID}>
       {books.map((book) => (
         <li key={book.link}>
-          <a href={book.link} rel="noopener noreferrer" className="group flex flex-col gap-2">
-            <Cover src={book.cover} alt="" />
-            <span className="type-body group-hover:underline group-hover:underline-offset-[0.2em]">
+          <a href={book.link} rel="noopener noreferrer" className="group flex flex-col gap-1">
+            <Cover src={book.cover} alt="" width={96} className="mb-1" />
+            <span className="type-label truncate text-fg group-hover:underline group-hover:underline-offset-[0.2em]">
               {book.title}
             </span>
-            <span className="type-meta text-fg-muted">{book.author}</span>
+            <span className="type-label truncate text-fg-muted">{book.author}</span>
           </a>
         </li>
       ))}
@@ -36,15 +35,14 @@ function Read({ books }: { books: Book[] }) {
           <ItemLink href={book.link} className="col-span-12 type-body md:col-span-6">
             {book.title}
           </ItemLink>
-          <span className="col-span-8 type-meta text-fg-muted md:col-span-4">{book.author}</span>
-          <span className="col-span-4 text-right type-meta md:col-span-2">{formatRating(book.numRating)}</span>
+          <span className="col-span-12 type-meta text-fg-muted md:col-span-6">{book.author}</span>
         </li>
       ))}
     </ul>
   );
 }
 
-// Covers for the reading shelf, then the read list with ratings.
+// Covers for the reading shelf, then the read list.
 function Render({ data }: { data: Books }) {
   return (
     <div className="flex flex-col gap-12">
@@ -59,7 +57,6 @@ function Render({ data }: { data: Books }) {
     </div>
   );
 }
-
 
 export const books: SectionDefinition<Books> = {
   id: "books",

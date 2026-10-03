@@ -10,12 +10,11 @@ export function parseHex(value: string): Rgb | null {
   return [0, 2, 4].map((i) => Number.parseInt(full.slice(i, i + 2), 16)) as Rgb;
 }
 
-// Theme changes flip <html data-theme>; the Life side never changes, so the
-// one observer covers both.
-function subscribe(onChange: () => void) {
-  const observer = new MutationObserver(onChange);
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-  return () => observer.disconnect();
+// Tokens no longer change at runtime (the Work side is light only and the
+// Life side is always dark), so there is nothing to subscribe to: the value
+// is read once the element exists.
+function subscribe() {
+  return () => {};
 }
 
 // A colour token read from the element's computed style, so a subtree that

@@ -4,8 +4,9 @@ import { type MouseEvent, type ReactNode, useEffect, useRef, useState } from "re
 import { Button } from "@/components/ui/button";
 
 // The mobile menu (below md): a native modal <dialog>, full-screen. Its
-// content mounts only while open, so the toggles inside never duplicate the desktop ones in the
-// DOM. Following a link, or clicking the backdrop, closes it.
+// content mounts only while open, so the links inside never duplicate the
+// desktop ones in the DOM. Following a link, or clicking the backdrop, closes
+// it. WorkShell renders it only once a nav item is ready.
 export function MenuDialog({ title, children }: { title: ReactNode; children: ReactNode }) {
   const ref = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);

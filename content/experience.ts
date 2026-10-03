@@ -1,7 +1,6 @@
 import type { OrgId } from "./orgs";
 
-// Roles and dates as on Onur's LinkedIn (read 2026-10-03). Only confirmed
-// facts. Products link to their case studies once those exist (Sprint 5).
+// Roles and dates as on Onur's LinkedIn (read 2026-10-03). Only confirmed facts. PrimeTek products link to their case studies (Sprint 5).
 export interface ExperienceChild {
   title: string;
   note: string;
@@ -32,10 +31,10 @@ export const experience: ExperienceEntry[] = [
     start: "2016-05",
     end: "2026-04",
     children: [
-      { title: "PrimeOne", note: "design system" },
-      { title: "PrimeBlocks", note: "UI blocks" },
-      { title: "PrimeIcons", note: "icon set" },
-      { title: "Templates", note: "25+ app templates" },
+      { title: "PrimeOne", note: "design system", href: "/work/primeone/" },
+      { title: "PrimeBlocks", note: "UI blocks", href: "/work/primeblocks/" },
+      { title: "PrimeIcons", note: "icon set", href: "/work/primeicons/" },
+      { title: "Templates", note: "app templates", href: "/work/templates/" },
     ],
   },
   {

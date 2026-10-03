@@ -3,10 +3,11 @@ import { expect, test } from "@playwright/test";
 const PRIMITIVES = [
   "DitherStrip",
   "DitherRule",
-  "MediaPlaceholder",
+  "PlaceholderWash",
+  "MediaFigure",
+  "SelectedWorkItem",
   "PrimaryButton",
-  "LabAvatar",
-  "ContributionChart",
+  "Heatmap",
   "FooterWash",
   "MetaLabel",
   "StatusGlyph",
@@ -14,10 +15,8 @@ const PRIMITIVES = [
   "EraStamp",
   "TextLink",
   "Button",
-  "Toggle",
   "RelativeTime",
   "LiveClock",
-  "Rating",
   "Cover",
   "DataTable",
   "Empty",
@@ -33,20 +32,15 @@ test("/system/ renders every primitive, the type scale and the Sources row", asy
     await expect(page.locator(`[data-primitive="${name}"]`)).toBeVisible();
   }
   await expect(page.locator("[data-type]")).toHaveCount(6);
-  // Ratings are numbers in mono, never stars.
-  await expect(page.locator('[data-primitive="Rating"]')).toContainText("3.5 · 4");
-  await expect(page.locator('[data-primitive="Rating"]')).not.toContainText("\u2605");
   // This run has no database, so every source is never synced.
-  const sources = page.locator("section", { has: page.getByRole("heading", { name: "Sources" }) });
+  const sources = page.locator("section", { has: page.getByRole("heading", { name: "Sources", exact: true }) });
   await expect(sources).toBeVisible();
   await expect(sources.locator("tbody tr")).toHaveCount(5);
   await expect(sources.locator('[data-health="never"]')).toHaveCount(5);
 });
 
-test("the Life palette block is dark under the light theme", async ({ page, context, baseURL }) => {
-  await context.addCookies([{ name: "theme", value: "light", url: baseURL! }]);
+test("the Life palette block is dark on the light page", async ({ page }) => {
   await page.goto("/system/");
-  await expect(page.locator("html")).not.toHaveAttribute("data-theme", "dark");
   const palette = page.getByTestId("life-palette");
   await expect(palette).toBeVisible();
   await expect(palette).toHaveCSS("background-color", "rgb(11, 11, 12)");

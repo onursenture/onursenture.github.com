@@ -1,0 +1,134 @@
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;600&family=Doto:wght@900&display=swap" rel="stylesheet">
+
+<h2>Mobbin turu 2: çok görselli setler için üç yeni yön</h2>
+<p class="subtitle">Changelog'ları, galerileri, görüntüleyicileri, stüdyo arşivlerini ve component kütüphanelerini taradım. İşimize yarayanlar şunlar: <b>Studio Freight</b> (Grid / List / Zoom ve 1X / 2X / ∞ görünüm anahtarları, mono), <b>Base</b> (görselleri "dosya" gibi gösteren kartlar, üstlerinde ad, boyut ve format bilgisi), <b>MOUTHWASH Studio</b> (kodlu küçük kareler, RC-134 gibi), <b>Cosmos</b> (üst üste yelpaze gibi açılmış set kapakları), <b>Webflow Libraries</b> (kapak görseli ve "114 ▦" sayaç rozeti), <b>GetYourGuide</b> (görüntüleyici içinde "24 / 32" sayacı ve ızgaraya geçiş). B'nin iskeleti üç yönde de aynı kalıyor.</p>
+
+<style>
+  .mk { border: 1px solid rgba(127,127,127,.3); border-radius: 6px; overflow: hidden; margin: 10px 0 6px; }
+  .mk * { box-sizing: border-box; }
+  .why { font-size: 13px; margin: 6px 0 4px; }
+  .refs { font-size: 12px; opacity: .8; margin: 2px 0 8px; }
+  .refs a { color: inherit; }
+  .pg { background: #FAFAF8; color: #1F1F22; font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; line-height: 1.62; position: relative; }
+  .pg .m { color: #6E6E73; }
+  .pg a { color: #2F55F5; text-decoration: none; }
+  .pg p { margin: 4px 0 8px; color: #52525A; }
+  .pg .ver { font-weight: 500; }
+  .rule { height: 6px; background-image: radial-gradient(#C9C9C3 .8px, transparent 1px); background-size: 3px 3px; }
+  .tl { display: grid; grid-template-columns: 150px 1fr; gap: 28px; padding: 26px 40px; }
+  .yr { font-family: 'Doto'; font-weight: 900; font-size: 26px; line-height: 1; }
+  .ent { display: grid; grid-template-columns: 260px 1fr; gap: 28px; align-items: start; }
+  .fig { background-color: #F1F1EE; background-image: radial-gradient(rgba(47,85,245,.55) .9px, transparent 1.15px), radial-gradient(rgba(47,85,245,.28) .9px, transparent 1.15px); background-size: 4px 4px; background-position: 0 0, 2px 2px; }
+  .fade { -webkit-mask: linear-gradient(115deg, #000 0%, rgba(0,0,0,.55) 55%, rgba(0,0,0,.25) 100%); mask: linear-gradient(115deg, #000 0%, rgba(0,0,0,.55) 55%, rgba(0,0,0,.25) 100%); }
+  .figw { position: relative; border: 1px solid #E6E6E1; background: #FAFAF8; }
+  .t { position: absolute; left: 8px; bottom: 6px; font-size: 10px; letter-spacing: .04em; background: #FAFAF8; padding: 0 5px; }
+
+  /* 1 stack */
+  .stk { position: relative; height: 230px; }
+  .stk .figw { position: absolute; width: 74%; aspect-ratio: 16/10; }
+  .stk .figw:nth-child(1) { left: 0; top: 34px; transform: rotate(-3deg); opacity: .9; }
+  .stk .figw:nth-child(2) { left: 13%; top: 17px; transform: rotate(1.5deg); }
+  .stk .figw:nth-child(3) { left: 26%; top: 0; }
+  .stk .fig { height: 100%; }
+  .badge { position: absolute; right: 8px; top: 8px; background: #1F1F22; color: #FAFAF8; font-size: 10.5px; padding: 1px 6px; }
+  .note { position: absolute; right: 0; bottom: -2px; font-size: 11px; color: #6E6E73; }
+
+  /* 2 views */
+  .vbar { display: flex; justify-content: space-between; align-items: center; padding: 12px 40px; border-bottom: 1px solid #E6E6E1; }
+  .seg { display: inline-flex; gap: 14px; }
+  .seg span { color: #6E6E73; } .seg span.on { color: #1F1F22; text-decoration: underline; text-underline-offset: 4px; }
+  .chips { display: flex; gap: 6px; }
+  .chips span { border: 1px solid #E6E6E1; padding: 0 6px; font-size: 11px; color: #6E6E73; }
+  .chips span.on { border-color: #1F1F22; color: #1F1F22; }
+  .files { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 18px 40px 26px; background-image: radial-gradient(#E3E3DE .8px, transparent 1px); background-size: 6px 6px; }
+  .file { border: 1px solid #E6E6E1; background: #FAFAF8; }
+  .file .h { padding: 4px 7px; font-size: 10.5px; line-height: 1.4; border-bottom: 1px solid #E6E6E1; }
+  .file .h b { font-weight: 500; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file .fig { aspect-ratio: 16/10; }
+  .lead1 .fig { aspect-ratio: 16/9; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .two > div:first-child { border-right: 1px solid #E6E6E1; }
+  .cap2 { font-size: 11px; color: #6E6E73; padding: 6px 40px 0; }
+
+  /* 3 rail */
+  .rail { display: flex; gap: 8px; margin-right: -40px; overflow: hidden; }
+  .rail > div { flex: 0 0 120px; }
+  .rail .fig { aspect-ratio: 4/3; border: 1px solid #E6E6E1; }
+  .rail .c { font-size: 10.5px; margin-top: 3px; color: #6E6E73; }
+  .rail .c b { color: #1F1F22; font-weight: 400; }
+  .railhd { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .ent3 { display: grid; grid-template-columns: 1fr; gap: 10px; }
+
+  /* viewer grid mode */
+  .vw { background: #0B0B0C; color: #EDEDED; font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 16px 24px 20px; }
+  .vw .top { display: flex; justify-content: space-between; color: #8A8A90; margin-bottom: 12px; }
+  .vw .top b { color: #EDEDED; font-weight: 400; }
+  .vw .g { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+  .vw .g i { aspect-ratio: 4/3; background-color: #141416; background-image: radial-gradient(rgba(110,139,255,.55) .9px, transparent 1.15px); background-size: 4px 4px; border: 1px solid #222225; }
+  .vw .g i.on { border-color: #6E8BFF; }
+</style>
+
+<!-- ========== 1 ========== -->
+<h3>1 · Deste (stack)</h3>
+<p class="refs">Referanslar: <a href="https://mobbin.com/sites/sections/8e070129-3de0-457a-b6a0-39ace1cc6015">Cosmos · Aesthetic Studies</a>, <a href="https://mobbin.com/sites/sections/c52a2365-53e8-4c7c-81a5-27d7257cf3bd">Webflow · Libraries</a>, <a href="https://mobbin.com/screens/a002c1c4-730a-4cfc-8ce9-fae8960a2ed0">GetYourGuide · viewer</a></p>
+<div class="mk"><div class="pg">
+  <div class="tl"><div class="yr">2024</div>
+    <div class="ent"><div><span class="ver">3.0</span> <span class="m">· Nov</span><p>Redesigned from the ground up for the new theming engine.</p><a>post ↗</a></div>
+      <div class="stk"><div class="figw"><div class="fig fade"></div></div><div class="figw"><div class="fig fade"></div></div><div class="figw"><div class="fig fade"></div><span class="t">FIG. 03 · 3.0</span><span class="badge">12 ▦</span></div><span class="note">hover: yelpaze açılır · click: görüntüleyici</span></div></div></div>
+  <div class="rule"></div>
+  <div class="tl"><div class="yr">2023</div>
+    <div class="ent"><div><span class="ver">2.2</span> <span class="m">· Dec</span><p>Tokens tightened and aligned one-to-one with the code.</p><a>post ↗</a></div>
+      <div class="stk" style="height:200px"><div class="figw" style="left:26%;top:0;transform:none"><div class="fig fade"></div><span class="t">FIG. 04 · 2.2</span></div></div></div></div>
+</div></div>
+<div class="mk"><div class="vw"><div class="top"><span><b>PrimeOne · 3.0</b> · 12 figures</span><span>▦ grid · ▭ single · Esc ×</span></div>
+  <div class="g"><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
+<p class="why">Her set, üst üste duran bir <b>deste</b>. Hover'da deste yelpaze gibi açılıyor, tıklayınca görüntüleyici açılıyor. Görüntüleyicinin içinde tek görsel ile ızgara arasında geçiş var. Tek görselli bir set düz bir figür olarak görünüyor. 80 component de tek bir deste ("80 ▦"). Sayfa sakin kalıyor, bütün kalabalık görüntüleyicinin içinde yaşıyor. <b>Risk:</b> setin içeriği ancak tıklanınca görülüyor.</p>
+
+<!-- ========== 2 ========== -->
+<h3 style="margin-top:30px">2 · Aynı medya, üç görünüm (Log · Grid · Index)</h3>
+<p class="refs">Referanslar: <a href="https://mobbin.com/sites/sections/6896be25-3c49-46c1-880f-cbad324977d9">Studio Freight · Grid / List / Zoom</a>, <a href="https://mobbin.com/sites/sections/d4f3d376-5f46-430f-b7f6-0b3d82a90917">Base · dosya kartları</a></p>
+<div class="mk"><div class="pg">
+  <div class="vbar"><span class="seg"><span>Log</span><span class="on">Grid</span><span>Index</span></span><span class="chips"><span class="on">All 64</span><span>3.0 · 12</span><span>4.0 · 9</span><span>Components · 80</span><span>Tokens · 6</span></span><span class="seg"><span class="on">1×</span><span>2×</span><span>∞</span></span></div>
+  <div class="files">
+    <div class="file"><div class="h"><b>tokens-overview.png</b><span class="m">3.0 · 2880×1800</span></div><div class="fig"></div></div>
+    <div class="file"><div class="h"><b>button-variants.png</b><span class="m">3.0 · component</span></div><div class="fig"></div></div>
+    <div class="file"><div class="h"><b>datatable-dark.png</b><span class="m">3.0 · component</span></div><div class="fig"></div></div>
+    <div class="file"><div class="h"><b>variables-collections.png</b><span class="m">4.0 · 2880×1800</span></div><div class="fig"></div></div>
+    <div class="file"><div class="h"><b>select-states.png</b><span class="m">4.0 · component</span></div><div class="fig"></div></div>
+    <div class="file"><div class="h"><b>theme-modes.mp4</b><span class="m">4.0 · 0:14</span></div><div class="fig"></div></div>
+    <div class="file"><div class="h"><b>dialog.png</b><span class="m">2.2 · component</span></div><div class="fig"></div></div>
+    <div class="file"><div class="h"><b>token-table.png</b><span class="m">2.2 · 2880×1800</span></div><div class="fig"></div></div>
+  </div>
+</div></div>
+<div class="mk"><div class="pg"><div class="two">
+  <div><div class="cap2">Log görünümü (B'nin kendisi)</div><div class="tl" style="grid-template-columns:70px 1fr;padding:14px 40px 22px"><div class="yr" style="font-size:20px">2024</div><div><span class="ver">3.0</span> <span class="m">· Nov</span><p>Redesigned for the new theming engine.</p><div class="figw lead1"><div class="fig fade"></div><span class="t">FIG. 03 · 3.0</span></div><div style="margin-top:6px"><a>+11 in Grid →</a></div></div></div></div>
+  <div><div class="cap2">Index görünümü (liste)</div><div style="padding:14px 40px 22px;font-size:11.5px">
+    <div style="display:grid;grid-template-columns:44px 1fr 60px;gap:10px;padding:4px 0;border-bottom:1px dashed #E6E6E1"><span class="m">03.01</span><span>tokens-overview.png</span><span class="m">3.0</span></div>
+    <div style="display:grid;grid-template-columns:44px 1fr 60px;gap:10px;padding:4px 0;border-bottom:1px dashed #E6E6E1"><span class="m">03.02</span><span>button-variants.png</span><span class="m">3.0</span></div>
+    <div style="display:grid;grid-template-columns:44px 1fr 60px;gap:10px;padding:4px 0;border-bottom:1px dashed #E6E6E1"><span class="m">03.03</span><span>datatable-dark.png</span><span class="m">3.0</span></div>
+    <div style="display:grid;grid-template-columns:44px 1fr 60px;gap:10px;padding:4px 0;border-bottom:1px dashed #E6E6E1"><span class="m">04.01</span><span>variables-collections.png</span><span class="m">4.0</span></div>
+    <div style="display:grid;grid-template-columns:44px 1fr 60px;gap:10px;padding:4px 0"><span class="m">C.001</span><span>Button</span><span class="m">component</span></div>
+  </div></div>
+</div></div></div>
+<p class="why">Ürün sayfasında, içerikten önce bir görünüm anahtarı var. <b>Log</b> B'nin kendisi: her release'in yanında tek bir öncü figür ve "+11 in Grid →" linki. <b>Grid</b> sayfadaki bütün görselleri "dosya" kartları olarak gösteriyor (ad, sürüm, boyut). Sürüme ya da türe göre süzülebiliyor, yoğunluk 1× / 2× / ∞. <b>Index</b> aynı görselleri mono bir liste olarak veriyor. 80 component için ayrı bir Catalog bandına gerek kalmıyor, Grid'de "Components · 80" filtresi o işi görüyor. Hepsi aynı görüntüleyiciye açılıyor. Görünüm URL'de duruyor (<code>?view=grid&amp;tag=components</code>). <b>Önerim bu,</b> çünkü "çok görsel" ve "80 component" sorunlarını tek bir mekanizmayla çözüyor ve geek/sistem kişiliğine en çok bu oturuyor. <b>Risk:</b> en çok iş gerektiren seçenek bu. Her görsele bir ad, sürüm ve etiket gerekiyor. Ama Sprint 7'deki admin upload bu bilgileri zaten isteyecek.</p>
+
+<!-- ========== 3 ========== -->
+<h3 style="margin-top:30px">3 · Kodlu şerit (rail)</h3>
+<p class="refs">Referanslar: <a href="https://mobbin.com/sites/sections/672f92e4-3ef9-49c3-b9f5-dc2b4ade1c02">MOUTHWASH Studio · arşiv şeridi</a>, <a href="https://mobbin.com/sites/sections/1115875b-e6af-4b8f-b002-d5aa10ec282e">Siena Film Foundation · galeri</a></p>
+<div class="mk"><div class="pg">
+  <div class="tl"><div class="yr">2024</div>
+    <div class="ent3"><div><span class="ver">3.0</span> <span class="m">· Nov</span> — <span style="color:#52525A">Redesigned from the ground up for the new theming engine.</span> <a>post ↗</a></div>
+      <div><div class="railhd"><span class="m">12 figures</span><span class="m">← → kaydır</span></div>
+      <div class="rail"><div><div class="fig"></div><div class="c"><b>03.01</b> Overview</div></div><div><div class="fig"></div><div class="c"><b>03.02</b> Tokens</div></div><div><div class="fig"></div><div class="c"><b>03.03</b> Button</div></div><div><div class="fig"></div><div class="c"><b>03.04</b> Input</div></div><div><div class="fig"></div><div class="c"><b>03.05</b> Table</div></div><div><div class="fig"></div><div class="c"><b>03.06</b> Dialog</div></div><div><div class="fig"></div><div class="c"><b>03.07</b> Menu</div></div></div></div></div></div>
+  <div class="rule"></div>
+  <div class="tl"><div class="yr">∞</div>
+    <div class="ent3"><div>Components <span class="m">· 80</span></div>
+      <div class="rail"><div><div class="fig"></div><div class="c"><b>C.001</b> Button</div></div><div><div class="fig"></div><div class="c"><b>C.002</b> InputText</div></div><div><div class="fig"></div><div class="c"><b>C.003</b> Select</div></div><div><div class="fig"></div><div class="c"><b>C.004</b> DatePicker</div></div><div><div class="fig"></div><div class="c"><b>C.005</b> Checkbox</div></div><div><div class="fig"></div><div class="c"><b>C.006</b> Slider</div></div><div><div class="fig"></div><div class="c"><b>C.007</b> DataTable</div></div></div></div></div>
+</div></div>
+<p class="why">Her set, sağ kenardan taşan yatay bir şerit. Kareler arşiv kodlarıyla numaralanıyor (03.01, C.001), yani B'deki FIG numaralandırmasının doğal devamı. 80 component en altta kendi şeridinde duruyor. Tüm set görünüyor ama dikey yer kaplamıyor. <b>Risk:</b> yatay kaydırma masaüstünde fare ile zahmetli, şeridin son kısımları hiç görülmeyebilir.</p>
+
+<div class="options" style="margin-top:20px">
+  <div class="option" data-choice="stack" onclick="toggleSelect(this)"><div class="letter">1</div><div class="content"><h3>Deste</h3><p>Sakin sayfa, kalabalık görüntüleyicide</p></div></div>
+  <div class="option" data-choice="views" onclick="toggleSelect(this)"><div class="letter">2</div><div class="content"><h3>Log · Grid · Index</h3><p>Önerim: tek mekanizma, en "sistem"</p></div></div>
+  <div class="option" data-choice="rail" onclick="toggleSelect(this)"><div class="letter">3</div><div class="content"><h3>Kodlu şerit</h3><p>Hepsi görünür, yatay</p></div></div>
+</div>

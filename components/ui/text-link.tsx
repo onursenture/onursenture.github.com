@@ -14,10 +14,13 @@ export function TextLink({
   href,
   children,
   className,
+  ariaLabel,
 }: {
   href: string;
   children: ReactNode;
   className?: string;
+  // Replaces the accessible name when several links share the same visible text.
+  ariaLabel?: string;
 }) {
   const external = isExternal(href);
   const content = (
@@ -28,11 +31,11 @@ export function TextLink({
   );
   const classes = cx("group inline", className);
   return external ? (
-    <a href={href} rel="noopener noreferrer" className={classes}>
+    <a href={href} rel="noopener noreferrer" aria-label={ariaLabel} className={classes}>
       {content}
     </a>
   ) : (
-    <Link href={href} className={classes}>
+    <Link href={href} aria-label={ariaLabel} className={classes}>
       {content}
     </Link>
   );

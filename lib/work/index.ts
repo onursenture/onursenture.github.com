@@ -1,0 +1,27 @@
+import { productPages } from "@/content/work";
+import type { WorkSlug } from "@/content/work/types";
+import { findImage, hasImage } from "@/lib/images/manifest";
+import { type PinView, type ProductPageView, buildPins, buildProductPage } from "./derive";
+import { validateWork } from "./validate";
+
+// The server-side read API for the product pages and the home's Selected
+// work: content bound to the image manifest. Sprint 7's admin overlay will
+// merge its edits here.
+
+// A broken registry fails the build instead of shipping a broken page.
+const errors = validateWork(productPages, hasImage);
+if (errors.length > 0) throw new Error(`content/work is invalid:\n${errors.join("\n")}`);
+
+export function getProductSlugs(): WorkSlug[] {
+  return productPages.map((page) => page.slug);
+}
+
+export function getProductPage(slug: string): ProductPageView | null {
+  const page = productPages.find((item) => item.slug === slug);
+  return page ? buildProductPage(page, findImage) : null;
+}
+
+// Every pinned image across the pages, sorted by pin.order.
+export function getPins(): PinView[] {
+  return buildPins(productPages, findImage);
+}
