@@ -12,7 +12,6 @@ import { Cover } from "@/components/ui/cover";
 import { DataTable } from "@/components/ui/data-table";
 import { DitherRule, DitherStrip, FooterWash } from "@/components/ui/dither";
 import { EraStamp } from "@/components/ui/era-stamp";
-import { IndexRow } from "@/components/ui/index-row";
 import { LabAvatar } from "@/components/ui/lab-avatar";
 import { LiveClock } from "@/components/ui/live-clock";
 import { MediaPlaceholder } from "@/components/ui/media-placeholder";
@@ -203,14 +202,6 @@ export default async function SystemPage() {
             <Band label="Label" source="Source" href="/life/">
               <p className="type-body">Band content.</p>
             </Band>
-          </div>
-        </Specimen>
-        <Specimen name="IndexRow">
-          <div className="w-full">
-            <IndexRow entry={{ years: "Year", title: "Title", meta: "meta", role: "Role", era: "Era" }} />
-            <IndexRow entry={{ title: "Linked row", meta: "the whole row is the link", href: "/life/" }} />
-            <IndexRow entry={{ title: "Plain row", meta: "no link, no year, no role" }} />
-            <IndexRow entry={{ title: "With a status", meta: "◐ wip", status: "late", statusLabel: "in progress" }} />
           </div>
         </Specimen>
         <Specimen name="Empty">

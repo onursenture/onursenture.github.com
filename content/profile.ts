@@ -1,20 +1,19 @@
 // Who the site is about. Only facts Onur has confirmed go here.
+import type { OrgId } from "./orgs";
 
-// One segment of the home page's mono meta line, joined by " · ".
-export type MetaSegment =
-  | { text: string }
-  // The label plus a live HH:mm clock in that IANA time zone.
-  | { clock: string; label: string }
-  // "OPEN TO ROLES", shown only while `available` is true.
-  | { availability: true };
+// A bio paragraph is text with inline organisation marks.
+export type BioSegment = string | { org: OrgId };
 
 export interface Profile {
   name: string;
-  // The home page headline.
-  identity?: string;
-  meta?: MetaSegment[];
+  // The label column under the name.
+  role: string;
+  location: { place: string; timeZone: string };
+  // The home h1: a strong opening and a muted continuation.
+  lead: { strong: string; rest: string };
+  bio: BioSegment[][];
   available: boolean;
-  // "Book a call →" renders only when this is set (S6).
+  // "Book a call" renders only when this is set (Sprint 8).
   bookingUrl?: string;
   // Handles, not URLs; socialLinks() builds the URLs.
   social: {
@@ -25,17 +24,31 @@ export interface Profile {
     letterboxd: string;
     instapaper: string;
   };
-  // Career metrics for the dashboard Stat row, shown only when present (S4).
-  metrics?: { label: string; value: string }[];
 }
 
 export const profile: Profile = {
   name: "Onur Senture",
-  identity: "From components to complete apps, designed and built end to end.",
-  meta: [
-    { text: "DESIGNER + BUILDER" },
-    { clock: "Europe/Istanbul", label: "ANKARA" },
-    { availability: true },
+  role: "Designer who builds",
+  location: { place: "Ankara", timeZone: "Europe/Istanbul" },
+  // Draft copy (Sprint 4): facts from LinkedIn and the approved S3 identity
+  // line; Onur confirms on the preview.
+  lead: {
+    strong: "Designer who builds.",
+    rest: "From components to complete apps, designed and built end to end.",
+  },
+  bio: [
+    [
+      "For ten years I led design at ",
+      { org: "primetek" },
+      ", where I built the PrimeOne design system, PrimeBlocks, PrimeIcons and the templates behind PrimeVue, PrimeNG and PrimeReact.",
+    ],
+    [
+      "Since 2013 I've also run ",
+      { org: "orkestra" },
+      ", where we made Nebuu, Rebound Line, Hi Jump and other iOS games and apps. Computer Science at ",
+      { org: "bilkent" },
+      ".",
+    ],
   ],
   available: true,
   social: {

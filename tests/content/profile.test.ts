@@ -12,8 +12,7 @@ describe("profile", () => {
     ]);
   });
 
-  it("ships without a booking link or career metrics until they are confirmed", () => {
+  it("ships without a booking link until Sprint 8 sets one", () => {
     expect(profile.bookingUrl).toBeUndefined();
-    expect(profile.metrics).toBeUndefined();
   });
 });

@@ -21,7 +21,6 @@ const PRIMITIVES = [
   "Cover",
   "DataTable",
   "Band",
-  "IndexRow",
   "Empty",
   "Picture",
 ];
