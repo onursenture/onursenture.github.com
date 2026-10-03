@@ -1,8 +1,10 @@
 "use client";
 
 import { type StudyView, filterMedia } from "@/lib/work/derive";
+import type { IconSet } from "@/lib/work/icons";
 import type { ViewState } from "@/lib/work/url-state";
 import { GridView } from "./grid-view";
+import { IconGrid, IconIndex } from "./icon-grid";
 import { IndexView } from "./index-view";
 import { LogView } from "./log-view";
 import { MediaButton } from "./media-button";
@@ -19,11 +21,13 @@ export function StudyBody({
   state,
   onChange,
   onOpen,
+  icons,
 }: {
   study: StudyView;
   state: ViewState;
   onChange?: (patch: Partial<ViewState>) => void;
   onOpen?: (id: string) => void;
+  icons?: IconSet;
 }) {
   const shown = filterMedia(study.media, state.tag);
   return (
@@ -31,11 +35,11 @@ export function StudyBody({
       <div className="px-4 pb-8 md:px-10">
         <MediaButton media={study.hero} onOpen={onOpen} sizes={HERO_SIZES} ratio="aspect-[16/10] md:aspect-[21/9]" priority />
       </div>
-      <ViewBar chips={study.chips} state={state} onChange={onChange} />
+      <ViewBar chips={study.chips} state={state} onChange={onChange} showChips={!icons} showDensity={!icons} />
       {state.view === "grid" ? (
-        <GridView media={shown} density={state.density} onOpen={onOpen} />
+        icons ? <IconGrid set={icons} /> : <GridView media={shown} density={state.density} onOpen={onOpen} />
       ) : state.view === "index" ? (
-        <IndexView media={shown} onOpen={onOpen} />
+        icons ? <IconIndex set={icons} /> : <IndexView media={shown} onOpen={onOpen} />
       ) : (
         <LogView study={study} onOpen={onOpen} onShowEntry={(entryId) => onChange?.({ view: "grid", tag: entryId })} />
       )}

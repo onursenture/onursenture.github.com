@@ -6,6 +6,7 @@ import { StudyBody } from "@/components/work/study-body";
 import { StudyBrowser } from "@/components/work/study-browser";
 import { renditionUrl } from "@/lib/images/plan";
 import { pageMetadata } from "@/lib/metadata";
+import { getPrimeIcons } from "@/lib/work/primeicons";
 import { DEFAULT_VIEW_STATE } from "@/lib/work/url-state";
 import { caseStudyFacts, getCaseStudies, getCaseStudy, getStudyView } from "@/lib/work";
 
@@ -34,14 +35,20 @@ export default async function CaseStudyPage({ params }: PageProps<"/work/[slug]"
   const study = getCaseStudy((await params).slug);
   if (!study) notFound();
   const view = getStudyView(study);
+  // PrimeIcons shows the real set (spec §4.1); its size and version are facts
+  // counted from the package, not written by hand.
+  const icons = study.slug === "primeicons" ? await getPrimeIcons() : undefined;
+  const facts = icons
+    ? [...caseStudyFacts(study, view), { label: "Set", value: `v${icons.version} · ${icons.icons.length} icons` }]
+    : caseStudyFacts(study, view);
   return (
     <main className="pb-16">
-      <CaseStudyHeader study={study} facts={caseStudyFacts(study, view)} />
+      <CaseStudyHeader study={study} facts={facts} />
       {/* The fallback is the prerendered default (Log) view. StudyBrowser
           reads ?view/tag/density after hydration, so every query shares one
           cached HTML (spec §3.2). */}
       <Suspense fallback={<StudyBody study={view} state={DEFAULT_VIEW_STATE} />}>
-        <StudyBrowser study={view} />
+        <StudyBrowser study={view} icons={icons} />
       </Suspense>
     </main>
   );

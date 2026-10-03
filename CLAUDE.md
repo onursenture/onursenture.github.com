@@ -43,6 +43,7 @@ CI runs typecheck, lint, test, build, e2e, then a fixture build and `e2e:fixture
 - OG images are always JPEG with an absolute URL (via `metadataBase`). Pages without a real image omit `og:image`.
 - Titles come from one format, `TITLE_TEMPLATE` / `fullTitle()` in `lib/metadata.ts`; build page metadata with `pageMetadata()`.
 - English only.
+- `primeicons` is pinned to exactly `7.0.0`, the last MIT release (the PrimeIcons case study renders it live). 8.x is under PrimeTek's commercial PrimeUI license (license key, no redistribution): never upgrade it, and keep it out of automated dependency bumps.
 
 ## Design system (Sprint 4)
 
