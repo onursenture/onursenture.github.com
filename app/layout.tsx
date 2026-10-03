@@ -1,21 +1,30 @@
 import type { Metadata } from "next";
-import { Fragment_Mono } from "next/font/google";
+import { Doto, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import { OPEN_GRAPH_DEFAULTS, TWITTER_DEFAULTS } from "@/lib/metadata";
 import { site } from "@/lib/site";
 import { themeScript } from "@/lib/theme/theme";
 import "./globals.css";
 
-// Self-hosted at build time; exposed as --font-fragment-mono, which
-// globals.css maps to --font-mono.
-const fragmentMono = Fragment_Mono({
-  weight: "400",
+// Self-hosted at build time. globals.css maps these variables to
+// --font-mono, --font-sans and --font-name. latin-ext covers Turkish.
+const plexMono = IBM_Plex_Mono({
+  weight: ["400", "500"],
   subsets: ["latin", "latin-ext"],
   display: "swap",
-  variable: "--font-fragment-mono",
+  variable: "--font-plex-mono",
 });
-
-// Neue Haas Grotesk Display and Text come from this Adobe Fonts web project.
-const ADOBE_FONTS_KIT = "https://use.typekit.net/jgu1ygn.css";
+const plexSans = IBM_Plex_Sans({
+  weight: ["500", "600"],
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+  variable: "--font-plex-sans",
+});
+const doto = Doto({
+  weight: "900",
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+  variable: "--font-doto",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -29,16 +38,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     // data-theme is set by themeScript before hydration, so React must not
     // complain that the server HTML lacked it.
-    <html lang="en" className={fragmentMono.variable} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${plexMono.variable} ${plexSans.variable} ${doto.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        <link rel="preconnect" href="https://use.typekit.net" crossOrigin="" />
-        <link rel="preconnect" href="https://p.typekit.net" crossOrigin="" />
-        <link rel="stylesheet" href={ADOBE_FONTS_KIT} />
       </head>
-      <body>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

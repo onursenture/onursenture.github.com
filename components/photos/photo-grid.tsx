@@ -16,7 +16,7 @@ export function PhotoGrid({ photos }: { photos: Photo[] }) {
         <li key={photo.slug}>
           <Link href={`/life/photos/${photo.slug}/`} className="group flex flex-col gap-2">
             <Picture image={photo.image} alt="" sizes={PHOTO_GRID_SIZES} className="aspect-[3/2] w-full object-cover" />
-            <span className="type-sans-14 group-hover:underline group-hover:underline-offset-[0.2em]">{photo.title}</span>
+            <span className="type-body group-hover:underline group-hover:underline-offset-[0.2em]">{photo.title}</span>
           </Link>
         </li>
       ))}

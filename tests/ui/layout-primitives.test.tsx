@@ -57,14 +57,14 @@ describe("IndexRow", () => {
 describe("IndexList", () => {
   it("renders no year or role cell while no entry has a value", () => {
     const markup = html(<IndexList entries={[{ title: "a" }, { title: "b", meta: "m" }]} />);
-    expect(markup).not.toContain("type-mono-13");
+    expect(markup).not.toContain("type-body");
     expect(markup.match(/md:col-span-11/g)).toHaveLength(2);
   });
 
   it("brings the year column back for every row once one entry has a year", () => {
     const markup = html(<IndexList entries={[{ title: "a" }, { title: "b", years: "2024" }]} />);
     expect(markup.match(/md:col-span-9/g)).toHaveLength(2);
-    expect(markup.match(/type-mono-13/g)).toHaveLength(2);
+    expect(markup.match(/type-body/g)).toHaveLength(2);
     expect(markup).not.toContain("md:col-span-3");
   });
 
@@ -85,7 +85,7 @@ describe("DataTable", () => {
     const markup = html(<DataTable columns={columns} rows={[{ title: "a", n: 1 }]} rowKey={(r) => r.title} />);
     expect(markup).toContain("<thead>");
     expect(markup.match(/<th scope="col"/g)).toHaveLength(2);
-    expect(markup).toMatch(/type-mono-12[^"]*text-right[^>]*>1</);
+    expect(markup).toMatch(/type-meta[^"]*text-right[^>]*>1</);
   });
 
   it("renders one empty-state row spanning every column", () => {

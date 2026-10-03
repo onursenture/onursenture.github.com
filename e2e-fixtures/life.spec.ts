@@ -18,7 +18,7 @@ test("bands show real rows from every source", async ({ page }) => {
     ["Bozkır", "3"],
     ["Hacı Komünist", "4"],
   ]) {
-    await expect(books.locator("li", { hasText: title }).locator("span.type-mono-12").last()).toHaveText(rating);
+    await expect(books.locator("li", { hasText: title }).locator("span.type-meta").last()).toHaveText(rating);
   }
   await expect(books).not.toContainText("\u2605");
   const articles = page.locator('[data-section="articles"]');

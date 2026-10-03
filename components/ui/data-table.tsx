@@ -5,7 +5,7 @@ export interface Column<T> {
   header: string;
   cell: (row: T) => ReactNode;
   align?: "left" | "right";
-  // Fragment Mono, muted: numbers, dates, years, domains. Stays on one line.
+  // Mono, muted: numbers, dates, years, domains. Stays on one line.
   mono?: boolean;
   // Lets a mono cell wrap (names, which can be long) below xl.
   wrap?: boolean;
@@ -37,7 +37,7 @@ export function DataTable<T>({
                 key={index}
                 scope="col"
                 className={cx(
-                  "h-8 px-3 font-normal whitespace-nowrap type-mono-11 text-fg-muted",
+                  "h-8 px-3 font-normal whitespace-nowrap type-label text-fg-muted",
                   column.align === "right" ? "text-right" : "text-left",
                 )}
               >
@@ -49,7 +49,7 @@ export function DataTable<T>({
         <tbody>
           {rows.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} className="h-9 px-3 type-mono-12 text-fg-muted">
+              <td colSpan={columns.length} className="h-9 px-3 type-meta text-fg-muted">
                 <span aria-hidden="true" className="font-sans">
                   ○
                 </span>{" "}
@@ -66,7 +66,7 @@ export function DataTable<T>({
                       "h-9 px-3 align-middle",
                       // Text cells keep a readable width; on narrow screens
                       // the table scrolls sideways instead of squeezing them.
-                      column.mono ? cx("type-mono-12 text-fg-muted", column.wrap ? "xl:whitespace-nowrap" : "whitespace-nowrap") : "min-w-24 type-sans-13",
+                      column.mono ? cx("type-meta text-fg-muted", column.wrap ? "xl:whitespace-nowrap" : "whitespace-nowrap") : "min-w-24 type-body",
                       column.align === "right" ? "text-right" : "text-left",
                     )}
                   >

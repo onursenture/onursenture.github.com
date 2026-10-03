@@ -14,7 +14,7 @@ describe("Lab index", () => {
 
   it("collapses the empty year column in the site band", () => {
     const markup = html(<LabBand entries={[{ title: "a", description: "b" }]} />);
-    expect(markup).not.toContain("type-mono-13");
+    expect(markup).not.toContain("type-body");
     expect(markup).toContain("md:col-span-11");
   });
 

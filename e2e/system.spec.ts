@@ -25,7 +25,7 @@ test("/system/ renders every primitive, the type scale and the Sources band", as
   for (const name of PRIMITIVES) {
     await expect(page.locator(`[data-primitive="${name}"]`)).toBeVisible();
   }
-  await expect(page.locator("[data-type]")).toHaveCount(17);
+  await expect(page.locator("[data-type]")).toHaveCount(6);
   // Ratings are numbers in mono, never stars.
   await expect(page.locator('[data-primitive="Rating"]')).toContainText("3.5 · 4");
   await expect(page.locator('[data-primitive="Rating"]')).not.toContainText("\u2605");

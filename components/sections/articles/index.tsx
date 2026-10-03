@@ -14,10 +14,10 @@ function Render({ data }: { data: Article[] }) {
     <ul className="border-t">
       {data.map((article) => (
         <li key={article.link} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b py-3">
-          <ItemLink href={article.link} className="type-sans-16">
+          <ItemLink href={article.link} className="type-body">
             {article.title}
           </ItemLink>
-          <span className="type-mono-12 text-fg-muted">
+          <span className="type-meta text-fg-muted">
             {[article.domain, minutes(article)].filter(Boolean).join(" · ")}
           </span>
         </li>

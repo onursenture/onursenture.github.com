@@ -33,7 +33,7 @@ describe("StatusGlyph", () => {
 describe("MetaLabel", () => {
   it("renders an uppercase mono label with an optional leading glyph", () => {
     const markup = html(<MetaLabel status="ok">Films</MetaLabel>);
-    expect(markup).toMatch(/^<span class="[^"]*type-mono-11[^"]*uppercase/);
+    expect(markup).toMatch(/^<span class="[^"]*type-label[^"]*uppercase/);
     expect(markup).toContain("●</span>Films");
   });
 

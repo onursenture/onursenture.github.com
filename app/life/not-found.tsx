@@ -6,8 +6,8 @@ export default function NotFound() {
   return (
     <main className="flex flex-col items-start gap-6 py-24">
       <MetaLabel>404</MetaLabel>
-      <h1 className="type-display-64">Page not found</h1>
-      <TextLink href="/life/" className="type-sans-16">
+      <h1 className="type-lead">Page not found</h1>
+      <TextLink href="/life/" className="type-body">
         Back to Life
       </TextLink>
     </main>

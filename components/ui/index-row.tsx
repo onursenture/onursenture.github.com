@@ -55,14 +55,14 @@ export function IndexRow({
   const body = (
     <>
       {columns.years ? (
-        <span className="col-span-2 type-mono-13 max-md:empty:hidden">{years}</span>
+        <span className="col-span-2 type-body max-md:empty:hidden">{years}</span>
       ) : null}
       <span className={cx("col-span-1", TITLE_SPAN[`${columns.years}-${columns.role}`])}>
-        {status ? <StatusGlyph status={status} label={statusLabel} className="mr-2 type-sans-20" /> : null}
-        <span className={cx("type-sans-20", href && "group-hover:underline group-hover:underline-offset-[0.15em]")}>
+        {status ? <StatusGlyph status={status} label={statusLabel} className="mr-2 type-lead" /> : null}
+        <span className={cx("type-lead", href && "group-hover:underline group-hover:underline-offset-[0.15em]")}>
           {title}
         </span>
-        {meta ? <span className="ml-3 type-mono-12 text-fg-muted">{meta}</span> : null}
+        {meta ? <span className="ml-3 type-meta text-fg-muted">{meta}</span> : null}
         {era ? (
           <span className="mt-1 block">
             <EraStamp parts={[era]} />
@@ -70,11 +70,11 @@ export function IndexRow({
         ) : null}
       </span>
       {columns.role ? (
-        <span className="col-span-2 type-mono-13 text-fg-muted max-md:order-last max-md:empty:hidden md:col-span-3">
+        <span className="col-span-2 type-body text-fg-muted max-md:order-last max-md:empty:hidden md:col-span-3">
           {role}
         </span>
       ) : null}
-      <span aria-hidden="true" className="col-span-1 text-right type-sans-20">
+      <span aria-hidden="true" className="col-span-1 text-right type-lead">
         {href ? "→" : null}
       </span>
     </>

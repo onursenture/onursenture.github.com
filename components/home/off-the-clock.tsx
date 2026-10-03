@@ -30,9 +30,9 @@ function Tile({
       {media}
       <span className="flex flex-col gap-1">
         {title ? (
-          <span className="type-sans-16 group-hover:underline group-hover:underline-offset-[0.2em]">{title}</span>
+          <span className="type-body group-hover:underline group-hover:underline-offset-[0.2em]">{title}</span>
         ) : null}
-        {detail ? <span className="type-mono-12 text-fg-muted">{detail}</span> : null}
+        {detail ? <span className="type-meta text-fg-muted">{detail}</span> : null}
       </span>
     </Link>
   );
@@ -92,8 +92,8 @@ export async function OffTheClock() {
         label="Saved"
         href="/life/#articles"
         media={
-          <span className="flex aspect-[2/3] flex-col justify-end border bg-surface p-4">
-            <span className="type-sans-20 group-hover:underline group-hover:underline-offset-[0.2em]">
+          <span className="flex aspect-[2/3] flex-col justify-end border bg-bg p-4">
+            <span className="type-lead group-hover:underline group-hover:underline-offset-[0.2em]">
               {article.title}
             </span>
           </span>

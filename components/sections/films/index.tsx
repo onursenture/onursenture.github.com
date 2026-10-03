@@ -15,10 +15,10 @@ function Render({ data }: { data: Film[] }) {
         <li key={film.link}>
           <a href={film.link} rel="noopener noreferrer" className="group flex flex-col gap-2">
             <Cover src={film.poster} alt="" />
-            <span className="type-sans-14 group-hover:underline group-hover:underline-offset-[0.2em]">
+            <span className="type-body group-hover:underline group-hover:underline-offset-[0.2em]">
               {film.title}
             </span>
-            <span className="type-mono-12 text-fg-muted">
+            <span className="type-meta text-fg-muted">
               {[formatRating(film.ratingValue), film.year].filter(Boolean).join(" · ")}
             </span>
           </a>

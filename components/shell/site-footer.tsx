@@ -15,7 +15,7 @@ export async function SiteFooter() {
   const year = await copyrightYear();
   return (
     <footer className="border-t">
-      <div className="mx-auto flex max-w-312 flex-wrap items-center gap-x-2 gap-y-1 px-4 py-6 type-mono-11 text-fg-muted md:px-6">
+      <div className="mx-auto flex max-w-312 flex-wrap items-center gap-x-2 gap-y-1 px-4 py-6 type-label text-fg-muted md:px-6">
         <span>
           © {year} {profile.name}
         </span>

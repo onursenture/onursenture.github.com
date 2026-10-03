@@ -32,7 +32,7 @@ export function Band({
           {source ? <span>· {source}</span> : null}
         </MetaLabel>
         {href ? (
-          <TextLink href={href} className="type-mono-11 tracking-[0.02em] uppercase">
+          <TextLink href={href} className="type-label tracking-[0.02em] uppercase">
             {linkLabel}
           </TextLink>
         ) : null}

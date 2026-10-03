@@ -16,10 +16,10 @@ function Reading({ books }: { books: Book[] }) {
         <li key={book.link}>
           <a href={book.link} rel="noopener noreferrer" className="group flex flex-col gap-2">
             <Cover src={book.cover} alt="" />
-            <span className="type-sans-14 group-hover:underline group-hover:underline-offset-[0.2em]">
+            <span className="type-body group-hover:underline group-hover:underline-offset-[0.2em]">
               {book.title}
             </span>
-            <span className="type-mono-12 text-fg-muted">{book.author}</span>
+            <span className="type-meta text-fg-muted">{book.author}</span>
           </a>
         </li>
       ))}
@@ -33,11 +33,11 @@ function Read({ books }: { books: Book[] }) {
     <ul className="border-t">
       {books.map((book) => (
         <li key={book.link} className="grid grid-cols-12 items-baseline gap-x-6 border-b py-3">
-          <ItemLink href={book.link} className="col-span-12 type-sans-16 md:col-span-6">
+          <ItemLink href={book.link} className="col-span-12 type-body md:col-span-6">
             {book.title}
           </ItemLink>
-          <span className="col-span-8 type-mono-12 text-fg-muted md:col-span-4">{book.author}</span>
-          <span className="col-span-4 text-right type-mono-12 md:col-span-2">{formatRating(book.numRating)}</span>
+          <span className="col-span-8 type-meta text-fg-muted md:col-span-4">{book.author}</span>
+          <span className="col-span-4 text-right type-meta md:col-span-2">{formatRating(book.numRating)}</span>
         </li>
       ))}
     </ul>

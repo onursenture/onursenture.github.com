@@ -41,7 +41,7 @@ function Neighbour({ label, photo, align }: { label: string; photo: Photo | null
   return (
     <div className={align === "right" ? "flex flex-col items-end gap-1 text-right" : "flex flex-col gap-1"}>
       <MetaLabel>{label}</MetaLabel>
-      <TextLink href={`/life/photos/${photo.slug}/`} className="type-sans-14">
+      <TextLink href={`/life/photos/${photo.slug}/`} className="type-body">
         {photo.title}
       </TextLink>
     </div>
@@ -59,8 +59,8 @@ export default async function PhotoPage({ params }: PageProps<"/life/photos/[slu
     <main className="flex flex-col gap-8 pt-8 pb-24 md:pt-12">
       <Picture image={photo.image} alt={photo.title} sizes={SIZES} priority />
       <div className="flex flex-col gap-3">
-        <h1 className="type-display-40">{photo.title}</h1>
-        <p className="type-mono-12 text-fg-muted">
+        <h1 className="type-lead">{photo.title}</h1>
+        <p className="type-meta text-fg-muted">
           <time dateTime={photo.date}>{formatDate(photo.date)}</time>
           {photo.camera ? ` · ${photo.camera}` : null}
         </p>

@@ -12,10 +12,10 @@ function Render({ data }: { data: Post[] }) {
     <ul className="border-t">
       {data.map((post) => (
         <li key={post.link} className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b py-3">
-          <ItemLink href={post.link} className="type-sans-16">
+          <ItemLink href={post.link} className="type-body">
             {post.title}
           </ItemLink>
-          <time dateTime={post.date} className="type-mono-12 text-fg-muted">
+          <time dateTime={post.date} className="type-meta text-fg-muted">
             {formatDate(post.date)}
           </time>
         </li>

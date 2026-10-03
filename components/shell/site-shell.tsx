@@ -18,7 +18,7 @@ function BookACall() {
 // actions on the right), content in a 1200px container, and the footer. Below md the bar collapses to the name and a Menu button.
 export function SiteShell({ children }: { children: ReactNode }) {
   const name = (
-    <Link href="/" className="type-sans-14-medium">
+    <Link href="/" className="type-body font-medium">
       {profile.name}
     </Link>
   );

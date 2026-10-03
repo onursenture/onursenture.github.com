@@ -10,7 +10,7 @@ function Render({ data }: { data: Contributions }) {
   return (
     <div className="flex flex-col gap-4">
       <Heatmap data={data} />
-      <p className="type-mono-12 text-fg-muted">{data.total} contributions in the last year</p>
+      <p className="type-meta text-fg-muted">{data.total} contributions in the last year</p>
     </div>
   );
 }

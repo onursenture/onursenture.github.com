@@ -27,33 +27,22 @@ import { pageMetadata } from "@/lib/metadata";
 export const metadata: Metadata = pageMetadata("System", { robots: { index: false, follow: false } });
 
 const TYPE_STYLES = [
-  ["type-display-160", "Aa"],
-  ["type-display-96", "One system"],
-  ["type-display-64", "Two densities"],
-  ["type-display-40", "Same tokens, two readings."],
-  ["type-sans-28", "Selected work"],
-  ["type-sans-28-medium", "Selected work"],
-  ["type-sans-20", "Section title"],
-  ["type-sans-20-medium", "Section title"],
-  ["type-sans-16", "Site body text sits in a ~680px measure at line-height 1.6."],
-  ["type-sans-16-medium", "Site body text sits in a ~680px measure at line-height 1.6."],
-  ["type-sans-14", "Navigation, buttons and compact body."],
-  ["type-sans-14-medium", "Navigation, buttons and compact body."],
-  ["type-sans-13", "Sidebar items, table cells, panel headers."],
-  ["type-sans-13-medium", "Sidebar items, table cells, panel headers."],
-  ["type-mono-13", "2026 · 1,284 · 12:00"],
-  ["type-mono-12", "2026 · 1,284 · 12:00"],
-  ["type-mono-11", "2026 · 1,284 · 12:00"],
+  ["type-name", "ONUR SENTURE"],
+  ["type-lead", "Designer who builds."],
+  ["type-body", "Body text in mono, 13 on 21."],
+  ["type-meta", "May 2016–Apr 2026 · 2,133"],
+  ["type-label", "LABEL · 11"],
+  ["type-boot", "last watched: Love & Other Drugs 3.5"],
 ] as const;
 
 // Literal class names so Tailwind generates them.
 const SWATCHES = [
   ["--color-bg", "bg-bg"],
-  ["--color-surface", "bg-surface"],
   ["--color-fg", "bg-fg"],
   ["--color-fg-muted", "bg-fg-muted"],
+  ["--color-fg-soft", "bg-fg-soft"],
   ["--color-line", "bg-line"],
-  ["--color-line-strong", "bg-line-strong"],
+  ["--color-accent", "bg-accent"],
   ["--color-danger", "bg-danger"],
   ["--color-danger-bg", "bg-danger-bg"],
 ] as const;
@@ -80,9 +69,9 @@ export default async function SystemPage() {
 
   return (
     <main className="flex flex-col gap-16 py-16">
-      <h1 className="type-display-64">System</h1>
+      <h1 className="type-lead">System</h1>
 
-      <Band label="Type" source="17 styles">
+      <Band label="Type" source="6 styles">
         <div className="flex flex-col">
           {TYPE_STYLES.map(([style, sample]) => (
             <div key={style} data-type={style} className="flex flex-col gap-2 border-b py-4 last:border-b-0">
@@ -98,7 +87,7 @@ export default async function SystemPage() {
           {SWATCHES.map(([token, swatch]) => (
             <div key={token} className="flex flex-col gap-2">
               <span className={`h-12 border ${swatch}`} />
-              <span className="type-mono-12">{token}</span>
+              <span className="type-meta">{token}</span>
             </div>
           ))}
         </div>
@@ -110,7 +99,7 @@ export default async function SystemPage() {
           <MetaLabel status="ok">With a glyph</MetaLabel>
         </Specimen>
         <Specimen name="StatusGlyph">
-          <span className="type-sans-16">
+          <span className="type-body">
             <StatusGlyph status="ok" /> ok · <StatusGlyph status="late" /> late ·{" "}
             <StatusGlyph status="empty" /> empty · <StatusGlyph status="error" /> error · → link · × close
           </span>
@@ -135,20 +124,20 @@ export default async function SystemPage() {
           <ToggleDemo />
         </Specimen>
         <Specimen name="RelativeTime">
-          <span className="type-mono-12">
+          <span className="type-meta">
             {photo ? <RelativeTime iso={`${photo.date}T00:00:00.000Z`} /> : null}
           </span>
         </Specimen>
         <Specimen name="LiveClock">
-          <span className="type-mono-12">
+          <span className="type-meta">
             ANKARA <LiveClock timeZone="Europe/Istanbul" place="Ankara" />
           </span>
         </Specimen>
         <Specimen name="Rating">
-          <span className="type-mono-12">
+          <span className="type-meta">
             {formatRating(3.5)} · {formatRating(4)}
           </span>
-          <span className="type-mono-12 text-fg-muted">unrated shows nothing: [{formatRating(null)}]</span>
+          <span className="type-meta text-fg-muted">unrated shows nothing: [{formatRating(null)}]</span>
         </Specimen>
         <Specimen name="Cover">
           <div className="w-24">
@@ -164,7 +153,7 @@ export default async function SystemPage() {
         <Specimen name="Band">
           <div className="w-full">
             <Band label="Label" source="Source" href="/life/">
-              <p className="type-sans-16">Band content.</p>
+              <p className="type-body">Band content.</p>
             </Band>
           </div>
         </Specimen>

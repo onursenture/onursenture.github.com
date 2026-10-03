@@ -12,7 +12,7 @@ export function HomeSite() {
   return (
     <main className="flex flex-col gap-16 pt-16 pb-24 md:gap-24 md:pt-24">
       <header className="flex flex-col gap-6">
-        <h1 className="max-w-[30ch] type-display-40">{profile.identity ?? profile.name}</h1>
+        <h1 className="max-w-[30ch] type-lead">{profile.identity ?? profile.name}</h1>
         {profile.meta ? <MetaLine segments={profile.meta} available={profile.available} /> : null}
       </header>
       <Band label="Selected work" id="work">

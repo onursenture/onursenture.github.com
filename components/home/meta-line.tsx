@@ -30,7 +30,7 @@ export function MetaLine({ segments, available }: { segments: MetaSegment[]; ava
   const visible = visibleSegments(segments, available);
   if (visible.length === 0) return null;
   return (
-    <p data-testid="meta-line" className="type-mono-12 tracking-[0.02em] text-fg-muted uppercase">
+    <p data-testid="meta-line" className="type-meta tracking-[0.02em] text-fg-muted uppercase">
       {visible.map((segment, index) => (
         <Fragment key={index}>
           {index > 0 ? <span aria-hidden="true"> · </span> : null}
