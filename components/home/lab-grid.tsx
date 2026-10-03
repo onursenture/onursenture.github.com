@@ -23,7 +23,7 @@ export function LabGrid({ entries }: { entries: LabEntry[] }) {
             {entry.href ? (
               <ItemLink href={entry.href}>
                 {entry.title}
-                {isExternal(entry.href) ? <span aria-hidden="true"> ↗</span> : null}
+                {isExternal(entry.href) ? <span aria-hidden="true"> ↗</span> : null}
               </ItemLink>
             ) : (
               <span>{entry.title}</span>

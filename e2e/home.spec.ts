@@ -9,6 +9,13 @@ test("the home leads with the lead line, the role and a live Ankara clock", asyn
   await expect(page.locator("#identity")).toContainText("Open to work");
 });
 
+test("each section's label is a heading", async ({ page }) => {
+  await page.goto("/");
+  for (const name of ["Work", "Experience", "Lab"]) {
+    await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
+  }
+});
+
 test("the bio names PrimeTek, Orkestra and Bilkent with inline marks", async ({ page }) => {
   await page.goto("/");
   const identity = page.locator("#identity");

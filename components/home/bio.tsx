@@ -9,7 +9,7 @@ export function Bio({ paragraphs }: { paragraphs: BioSegment[][] }) {
   return (
     <>
       {paragraphs.map((segments, index) => (
-        <p key={index} className="mb-2 indent-[3ch] text-justify type-body text-fg-soft">
+        <p key={index} className="mb-2 indent-[3ch] md:text-justify type-body text-fg-soft">
           {segments.map((segment, i) =>
             typeof segment === "string" ? (
               <Fragment key={i}>{segment}</Fragment>

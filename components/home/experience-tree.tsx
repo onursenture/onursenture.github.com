@@ -17,7 +17,7 @@ export function ExperienceTree({ entries }: { entries: ExperienceEntry[] }) {
           {entry.children.length > 0 ? (
             <ul aria-label={`${ORGS[entry.org].name} work`}>
               {entry.children.map((child, index) => (
-                <li key={child.title} className="grid grid-cols-[3ch_13ch_1fr] text-fg-muted">
+                <li key={child.title} className="grid grid-cols-[4ch_13ch_1fr] text-fg-muted">
                   <span aria-hidden="true">{index === entry.children.length - 1 ? "└─" : "├─"}</span>
                   {child.href ? (
                     <ItemLink href={child.href} className="text-accent">

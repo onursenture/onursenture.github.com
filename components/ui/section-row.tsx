@@ -7,6 +7,7 @@ import { cx } from "@/lib/cx";
 export function SectionRow({
   id,
   label,
+  labelAs: LabelTag = "h2",
   action,
   wide = false,
   children,
@@ -14,6 +15,8 @@ export function SectionRow({
 }: {
   id?: string;
   label: ReactNode;
+  // The label is the section's heading, unless the content holds the page h1.
+  labelAs?: "h2" | "div";
   action?: ReactNode;
   wide?: boolean;
   children: ReactNode;
@@ -22,7 +25,7 @@ export function SectionRow({
   return (
     <section id={id} data-section={dataSection} className="scroll-mt-20">
       <div className="grid gap-4 px-4 py-8 md:px-10 lg:grid-cols-[200px_minmax(0,480px)_1fr] lg:gap-7 lg:py-[30px]">
-        <div className="type-body text-fg">{label}</div>
+        <LabelTag className="type-body font-normal text-fg">{label}</LabelTag>
         <div className={cx("min-w-0", wide && "lg:col-span-2")}>{children}</div>
         {action && !wide ? <div className="type-meta text-fg-muted lg:text-right">{action}</div> : null}
       </div>

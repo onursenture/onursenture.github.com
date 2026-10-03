@@ -46,6 +46,7 @@ describe("SectionRow", () => {
     );
     expect(html).toContain('id="work"');
     expect(html).toContain(">Work<");
+    expect(html).toMatch(/<h2[^>]*>Work<\/h2>/);
     expect(html).toContain("<p>content</p>");
     expect(html).toContain("<span>All</span>");
   });

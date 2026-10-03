@@ -10,7 +10,7 @@ describe("formatSpan", () => {
 });
 
 describe("experience", () => {
-  it("lists the confirmed roles, newest start first, each with a known org", () => {
+  it("lists the confirmed roles, ongoing first, then by end date, newest first, each with a known org", () => {
     expect(experience.map((e) => e.org)).toEqual(["orkestra", "primetek", "etiya"]);
     for (const entry of experience) expect(ORGS[entry.org]).toBeDefined();
   });

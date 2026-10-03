@@ -29,6 +29,7 @@ export function HomeSite() {
     <SectionRow
       key="identity"
       id="identity"
+      labelAs="div"
       label={
         <>
           <span className="text-fg">{profile.role}</span>
