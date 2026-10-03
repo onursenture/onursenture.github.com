@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { byId, entry, primeone } from "./primeone";
 
 const STUDIES = [
   ["primeone", "PrimeOne"],
@@ -21,13 +22,17 @@ for (const [slug, title] of STUDIES) {
 
 test("the PrimeOne log is newest first and links each entry's post", async ({ page }) => {
   await page.goto("/work/primeone/");
-  await expect(page.locator('[data-view="log"] h2')).toHaveText(["2026", "2024", "2023", "2022"]);
-  const entry = page.locator("#entry-3-0");
-  await expect(entry).toContainText("3.0");
-  await expect(entry).toContainText("· Nov");
-  await expect(entry.getByRole("link", { name: "post" })).toHaveAttribute("href", "https://x.com/w00f/status/1854537901700186303");
-  await expect(entry.locator('[data-media="overview-3-0"]')).toContainText("FIG. 06.1 · Overview");
-  await expect(entry.getByRole("button", { name: "+1 in Grid →" })).toBeVisible();
+  await expect(page.locator('[data-view="log"] h2')).toHaveText(primeone.groups.map((group) => group.year));
+  const e30 = entry("3-0");
+  const overview = byId("overview-3-0");
+  const block = page.locator("#entry-3-0");
+  await expect(block).toContainText(e30.heading);
+  await expect(block).toContainText(`· ${e30.month}`);
+  const post = block.getByRole("link", { name: `Post on X, ${e30.heading}, ${e30.month} ${e30.year}` });
+  await expect(post).toHaveAttribute("href", "https://x.com/w00f/status/1854537901700186303");
+  await expect(post).toContainText("post");
+  await expect(block.locator('[data-media="overview-3-0"]')).toContainText(`${overview.label} · ${overview.caption}`);
+  await expect(block.getByRole("button", { name: `+${e30.media.length - 1} in Grid →` })).toBeVisible();
 });
 
 test("Templates credits Genesis and counts its coverage from the data", async ({ page }) => {

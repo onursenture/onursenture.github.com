@@ -46,9 +46,9 @@ export function MediaFigure({ media, sizes, ratio, bare = false, fit = false, pr
     );
   }
   return (
-    <div
+    <span
       className={cx(
-        "relative overflow-hidden border",
+        "relative block overflow-hidden border",
         fit ? "aspect-[16/10] max-h-[62dvh] w-full max-w-5xl" : cx("w-full", ratio ?? RATIO[media.aspect]),
         className,
       )}
@@ -59,6 +59,6 @@ export function MediaFigure({ media, sizes, ratio, bare = false, fit = false, pr
           {media.label} · {media.caption}
         </span>
       )}
-    </div>
+    </span>
   );
 }

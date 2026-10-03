@@ -1,4 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { entry, media, tagged, total } from "./primeone";
+
+const e30 = entry("3-0");
 
 test("switching views updates the URL and the page", async ({ page }) => {
   await page.goto("/work/primeone/");
@@ -7,13 +10,13 @@ test("switching views updates the URL and the page", async ({ page }) => {
   await expect(page).toHaveURL(/\/work\/primeone\/\?view=grid$/);
   const grid = page.locator('[data-view="grid"]');
   await expect(grid).toBeVisible();
-  // Hero + five entry figures.
-  await expect(grid.locator("[data-media]")).toHaveCount(6);
+  // The hero plus every entry's figures.
+  await expect(grid.locator("[data-media]")).toHaveCount(total);
   await expect(page.getByRole("group", { name: "Filter" }).getByRole("button", { name: /^All/ })).toHaveAttribute("aria-pressed", "true");
 
   await views.getByRole("button", { name: "Index" }).click();
   await expect(page).toHaveURL(/\?view=index$/);
-  await expect(page.locator('[data-view="index"] li')).toHaveCount(6);
+  await expect(page.locator('[data-view="index"] li')).toHaveCount(media.length);
 
   await views.getByRole("button", { name: "Log" }).click();
   await expect(page).toHaveURL(/\/work\/primeone\/$/);
@@ -25,9 +28,9 @@ test("chips filter by entry or tag with computed counts", async ({ page }) => {
   const filter = page.getByRole("group", { name: "Filter" });
   await filter.getByRole("button", { name: /^Tokens/ }).click();
   await expect(page).toHaveURL(/\?view=grid&tag=tokens$/);
-  await expect(page.locator('[data-view="grid"] [data-media]')).toHaveCount(3);
-  await filter.getByRole("button", { name: /^3\.0/ }).click();
-  await expect(page.locator('[data-view="grid"] [data-media]')).toHaveCount(2);
+  await expect(page.locator('[data-view="grid"] [data-media]')).toHaveCount(tagged("tokens").length);
+  await filter.getByRole("button", { name: new RegExp(`^${e30.heading.replace(".", "\\.")}`) }).click();
+  await expect(page.locator('[data-view="grid"] [data-media]')).toHaveCount(e30.media.length);
 });
 
 test("density changes the grid and is kept in the URL", async ({ page }) => {
@@ -40,8 +43,8 @@ test("density changes the grid and is kept in the URL", async ({ page }) => {
 test("a deep link opens the filtered view after hydration", async ({ page }) => {
   await page.goto("/work/primeone/?view=grid&tag=3-0&density=2");
   await expect(page.locator('[data-view="grid"]')).toHaveAttribute("data-density", "2");
-  await expect(page.locator('[data-view="grid"] [data-media]')).toHaveCount(2);
-  await expect(page.getByRole("group", { name: "Filter" }).getByRole("button", { name: /^3\.0/ })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator('[data-view="grid"] [data-media]')).toHaveCount(e30.media.length);
+  await expect(page.getByRole("group", { name: "Filter" }).getByRole("button", { name: new RegExp(`^${e30.heading.replace(".", "\\.")}`) })).toHaveAttribute("aria-pressed", "true");
 });
 
 test("unknown query values fall back to the Log", async ({ page }) => {
@@ -51,9 +54,9 @@ test("unknown query values fall back to the Log", async ({ page }) => {
 
 test("'+N in Grid' opens the Grid filtered to that entry", async ({ page }) => {
   await page.goto("/work/primeone/");
-  await page.locator("#entry-3-0").getByRole("button", { name: "+1 in Grid →" }).click();
+  await page.locator("#entry-3-0").getByRole("button", { name: `+${e30.media.length - 1} in Grid →` }).click();
   await expect(page).toHaveURL(/\?view=grid&tag=3-0$/);
-  await expect(page.locator('[data-view="grid"] [data-media]')).toHaveCount(2);
+  await expect(page.locator('[data-view="grid"] [data-media]')).toHaveCount(e30.media.length);
 });
 
 test("the server HTML is the Log whatever the query", async ({ request }) => {

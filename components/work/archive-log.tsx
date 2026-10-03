@@ -36,7 +36,7 @@ export function ArchiveLog({ view, onOpen }: { view: ArchiveView; onOpen?: (id: 
                     ) : null}
                   </div>
                   <p className="type-meta lg:text-right">
-                    <TextLink href={row.source} className="text-accent">
+                    <TextLink href={row.source} ariaLabel={`Post on X, ${row.title}, ${row.monthYear}`} className="text-accent">
                       post
                     </TextLink>
                   </p>

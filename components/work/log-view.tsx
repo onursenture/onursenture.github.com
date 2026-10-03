@@ -82,7 +82,7 @@ function EntryBlock({
         {entry.source || entry.links.length > 0 ? (
           <p className="flex flex-wrap gap-x-4 type-meta">
             {entry.source ? (
-              <TextLink href={entry.source} className="text-accent">
+              <TextLink href={entry.source} ariaLabel={`Post on X, ${entry.heading}, ${entry.month} ${entry.year}`} className="text-accent">
                 post
               </TextLink>
             ) : null}

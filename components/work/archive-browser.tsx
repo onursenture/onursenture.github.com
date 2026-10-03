@@ -8,12 +8,12 @@ import { MediaViewer } from "./media-viewer";
 import { useViewerHistory, useViewState } from "./use-view-state";
 
 const TAGS: ReadonlySet<string> = new Set(["all"]);
-// The Archive has no Posts view.
-const VIEWS: ReadonlySet<WorkView> = new Set(["log", "grid", "index"]);
+// The Archive is a Log only: no Grid, Index or Posts.
+const VIEWS: ReadonlySet<WorkView> = new Set(["log"]);
 
 // The Archive with its figures in the shared viewer (?fig=).
 export function ArchiveBrowser({ view }: { view: ArchiveView }) {
-  const valid = useMemo(() => ({ tags: TAGS, views: VIEWS, figs: new Set(view.media.map((item) => item.id)) }), [view]);
+  const valid = useMemo(() => ({ tags: TAGS, postTags: TAGS, views: VIEWS, figs: new Set(view.media.map((item) => item.id)) }), [view]);
   const [state, update] = useViewState(valid);
   const viewer = useViewerHistory(state.fig, update);
   return (

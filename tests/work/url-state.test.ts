@@ -71,6 +71,30 @@ describe("posts view", () => {
     expect(parse("view=posts&tag=3-0")).toEqual(DEFAULT_VIEW_STATE);
   });
 
+  it("keeps media chip keys to Grid and Index, and post chip keys to Posts", () => {
+    // "tokens" is a media tag only; "2-0" is a post chip only; "3-0" is both.
+    const both = validValues(
+      [{ id: "cover" }],
+      [{ key: "all" }, { key: "3-0" }, { key: "tokens" }],
+      [{ key: "all" }, { key: "2-0" }, { key: "3-0" }],
+      new Set(["log", "grid", "index", "posts"] as const),
+    );
+    const read = (query: string) => parseViewState(new URLSearchParams(query), both);
+    expect(read("view=posts&tag=tokens").tag).toBe("all");
+    expect(read("view=grid&tag=2-0").tag).toBe("all");
+    expect(read("view=index&tag=2-0").tag).toBe("all");
+    expect(read("view=grid&tag=tokens").tag).toBe("tokens");
+    expect(read("view=posts&tag=2-0").tag).toBe("2-0");
+    expect(read("view=grid&tag=3-0").tag).toBe("3-0");
+    expect(read("view=posts&tag=3-0").tag).toBe("3-0");
+  });
+
+  it("lets a Log-only page (the Archive) ignore every other view", () => {
+    const logOnly = validValues([{ id: "a" }], [{ key: "all" }], [{ key: "all" }], new Set(["log"] as const));
+    expect(parseViewState(new URLSearchParams("view=grid&tag=all&density=2"), logOnly)).toEqual(DEFAULT_VIEW_STATE);
+    expect(parseViewState(new URLSearchParams("view=posts"), logOnly)).toEqual(DEFAULT_VIEW_STATE);
+  });
+
   it("keeps the default views (log, grid, index) when none are passed", () => {
     expect(validValues([], []).views).toEqual(new Set(["log", "grid", "index"]));
   });
