@@ -50,5 +50,5 @@ Sprint 5 (Work I: PrimeTek) is complete on branch `sprint-5`: `/work/`, four cas
 
 ## Research (any sprint)
 
-- The PrimeFaces blog can be walked post by post with its previous/next links from any article (the index redirects). Use it for dates the X search missed (e.g. PrimeOne 3.1).
+- **PrimeFaces blog, full walk (its own task, Onur 2026-10-03).** The blog index redirects, but every article links to the previous and next post. Walk it end to end in both directions separately, from a mid-point article backwards to 2016 and forwards to 2026, covering Onur's ten years. Record every post relevant to his work: PrimeOne, PrimeBlocks, PrimeIcons, templates, themes, Theme Designer, the store and design tooling. The goal is to fill gaps and correct the record of what he did across those years, not only single dates like PrimeOne 3.1. Output a research file like `x-prime-posts.md`, then run a content pass.
 - The 2019-06 – 2020-10 X search window was thin; templates from that period may be missing posts.
