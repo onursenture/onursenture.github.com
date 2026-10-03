@@ -20,3 +20,6 @@ _theme_packages/
 .rvmrc
 .sass-cache
 .jekyll-cache
+
+# Playwright MCP session logs
+.playwright-mcp/
