@@ -21,7 +21,7 @@ describe("caseStudyFacts", () => {
   it("for a templates study with zero page-tagged media, value is just the template count", () => {
     const templates = getCaseStudy("templates")!;
     // Create a copy with all page tags removed
-    const templatesNoPags: CaseStudy = {
+    const templatesNoPages: CaseStudy = {
       ...templates,
       entries: templates.entries.map((entry) => ({
         ...entry,
@@ -31,15 +31,15 @@ describe("caseStudyFacts", () => {
         })),
       })),
     };
-    const view = getStudyView(templatesNoPags);
-    const facts = caseStudyFacts(templatesNoPags, view);
+    const view = getStudyView(templatesNoPages);
+    const facts = caseStudyFacts(templatesNoPages, view);
     const lastFact = facts[facts.length - 1];
     expect(lastFact).toEqual({ label: "Coverage", value: "6 templates" });
   });
 
-  it("with exactly 1 entry it says 1 template (singular)", () => {
+  it("with exactly 1 entry and a page, the Coverage says 1 template · 1 page (singular)", () => {
     const templates = getCaseStudy("templates")!;
-    // Create a copy with only one entry
+    // Create a copy with only one entry (Verona, which has page-tagged media)
     const templatesOneEntry: CaseStudy = {
       ...templates,
       entries: [templates.entries[0]],
@@ -47,7 +47,27 @@ describe("caseStudyFacts", () => {
     const view = getStudyView(templatesOneEntry);
     const facts = caseStudyFacts(templatesOneEntry, view);
     const lastFact = facts[facts.length - 1];
-    expect(lastFact.label).toBe("Coverage");
-    expect(lastFact.value).toContain("1 template");
+    expect(lastFact).toEqual({ label: "Coverage", value: "1 template · 1 page" });
+  });
+
+  it("with exactly 1 entry and no pages, the Coverage says 1 template (singular)", () => {
+    const templates = getCaseStudy("templates")!;
+    // Create a copy with only one entry and no page tags
+    const templatesOneEntry: CaseStudy = {
+      ...templates,
+      entries: [
+        {
+          ...templates.entries[0],
+          media: templates.entries[0].media.map((media) => ({
+            ...media,
+            tags: (media.tags || []).filter((tag) => tag !== "page"),
+          })),
+        },
+      ],
+    };
+    const view = getStudyView(templatesOneEntry);
+    const facts = caseStudyFacts(templatesOneEntry, view);
+    const lastFact = facts[facts.length - 1];
+    expect(lastFact).toEqual({ label: "Coverage", value: "1 template" });
   });
 });
