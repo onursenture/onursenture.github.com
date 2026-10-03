@@ -218,7 +218,7 @@ Onur and Claude design together, using Mobbin MCP, Figma MCP and reference sites
 | Sprint | Contents |
 |---|---|
 | Sprint 4 | This spec |
-| Sprint 5 | Work I: PrimeTek, with placeholder media |
+| Sprint 5 | Work I: PrimeTek — see `2026-10-03-sprint-5-work-primetek-design.md` (case studies, Posts view, Figma images; new projects PrimeStore 2025 and PrimeDesigner deferred to Sprint 6) |
 | Sprint 6 | Work II: Orkestra and Lab |
 | Sprint 7 | Admin: GitHub auth, media upload into placeholder slots, simple page editing |
 | Sprint 8 | Resume, Book a call, launch |
