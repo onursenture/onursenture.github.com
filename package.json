@@ -15,7 +15,8 @@
     "e2e:fixtures": "playwright test --config playwright.fixtures.config.ts",
     "images": "tsx scripts/images.ts",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx scripts/migrate.ts --force"
+    "db:migrate": "tsx scripts/migrate.ts --force",
+    "screenshots": "tsx scripts/screenshots.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.2.0",

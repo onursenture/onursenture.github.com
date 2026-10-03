@@ -1,28 +1,229 @@
 @import "tailwindcss";
 
 /* Theme and view are attributes, not media queries, so both can be toggled.
-   Usage: dark:bg-black, dashboard:text-xs. Design tokens arrive in S3. */
+   Usage: dark:…, dashboard:… (density tweaks only; colors come from tokens). */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 @custom-variant dashboard (&:where([data-view="dashboard"], [data-view="dashboard"] *));
 
-:root {
-  color-scheme: light;
-  --background: #ffffff;
-  --foreground: #171717;
+/* Design tokens (S1). Names match the Figma variables exactly. The defaults
+   are cleared first, so only these exist: no palette colors, no shadows, one
+   radius. tests/tokens.test.ts checks the values below against the S1 spec. */
+@theme static {
+  --color-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --text-shadow-*: initial;
+
+  --color-bg: #FFFFFF;
+  --color-surface: #FAFAFA;
+  --color-fg: #000000;
+  --color-fg-muted: #737373;
+  --color-line: #E5E5E5;
+  --color-line-strong: #D4D4D4;
+  --color-danger: #D92D20;
+  --color-danger-bg: #FEF3F2;
+
+  /* Neue Haas Grotesk comes from the Adobe Fonts kit (app/layout.tsx);
+     Fragment Mono from next/font, which defines --font-fragment-mono. */
+  --font-display: "neue-haas-grotesk-display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-sans: "neue-haas-grotesk-text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: var(--font-fragment-mono), ui-monospace, Menlo, monospace;
+
+  /* Form controls only (buttons, inputs, toggles). Everything else is square. */
+  --radius-control: 4px;
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --color-bg: #000000;
+  --color-surface: #0A0A0A;
+  --color-fg: #F2F2F2;
+  --color-fg-muted: #8A8A8A;
+  --color-line: #262626;
+  --color-line-strong: #404040;
+  --color-danger: #F97066;
+  --color-danger-bg: #2A0F0C;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+/* Without JavaScript the theme script never sets data-theme, so follow the
+   OS. Same values as the block above. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --color-bg: #000000;
+    --color-surface: #0A0A0A;
+    --color-fg: #F2F2F2;
+    --color-fg-muted: #8A8A8A;
+    --color-line: #262626;
+    --color-line-strong: #404040;
+    --color-danger: #F97066;
+    --color-danger-bg: #2A0F0C;
+  }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  /* Structure comes from 1px rules: a bare `border` is a --color-line rule. */
+  *,
+  ::before,
+  ::after,
+  ::backdrop {
+    border-color: var(--color-line);
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--color-fg);
+    color: var(--color-bg);
+  }
+
+  :focus-visible {
+    outline: 1px solid var(--color-fg);
+    outline-offset: 2px;
+  }
+}
+
+/* Type scale: one class per Figma text style (display/96 → type-display-96,
+   sans/14-medium → type-sans-14-medium, mono/11 → type-mono-11), plus
+   display-160 from the S1 spec. Adobe shifts the Display weights: 65 Medium
+   is font-weight 600. Display sizes are fluid and reach their nominal size
+   at a 1440px viewport. */
+@utility type-display-160 {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 11.11vw, 10rem);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  font-weight: 600;
+}
+@utility type-display-96 {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6.67vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  font-weight: 600;
+}
+@utility type-display-64 {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 4.45vw, 4rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+@utility type-display-40 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 2.78vw, 2.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+@utility type-sans-28 {
+  font-family: var(--font-sans);
+  font-size: 1.75rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+}
+@utility type-sans-28-medium {
+  font-family: var(--font-sans);
+  font-size: 1.75rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}
+@utility type-sans-20 {
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  line-height: 1.3;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+@utility type-sans-20-medium {
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  line-height: 1.3;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+@utility type-sans-16 {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+@utility type-sans-16-medium {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+@utility type-sans-14 {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+@utility type-sans-14-medium {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+@utility type-sans-13 {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+@utility type-sans-13-medium {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+/* Fragment Mono has one weight; the Figma -medium mono styles map to 400. */
+@utility type-mono-13 {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+@utility type-mono-12 {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+@utility type-mono-11 {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  letter-spacing: 0;
+  font-weight: 400;
 }
