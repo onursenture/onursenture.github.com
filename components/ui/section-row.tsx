@@ -3,7 +3,7 @@ import { cx } from "@/lib/cx";
 
 // The row's grid, shared with the Life "Now" block so the two cannot drift:
 // 200px label column, 480px content column, then the action column from lg.
-export const ROW_GRID = "grid gap-4 px-4 py-8 md:px-10 lg:grid-cols-[200px_minmax(0,480px)_1fr] lg:gap-7 lg:py-[30px]";
+export const ROW_GRID = "grid grid-cols-1 gap-4 px-4 py-8 md:px-10 lg:grid-cols-[200px_minmax(0,480px)_1fr] lg:gap-7 lg:py-[30px]";
 
 // One section on the Sprint 4 grid: a 200px label column, a content column of
 // up to 480px (`wide` lets content take the action column too, and from lg the

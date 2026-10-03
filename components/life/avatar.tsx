@@ -7,7 +7,7 @@ export function Avatar() {
   return (
     <picture>
       <source srcSet={data.avif} type="image/avif" />
-      <img src={data.webp} alt="" aria-hidden="true" width={96} height={96} className="block size-24" />
+      <img src={data.webp} alt="" aria-hidden="true" width={data.size} height={data.size} className="block size-24" />
     </picture>
   );
 }

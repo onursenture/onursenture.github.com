@@ -33,7 +33,7 @@ export default async function LifePage() {
   return (
     <main className="pb-8">
       <h1 className="sr-only">Life</h1>
-      <section aria-label="Now" className={`${ROW_GRID} grid-cols-1`}>
+      <section aria-label="Now" className={ROW_GRID}>
         <Avatar />
         <BootReadout lines={lines} />
       </section>
