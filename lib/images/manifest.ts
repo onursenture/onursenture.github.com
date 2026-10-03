@@ -14,3 +14,9 @@ export function getImage(key: string): ImageEntry {
 export function hasImage(key: string): boolean {
   return key in manifest;
 }
+
+// The entry for a key, or undefined. For optional slots (work media) that
+// fall back to a placeholder instead of failing the build.
+export function findImage(key: string): ImageEntry | undefined {
+  return manifest[key];
+}
