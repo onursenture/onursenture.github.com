@@ -1,3 +1,4 @@
+import { primeblocksPosts } from "./posts/primeblocks";
 import type { CaseStudy } from "./types";
 
 // Every entry is backed by the post in its `source`; see primeone.ts.
@@ -122,4 +123,5 @@ export const primeblocks: CaseStudy = {
       media: [],
     },
   ],
+  posts: primeblocksPosts,
 };

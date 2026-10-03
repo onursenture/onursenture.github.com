@@ -30,7 +30,7 @@ export function PostsView({ groups }: { groups: YearGroup<PostView>[] }) {
                   <span className="type-meta text-fg-muted">{post.day}</span>
                   <span className="type-meta text-fg-muted">{post.account}</span>
                   <p className="type-body text-fg-soft">{post.summary}</p>
-                  <TextLink href={post.url} className="type-meta text-accent">
+                  <TextLink href={post.url} ariaLabel={`Post on X, ${post.day} ${post.year}, ${post.account}`} className="type-meta text-accent">
                     post
                   </TextLink>
                 </li>

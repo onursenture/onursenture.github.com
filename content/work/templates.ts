@@ -1,3 +1,4 @@
+import { templatesPosts } from "./posts/templates";
 import type { CaseStudy } from "./types";
 
 // Every template released during Onur's tenure (May 2016 to Apr 2026) that
@@ -491,4 +492,5 @@ export const templates: CaseStudy = {
       ],
     },
   ],
+  posts: templatesPosts,
 };

@@ -153,6 +153,7 @@ describe("Posts", () => {
     expect(markup).toContain("Launch.");
     expect(markup).toContain('href="https://x.com/primereact/status/100"');
     expect(markup).toContain("\u00a0\u2197");
+    expect(markup).toContain('aria-label="Post on X, 7 Nov 2024, @primereact"');
   });
 
   it("renders an empty list when the filter leaves nothing", () => {

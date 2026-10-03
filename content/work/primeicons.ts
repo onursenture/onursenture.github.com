@@ -1,3 +1,4 @@
+import { primeiconsPosts } from "./posts/primeicons";
 import type { CaseStudy } from "./types";
 
 // Every entry is backed by the post in its `source`. The live icon grid comes from
@@ -70,4 +71,5 @@ export const primeicons: CaseStudy = {
       media: [{ id: "set-7-0", caption: "The 7.0 set" }],
     },
   ],
+  posts: primeiconsPosts,
 };
