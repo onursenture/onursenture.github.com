@@ -5,6 +5,12 @@ import type { Contributions } from "@/lib/sources/github";
 // side outside the palette, on purpose: the audience knows them (Onur 2026-10-03).
 const LEVELS = ["bg-[#ebedf0]", "bg-[#9be9a8]", "bg-[#40c463]", "bg-[#30a14e]", "bg-[#216e39]"];
 
+// The sentence that names the figure and its period; the visible line and the
+// heatmap's accessible name both use it so they can't drift.
+export function contributionsLabel(total: number): string {
+  return `${total.toLocaleString("en-US")} contributions in the last 12 months`;
+}
+
 // One column per week, Sunday on top. The first week is usually partial, so
 // it is padded down to its first day's weekday.
 export function Heatmap({ data }: { data: Contributions }) {
@@ -14,7 +20,7 @@ export function Heatmap({ data }: { data: Contributions }) {
     <div className="overflow-x-auto">
       <div
         role="img"
-        aria-label={`${data.total} contributions in the last year`}
+        aria-label={contributionsLabel(data.total)}
         className="grid w-max grid-flow-col grid-rows-7 gap-[3px]"
       >
         {Array.from({ length: offset }, (_, i) => (

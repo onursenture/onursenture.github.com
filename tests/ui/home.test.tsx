@@ -109,9 +109,10 @@ describe("LabGrid", () => {
     expect(markup).toContain("onursenture.com");
     expect(markup).toContain("This site.");
     expect(markup).toContain("2026");
-    expect(markup).not.toContain("<canvas");
-    // LabAvatar's wrapper (a canvas only mounts after hydration).
-    expect(markup).not.toContain("relative block shrink-0");
+    // The row starts with its status glyph, then the title; no aria-hidden avatar leads it.
+    const row = markup.slice(markup.indexOf("<li"));
+    expect(row.replace(/^<li[^>]*>/, "")).toMatch(/^<span[^>]*><span[^>]*role="img"[^>]*aria-label="in progress"/);
+    expect(markup).not.toMatch(/<li[^>]*><span[^>]*aria-hidden="true"/);
   });
 });
 

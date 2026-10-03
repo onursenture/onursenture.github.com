@@ -55,14 +55,16 @@ const SWATCHES = [
 ] as const;
 
 // Generic sample for the Heatmap specimen, not real data: 20 weeks, levels 0–4.
+const SAMPLE_WEEKS = Array.from({ length: 20 }, (_, w) => ({
+  days: Array.from({ length: 7 }, (_, d) => {
+    const date = new Date(Date.UTC(2026, 0, 4 + w * 7 + d)).toISOString().slice(0, 10);
+    const level = (w * 3 + d * 2) % 5;
+    return { date, count: level, level };
+  }),
+}));
 const SAMPLE_CONTRIBUTIONS = {
-  total: 0,
-  weeks: Array.from({ length: 20 }, (_, w) => ({
-    days: Array.from({ length: 7 }, (_, d) => {
-      const date = new Date(Date.UTC(2026, 0, 4 + w * 7 + d)).toISOString().slice(0, 10);
-      return { date, count: 0, level: (w * 3 + d * 2) % 5 };
-    }),
-  })),
+  total: SAMPLE_WEEKS.flatMap((week) => week.days).reduce((sum, day) => sum + day.count, 0),
+  weeks: SAMPLE_WEEKS,
 };
 
 function Swatches() {
