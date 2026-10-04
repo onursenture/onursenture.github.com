@@ -9,24 +9,30 @@ import { ROW_GRID } from "@/components/ui/section-row";
 import { getPhotos } from "@/lib/content/photos";
 import { buildReadout } from "@/lib/life/readout";
 import { pageMetadata } from "@/lib/metadata";
+import { getPublishedNotes } from "@/lib/notes/read";
+import { notePathOn, onSide } from "@/lib/notes/views";
 import { readSource } from "@/lib/sources/read";
 
 export const metadata: Metadata = pageMetadata("Life");
 
 export default async function LifePage() {
-  const [films, books, articles, writing, github, photos] = await Promise.all([
+  const [films, books, articles, writing, github, photos, allNotes] = await Promise.all([
     readSource("letterboxd"),
     readSource("goodreads"),
     readSource("instapaper"),
     readSource("writing"),
     readSource("github"),
     getPhotos(),
+    getPublishedNotes(),
   ]);
+  const lifeNotes = onSide(allNotes, "life");
+  const latestNote = lifeNotes[0];
   const lines = buildReadout({
     film: films.data[0],
     books: books.data.currentlyReading,
     article: articles.data[0],
     photo: photos[0],
+    note: latestNote ? { text: latestNote.text, href: notePathOn(latestNote, "life") } : undefined,
     post: writing.data[0],
     contributions: github.data,
   });
@@ -37,12 +43,14 @@ export default async function LifePage() {
         <Avatar />
         <BootReadout lines={lines} />
       </section>
-      {lifeSections.map((section) => (
-        <Fragment key={section.id}>
-          <DitherRule className="mx-4 md:mx-10" />
-          <SectionBlock section={section} />
-        </Fragment>
-      ))}
+      {lifeSections
+        .filter((section) => section.id !== "notes" || lifeNotes.length > 0)
+        .map((section) => (
+          <Fragment key={section.id}>
+            <DitherRule className="mx-4 md:mx-10" />
+            <SectionBlock section={section} />
+          </Fragment>
+        ))}
     </main>
   );
 }

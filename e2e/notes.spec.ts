@@ -14,3 +14,11 @@ test("unknown note pages and pages past the last are 404s", async ({ page }) => 
   expect((await page.goto("/notes/page/2/"))?.status()).toBe(404);
   expect((await page.goto("/notes/page/1/"))?.status()).toBe(404);
 });
+
+test("with no notes /life/ has no Notes section and /life/notes/ says so", async ({ page }) => {
+  await page.goto("/life/");
+  await expect(page.locator('[data-section="notes"]')).toHaveCount(0);
+  await page.goto("/life/notes/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Notes Off the clock.");
+  await expect(page.getByText("No notes yet.")).toBeVisible();
+});
