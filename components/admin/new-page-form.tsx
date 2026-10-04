@@ -28,6 +28,7 @@ export function NewPageForm({ orgs }: { orgs: { id: OrgId; name: string }[] }) {
       const result = await createPageAction({ slug, org, title, kind });
       if (result.status === "ok") router.push(`/admin/work/${result.slug}/`);
       else if (result.status === "invalid") setIssues(result.issues);
+      else if (result.status === "conflict") setIssues([{ doc: `work/${slug}`, at: "slug", message: `"${slug}" is taken` }]);
       else setIssues([{ doc: "work-index", at: "", message: result.status === "unauthorized" ? "Signed out — sign in again." : "The database is unavailable." }]);
     });
   }
@@ -37,7 +38,7 @@ export function NewPageForm({ orgs }: { orgs: { id: OrgId; name: string }[] }) {
       <h1 className="type-lead">New page</h1>
       <form onSubmit={submit} className="flex flex-col gap-3">
         <TextField label="Title" value={title} onChange={setTitle} issues={at("title")} />
-        <TextField label="Slug" value={slug} onChange={setTypedSlug} hint={`/work/${slug || "…"}/ · permanent`} issues={at("slug")} />
+        <TextField label="Slug" value={slug} onChange={(value) => setTypedSlug(value === "" ? null : value)} hint={`/work/${slug || "…"}/ · permanent`} issues={at("slug")} />
         <SelectField label="Organisation" value={org} options={orgs.map((item) => ({ value: item.id, label: item.name }))} onChange={setOrg} />
         <TextField label="Kind" value={kind} onChange={setKind} hint="A few words, e.g. word game" />
         <IssueText issues={issues.filter((issue) => !["title", "slug"].includes(issue.at))} />

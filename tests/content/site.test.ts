@@ -63,6 +63,25 @@ describe("resolveSite", () => {
     expect(resolveSite(new Map([["lab", [{ title: "" }]]])).lab).toBe(labIndex);
   });
 
+  it("resolves a rough draft loosely (the preview) and falls back strictly", () => {
+    const rough = {
+      ...nebuu,
+      slug: "rough",
+      title: "",
+      facts: [{ label: "Years", value: "" }],
+      blocks: [{ kind: "images", id: "images", images: [{ id: "a", pin: { title: "A", note: "" } }] }],
+    };
+    const values = new Map<string, unknown>([["work/rough", rough]]);
+    expect(resolvePage(values, "rough")).toBeNull();
+    expect(resolvePage(values, "rough", { loose: true })?.slug).toBe("rough");
+    const nebuuRough = new Map<string, unknown>([["work/nebuu", { ...nebuu, title: "" }]]);
+    expect(resolvePage(nebuuRough, "nebuu")?.title).toBe(nebuu.title);
+    expect(resolvePage(nebuuRough, "nebuu", { loose: true })?.title).toBe("");
+    const lab = new Map<string, unknown>([["lab", [{ title: "", description: "" }]]]);
+    expect(resolveSite(lab).lab).toBe(labIndex);
+    expect(resolveSite(lab, { loose: true }).lab).toEqual([{ title: "", description: "" }]);
+  });
+
   it("resolves one page and the index slugs", () => {
     const values = new Map<string, unknown>([["work/new-page", { ...nebuu, slug: "new-page" }]]);
     expect(resolvePage(values, "new-page")?.slug).toBe("new-page");

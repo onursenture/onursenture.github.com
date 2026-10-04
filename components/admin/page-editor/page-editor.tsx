@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { deletePageAction } from "@/app/admin/actions";
 import { Button } from "@/components/ui/button";
 import type { Block, ProductPage } from "@/content/work/types";
@@ -25,6 +25,22 @@ export interface PageEditorProps {
   hasRepo: boolean;
 }
 
+function deleteMessage(result: Exclude<Awaited<ReturnType<typeof deletePageAction>>, { status: "ok" }>): string {
+  switch (result.status) {
+    case "unauthorized":
+      return "Signed out — sign in again.";
+    case "unavailable":
+      return "Database unavailable.";
+    case "invalid": {
+      const reasons = result.issues.map((issue) => issue.message).join("; ");
+      const experience = result.issues.some((issue) => issue.doc === "experience");
+      return `Can't delete: ${reasons}${experience ? ". Remove it from Experience first." : "."}`;
+    }
+    default:
+      return "Couldn't delete this page. Reload and try again.";
+  }
+}
+
 // A product page's editor (spec §2.3): header fields, then the blocks as
 // collapsible, reorderable cards; the open card is the one the preview outlines.
 // The route keys this by document, so switching pages remounts it.
@@ -39,6 +55,11 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
   const blocks = useKeyedList(page.blocks, (next) => set({ blocks: next }));
   const lockedBlocks = new Set(locked.blocks);
   const lockedImages = new Set(locked.images);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const deleteAlert = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    if (deleteError) deleteAlert.current?.scrollIntoView({ block: "nearest" });
+  }, [deleteError]);
   const pageImageIds = pageImages(page).map((image) => image.id);
   const openIndex = openKey ? blocks.keys.indexOf(openKey) : -1;
   const focusId = openIndex >= 0 ? page.blocks[openIndex].id : null;
@@ -46,7 +67,9 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
   const shown = editor.status === "invalid" ? editor.issues : [];
 
   function addBlock(kind: Block["kind"]) {
-    const taken = page.blocks.map((block) => block.id);
+    // Published ids are reserved for good: a new block never takes the id of
+    // one that was deleted.
+    const taken = [...page.blocks.map((block) => block.id), ...locked.blocks];
     const block: Block =
       kind === "text"
         ? { kind, id: uniqueId("", taken, "block"), heading: "", body: [""] }
@@ -65,13 +88,16 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
     if (window.confirm(question)) blocks.remove(index);
   }
 
+  // Delete problems get their own line: they are not publish issues, so they
+  // leave the editor's status (and Publish) alone.
   async function deletePage() {
-    if (!window.confirm(`Delete ${page.title}? It leaves the site at once.`)) return;
+    const question = live ? `Delete ${page.title || page.slug}? It leaves the site at once.` : "Delete this draft page?";
+    if (!window.confirm(question)) return;
+    setDeleteError(null);
     await editor.flush();
     const result = await deletePageAction(page.slug);
     if (result.status === "ok") router.push("/admin/");
-    else if (result.status === "invalid") editor.report(result.issues);
-    else editor.report([{ doc: init.docKey, at: "", message: result.status === "unauthorized" ? "signed out" : "the database is unavailable" }]);
+    else setDeleteError(deleteMessage(result));
   }
 
   const extra = (
@@ -97,6 +123,11 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
       extraActions={extra}
     >
       <div className="flex flex-col gap-6">
+        {deleteError ? (
+          <p ref={deleteAlert} role="alert" className="border border-danger bg-danger-bg px-3 py-2 type-meta text-danger">
+            {deleteError}
+          </p>
+        ) : null}
         {live ? null : <p className="border border-line px-3 py-2 type-meta text-fg-muted">New page: not on the site until you publish it.</p>}
         <HeaderFields page={page} docKey={init.docKey} issues={shown} onChange={set} />
         <section className="flex flex-col gap-2">
@@ -119,7 +150,7 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
                   controls={controls}
                   open={openKey === blocks.keys[index]}
                   locked={lockedBlocks.has(block.id)}
-                  takenBlockIds={page.blocks.filter((_, i) => i !== index).map((item) => item.id)}
+                  takenBlockIds={[...page.blocks.filter((_, i) => i !== index).map((item) => item.id), ...locked.blocks.filter((id) => id !== block.id)]}
                   lockedImages={lockedImages}
                   pageImageIds={pageImageIds}
                   entries={entries}

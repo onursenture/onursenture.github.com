@@ -10,7 +10,7 @@ export function kebab(text: string): string {
   return text
     .replace(/[ıİşŞğĞüÜöÖçÇ]/g, (letter) => FOLD[letter])
     .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")

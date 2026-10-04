@@ -30,11 +30,11 @@ export function docRows(docs: ContentDoc[]): { pages: DocRow[]; home: DocRow[] }
     return { key, title, editHref, state: override ?? state(doc), publishedAt: doc?.publishedAt?.toISOString() ?? null };
   };
 
-  const pages = live.map((slug) => row(workKey(slug), resolvePage(drafts, slug)?.title ?? slug, `/admin/work/${slug}/`));
+  const pages = live.map((slug) => row(workKey(slug), resolvePage(drafts, slug, { loose: true })?.title || slug, `/admin/work/${slug}/`));
   for (const doc of docs) {
     const slug = slugOfKey(doc.key);
     if (slug === null || live.includes(slug)) continue;
-    pages.push(row(doc.key, resolvePage(drafts, slug)?.title ?? slug, `/admin/work/${slug}/`, "new"));
+    pages.push(row(doc.key, resolvePage(drafts, slug, { loose: true })?.title || slug, `/admin/work/${slug}/`, "new"));
   }
 
   const home = [row("profile", "Bio", "/admin/bio/"), row("lab", "Lab", "/admin/lab/"), row("experience", "Experience", "/admin/experience/")];

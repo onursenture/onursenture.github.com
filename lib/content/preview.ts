@@ -17,11 +17,11 @@ async function drafts(store: ContentStore | null): Promise<{ values: DocValues; 
 // One page's draft, also when it isn't listed yet (a new page).
 export async function draftPageView(store: ContentStore | null, slug: string): Promise<ProductPageView | null> {
   const { values, media } = await drafts(store);
-  const page = resolvePage(values, slug);
+  const page = resolvePage(values, slug, { loose: true });
   return page ? buildProductPage(page, lookupWith(media)) : null;
 }
 
 export async function draftHomeContent(store: ContentStore | null): Promise<HomeContent> {
   const { values, media } = await drafts(store);
-  return homeContent(resolveSite(values), lookupWith(media));
+  return homeContent(resolveSite(values, { loose: true }), lookupWith(media));
 }

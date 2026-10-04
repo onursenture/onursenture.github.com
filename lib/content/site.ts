@@ -6,7 +6,20 @@ import { type ProfileCopy, profile } from "@/content/profile";
 import { productPages } from "@/content/work";
 import type { ProductPage } from "@/content/work/types";
 import { type DocKey, slugOfKey, workKey } from "./keys";
-import { experienceSchema, labSchema, pinsSchema, productPageSchema, profileSchema, workIndexSchema } from "./schemas";
+import {
+  experienceSchema,
+  labSchema,
+  looseExperienceSchema,
+  looseLabSchema,
+  loosePinsSchema,
+  looseProductPageSchema,
+  looseProfileSchema,
+  looseWorkIndexSchema,
+  pinsSchema,
+  productPageSchema,
+  profileSchema,
+  workIndexSchema,
+} from "./schemas";
 
 // The whole editable site, resolved from document values over the repo
 // content (Sprint 7 spec §1.3). Pure: no database, no cache. lib/content/read.ts
@@ -77,26 +90,33 @@ function parsed<T>(values: DocValues, key: DocKey, schema: z.ZodType<T>): T | un
   return undefined;
 }
 
-export function indexSlugs(values: DocValues): string[] {
-  return parsed(values, "work-index", workIndexSchema)?.slugs ?? productPages.map((page) => page.slug);
+// `loose` (the admin preview only) accepts a draft that is the right shape but
+// not publishable yet; everything else reads strictly.
+export interface ResolveOptions {
+  loose?: boolean;
 }
 
-export function resolvePage(values: DocValues, slug: string): ProductPage | null {
-  return parsed(values, workKey(slug), productPageSchema) ?? productPages.find((page) => page.slug === slug) ?? null;
+export function indexSlugs(values: DocValues, { loose = false }: ResolveOptions = {}): string[] {
+  return parsed(values, "work-index", loose ? looseWorkIndexSchema : workIndexSchema)?.slugs ?? productPages.map((page) => page.slug);
 }
 
-export function resolveSite(values: DocValues): SiteContent {
+export function resolvePage(values: DocValues, slug: string, { loose = false }: ResolveOptions = {}): ProductPage | null {
+  return parsed(values, workKey(slug), loose ? looseProductPageSchema : productPageSchema) ?? productPages.find((page) => page.slug === slug) ?? null;
+}
+
+export function resolveSite(values: DocValues, options: ResolveOptions = {}): SiteContent {
+  const loose = options.loose ?? false;
   const repo = repoSite();
-  const pages = indexSlugs(values).flatMap((slug) => {
-    const page = resolvePage(values, slug);
+  const pages = indexSlugs(values, options).flatMap((slug) => {
+    const page = resolvePage(values, slug, options);
     if (!page) console.warn(`[content] work-index lists "${slug}", which has no page`);
     return page ? [page] : [];
   });
   return {
     pages,
-    pins: parsed(values, "pins", pinsSchema)?.order ?? repo.pins,
-    lab: parsed(values, "lab", labSchema) ?? repo.lab,
-    profile: parsed(values, "profile", profileSchema) ?? repo.profile,
-    experience: parsed(values, "experience", experienceSchema) ?? repo.experience,
+    pins: parsed(values, "pins", loose ? loosePinsSchema : pinsSchema)?.order ?? repo.pins,
+    lab: parsed(values, "lab", loose ? looseLabSchema : labSchema) ?? repo.lab,
+    profile: parsed(values, "profile", loose ? looseProfileSchema : profileSchema) ?? repo.profile,
+    experience: parsed(values, "experience", loose ? looseExperienceSchema : experienceSchema) ?? repo.experience,
   };
 }

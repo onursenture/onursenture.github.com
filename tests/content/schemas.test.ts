@@ -13,6 +13,9 @@ import {
   labSchema,
   orgIdSchema,
   pinsSchema,
+  looseExperienceSchema,
+  looseLabSchema,
+  looseProductPageSchema,
   productPageSchema,
   profileSchema,
   schemaFor,
@@ -56,6 +59,33 @@ describe("schemas", () => {
     const nebuu = productPages.find((p) => p.slug === "nebuu")!;
     expect(productPageSchema.safeParse({ ...nebuu, blocks: [{ kind: "video", id: "x" }] }).success).toBe(false);
     expect(productPageSchema.safeParse({ ...nebuu, title: "" }).success).toBe(false);
+  });
+
+  it("reject an empty body paragraph and a text block with no paragraphs", () => {
+    const nebuu = productPages.find((p) => p.slug === "nebuu")!;
+    const text = nebuu.blocks.find((b) => b.kind === "text")!;
+    const withBody = (body: string[]) => ({ ...nebuu, blocks: [{ ...text, body }] });
+    expect(productPageSchema.safeParse(withBody([""])).success).toBe(false);
+    expect(productPageSchema.safeParse(withBody([])).success).toBe(false);
+    expect(productPageSchema.safeParse(withBody(["Made it."])).success).toBe(true);
+    const then = nebuu.blocks.find((b) => b.kind === "then")!;
+    expect(productPageSchema.safeParse({ ...nebuu, blocks: [{ ...then, body: [""] }] }).success).toBe(false);
+  });
+
+  it("have loose variants that keep the shape but not the content rules", () => {
+    const nebuu = productPages.find((p) => p.slug === "nebuu")!;
+    const rough = {
+      ...nebuu,
+      title: "",
+      facts: [{ label: "Years", value: "" }],
+      blocks: [{ kind: "text", id: "block", heading: "", body: [""] }],
+    };
+    expect(productPageSchema.safeParse(rough).success).toBe(false);
+    expect(looseProductPageSchema.safeParse(rough).success).toBe(true);
+    expect(looseProductPageSchema.safeParse({ ...rough, blocks: [{ kind: "video", id: "x" }] }).success).toBe(false);
+    expect(looseLabSchema.safeParse([{ title: "", description: "" }]).success).toBe(true);
+    expect(looseExperienceSchema.safeParse([{ ...experience[0], start: "" }]).success).toBe(true);
+    for (const page of productPages) expect(looseProductPageSchema.safeParse(page).success, page.slug).toBe(true);
   });
 
   it("pick the schema for a key", () => {

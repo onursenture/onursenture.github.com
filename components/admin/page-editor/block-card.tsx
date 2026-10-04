@@ -54,6 +54,8 @@ export function BlockCard(props: BlockCardProps) {
   const label = blockLabel(block);
   // validateWork places issues at the block id, zod at blocks/<index>.
   const mine = [...issuesAt(issues, docKey, block.id), ...issuesAt(issues, docKey, `blocks/${index}`)];
+  // Image issues show on their image card, not twice.
+  const own = mine.filter((issue) => !issue.at.startsWith(`${block.id}/`) && !issue.at.startsWith(`blocks/${index}/images/`));
   const heading = "heading" in block ? (block.heading ?? "") : "";
   const setHeading = (next: string) =>
     onChange({ ...block, heading: next, id: followId(block.id, heading, next, props.takenBlockIds, FALLBACK[block.kind], locked) } as Block);
@@ -125,7 +127,7 @@ export function BlockCard(props: BlockCardProps) {
           ) : null}
           {block.kind === "icons" ? <p className="type-meta text-fg-muted">The live PrimeIcons 7.0.0 set, rendered from the pinned package.</p> : null}
           {block.kind === "images" ? <ImagesField {...props} block={block} /> : null}
-          <IssueText issues={mine} />
+          <IssueText issues={own} />
         </div>
       ) : null}
     </div>
@@ -133,7 +135,9 @@ export function BlockCard(props: BlockCardProps) {
 }
 
 function ImagesField(props: BlockCardProps & { block: Extract<Block, { kind: "images" }> }) {
-  const { block, onChange, slug, lockedImages, pageImageIds, entries, issues, docKey } = props;
+  const { block, index: blockIndex, onChange, slug, lockedImages, pageImageIds, entries, issues, docKey } = props;
+  // Ids to avoid: the page's own, and every published one (even if deleted).
+  const reserved = [...pageImageIds, ...lockedImages];
   const list = useKeyedList(block.images, (images) => onChange({ ...block, images }));
   return (
     <div className="flex flex-col gap-2">
@@ -159,8 +163,8 @@ function ImagesField(props: BlockCardProps & { block: Extract<Block, { kind: "im
               entry={entries[key]}
               controls={controls}
               locked={lockedImages.has(image.id)}
-              takenIds={pageImageIds.filter((id) => id !== image.id)}
-              issues={issuesAt(issues, docKey, `${block.id}/${image.id}`)}
+              takenIds={reserved.filter((id) => id !== image.id)}
+              issues={[...issuesAt(issues, docKey, `${block.id}/${image.id}`), ...issuesAt(issues, docKey, `blocks/${blockIndex}/images/${index}`)]}
               uploadSlot={props.renderUpload?.(image, update)}
               onChange={update}
               onRemove={() => {
@@ -171,7 +175,7 @@ function ImagesField(props: BlockCardProps & { block: Extract<Block, { kind: "im
           );
         }}
       </SortableList>
-      <AddButton onClick={() => list.insert(block.images.length, { id: uniqueId("", pageImageIds, "image") })}>Add image</AddButton>
+      <AddButton onClick={() => list.insert(block.images.length, { id: uniqueId("", reserved, "image") })}>Add image</AddButton>
     </div>
   );
 }
