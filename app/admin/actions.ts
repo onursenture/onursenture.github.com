@@ -1,6 +1,6 @@
 "use server";
 
-import { updateTag } from "next/cache";
+import { revalidateTag, updateTag } from "next/cache";
 import { type NewPageInput, createPage, deletePage, discardDraft, publishDoc, resetDoc, saveDraft } from "@/lib/admin/operations";
 import type { ActionResult } from "@/lib/admin/results";
 import { isAdmin } from "@/lib/auth/admin";
@@ -8,7 +8,12 @@ import { getContentStore } from "@/lib/content/get-store";
 import { type DocKey, isDocKey } from "@/lib/content/keys";
 import { CONTENT_TAG } from "@/lib/content/read";
 import type { ContentStore } from "@/lib/content/store";
+import { getDb } from "@/lib/db/client";
 import { hasImageWith, toMediaEntry } from "@/lib/images/lookup";
+import { sources } from "@/lib/sources/registry";
+import { sourceTag } from "@/lib/sources/tags";
+import { DrizzleSnapshotStore } from "@/lib/sync/drizzle-store";
+import { type SyncResult, syncAll } from "@/lib/sync/run";
 
 // Server actions for the admin UI. Each checks the session first, then the
 // store; a store error reads as "unavailable" so the editor can say so.
@@ -82,4 +87,17 @@ export async function deletePageAction(slug: string): Promise<ActionResult> {
     if (result.status === "ok") updateTag(CONTENT_TAG);
     return result;
   });
+}
+
+// "Sync now" on the admin home: every source, regardless of schedule, then the
+// same stale-while-revalidate as the sync route.
+export async function syncNowAction(): Promise<ActionResult<{ results: SyncResult[] }>> {
+  if (!(await isAdmin())) return { status: "unauthorized" };
+  const db = getDb();
+  if (!db) return { status: "unavailable" };
+  const results = await syncAll(Object.values(sources), new DrizzleSnapshotStore(db), { fetch: globalThis.fetch, env: process.env }, new Date(), {
+    force: true,
+  });
+  for (const result of results) if (result.status === "ok") revalidateTag(sourceTag(result.source), "max");
+  return { status: "ok", results };
 }
