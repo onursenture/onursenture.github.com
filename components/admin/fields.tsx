@@ -9,8 +9,9 @@ import { useKeyedList } from "./use-keyed-list";
 // Form controls for the admin editors, on the site tokens. Every control sits
 // in a <label>, so its visible label is its accessible name.
 
-export const CONTROL =
-  "w-full min-w-0 rounded-control border border-line bg-bg px-2 py-1.5 type-body text-fg focus:border-accent focus:outline-none disabled:text-fg-muted";
+const CONTROL_BASE =
+  "min-w-0 rounded-control border border-line bg-bg px-2 py-1.5 type-body text-fg focus:border-accent focus:outline-none disabled:text-fg-muted";
+export const CONTROL = `w-full ${CONTROL_BASE}`;
 
 export function IssueText({ issues, id }: { issues?: Issue[]; id?: string }) {
   if (!issues?.length) return null;
@@ -180,7 +181,7 @@ export interface PairColumn<T> {
 }
 
 // Rows of short text pairs: links, sources, credits, facts.
-export function PairsField<T extends Record<string, string | undefined>>({
+export function PairsField<T extends { [K in keyof T]: string | undefined }>({
   legend,
   value,
   onChange,
@@ -215,7 +216,8 @@ export function PairsField<T extends Record<string, string | undefined>>({
                 const text = event.target.value;
                 list.update(index, { ...item, [column.key]: column.optional ? optional(text) : text } as T);
               }}
-              className={cx(CONTROL, column.className)}
+              // A column with its own width drops the full-width default.
+              className={column.className ? cx(CONTROL_BASE, column.className) : CONTROL}
             />
           ))}
           {removable?.(item) === false ? (

@@ -105,6 +105,10 @@ describe("createPage", () => {
     expect((await createPage(store, { slug: "Bad Slug", org: "orkestra", title: "X", kind: "" }, t0)).status).toBe("invalid");
   });
 
+  it("reserves the slug of the new-page form", async () => {
+    expect((await createPage(store, { slug: "new", org: "orkestra", title: "New", kind: "" }, t0)).status).toBe("invalid");
+  });
+
   it("starts from the org's role and name and one What I did block", () => {
     const page = newPage({ slug: "x", org: "primetek", title: "X", kind: "kit" });
     expect(page.facts).toEqual([

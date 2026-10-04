@@ -126,7 +126,8 @@ export async function createPage(store: ContentStore, input: NewPageInput, now: 
       ...indexSlugs(publishedValues(docs)),
       ...docs.map((doc) => slugOfKey(doc.key)).filter((slug): slug is string => slug !== null),
     ]);
-    if (taken.has(input.slug) || repoValue(key) !== null) issues.push({ doc: key, at: "slug", message: `"${input.slug}" is taken` });
+    // "new" is the new-page form's route (/admin/work/new/).
+    if (taken.has(input.slug) || input.slug === "new" || repoValue(key) !== null) issues.push({ doc: key, at: "slug", message: `"${input.slug}" is taken` });
   }
   if (issues.length > 0) return invalid(issues);
   const result = await store.saveDraft(key, newPage(input), null, now);
