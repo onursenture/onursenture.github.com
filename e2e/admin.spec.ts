@@ -23,3 +23,16 @@ test("sign-in goes to GitHub, or says it isn't configured", async ({ request }) 
   expect([307, 503]).toContain(response.status());
   if (response.status() === 307) expect(response.headers().location).toMatch(/^https:\/\/github\.com\/login\/oauth\/authorize\?/);
 });
+
+test("previews redirect a signed-out visitor to sign-in", async ({ page }) => {
+  await page.goto("/admin/preview/work/nebuu/");
+  await expect(page).toHaveURL(/\/admin\/\?next=%2Fadmin%2Fwork%2Fnebuu%2F$/);
+  await expect(page.getByRole("link", { name: "Sign in with GitHub" })).toBeVisible();
+});
+
+test("public pages show no Edit link to a signed-out visitor", async ({ page }) => {
+  for (const path of ["/", "/work/nebuu/"]) {
+    await page.goto(path);
+    await expect(page.locator("footer").getByRole("link", { name: "Edit" })).toHaveCount(0);
+  }
+});

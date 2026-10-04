@@ -1,4 +1,6 @@
 import { cacheLife } from "next/cache";
+import { Suspense } from "react";
+import { EditLink } from "@/components/shell/edit-link";
 import { FooterWash } from "@/components/ui/dither";
 import { profile, socialLinks } from "@/content/profile";
 import { buildLine } from "@/lib/build-info";
@@ -20,6 +22,10 @@ export async function SiteFooter() {
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 pb-4 type-meta text-fg-muted md:px-10">
         <p data-testid="build-line">{buildLine()}</p>
         <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          {/* usePathname() is request-time data on a route with params, so it sits in its own boundary. */}
+          <Suspense fallback={null}>
+            <EditLink />
+          </Suspense>
           <span>
             © {year} {profile.name}
           </span>
