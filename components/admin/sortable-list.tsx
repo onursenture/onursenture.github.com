@@ -8,7 +8,8 @@ import { cx } from "@/lib/cx";
 
 // A vertical list reordered by dragging a grip or with ↑/↓ buttons (the
 // keyboard and screen-reader path). Each row renders its own controls where it
-// wants them. `canMove` vetoes a move (the then block stays first).
+// wants them. `canMove` vetoes a move (the then block stays first). A lifted row
+// is opaque, so it covers the rows it passes over.
 export function SortableList({
   keys,
   onMove,
@@ -88,7 +89,7 @@ function SortableRow({
     </span>
   );
   return (
-    <li ref={setNodeRef} style={{ transform: CSS.Translate.toString(transform), transition }} className={cx("min-w-0", isDragging && "relative z-10 opacity-80")}>
+    <li ref={setNodeRef} style={{ transform: CSS.Translate.toString(transform), transition }} className={cx("min-w-0", isDragging && "relative z-10 cursor-grabbing bg-bg")}>
       {children(controls)}
     </li>
   );

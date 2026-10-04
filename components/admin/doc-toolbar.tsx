@@ -34,6 +34,8 @@ function StatusText({ editor }: { editor: DocEditorState }) {
           </a>
         </span>
       );
+    case "offline":
+      return <span className="text-danger">Offline — retrying</span>;
     case "unavailable":
       return <span className="text-danger">Database unavailable</span>;
     case "invalid":

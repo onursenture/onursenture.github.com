@@ -54,10 +54,10 @@ export async function saveDraftAction(key: string, draft: unknown, expected: str
   return run((store) => saveDraft(store, key, draft, expected, new Date()));
 }
 
-export async function publishAction(key: string): Promise<ActionResult<{ publishedAt: string }>> {
+export async function publishAction(key: string, expected: string | null): Promise<ActionResult<{ publishedAt: string }>> {
   if (!isDocKey(key)) return badKey(key);
   return run(async (store) => {
-    const result = await publishDoc(store, key as DocKey, new Date(), await hasImageIn(store));
+    const result = await publishDoc(store, key as DocKey, new Date(), await hasImageIn(store), expected);
     if (result.status === "ok") updateTag(CONTENT_TAG);
     return result;
   });

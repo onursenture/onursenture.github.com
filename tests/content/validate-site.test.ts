@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { z } from "zod";
 import { productPages } from "@/content/work";
 import type { ProductPage } from "@/content/work/types";
 import { hasImage } from "@/lib/images/manifest";
 import { formatIssue, issuesAt } from "@/lib/content/issues";
 import { repoSite } from "@/lib/content/site";
-import { validateSite, workIssue } from "@/lib/content/validate-site";
+import { validateSite, workIssue, zodIssues } from "@/lib/content/validate-site";
 
 const repo = repoSite();
 const withPage = (slug: string, change: (page: ProductPage) => ProductPage) => ({
@@ -84,5 +85,36 @@ describe("issues", () => {
   });
   it("selects the issues at a place and below it", () => {
     expect(issuesAt(issues, "work/nebuu", "highlights").map((i) => i.message)).toEqual(["a", "b"]);
+  });
+});
+
+describe("zodIssues", () => {
+  const schema = z.object({
+    title: z.string().min(1),
+    start: z.string().regex(/^\d{4}-\d{2}$/, "use YYYY-MM"),
+    tags: z.array(z.string()).min(1),
+    note: z.string().min(3),
+  });
+
+  it("says a blank required string is required, and keeps custom messages", () => {
+    const result = schema.safeParse({ title: "", start: "2026", tags: [], note: "ab" });
+    if (result.success) throw new Error("expected a failure");
+    const issues = zodIssues("lab", result.error);
+    expect(issues).toContainEqual({ doc: "lab", at: "title", message: "is required" });
+    expect(issues).toContainEqual({ doc: "lab", at: "start", message: "use YYYY-MM" });
+  });
+
+  it("leaves other too_small messages (longer minimums, arrays) as zod wrote them", () => {
+    const result = schema.safeParse({ title: "x", start: "2026-01", tags: [], note: "ab" });
+    if (result.success) throw new Error("expected a failure");
+    const issues = zodIssues("lab", result.error);
+    expect(issues.find((i) => i.at === "note")?.message).not.toBe("is required");
+    expect(issues.find((i) => i.at === "tags")?.message).not.toBe("is required");
+  });
+
+  it("joins nested paths with /", () => {
+    const result = z.object({ rows: z.array(z.object({ title: z.string().min(1) })) }).safeParse({ rows: [{ title: "" }] });
+    if (result.success) throw new Error("expected a failure");
+    expect(zodIssues("lab", result.error)).toEqual([{ doc: "lab", at: "rows/0/title", message: "is required" }]);
   });
 });

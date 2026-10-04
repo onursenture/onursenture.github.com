@@ -48,6 +48,14 @@ describe("publishDoc", () => {
     expect(result.status === "invalid" && result.issues[0]).toMatchObject({ doc: "lab", at: "0/title" });
   });
 
+  it("refuses to publish a draft newer than the caller saw", async () => {
+    await saveDraft(store, "lab", [{ title: "A", description: "x" }], null, t0);
+    await saveDraft(store, "lab", [{ title: "B", description: "x" }], t0.toISOString(), t1);
+    expect(await publishDoc(store, "lab", t1, any, t0.toISOString())).toEqual({ status: "conflict" });
+    expect((await store.getDoc("lab"))?.published).toBeNull();
+    expect(await publishDoc(store, "lab", t1, any, t1.toISOString())).toEqual({ status: "ok", publishedAt: t1.toISOString() });
+  });
+
   it("publishes an edited page and clears its draft", async () => {
     await saveDraft(store, "work/nebuu", { ...nebuu, intro: "New intro." }, null, t0);
     expect(await publishDoc(store, "work/nebuu", t1, any)).toEqual({ status: "ok", publishedAt: t1.toISOString() });

@@ -59,7 +59,7 @@ export function EditorFrame({
           />
         </div>
       </div>
-      <IssuesList issues={editor.issues} />
+      <IssuesList issues={editor.issues} blocking={editor.status === "invalid"} />
       {preview ? (
         <div role="tablist" aria-label="Editor view" className="flex gap-4 border-b border-line px-4 py-1.5 type-meta lg:hidden">
           {(["form", "preview"] as const).map((name) => (

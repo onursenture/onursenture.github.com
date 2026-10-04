@@ -40,9 +40,13 @@ export async function publishDoc(
   key: DocKey,
   now: Date,
   hasImage: (key: string) => boolean,
+  // The draft time the caller last saw. When given and the stored draft is a
+  // different one (another tab saved since), nothing is published.
+  expected?: string | null,
 ): Promise<OpResult<{ publishedAt: string }>> {
   const docs = await store.listDocs();
   const doc = docs.find((item) => item.key === key);
+  if (expected !== undefined && (doc?.draftUpdatedAt?.toISOString() ?? null) !== expected) return { status: "conflict" };
   if (doc?.draft == null) return invalid([{ doc: key, at: "", message: "there is no draft to publish" }]);
   const parsed = schemaFor(key).safeParse(doc.draft);
   if (!parsed.success) return invalid(zodIssues(key, parsed.error));

@@ -15,7 +15,8 @@ export function LabEditor({ init }: { init: DocEditorInit<LabEntry[]> }) {
   const editor = useDocEditor(init);
   const entries = editor.value;
   const list = useKeyedList(entries, (next) => editor.setValue(() => next));
-  const at = (path: string) => issuesAt(editor.issues, "lab", path);
+  // Field messages go away with the first edit; the banner keeps the list.
+  const at = (path: string) => (editor.status === "invalid" ? issuesAt(editor.issues, "lab", path) : []);
 
   return (
     <EditorFrame crumbs={["Lab"]} editor={editor} preview="/admin/preview/home/" focusId="lab" openHref="/#lab">

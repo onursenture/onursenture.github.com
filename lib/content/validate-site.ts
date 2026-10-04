@@ -16,8 +16,15 @@ export function workIssue(line: string): Issue {
   return { doc: workKey(match[1]), at: match[2] ?? "", message: match[3] };
 }
 
+// A blank required string is the common mistake: say so instead of zod's
+// "Too small: expected string to have >=1 characters". Custom messages stay.
+function zodMessage(issue: z.ZodError["issues"][number]): string {
+  if (issue.code === "too_small" && issue.origin === "string" && issue.minimum === 1) return "is required";
+  return issue.message;
+}
+
 export function zodIssues(doc: DocKey, error: z.ZodError): Issue[] {
-  return error.issues.map((issue) => ({ doc, at: issue.path.map(String).join("/"), message: issue.message }));
+  return error.issues.map((issue) => ({ doc, at: issue.path.map(String).join("/"), message: zodMessage(issue) }));
 }
 
 export function validateSite(site: SiteContent, hasImage: (key: string) => boolean): Issue[] {

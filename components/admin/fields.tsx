@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { type ReactNode, useId } from "react";
 import { optional } from "@/lib/admin/list";
 import type { Issue } from "@/lib/content/issues";
 import { cx } from "@/lib/cx";
@@ -12,18 +12,54 @@ import { useKeyedList } from "./use-keyed-list";
 export const CONTROL =
   "w-full min-w-0 rounded-control border border-line bg-bg px-2 py-1.5 type-body text-fg focus:border-accent focus:outline-none disabled:text-fg-muted";
 
-export function IssueText({ issues }: { issues?: Issue[] }) {
+export function IssueText({ issues, id }: { issues?: Issue[]; id?: string }) {
   if (!issues?.length) return null;
-  return <p className="type-meta text-danger">{issues.map((issue) => issue.message).join("; ")}</p>;
+  return (
+    <p id={id} className="type-meta text-danger">
+      {issues.map((issue) => issue.message).join("; ")}
+    </p>
+  );
 }
 
-export function Field({ label, hint, issues, children }: { label: string; hint?: ReactNode; issues?: Issue[]; children: ReactNode }) {
+// What a control needs to point at its hint or issue text.
+export interface ControlProps {
+  "aria-describedby"?: string;
+  "aria-invalid"?: true;
+}
+
+// The label wraps the caption and the control only, so the caption is the
+// control's accessible name; the hint or issue text is a sibling it is
+// described by. A control that is not one of the fields below can take the
+// ControlProps from the function form of children.
+export function Field({
+  label,
+  hint,
+  issues,
+  children,
+}: {
+  label: string;
+  hint?: ReactNode;
+  issues?: Issue[];
+  children: ReactNode | ((control: ControlProps) => ReactNode);
+}) {
+  const id = useId();
+  const invalid = Boolean(issues?.length);
+  const describedBy = invalid || hint ? id : undefined;
+  const control: ControlProps = { "aria-describedby": describedBy, "aria-invalid": invalid ? true : undefined };
   return (
-    <label className="flex min-w-0 flex-col gap-1">
-      <span className="type-label text-fg-muted">{label}</span>
-      {children}
-      {issues?.length ? <IssueText issues={issues} /> : hint ? <span className="type-meta text-fg-muted">{hint}</span> : null}
-    </label>
+    <div className="flex min-w-0 flex-col gap-1">
+      <label className="flex min-w-0 flex-col gap-1">
+        <span className="type-label text-fg-muted">{label}</span>
+        {typeof children === "function" ? children(control) : children}
+      </label>
+      {invalid ? (
+        <IssueText id={id} issues={issues} />
+      ) : hint ? (
+        <span id={id} className="type-meta text-fg-muted">
+          {hint}
+        </span>
+      ) : null}
+    </div>
   );
 }
 
@@ -48,7 +84,9 @@ export function TextField({
 }) {
   return (
     <Field label={label} hint={hint} issues={issues}>
-      <input type={type} value={value} placeholder={placeholder} disabled={disabled} onChange={(event) => onChange(event.target.value)} className={CONTROL} />
+      {(control) => (
+        <input type={type} value={value} placeholder={placeholder} disabled={disabled} onChange={(event) => onChange(event.target.value)} className={CONTROL} {...control} />
+      )}
     </Field>
   );
 }
@@ -70,7 +108,7 @@ export function TextAreaField({
 }) {
   return (
     <Field label={label} hint={hint} issues={issues}>
-      <textarea value={value} rows={rows} onChange={(event) => onChange(event.target.value)} className={CONTROL} />
+      {(control) => <textarea value={value} rows={rows} onChange={(event) => onChange(event.target.value)} className={CONTROL} {...control} />}
     </Field>
   );
 }
