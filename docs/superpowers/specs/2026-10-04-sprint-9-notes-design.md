@@ -300,3 +300,18 @@ A **Notes** section is added above Sources. It shows the drafts and scheduled co
 - Replies, likes or mentions from the network.
 - Tag pages, note search, quotes, video, and versioning.
 - Media cleanup for deleted notes' Blob files, which stays in the existing post-launch follow-up.
+
+## Errata (implementation)
+
+- **Dates.** Lists outside `/notes/` always show the year ("Oct 4, 2026"): a prerendered page can't know the current year. Under a year label they show "Oct 4".
+- **HEIC.** There was no HEIC spike. The browser converts any non-PNG/JPEG file to JPEG before upload (`components/admin/notes/note-upload.ts`). A real iPhone upload on production is a follow-up check.
+- **Facets** come from `@atproto/api` 0.23.0 `RichText` (spike on 2026-10-04: identical grapheme counts, and no false positives on file names). Link text renders as written, not shortened.
+- **The Life section's action** reads "All", like every other Life section, not "All notes".
+- **The scheduled pill** uses the accent token, because amber isn't a token.
+- **Notes in dev and e2e** live in a sibling JSON file (`<content store>.notes.json`).
+- **Note page text** is `type-lead` with an inline `fontWeight: 400`, a deliberate exception Onur approved (the mockup weight) to "type only from `type-*` classes".
+- **Composer (`NoteComposerState`)**, after the Task 9 review fixes (all approved by Onur): `dirty` compares order-independently (key-sorted), because the server returns embeds in schema key order; `open()`/`startNew()` are ignored while an action runs, and the timeline rows, Cancel, Delete and Unschedule are disabled while an action or an upload runs; on a scheduled note whose schedule was moved, Save is disabled (use Reschedule, Publish now or Unschedule); for new notes and drafts the schedule toggle doesn't count as an unsaved change; `hasUnsaved` includes running uploads.
+- **Feed descriptions** are HTML-escaped once for HTML and again for XML, so an apostrophe appears as `&amp;apos;` in the raw XML. That is correct.
+- **Admin form labels.** The Note and Alt text textareas use a `<label htmlFor>` beside the control: a wrapping label pulled the typed value into Playwright's accessible-name match.
+- **e2e.** After a client navigation Next keeps the previous route hidden, so counts use `:visible`. Playwright reuses a running server locally on 3217/3219/3221, so stop stale `next start` processes first.
+- **Facet library and target.** `@atproto/api` is pinned to 0.23.0 (exact). tsconfig targets ES2017, so BigInt literals are not allowed; `lib/notes/tid.ts` uses `BigInt()`.

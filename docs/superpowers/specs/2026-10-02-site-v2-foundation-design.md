@@ -224,7 +224,7 @@ Onur and Claude design together, using Mobbin MCP, Figma MCP and reference sites
 | Sprint 6 | Work II: Orkestra and Lab |
 | Sprint 7 | Admin: GitHub auth, media upload into placeholder slots, simple page editing — done: see 2026-10-04-sprint-7-admin-design.md |
 | Sprint 8 | Resume, Book a call |
-| Sprint 9 | Notes |
+| Sprint 9 | Notes — done: see 2026-10-04-sprint-9-notes-design.md |
 | Sprint 10 | Personal layer and Life sub-pages |
 | Sprint 11 | Polish: changelog, paddle effect, Konami easter egg, performance and accessibility |
 | Sprint 12 | Launch: the launch-readiness fixes from the follow-ups, then the cutover steps above (onursenture.com on Vercel, `v2` into `master`, GitHub Pages off) |
