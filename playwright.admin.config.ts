@@ -25,6 +25,7 @@ export default defineConfig({
       MEDIA_DEV_DIR: ".e2e-admin/media",
       ADMIN_E2E: "1",
       ADMIN_GITHUB_ID: "1",
+      SYNC_SECRET: "e2e-sync-secret",
       AUTH_SECRET: "e2e-only-secret-e2e-only-secret-000000",
       // Blanked so a local .env.local can never point the e2e at production
       // Neon, Blob or GitHub OAuth: @next/env doesn't override a key that is
