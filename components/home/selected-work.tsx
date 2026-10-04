@@ -13,7 +13,8 @@ export function pinHref(pin: PinView): string {
 }
 
 // One pinned image: a 16:10 frame (the image, or the dither placeholder with
-// its title as the FIG label), the title, one muted line and the source link
+// its title as the FIG label), the title, one muted line (the note, left out
+// when it is blank) and the source link
 // to the images block it comes from. The frame links there too, but it is
 // hidden from assistive tech and the tab order, so each item has one link.
 // `sizes` defaults to the home grid's; a specimen elsewhere passes its own.
@@ -25,7 +26,7 @@ export function SelectedWorkItem({ pin, sizes = SELECTED_WORK_SIZES }: { pin: Pi
         <MediaFigure media={pin.image} sizes={sizes} label={`FIG. ${pad2(pin.order)} · ${pin.pin.title}`} />
       </Link>
       <p className="mt-2 type-body">{pin.pin.title}</p>
-      <p className="truncate type-meta text-fg-muted">{pin.pin.note}</p>
+      {pin.pin.note.trim() ? <p className="truncate type-meta text-fg-muted">{pin.pin.note}</p> : null}
       <p className="mt-1 type-meta">
         <TextLink href={href} className="text-accent">
           {pin.pageTitle}

@@ -21,7 +21,7 @@ export interface Link { label: string; href: string }
 // (content/pins.ts in the repo), not on the image.
 export interface Pin {
   title: string;
-  // One line of context.
+  // One line of context; optional copy: blank leaves the line out.
   note: string;
 }
 

@@ -113,7 +113,7 @@ export function ImageCard({
           {image.pin ? (
             <>
               <TextField label="Pin title" hint="2–4 words" value={image.pin.title} onChange={(title) => onChange({ ...image, pin: { ...image.pin!, title } })} />
-              <TextField label="Pin note" hint="One line" value={image.pin.note} onChange={(note) => onChange({ ...image, pin: { ...image.pin!, note } })} />
+              <TextField label="Pin note" hint="One line, optional" value={image.pin.note} onChange={(note) => onChange({ ...image, pin: { ...image.pin!, note } })} />
             </>
           ) : null}
           <IssueText issues={issues} />
