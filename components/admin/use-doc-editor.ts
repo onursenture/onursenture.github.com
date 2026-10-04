@@ -22,6 +22,8 @@ export interface DocEditorState {
   issues: Issue[];
   previewVersion: number;
   canPublish: boolean;
+  blocked: boolean;
+  retrying: boolean;
   flush: () => Promise<void>;
   publish: () => Promise<void>;
   discard: () => Promise<void>;

@@ -6,7 +6,9 @@ import type { ActionResult, DocEditorInit } from "./results";
 // be tested with fake timers: local value, autosave ~1s after the last change
 // (one request in flight at a time, the latest value wins), optimistic
 // concurrency through draftUpdatedAt, publish ordered after the autosave,
-// retry with backoff when the network drops, and a preview version that bumps
+// retry with backoff when the network or the database drops (a save only;
+// publish, discard and reset are the user's to try again), and a preview
+// version that bumps
 // after each write so the preview reloads. components/admin/use-doc-editor.ts
 // binds it to React.
 
@@ -26,8 +28,10 @@ export type EditorStatus =
   | "unavailable"
   | "invalid";
 
-// These end the session's writes until the page is reloaded or signed in again.
-const BLOCKING: EditorStatus[] = ["conflict", "signed-out", "unavailable"];
+// A conflict or a lost session ends the session's writes until the page is
+// reloaded or signed in again, and so does a database that was missing from
+// the start. A database error during the session is treated like the network:
+// the edit stays pending and a save is retried.
 
 export interface DocActions {
   save: (key: DocKey, value: unknown, expected: string | null) => Promise<ActionResult<{ draftUpdatedAt: string }>>;
@@ -45,10 +49,15 @@ export interface SessionSnapshot<T> {
   issues: Issue[];
   previewVersion: number;
   canPublish: boolean;
+  // Writes are stopped for good (conflict, signed out, no database at all).
+  blocked: boolean;
+  // A retry is scheduled ("offline"/"unavailable" then read "retrying");
+  // otherwise the user has to try again.
+  retrying: boolean;
 }
 
-// A request that threw (the network, not the server) is retried; the server's
-// own answers are not.
+// A request that threw (the network, not the server). A save is retried after
+// it, and after "unavailable"; the server's other answers are final.
 type Outcome<R> = R | { status: "network" };
 
 export class DocSession<T> {
@@ -57,6 +66,8 @@ export class DocSession<T> {
   private listeners = new Set<() => void>();
   private expected: string | null;
   private pending = false;
+  // A save request is on its way: its edit isn't stored yet.
+  private saving = false;
   private blocked: boolean;
   // The last save failed: its edit is still unsaved, so publishing must wait.
   private saveFailed = false;
@@ -82,6 +93,8 @@ export class DocSession<T> {
       issues: [],
       previewVersion: 0,
       canPublish: false,
+      blocked: this.blocked,
+      retrying: false,
     };
     this.snapshot.canPublish = this.computeCanPublish(this.snapshot);
   }
@@ -97,7 +110,7 @@ export class DocSession<T> {
 
   // An edit is not saved yet (typed, in flight, or failed): leaving loses it.
   get hasUnsaved() {
-    return this.pending;
+    return this.pending || this.saving;
   }
 
   setValue = (update: (previous: T) => T) => {
@@ -147,7 +160,8 @@ export class DocSession<T> {
     return this.enqueue(async () => {
       const result = await this.attempt(() => action(this.docKey));
       if (result.status === "ok") this.saveFailed = false;
-      else this.pending = hadPending;
+      // Keep an edit made while the action ran, as well as the one it dropped.
+      else this.pending ||= hadPending;
       return result;
     });
   };
@@ -160,15 +174,18 @@ export class DocSession<T> {
     this.set({ issues, ...(issues.length ? { status: "invalid" as const } : {}) });
   };
 
-  failed(result: ActionResult | { status: "network" }) {
+  // Shows a failed request. `retrying` only when a retry is really scheduled.
+  failed(result: ActionResult | { status: "network" }, retrying = false) {
     if (result.status === "invalid") {
       this.set({ issues: result.issues, status: "invalid" });
     } else if (result.status === "network") {
-      this.set({ status: "offline" });
-    } else {
-      const status: EditorStatus = result.status === "conflict" ? "conflict" : result.status === "unauthorized" ? "signed-out" : "unavailable";
-      this.blocked = BLOCKING.includes(status);
-      this.set({ status });
+      this.set({ status: "offline", retrying });
+    } else if (result.status === "unavailable") {
+      // Not blocking: the database was there when the session started.
+      this.set({ status: "unavailable", retrying });
+    } else if (result.status === "conflict" || result.status === "unauthorized") {
+      this.blocked = true;
+      this.set({ status: result.status === "conflict" ? "conflict" : "signed-out" });
     }
   }
 
@@ -185,8 +202,10 @@ export class DocSession<T> {
   private async save(): Promise<void> {
     if (!this.pending || this.blocked) return;
     this.pending = false;
+    this.saving = true;
     this.set({ status: "saving" });
     const result = await this.attempt(() => this.actions.save(this.docKey, this.snapshot.value, this.expected));
+    this.saving = false;
     if (result.status === "ok") {
       this.expected = result.draftUpdatedAt;
       this.saveFailed = false;
@@ -203,8 +222,9 @@ export class DocSession<T> {
     // the next save (or retry) sends the latest value.
     this.pending = true;
     this.saveFailed = true;
-    this.failed(result);
-    if (result.status === "network" && this.attached) this.schedule(RETRY_MS[Math.min(this.retries++, RETRY_MS.length - 1)]);
+    const retry = (result.status === "network" || result.status === "unavailable") && this.attached;
+    this.failed(result, retry);
+    if (retry) this.schedule(RETRY_MS[Math.min(this.retries++, RETRY_MS.length - 1)]);
   }
 
   private async attempt<R extends { status: string }>(request: () => Promise<R>): Promise<Outcome<R>> {
@@ -232,12 +252,12 @@ export class DocSession<T> {
   }
 
   private computeCanPublish(snapshot: SessionSnapshot<T>) {
-    const busy = snapshot.status === "saving" || snapshot.status === "publishing" || snapshot.status === "invalid" || BLOCKING.includes(snapshot.status);
+    const busy = snapshot.status === "saving" || snapshot.status === "publishing" || snapshot.status === "invalid" || this.blocked;
     return !busy && (snapshot.hasDraft || this.pending || snapshot.status === "dirty");
   }
 
   private set(patch: Partial<SessionSnapshot<T>>) {
-    const next = { ...this.snapshot, ...patch };
+    const next = { ...this.snapshot, ...patch, blocked: this.blocked };
     this.snapshot = { ...next, canPublish: this.computeCanPublish(next) };
     for (const listener of this.listeners) listener();
   }

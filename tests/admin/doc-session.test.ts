@@ -18,7 +18,7 @@ function deferred<R>() {
 const init: DocEditorInit<string> = { docKey: "lab", value: "v0", draftUpdatedAt: null, hasDraft: false, publishedAt: null, available: true };
 const saved = (n: number): ActionResult<{ draftUpdatedAt: string }> => ({ status: "ok", draftUpdatedAt: `t${n}` });
 
-function setup() {
+function setup(start: Partial<DocEditorInit<string>> = {}) {
   let n = 0;
   const actions = {
     save: vi.fn(async () => saved(++n)),
@@ -26,7 +26,7 @@ function setup() {
     discard: vi.fn(async (): Promise<ActionResult> => ({ status: "ok" })),
     reset: vi.fn(async (): Promise<ActionResult> => ({ status: "ok" })),
   };
-  return { actions, session: new DocSession<string>(init, actions satisfies DocActions) };
+  return { actions, session: new DocSession<string>({ ...init, ...start }, actions satisfies DocActions) };
 }
 
 const edit = (session: DocSession<string>, value: string) => session.setValue(() => value);
@@ -88,7 +88,7 @@ describe("a failed save", () => {
     actions.save.mockRejectedValueOnce(new Error("offline")).mockRejectedValueOnce(new Error("offline"));
     edit(session, "a");
     await vi.advanceTimersByTimeAsync(AUTOSAVE_MS);
-    expect(session.getSnapshot().status).toBe("offline");
+    expect(session.getSnapshot()).toMatchObject({ status: "offline", retrying: true });
     expect(session.hasUnsaved).toBe(true);
     await vi.advanceTimersByTimeAsync(1999);
     expect(actions.save).toHaveBeenCalledTimes(1);
@@ -113,16 +113,45 @@ describe("a failed save", () => {
     expect(actions.save).toHaveBeenCalledTimes(1);
   });
 
-  it("stays pending when the server says unavailable, so leaving still warns", async () => {
+  it("treats a database error mid-session like the network: pending, retried, not blocking", async () => {
     const { actions, session } = setup();
-    actions.save.mockResolvedValueOnce({ status: "unavailable" });
+    actions.save.mockResolvedValueOnce({ status: "unavailable" }).mockResolvedValueOnce({ status: "unavailable" });
     edit(session, "a");
     await vi.advanceTimersByTimeAsync(AUTOSAVE_MS);
-    expect(session.getSnapshot()).toMatchObject({ status: "unavailable", canPublish: false });
+    expect(session.getSnapshot()).toMatchObject({ status: "unavailable", retrying: true, blocked: false });
     expect(session.hasUnsaved).toBe(true);
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(actions.save).toHaveBeenCalledTimes(2);
     edit(session, "b");
+    await vi.advanceTimersByTimeAsync(AUTOSAVE_MS);
+    expect(actions.save).toHaveBeenCalledTimes(3);
+    expect(actions.save).toHaveBeenLastCalledWith("lab", "b", null);
+    expect(session.getSnapshot()).toMatchObject({ status: "saved", hasDraft: true });
+    expect(session.hasUnsaved).toBe(false);
+  });
+
+  it("stays blocked when there was no database from the start", async () => {
+    const { actions, session } = setup({ available: false });
+    expect(session.getSnapshot()).toMatchObject({ status: "unavailable", blocked: true, retrying: false, canPublish: false });
+    edit(session, "a");
     await vi.advanceTimersByTimeAsync(AUTOSAVE_MS * 3);
-    expect(actions.save).toHaveBeenCalledTimes(1);
+    expect(actions.save).not.toHaveBeenCalled();
+    expect(session.hasUnsaved).toBe(true);
+    await session.publish();
+    expect(actions.publish).not.toHaveBeenCalled();
+  });
+
+  it("warns on leaving while a save is in flight", async () => {
+    const first = deferred<ActionResult<{ draftUpdatedAt: string }>>();
+    const { actions, session } = setup();
+    actions.save.mockImplementationOnce(() => first.promise);
+    edit(session, "a");
+    await vi.advanceTimersByTimeAsync(AUTOSAVE_MS);
+    expect(session.getSnapshot().status).toBe("saving");
+    expect(session.hasUnsaved).toBe(true);
+    first.resolve(saved(1));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(session.hasUnsaved).toBe(false);
   });
 
   it("does not publish an edit that failed to save", async () => {
@@ -192,10 +221,33 @@ describe("publish", () => {
     actions.publish.mockResolvedValueOnce({ status: "conflict" });
     edit(session, "a");
     await session.publish();
-    expect(session.getSnapshot()).toMatchObject({ status: "conflict", canPublish: false });
+    expect(session.getSnapshot()).toMatchObject({ status: "conflict", canPublish: false, blocked: true });
     edit(session, "b");
     await vi.advanceTimersByTimeAsync(AUTOSAVE_MS * 2);
     expect(actions.save).toHaveBeenCalledTimes(1);
+  });
+
+  it("says try again, not retrying, when a publish loses the network", async () => {
+    const { actions, session } = setup();
+    actions.publish.mockRejectedValueOnce(new Error("offline"));
+    edit(session, "a");
+    await session.publish();
+    expect(session.getSnapshot()).toMatchObject({ status: "offline", retrying: false, canPublish: true });
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect(actions.publish).toHaveBeenCalledTimes(1);
+    await session.publish();
+    expect(session.getSnapshot().status).toBe("published");
+  });
+
+  it("does not block after a database error on publish", async () => {
+    const { actions, session } = setup();
+    actions.publish.mockResolvedValueOnce({ status: "unavailable" });
+    edit(session, "a");
+    await session.publish();
+    expect(session.getSnapshot()).toMatchObject({ status: "unavailable", retrying: false, blocked: false, canPublish: true });
+    edit(session, "b");
+    await vi.advanceTimersByTimeAsync(AUTOSAVE_MS);
+    expect(actions.save).toHaveBeenLastCalledWith("lab", "b", "t1");
   });
 
   it("keeps the issues after a later save, leaving Publish enabled, and clears them on success", async () => {
@@ -225,5 +277,27 @@ describe("discard", () => {
     expect(actions.save).not.toHaveBeenCalled();
     expect((await session.discard()).status).toBe("ok");
     expect(session.hasUnsaved).toBe(false);
+  });
+
+  it("keeps an edit made while a failing discard ran", async () => {
+    const release = deferred<ActionResult>();
+    const { actions, session } = setup();
+    actions.discard.mockImplementationOnce(() => release.promise);
+    const done = session.discard();
+    await vi.advanceTimersByTimeAsync(0);
+    edit(session, "b");
+    release.resolve({ status: "unavailable" });
+    await done;
+    expect(session.hasUnsaved).toBe(true);
+    await vi.advanceTimersByTimeAsync(AUTOSAVE_MS);
+    expect(actions.save).toHaveBeenCalledWith("lab", "b", null);
+  });
+
+  it("says try again after a discard loses the network", async () => {
+    const { actions, session } = setup();
+    actions.discard.mockRejectedValueOnce(new Error("offline"));
+    const result = await session.discard();
+    session.failed(result);
+    expect(session.getSnapshot()).toMatchObject({ status: "offline", retrying: false });
   });
 });

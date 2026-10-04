@@ -35,9 +35,13 @@ function StatusText({ editor }: { editor: DocEditorState }) {
         </span>
       );
     case "offline":
-      return <span className="text-danger">Offline — retrying</span>;
+      return <span className="text-danger">{editor.retrying ? "Offline — retrying" : "Offline — try again"}</span>;
     case "unavailable":
-      return <span className="text-danger">Database unavailable</span>;
+      return (
+        <span className="text-danger">
+          {editor.retrying ? "Database unavailable — retrying" : editor.blocked ? "Database unavailable" : "Database unavailable — try again"}
+        </span>
+      );
     case "invalid":
       return <span className="text-danger">Fix the issues to publish</span>;
     case "published":
@@ -67,16 +71,19 @@ function StatusText({ editor }: { editor: DocEditorState }) {
 }
 
 // Save status, Discard draft and Publish: the same controls on every editor.
-export function DocToolbar({ editor, extra }: { editor: DocEditorState; extra?: ReactNode }) {
+// hideDiscard: there is nothing to go back to (a page never published).
+export function DocToolbar({ editor, extra, hideDiscard = false }: { editor: DocEditorState; extra?: ReactNode; hideDiscard?: boolean }) {
   return (
     <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2">
       <p role="status" aria-live="polite" className="type-meta text-fg-muted">
         <StatusText editor={editor} />
       </p>
       {extra}
-      <Button variant="text" onClick={() => void editor.discard()} disabled={!editor.hasDraft}>
-        Discard draft
-      </Button>
+      {hideDiscard ? null : (
+        <Button variant="text" onClick={() => void editor.discard()} disabled={!editor.hasDraft}>
+          Discard draft
+        </Button>
+      )}
       <Button variant="primary" onClick={() => void editor.publish()} disabled={!editor.canPublish}>
         Publish
       </Button>

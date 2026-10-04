@@ -99,6 +99,8 @@ test("New page: create, publish, see it live, then delete it", async ({ page }) 
   await page.getByRole("button", { name: "Create draft" }).click();
   await expect(page).toHaveURL(/\/admin\/work\/e2e-page\/$/);
   await expect(page.getByText("New page: not on the site until you publish it.")).toBeVisible();
+  // Never published: nothing to go back to, so no Discard draft.
+  await expect(page.getByRole("button", { name: "Discard draft" })).toHaveCount(0);
 
   await page.getByLabel("Intro").fill("A page made by the admin e2e.");
   await page.getByLabel("Facts 2 Value").fill("2026");
@@ -106,6 +108,10 @@ test("New page: create, publish, see it live, then delete it", async ({ page }) 
   await page.getByLabel("Body 1", { exact: true }).fill("Built it.");
   await saved(page);
   await publish(page);
+  // The publish refreshes the server props: the page is live now.
+  await expect(page.getByText("New page: not on the site until you publish it.")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Open page ↗" })).toHaveAttribute("href", "/work/e2e-page/");
+  await expect(page.getByRole("button", { name: "Discard draft" })).toBeVisible();
 
   await page.goto("/work/e2e-page/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("E2E Page.");

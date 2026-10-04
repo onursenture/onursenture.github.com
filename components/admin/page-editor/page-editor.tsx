@@ -67,6 +67,17 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
   // Field messages go away with the first edit; the banner keeps the list.
   const shown = editor.status === "invalid" ? editor.issues : [];
 
+  // After a publish here, reload the server props: the page is now live and
+  // its block and image ids are locked. The route keys this editor by
+  // document, so the refresh keeps the session (and its state) as it is.
+  const publishedAt = editor.publishedAt;
+  const seenPublishedAt = useRef(init.publishedAt);
+  useEffect(() => {
+    if (publishedAt === seenPublishedAt.current) return;
+    seenPublishedAt.current = publishedAt;
+    router.refresh();
+  }, [publishedAt, router]);
+
   function addBlock(kind: Block["kind"]) {
     // Published ids are reserved for good: a new block never takes the id of
     // one that was deleted.
@@ -135,6 +146,9 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
       focusId={focusId}
       openHref={live ? `/work/${page.slug}/` : undefined}
       extraActions={extra}
+      // A page never published has no version to go back to; Delete page
+      // removes the draft instead.
+      hideDiscard={!live && !editor.publishedAt}
     >
       <div className="flex flex-col gap-6">
         {deleteError ? (

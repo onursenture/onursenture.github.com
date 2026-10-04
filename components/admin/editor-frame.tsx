@@ -18,6 +18,7 @@ export function EditorFrame({
   focusId = null,
   openHref,
   extraActions,
+  hideDiscard,
   children,
 }: {
   crumbs: string[];
@@ -26,6 +27,7 @@ export function EditorFrame({
   focusId?: string | null;
   openHref?: string;
   extraActions?: ReactNode;
+  hideDiscard?: boolean;
   children: ReactNode;
 }) {
   const [tab, setTab] = useState<"form" | "preview">("form");
@@ -46,6 +48,7 @@ export function EditorFrame({
         <div className="ml-auto">
           <DocToolbar
             editor={editor}
+            hideDiscard={hideDiscard}
             extra={
               <>
                 {extraActions}
