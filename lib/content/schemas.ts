@@ -83,19 +83,29 @@ function build(strict: boolean) {
     }),
   );
 
-  return { productPageSchema, workIndexSchema, pinsSchema, labSchema, profileSchema, experienceSchema };
+  const resumeSchema = z.object({
+    contact: z.object({ email: z.string(), linkedin: z.string() }),
+    summary: z.string(),
+    roles: z.array(z.object({ org: orgIdSchema, bullets: z.array(text()) })),
+    projects: z.array(z.object({ title: text(), line: text(), href: z.string().optional() })),
+    skills: z.array(z.object({ group: text(), items: text() })),
+    education: z.array(z.object({ degree: text(), school: text(), years: z.string().optional() })),
+  });
+
+  return { productPageSchema, workIndexSchema, pinsSchema, labSchema, profileSchema, experienceSchema, resumeSchema };
 }
 
 const strictSchemas = build(true);
 const looseSchemas = build(false);
 
-export const { productPageSchema, workIndexSchema, pinsSchema, labSchema, profileSchema, experienceSchema } = strictSchemas;
+export const { productPageSchema, workIndexSchema, pinsSchema, labSchema, profileSchema, experienceSchema, resumeSchema } = strictSchemas;
 export const looseProductPageSchema = looseSchemas.productPageSchema;
 export const looseWorkIndexSchema = looseSchemas.workIndexSchema;
 export const loosePinsSchema = looseSchemas.pinsSchema;
 export const looseLabSchema = looseSchemas.labSchema;
 export const looseProfileSchema = looseSchemas.profileSchema;
 export const looseExperienceSchema = looseSchemas.experienceSchema;
+export const looseResumeSchema = looseSchemas.resumeSchema;
 
 export function schemaFor(key: DocKey): z.ZodType {
   if (slugOfKey(key) !== null) return productPageSchema;
@@ -110,6 +120,8 @@ export function schemaFor(key: DocKey): z.ZodType {
       return profileSchema;
     case "experience":
       return experienceSchema;
+    case "resume":
+      return resumeSchema;
     default:
       throw new Error(`no schema for ${key}`);
   }

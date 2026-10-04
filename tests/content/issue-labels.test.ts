@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { experience } from "@/content/experience";
 import { labIndex } from "@/content/lab-index";
+import { resume } from "@/content/resume";
 import { productPages } from "@/content/work";
 import { fieldMessage, labelIssue } from "@/lib/content/issue-labels";
 import { formatIssue } from "@/lib/content/issues";
@@ -99,5 +100,32 @@ describe("fieldMessage", () => {
     expect(fieldMessage({ doc: "work/gonna", at: "highlights/gonna-iphone", message: "a" })).toBe("a");
     expect(fieldMessage({ doc: "work/gonna", at: "blocks/4", message: "a" })).toBe("a");
     expect(fieldMessage({ doc: "experience", at: "0/children/2", message: "a" })).toBe("a");
+  });
+});
+
+describe("labelIssue for the resume", () => {
+  const onResume = { doc: "resume" as const, value: resume };
+  const label = (at: string, message = "is required") => labelIssue({ doc: "resume", at, message }, onResume).text;
+
+  it("names the section, the entry and the field", () => {
+    expect(label("roles/1/bullets/1")).toBe("Resume › Roles › PrimeTek › Bullet 2: is required");
+    expect(label("roles/2", "Etiya is not in Experience")).toBe("Resume › Roles › Etiya: Etiya is not in Experience");
+    expect(label("projects/0/href", "/work/gone/ is not a product page")).toBe("Resume › Projects › PrimeOne › Link: /work/gone/ is not a product page");
+    expect(label("projects/1/line")).toBe("Resume › Projects › Theme Designer › Line: is required");
+    expect(label("skills/0/items")).toBe("Resume › Skills › Design › Items: is required");
+    expect(label("education/0/degree")).toBe("Resume › Education › BS Computer Science › Degree: is required");
+    expect(label("contact/email", "is not an email address")).toBe("Resume › Email: is not an email address");
+    expect(label("contact/linkedin", "use the handle")).toBe("Resume › LinkedIn: use the handle");
+    expect(label("summary")).toBe("Resume › Summary: is required");
+  });
+
+  it("keeps a path the value doesn't have", () => {
+    expect(label("projects/9/title")).toBe("Resume › Projects › 9/title: is required");
+  });
+
+  it("prefixes the field inside a card", () => {
+    expect(fieldMessage({ doc: "resume", at: "roles/1/bullets/0", message: "is required" })).toBe("Bullet 1: is required");
+    expect(fieldMessage({ doc: "resume", at: "projects/0/title", message: "is required" })).toBe("Title: is required");
+    expect(fieldMessage({ doc: "resume", at: "contact/email", message: "is not an email address" })).toBe("Email: is not an email address");
   });
 });

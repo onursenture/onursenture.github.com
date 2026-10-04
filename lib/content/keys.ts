@@ -2,7 +2,7 @@
 // editable unit: a product page is work/<slug>; the rest are singletons.
 export const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-export const SINGLETON_KEYS = ["work-index", "pins", "lab", "profile", "experience"] as const;
+export const SINGLETON_KEYS = ["work-index", "pins", "lab", "profile", "experience", "resume"] as const;
 
 export type WorkKey = `work/${string}`;
 export type DocKey = WorkKey | (typeof SINGLETON_KEYS)[number];
