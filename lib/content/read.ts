@@ -11,6 +11,10 @@ export const CONTENT_TAG = "content";
 export interface PublishedContent {
   site: SiteContent;
   media: MediaEntry[];
+  // The repo content stands in because the store couldn't be read (none, or
+  // an error). A "use cache" scope that sets its own cacheLife over this read
+  // (the resume PDF) follows it, since an explicit outer cacheLife wins.
+  fallback: boolean;
 }
 
 // The live site: published documents over the repo content, plus uploaded
@@ -30,15 +34,15 @@ export async function getPublishedContent(): Promise<PublishedContent> {
   }
   if (!store) {
     cacheLife("days");
-    return { site: repoSite(), media: [] };
+    return { site: repoSite(), media: [], fallback: true };
   }
   try {
     const [docs, media] = await Promise.all([store.listDocs(), store.listMedia()]);
     cacheLife("days");
-    return { site: resolveSite(publishedValues(docs)), media: media.map(toMediaEntry) };
+    return { site: resolveSite(publishedValues(docs)), media: media.map(toMediaEntry), fallback: false };
   } catch (e) {
     console.warn("[content] reading published content failed:", e instanceof Error ? e.message : e);
     cacheLife("minutes");
-    return { site: repoSite(), media: [] };
+    return { site: repoSite(), media: [], fallback: true };
   }
 }
