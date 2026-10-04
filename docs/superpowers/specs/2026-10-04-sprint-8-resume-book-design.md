@@ -252,3 +252,14 @@ The Bio editor gains two checkboxes above the lead: **Open to work** and **Book 
 - Phone number, photo or QR code on the resume.
 - PDF variants (Letter size, other languages): English A4 only.
 - Admin editing of the booking config (titles, durations, visibility).
+
+## Errata (planning)
+
+- §3.1: there is no sitemap in v2, so "in the sitemap" does not apply; the page is indexable.
+- §3.2: the PDF route uses Next's own cache headers for a prerendered route (there is no proxy setting `Cache-Control` in v2). The fonts are WOFF (the IBM Plex npm packages ship no TTF), which `@react-pdf/renderer` reads fine.
+- §1.3: a published resume that breaks the rules fails soft per item (a role for an org not in Experience is left out, a project link to a missing page renders without the link), the same as Experience, rather than falling back to the whole repo resume. Required fields are non-empty (`min(1)`), as everywhere else in the overlay.
+- §3.1: the email is passed to the client base64-encoded and rendered in pieces; a plain prop would put the address into the RSC payload of the static HTML.
+- §5: the "booking disabled" e2e runs only while `calUsername` is empty (`test.skip`), and the "booking enabled" e2e only while it is set; a unit test covers the picker's server HTML with an explicit config.
+- §1.3 / §4.1 (execution): a resume role only uses its org when it has at least one bullet. `validateSite` flags "‹Org› is not in Experience" only then, and the view ignores an empty orphan role. To drop an org from Experience, clear its bullets on the resume and publish that first.
+- §4.1 (execution): when the editor aligns the stored roles to the live Experience, it opens with that change as an unsaved edit (`DocEditorInit.dirty`), so Save draft / Publish write what the editor shows.
+- §3.2 (execution): the repo resume renders to one A4 page.
