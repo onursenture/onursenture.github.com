@@ -12,6 +12,15 @@ function refused(message: string, slug: string, imageId: string): UploadResult {
   return { status: "invalid", issues: [{ doc: `work/${slug}`, at: `upload/${imageId}`, message }] };
 }
 
+async function signedOut(): Promise<boolean> {
+  try {
+    const response = await fetch("/api/admin/upload/", { method: "POST", headers: { "content-type": "application/json" }, body: "{}" });
+    return response.status === 401;
+  } catch {
+    return false;
+  }
+}
+
 // Checks the file in the browser first (type, size, 16:10), so a wrong file
 // is never uploaded; then uploads the original (Blob, or the local route) and
 // asks the server to render it. The server checks everything again.
@@ -27,12 +36,19 @@ export async function uploadImage(file: File, target: { slug: string; imageId: s
   let source: string;
   if (mode === "blob") {
     const extension = file.type === "image/png" ? "png" : "jpg";
-    const blob = await upload(`uploads/${target.slug}/${target.imageId}.${extension}`, file, {
-      access: "public",
-      handleUploadUrl: "/api/admin/upload/",
-      contentType: file.type,
-    });
-    source = blob.url;
+    try {
+      const blob = await upload(`uploads/${target.slug}/${target.imageId}.${extension}`, file, {
+        access: "public",
+        handleUploadUrl: "/api/admin/upload/",
+        contentType: file.type,
+      });
+      source = blob.url;
+    } catch (e) {
+      // The Blob client hides the token route's status in a generic error, so
+      // ask the route again: 401 means the session is gone.
+      if (await signedOut()) return { status: "unauthorized" };
+      throw e;
+    }
   } else {
     const response = await fetch("/api/admin/upload-dev/", { method: "POST", headers: { "content-type": file.type }, body: file });
     if (response.status === 401) return { status: "unauthorized" };

@@ -82,6 +82,19 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
     setOpenKey(blocks.insert(kind === "then" ? 0 : page.blocks.length, block));
   }
 
+  // Points an image at its upload. Functional and keyed by the image's id as
+  // of now (the slot reports through its latest props, so a rename during the
+  // upload is followed), never by the list index from when the file was picked:
+  // edits, reorders and a second upload made in the meantime all survive.
+  function pointImageAt(id: string, key: string) {
+    editor.setValue((previous) => ({
+      ...previous,
+      blocks: previous.blocks.map((block) =>
+        block.kind === "images" ? { ...block, images: block.images.map((image) => (image.id === id ? { ...image, image: key } : image)) } : block,
+      ),
+    }));
+  }
+
   function removeBlock(index: number) {
     const block = page.blocks[index];
     const pinned = block.kind === "images" && block.images.some((image) => image.pin);
@@ -156,7 +169,7 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
                   pageImageIds={pageImageIds}
                   entries={entries}
                   issues={shown}
-                  renderUpload={(image: WorkImage, update: (image: WorkImage) => void) => (
+                  renderUpload={(image: WorkImage) => (
                     <UploadSlot
                       slug={page.slug}
                       imageId={image.id}
@@ -164,7 +177,7 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
                       hasImage={Boolean(image.image)}
                       onUploaded={(key, entry) => {
                         setEntries((current) => ({ ...current, [key]: entry }));
-                        update({ ...image, image: key });
+                        pointImageAt(image.id, key);
                       }}
                     />
                   )}

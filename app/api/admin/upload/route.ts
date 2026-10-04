@@ -4,10 +4,12 @@ import { MAX_BYTES, UPLOAD_TYPES } from "@/lib/media/rules";
 
 // Issues the browser a short-lived token to upload one original straight to
 // Blob (spec §3.1): the file never passes through a function, so the 4.5 MB
-// body limit doesn't apply. Signed-in admins only, uploads/ only.
+// body limit doesn't apply. Signed-in admins only (401 otherwise, which the
+// client reads as "signed out"), uploads/ only.
 export async function POST(request: Request) {
-  const body = (await request.json()) as HandleUploadBody;
+  if (!(await isAdmin())) return Response.json({ error: "unauthorized" }, { status: 401 });
   try {
+    const body = (await request.json()) as HandleUploadBody;
     const json = await handleUpload({
       body,
       request,

@@ -96,20 +96,26 @@ export async function deletePageAction(slug: string): Promise<ActionResult> {
 // image at the returned key (the client does that).
 export async function processUploadAction(input: { source: string; slug: string; imageId: string }): Promise<ActionResult<{ key: string; entry: MediaEntry }>> {
   const where = { doc: workKey(input.slug), at: `upload/${input.imageId}` };
-  if (!KEBAB.test(input.slug) || !KEBAB.test(input.imageId)) return { status: "invalid", issues: [{ ...where, message: "the image needs a kebab-case id first" }] };
+  const invalid = (message: string): ActionResult<never> => ({ status: "invalid", issues: [{ ...where, message }] });
   return run<{ key: string; entry: MediaEntry }>(async (store) => {
     const storage = getMediaStorage();
-    let bytes: Buffer;
     try {
-      bytes = await storage.readSource(input.source);
-    } catch {
-      return { status: "invalid", issues: [{ ...where, message: "The upload could not be read. Try again." }] };
+      if (!KEBAB.test(input.slug) || !KEBAB.test(input.imageId)) return invalid("the image needs a kebab-case id first");
+      let bytes: Buffer;
+      try {
+        bytes = await storage.readSource(input.source);
+      } catch {
+        return invalid("The upload could not be read. Try again.");
+      }
+      const result = await processImage(bytes, input, storage, new Date());
+      if (!result.ok) return invalid(result.reason);
+      await store.putMedia(result.record);
+      return { status: "ok", key: result.record.key, entry: toMediaEntry(result.record) };
+    } finally {
+      // Whatever happened (rejected, unreadable, or an encode or storage error),
+      // the original goes.
+      await storage.deleteSource(input.source).catch(() => undefined);
     }
-    const result = await processImage(bytes, input, storage, new Date());
-    await storage.deleteSource(input.source).catch(() => undefined);
-    if (!result.ok) return { status: "invalid", issues: [{ ...where, message: result.reason }] };
-    await store.putMedia(result.record);
-    return { status: "ok", key: result.record.key, entry: toMediaEntry(result.record) };
   });
 }
 

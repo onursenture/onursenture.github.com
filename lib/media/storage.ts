@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, resolve, sep } from "node:path";
 import { del, put } from "@vercel/blob";
+import { MAX_BYTES } from "./rules";
 
 // Where uploads and renditions live (spec §3.3): Vercel Blob in production,
 // a local folder served by /api/media-dev/ in development and the admin e2e.
@@ -37,7 +38,8 @@ export class LocalMediaStorage implements MediaStorage {
 
   private sourceFile(source: string): string {
     const file = source.startsWith("local:uploads/") ? this.resolveLocal(source.slice("local:".length)) : null;
-    if (!file) throw new Error("not a local upload");
+    const uploads = this.resolveLocal("uploads");
+    if (!file || !uploads || !file.startsWith(uploads + sep)) throw new Error("not a local upload");
     return file;
   }
 
@@ -71,13 +73,29 @@ export class BlobMediaStorage implements MediaStorage {
   private url(source: string): URL {
     const url = new URL(source);
     if (url.protocol !== "https:" || !url.hostname.endsWith(".public.blob.vercel-storage.com")) throw new Error("not a Blob URL");
+    if (!url.pathname.startsWith("/uploads/")) throw new Error("not an upload");
     return url;
   }
 
   async readSource(source: string): Promise<Buffer> {
     const response = await fetch(this.url(source));
     if (!response.ok) throw new Error(`reading the upload failed: ${response.status}`);
-    return Buffer.from(await response.arrayBuffer());
+    if (Number(response.headers.get("content-length") ?? 0) > MAX_BYTES) throw new Error("the upload is too large");
+    // Read in chunks so a missing or wrong content-length can't bypass the cap.
+    const chunks: Uint8Array[] = [];
+    let size = 0;
+    const reader = response.body?.getReader();
+    while (reader) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.length;
+      if (size > MAX_BYTES) {
+        await reader.cancel();
+        throw new Error("the upload is too large");
+      }
+      chunks.push(value);
+    }
+    return Buffer.concat(chunks);
   }
 
   async deleteSource(source: string): Promise<void> {
