@@ -93,11 +93,16 @@ export async function deletePageAction(slug: string): Promise<ActionResult> {
 // same stale-while-revalidate as the sync route.
 export async function syncNowAction(): Promise<ActionResult<{ results: SyncResult[] }>> {
   if (!(await isAdmin())) return { status: "unauthorized" };
-  const db = getDb();
-  if (!db) return { status: "unavailable" };
-  const results = await syncAll(Object.values(sources), new DrizzleSnapshotStore(db), { fetch: globalThis.fetch, env: process.env }, new Date(), {
-    force: true,
-  });
-  for (const result of results) if (result.status === "ok") revalidateTag(sourceTag(result.source), "max");
-  return { status: "ok", results };
+  try {
+    const db = getDb();
+    if (!db) return { status: "unavailable" };
+    const results = await syncAll(Object.values(sources), new DrizzleSnapshotStore(db), { fetch: globalThis.fetch, env: process.env }, new Date(), {
+      force: true,
+    });
+    for (const result of results) if (result.status === "ok") revalidateTag(sourceTag(result.source), "max");
+    return { status: "ok", results };
+  } catch (e) {
+    console.warn("[admin] sync now failed:", e instanceof Error ? e.message : e);
+    return { status: "unavailable" };
+  }
 }

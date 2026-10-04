@@ -18,12 +18,16 @@ export function SourcesPanel({ rows }: { rows: SourceRow[] | null }) {
   function sync() {
     setMessage(null);
     start(async () => {
-      const result = await syncNowAction();
-      if (result.status === "ok") {
-        const failed = result.results.filter((r) => r.status === "error").length;
-        setMessage(failed ? `${failed} source${failed > 1 ? "s" : ""} failed` : "All sources synced");
-        router.refresh();
-      } else setMessage(result.status === "unauthorized" ? "Signed out — sign in again" : "Database unavailable");
+      try {
+        const result = await syncNowAction();
+        if (result.status === "ok") {
+          const failed = result.results.filter((r) => r.status === "error").length;
+          setMessage(failed ? `${failed} source${failed > 1 ? "s" : ""} failed` : "All sources synced");
+          router.refresh();
+        } else setMessage(result.status === "unauthorized" ? "Signed out — sign in again" : "Database unavailable");
+      } catch {
+        setMessage("Database unavailable");
+      }
     });
   }
 
@@ -35,7 +39,7 @@ export function SourcesPanel({ rows }: { rows: SourceRow[] | null }) {
             <span className="text-fg">{row.label}</span>
             <span className="truncate text-fg-muted">
               {row.lastError ? (
-                <span className="text-danger">
+                <span className="text-danger" title={row.lastError}>
                   <StatusGlyph status="error" /> {row.lastError}
                 </span>
               ) : row.lastSuccessAt ? (
