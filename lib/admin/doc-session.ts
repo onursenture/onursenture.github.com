@@ -69,9 +69,13 @@ export class DocSession<T> {
   // The save queued or running, returned to a second save() instead of
   // queueing another.
   private queuedSave: Promise<void> | null = null;
-  // The value last stored (the init value, then each saved draft): what
-  // abandon() goes back to.
+  // What abandon() goes back to: the init value, then each saved draft. That
+  // is the stored value, except after a dirty init, where the init value is
+  // the loaded one (aligned), not stored until the first save lands.
   private baseline: T;
+  // The baseline is what the server holds. False after a dirty init until a
+  // save succeeds: abandon() then keeps it as an unsaved edit.
+  private baselineStored: boolean;
 
   constructor(
     init: DocEditorInit<T>,
@@ -82,9 +86,11 @@ export class DocSession<T> {
     this.blocked = !init.available;
     // With init.dirty the value is the loaded one, not the stored one; the
     // session starts with it unsaved. The baseline stays the loaded value, so
-    // abandon() never brings back the stored, misaligned one.
+    // abandon() never brings back the stored, misaligned one; it stays unsaved
+    // until a save lands.
     this.baseline = init.value;
     this.pending = !!init.dirty && init.available;
+    this.baselineStored = !this.pending;
     this.snapshot = {
       value: init.value,
       status: !init.available ? "unavailable" : this.pending ? "dirty" : "idle",
@@ -135,11 +141,14 @@ export class DocSession<T> {
   // Waits for the requests queued or running, writing nothing.
   idle = (): Promise<void> => this.enqueue(async () => undefined);
 
-  // Leave without saving: back to the last stored value, nothing unsaved. A
-  // save already in flight still lands (and its value is then shown).
+  // Leave without saving: back to the baseline, nothing unsaved. A save
+  // already in flight still lands (and its value is then shown). A baseline
+  // that was never stored (a dirty init) stays unsaved, so Save draft and
+  // Publish still write it rather than the stored draft; a save in flight
+  // covers it (a failed one leaves it unsaved again).
   abandon = () => {
-    this.pending = false;
-    this.set({ value: this.baseline, ...(this.blocked ? {} : { status: "idle" as const }) });
+    this.pending = !this.baselineStored && !this.saving;
+    this.set({ value: this.baseline, ...(this.blocked ? {} : { status: this.pending ? ("dirty" as const) : ("idle" as const) }) });
   };
 
   publish = (): Promise<void> => {
@@ -218,6 +227,7 @@ export class DocSession<T> {
     if (result.status === "ok") {
       this.expected = result.draftUpdatedAt;
       this.baseline = sent;
+      this.baselineStored = true;
       this.set({
         // Abandoned while it ran: show what was stored.
         ...(this.pending ? {} : { value: sent }),
