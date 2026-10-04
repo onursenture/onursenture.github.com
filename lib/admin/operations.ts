@@ -19,7 +19,7 @@ function invalid(issues: Issue[]) {
   return { status: "invalid" as const, issues };
 }
 
-// Autosave. No content validation: a half-finished edit is never lost.
+// Save draft. No content validation: a half-finished edit is never lost.
 export async function saveDraft(
   store: ContentStore,
   key: DocKey,

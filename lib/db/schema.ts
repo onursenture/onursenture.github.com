@@ -12,7 +12,7 @@ export const sourceSnapshots = pgTable("source_snapshots", {
 
 // Admin documents (Sprint 7): one row per editable unit (lib/content/keys.ts).
 // `published` null means "use the repo content"; `draft` null means no
-// unpublished edit. draft_updated_at guards autosave against a stale tab.
+// unpublished edit. draft_updated_at guards a draft save against a stale tab.
 export const contentDocs = pgTable("content_docs", {
   key: text("key").primaryKey(),
   draft: jsonb("draft"),

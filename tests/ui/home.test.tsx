@@ -89,6 +89,14 @@ describe("SelectedWork", () => {
     expect(markup).toMatch(/<a [^>]*href="\/work\/primeone\/#highlights"[^>]*><span[^>]*>PrimeOne<\/span><span aria-hidden="true">\u00a0→<\/span><\/a>/);
   });
 
+  it("leaves out the note line when the note is empty", () => {
+    const markup = html(<SelectedWorkItem pin={{ ...pin, pin: { title: "Components", note: "" } }} />);
+    expect(markup).toMatch(/<p class="mt-2 type-body">Components<\/p>/);
+    expect(markup).not.toContain("text-fg-muted");
+    expect(markup).not.toMatch(/<p[^>]*><\/p>/);
+    expect(markup.match(/<p /g)).toHaveLength(2);
+  });
+
   it("links the frame too, hidden from assistive tech and the tab order", () => {
     const markup = html(<SelectedWorkItem pin={pin} />);
     expect(markup.match(/href="\/work\/primeone\/#highlights"/g)).toHaveLength(2);

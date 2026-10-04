@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { isSaveShortcut, PREVIEW_SAVE } from "@/lib/admin/leave-guard";
 
 // Runs inside the preview iframe. The editor posts { type: "preview-focus", id }
 // (same origin only); the matching row (every block row's id is its block id)
@@ -11,6 +12,9 @@ import { useEffect } from "react";
 // (an attribute set before the row hydrates is a hydration mismatch), and the
 // scroll is repeated while the page is still growing (a scroll before the
 // content below arrives has nowhere to go).
+//
+// Cmd/Ctrl+S pressed while the preview has focus is passed to the editor
+// ({ type: "preview-save" }, same origin), so it saves the draft there.
 export function PreviewFocus() {
   useEffect(() => {
     const style = document.createElement("style");
@@ -48,7 +52,14 @@ export function PreviewFocus() {
       stop = setTimeout(settle, 1500);
     }
 
+    function onKeyDown(event: KeyboardEvent) {
+      if (!isSaveShortcut(event) || window.parent === window) return;
+      event.preventDefault();
+      window.parent.postMessage({ type: PREVIEW_SAVE }, window.location.origin);
+    }
+
     window.addEventListener("message", onMessage);
+    window.addEventListener("keydown", onKeyDown);
     // A reader scrolling the preview wins over the settle.
     window.addEventListener("wheel", settle, { passive: true });
     window.addEventListener("touchmove", settle, { passive: true });
@@ -57,6 +68,7 @@ export function PreviewFocus() {
       settle();
       style.remove();
       window.removeEventListener("message", onMessage);
+      window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("wheel", settle);
       window.removeEventListener("touchmove", settle);
     };

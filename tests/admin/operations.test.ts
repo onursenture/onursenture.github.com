@@ -64,6 +64,20 @@ describe("publishDoc", () => {
     expect((await store.getDoc("work/nebuu"))?.draft).toBeNull();
   });
 
+  it("publishes a pin with an empty note, but not one without a title", async () => {
+    const withPin = (pin: { title: string; note: string }): ProductPage => ({
+      ...nebuu,
+      blocks: nebuu.blocks.map((block) => (block.kind === "images" ? { ...block, images: block.images.map((image, i) => (i === 0 ? { ...image, pin } : image)) } : block)),
+    });
+    await saveDraft(store, "work/nebuu", withPin({ title: "", note: "" }), null, t0);
+    expect(await publishDoc(store, "work/nebuu", t1, any)).toMatchObject({ status: "invalid", issues: [{ doc: "work/nebuu", at: expect.stringMatching(/\/pin\/title$/), message: "is required" }] });
+    const doc = await store.getDoc("work/nebuu");
+    await saveDraft(store, "work/nebuu", withPin({ title: "Cards", note: "" }), doc!.draftUpdatedAt!.toISOString(), t1);
+    expect(await publishDoc(store, "work/nebuu", t1, any)).toEqual({ status: "ok", publishedAt: t1.toISOString() });
+    const images = (await live()).pages.find((p) => p.slug === "nebuu")!.blocks.flatMap((block) => (block.kind === "images" ? block.images : []));
+    expect(images.find((image) => image.pin?.title === "Cards")?.pin).toEqual({ title: "Cards", note: "" });
+  });
+
   it("refuses a page that breaks another document", async () => {
     const noYears: ProductPage = { ...nebuu, facts: nebuu.facts.filter((f) => f.label !== "Years") };
     await saveDraft(store, "work/nebuu", noYears, null, t0);

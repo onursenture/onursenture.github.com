@@ -17,7 +17,8 @@ function build(strict: boolean) {
   const text = () => (strict ? z.string().min(1) : z.string());
   const linkSchema = z.object({ label: text(), href: text() });
   const creditSchema = z.object({ name: text(), role: z.string().optional(), href: z.string().optional() });
-  const pinSchema = z.object({ title: text(), note: text() });
+  // The note is optional copy: the home leaves out its line when it is blank.
+  const pinSchema = z.object({ title: text(), note: z.string() });
 
   const workImageSchema = z.object({
     id: z.string(),

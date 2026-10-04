@@ -11,7 +11,7 @@ function StatusText({ editor }: { editor: DocEditorState }) {
   const pathname = usePathname();
   switch (editor.status) {
     case "dirty":
-      return <>Editing…</>;
+      return <>Unsaved changes</>;
     case "saving":
       return <>Saving…</>;
     case "publishing":
@@ -35,13 +35,9 @@ function StatusText({ editor }: { editor: DocEditorState }) {
         </span>
       );
     case "offline":
-      return <span className="text-danger">{editor.retrying ? "Offline — retrying" : "Offline — try again"}</span>;
+      return <span className="text-danger">Offline — try again</span>;
     case "unavailable":
-      return (
-        <span className="text-danger">
-          {editor.retrying ? "Database unavailable — retrying" : editor.blocked ? "Database unavailable" : "Database unavailable — try again"}
-        </span>
-      );
+      return <span className="text-danger">{editor.blocked ? "Database unavailable" : "Database unavailable — try again"}</span>;
     case "invalid":
       return <span className="text-danger">Fix the issues to publish</span>;
     case "published":
@@ -70,8 +66,10 @@ function StatusText({ editor }: { editor: DocEditorState }) {
   }
 }
 
-// Save status, Discard draft and Publish: the same controls on every editor.
-// hideDiscard: there is nothing to go back to (a page never published).
+// Save status, Discard draft, Save draft and Publish: the same controls on
+// every editor. Drafts are saved only by hand (here or Cmd/Ctrl+S); Publish
+// saves an unsaved edit first. hideDiscard: there is nothing to go back to (a
+// page never published).
 export function DocToolbar({ editor, extra, hideDiscard = false }: { editor: DocEditorState; extra?: ReactNode; hideDiscard?: boolean }) {
   return (
     <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2">
@@ -84,6 +82,9 @@ export function DocToolbar({ editor, extra, hideDiscard = false }: { editor: Doc
           Discard draft
         </Button>
       )}
+      <Button variant="ghost" onClick={() => void editor.save()} disabled={!editor.canSave} aria-keyshortcuts="Meta+S Control+S">
+        Save draft
+      </Button>
       <Button variant="primary" onClick={() => void editor.publish()} disabled={!editor.canPublish}>
         Publish
       </Button>
