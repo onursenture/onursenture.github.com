@@ -228,3 +228,14 @@ The plan walks through these as a controller task:
 - adding organisations (`ORGS` stays in code);
 - editing anything on the Life side, the name, location, social handles or availability;
 - Notes, Resume and the booking link (Sprints 8 and 9).
+
+## Errata (implementation)
+
+Where the shipped admin differs from this spec:
+
+- **`work-index` has no draft** (§1, §2 New page / Delete page). A new page's slug is not added to `work-index` when the page is created: publishing an unlisted page appends it, and Delete page removes it from the published `work-index` and drops the `work/<slug>` row in one validated step.
+- **Previews render drafts loosely** (§1.5). Publish and public reads are strict, but the preview routes resolve drafts with the loose schemas (`{ loose: true }`), so an unfinished draft still renders before it validates.
+- **Local media** (§3.3) lives in `.media-dev/` (or `MEDIA_DEV_DIR`), not `public/uploads-dev/`, behind `lib/media/storage.ts` (not `lib/media/store.ts`), and is served by `/api/media-dev/`. Off Vercel it is the default when `BLOB_READ_WRITE_TOKEN` is unset; on Vercel without a token uploads are off.
+- **The session check** (§4.2) is `isAdmin()` / `requireAdminPage()` in `lib/auth/admin.ts`; `lib/auth/session.ts` only signs and verifies the JWT.
+- **The admin e2e** (§6) uses a JSON file content store (`CONTENT_STORE_FILE`, `lib/content/file-store.ts`), not PGlite. The database store keeps its own PGlite tests.
+- **The toolbar shows no change count** (§2.2): the status reads "Draft saved 4s ago", "Published …" or "Repo version", without "· N unpublished changes".
