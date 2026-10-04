@@ -91,11 +91,13 @@ test("a scheduled Life note goes live only when publish-due runs after its time"
   await expect(row(page, "E2E scheduled note")).toContainText(/\d{2}:\d{2}/);
 
   expect(await publishDue(page)).toBe(0);
-  // A request, not page.goto: a browser visit to /life/notes/ makes Next
-  // prefetch /life/, and `next start` then keeps serving that prefetched
-  // /life/ after publish-due's revalidateTag (see the Task 11 report).
-  const before = await page.request.get("/life/notes/");
-  expect(await before.text()).not.toContain("E2E scheduled note");
+  // Wait for the /life/ prefetch from this page to finish: a render still in
+  // flight when publish-due revalidates "notes" is stored afterwards and looks
+  // fresh to Next's tag check (stamped at write time), so /life/ would keep the
+  // old list. publish-due's delayed second revalidation covers that in
+  // production; the test waits so it doesn't depend on that delay.
+  await page.goto("/life/notes/", { waitUntil: "networkidle" });
+  await expect(page.locator("main")).not.toContainText("E2E scheduled note");
 
   // Move it into the past, as if its quarter hour had come.
   const data = JSON.parse(readFileSync(NOTES_FILE, "utf8")) as { notes: Record<string, Note> };

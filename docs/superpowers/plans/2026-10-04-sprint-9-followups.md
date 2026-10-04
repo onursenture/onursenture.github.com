@@ -12,9 +12,9 @@
 - [ ] A scheduled note goes live within ~10 minutes of its time.
 - [ ] `/feed.xml` validates (W3C feed validator).
 
-**To investigate (production):**
+**Resolved, check once on production:**
 
-- [ ] On `next start`, after publish-due, `/life/` was seen staying stale (cache HIT without the new note) for 20s+ when a browser had visited `/life/notes/` first; the admin e2e avoids that sequence. Check on production (Vercel) with a real scheduled Life note.
+- [ ] Root cause of the stale `/life/` seen on `next start` after publish-due: a render still in flight when "notes" is revalidated is stored afterwards with a write-time stamp, so Next's tag check treats it as fresh. Mitigated by publish-due's delayed second revalidation (5 s, via `after()`). Still check once on production (Vercel) with a real scheduled note.
 
 **Controller (Task 13):**
 

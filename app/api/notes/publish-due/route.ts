@@ -1,4 +1,5 @@
 import { revalidateTag } from "next/cache";
+import { after } from "next/server";
 import { getNoteStore } from "@/lib/notes/get-store";
 import { publishDue } from "@/lib/notes/operations";
 import type { NoteStore } from "@/lib/notes/store";
@@ -10,6 +11,11 @@ import { isAuthorized } from "@/lib/sync/auth";
 // Authorization: Bearer $SYNC_SECRET. Publishes the scheduled notes that are
 // due. { expire: 0 } so the warm-up requests right after get the new list,
 // not the stale one.
+//
+// A page render still in flight when the tag expires is stored afterwards with
+// a write-time stamp, so Next's tag check treats it as fresh and it keeps the
+// old list. A second revalidation a few seconds later catches that render.
+const RECHECK_MS = 5000;
 export async function POST(request: Request) {
   if (!isAuthorized(request.headers.get("authorization"), process.env.SYNC_SECRET)) {
     return Response.json({ error: "unauthorized" }, { status: 401 });
@@ -23,7 +29,17 @@ export async function POST(request: Request) {
   if (!store) return Response.json({ error: "no note store" }, { status: 503 });
   try {
     const published = await publishDue(store, new Date());
-    if (published.length > 0) revalidateTag(NOTES_TAG, { expire: 0 });
+    if (published.length > 0) {
+      revalidateTag(NOTES_TAG, { expire: 0 });
+      after(async () => {
+        await new Promise((resolve) => setTimeout(resolve, RECHECK_MS));
+        try {
+          revalidateTag(NOTES_TAG, { expire: 0 });
+        } catch (e) {
+          console.warn("[notes] delayed revalidation failed:", e instanceof Error ? e.message : e);
+        }
+      });
+    }
     return Response.json({ published: published.length });
   } catch (e) {
     console.warn("[notes] publish-due failed:", e instanceof Error ? e.message : e);
