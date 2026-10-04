@@ -37,6 +37,8 @@ export const experience: ExperienceEntry[] = [
       { title: "PrimeBlocks", note: "UI blocks", href: "/work/primeblocks/" },
       { title: "PrimeIcons", note: "icon set", href: "/work/primeicons/" },
       { title: "Templates", note: "app templates", href: "/work/templates/" },
+      { title: "PrimeStore", note: "template store", href: "/work/primestore/" },
+      { title: "Theme Designer", note: "theme editor", href: "/work/theme-designer/" },
     ],
   },
   {

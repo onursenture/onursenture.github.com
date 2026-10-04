@@ -33,11 +33,7 @@ export const primeicons: ProductPage = {
       heading: "Highlights",
       columns: 3,
       images: [
-        {
-          id: "icon-sheet",
-          caption: "Icon sheet",
-          pin: { order: 3, title: "Icon sheet", note: "Drawn to replace Font Awesome" },
-        },
+        { id: "icon-sheet", caption: "Icon sheet" },
         { id: "details", caption: "Details" },
         { id: "in-use", caption: "In use" },
       ],

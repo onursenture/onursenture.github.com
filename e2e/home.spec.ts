@@ -30,17 +30,16 @@ test("the bio names PrimeTek, Orkestra and Bilkent with inline marks", async ({ 
   for (const name of ["PrimeTek", "Orkestra Studios", "Bilkent"]) await expect(identity).toContainText(name);
 });
 
-test("Selected work shows the four pins in order, each linking to its images block", async ({ page }) => {
+test("Selected work shows the curated pins in order, each linking to its images block", async ({ page }) => {
   await page.goto("/");
   const work = page.locator("#selected-work");
   const items = work.getByRole("listitem");
-  await expect(items).toHaveCount(4);
-  expect(pins.map((pin) => pin.slug)).toEqual(["primeone", "primeblocks", "primeicons", "templates"]);
+  await expect(items).toHaveCount(pins.length);
   for (const [index, pin] of pins.entries()) {
     const item = items.nth(index);
     await expect(item).toContainText(pin.pin.title);
     await expect(item).toContainText(pin.pin.note);
-    await expect(item).toContainText(`FIG. 0${index + 1} · ${pin.pin.title}`);
+    await expect(item).toContainText(`FIG. ${String(pin.pin.order).padStart(2, "0")} · ${pin.pin.title}`);
     // One link per item for assistive tech: the source link. The frame links
     // to the same place, hidden and out of the tab order.
     const source = item.getByRole("link");
@@ -54,8 +53,8 @@ test("Selected work shows the four pins in order, each linking to its images blo
 
 test("a Selected work source link lands on its product page's images block", async ({ page }) => {
   await page.goto("/");
-  await page.locator("#selected-work").getByRole("link", { name: "PrimeIcons" }).click();
-  await expect(page).toHaveURL(/\/work\/primeicons\/#highlights$/);
+  await page.locator("#selected-work").getByRole("link", { name: "Templates" }).click();
+  await expect(page).toHaveURL(/\/work\/templates\/#highlights$/);
   await expect(page.locator("#highlights")).toBeInViewport();
 });
 
@@ -78,8 +77,9 @@ test("Experience shows product rows with confirmed dates", async ({ page }) => {
   await expect(tree).toContainText("May 2016–Apr 2026");
   await expect(tree).toContainText("Apr 2014–Mar 2016");
   const products = tree.getByRole("list", { name: "PrimeTek work" });
-  await expect(products.getByRole("listitem")).toHaveCount(4);
-  await expect(products.getByRole("link")).toHaveCount(4);
+  await expect(products.getByRole("listitem")).toHaveCount(6);
+  await expect(products.getByRole("link")).toHaveCount(6);
+  await expect(products.getByRole("listitem").first()).toContainText("2022–2026");
   await expect(tree.getByRole("link", { name: "PrimeIcons" })).toHaveAttribute("href", "/work/primeicons/");
   // Nebuu has no page: plain text, not a link.
   await expect(tree).toContainText("Nebuu");
@@ -135,7 +135,7 @@ test.describe("at 390px", () => {
   test("Selected work has one column", async ({ page }) => {
     await page.goto("/");
     const lefts = await page.locator("#selected-work li").evaluateAll((els) => els.map((el) => Math.round(el.getBoundingClientRect().left)));
-    expect(lefts).toHaveLength(4);
+    expect(lefts).toHaveLength(pins.length);
     expect(new Set(lefts).size).toBe(1);
     const width = await page.locator("#selected-work li").first().evaluate((el) => el.getBoundingClientRect().width);
     expect(Math.round(width)).toBe(390 - 32);
