@@ -10,6 +10,9 @@ export interface ImageEntry {
   height: number;
   // Generated widths, ascending. Each exists as .avif and .jpg.
   widths: number[];
+  // Uploaded images (Sprint 7): the absolute Blob prefix (or /api/media-dev/
+  // locally) the renditions share. Unset: the renditions are /images/<key>-*.
+  baseUrl?: string;
 }
 
 export interface ManifestEntry extends ImageEntry {
@@ -33,13 +36,14 @@ export function widthsFor(sourceWidth: number): number[] {
   return [...fitting];
 }
 
-// "photos/stabilo" + 640 + "avif" → "/images/photos/stabilo-640.avif"
-export function renditionUrl(key: string, width: number, format: "avif" | "jpg"): string {
-  return `/images/${key}-${width}.${format}`;
+// "photos/stabilo" + 640 + "avif" → "/images/photos/stabilo-640.avif";
+// with a baseUrl → "<baseUrl>-640.avif".
+export function renditionUrl(key: string, width: number, format: "avif" | "jpg", baseUrl?: string): string {
+  return `${baseUrl ?? `/images/${key}`}-${width}.${format}`;
 }
 
 export function srcSet(key: string, entry: ImageEntry, format: "avif" | "jpg"): string {
-  return entry.widths.map((w) => `${renditionUrl(key, w, format)} ${w}w`).join(", ");
+  return entry.widths.map((w) => `${renditionUrl(key, w, format, entry.baseUrl)} ${w}w`).join(", ");
 }
 
 // Determine if a manifest entry is up to date: previous exists, hash and

@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { experience, formatSpan } from "@/content/experience";
 import { ORGS } from "@/content/orgs";
 import { productPages } from "@/content/work";
-import { getExperience } from "@/lib/work";
+import { repoSite } from "@/lib/content/site";
+import { experienceViews } from "@/lib/work/views";
 
 describe("formatSpan", () => {
   it("formats month spans, with an open end as now", () => {
@@ -51,6 +52,6 @@ describe("experience", () => {
   });
 
   it("resolves every row's year for the home", () => {
-    for (const entry of getExperience()) for (const child of entry.children) expect(child.years, child.title).toMatch(/^\d{4}(–(\d{4}|now))?$/);
+    for (const entry of experienceViews(repoSite())) for (const child of entry.children) expect(child.years, child.title).toMatch(/^\d{4}(–(\d{4}|now))?$/);
   });
 });

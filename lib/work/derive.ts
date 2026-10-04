@@ -69,7 +69,7 @@ export function imageKey(slug: string, imageId: string): string {
 export function resolveImage(slug: string, image: WorkImage, lookup: ImageLookup): ResolvedImage | null {
   const key = image.image ?? imageKey(slug, image.id);
   const entry = lookup(key);
-  return entry ? { key, width: entry.width, height: entry.height, widths: entry.widths } : null;
+  return entry ? { key, width: entry.width, height: entry.height, widths: entry.widths, ...(entry.baseUrl ? { baseUrl: entry.baseUrl } : {}) } : null;
 }
 
 // Every image on a page, in block order.

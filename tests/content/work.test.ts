@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { productPages } from "@/content/work";
 import { hasImage } from "@/lib/images/manifest";
-import { getPins, getProductPage, getProductSlugs } from "@/lib/work";
+import { repoSite } from "@/lib/content/site";
+import { findImage } from "@/lib/images/manifest";
+import { pinViews, productPageView, productSlugs } from "@/lib/work/views";
 import { pageImages } from "@/lib/work/derive";
 import { validateWork } from "@/lib/work/validate";
 
@@ -11,7 +13,7 @@ describe("content/work", () => {
   });
 
   it("lists the PrimeTek product pages first, in order", () => {
-    expect(getProductSlugs().slice(0, 6)).toEqual(["primeone", "primeblocks", "primeicons", "templates", "primestore", "theme-designer"]);
+    expect(productSlugs(repoSite()).slice(0, 6)).toEqual(["primeone", "primeblocks", "primeicons", "templates", "primestore", "theme-designer"]);
     for (const page of productPages.slice(0, 6)) expect(page.org).toBe("primetek");
   });
 
@@ -32,7 +34,7 @@ describe("content/work", () => {
   });
 
   it("adds the icon set after the images block on PrimeIcons only", () => {
-    const icons = getProductPage("primeicons")!;
+    const icons = productPageView(repoSite(), "primeicons", findImage)!;
     expect(icons.blocks.map((block) => block.kind)).toEqual(["text", "images", "icons"]);
     for (const page of productPages.filter((p) => p.slug !== "primeicons")) {
       expect(page.blocks.some((block) => block.kind === "icons"), page.slug).toBe(false);
@@ -47,7 +49,7 @@ describe("content/work", () => {
   });
 
   it("pins the curated Selected work, each the first highlight of its page", () => {
-    const pins = getPins();
+    const pins = pinViews(repoSite(), findImage);
     expect(pins.map((pin) => [pin.order, pin.slug, pin.blockId])).toEqual([
       [1, "primeone", "highlights"],
       [2, "primeblocks", "highlights"],
@@ -80,7 +82,7 @@ describe("content/work", () => {
   });
 
   it("tells Theme Designer's pivot from PrimeDesigner", () => {
-    const page = getProductPage("theme-designer")!;
+    const page = productPageView(repoSite(), "theme-designer", findImage)!;
     expect(page.blocks.map((block) => block.id)).toEqual(["what-i-did", "pivot", "highlights"]);
     expect(JSON.stringify(page)).toContain("PrimeDesigner");
     expect(page.facts.find((fact) => fact.label === "Years")?.value).toBe("2023–2025");
@@ -89,7 +91,7 @@ describe("content/work", () => {
   const orkestra = () => productPages.filter((p) => p.org === "orkestra");
 
   it("lists the nine Orkestra pages after PrimeTek, newest first", () => {
-    expect(getProductSlugs().slice(6)).toEqual([
+    expect(productSlugs(repoSite()).slice(6)).toEqual([
       "nebuu",
       "rebound-line",
       "hi-jump",
@@ -135,7 +137,7 @@ describe("content/work", () => {
   });
 
   it("publishes only the numbers Onur confirmed, each with its period", () => {
-    const text = (slug: string) => JSON.stringify(getProductPage(slug));
+    const text = (slug: string) => JSON.stringify(productPageView(repoSite(), slug, findImage));
     expect(text("nebuu")).toContain("#1 in Turkey's word-game category in 2014");
     expect(text("countdo")).toContain("more than 300,000 users by December 2014");
     expect(text("harf-marf")).toContain("15,000 players by June 2017");
