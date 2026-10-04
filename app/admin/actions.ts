@@ -5,11 +5,13 @@ import { type NewPageInput, createPage, deletePage, discardDraft, publishDoc, re
 import type { ActionResult } from "@/lib/admin/results";
 import { isAdmin } from "@/lib/auth/admin";
 import { getContentStore } from "@/lib/content/get-store";
-import { type DocKey, isDocKey } from "@/lib/content/keys";
+import { type DocKey, KEBAB, isDocKey, workKey } from "@/lib/content/keys";
 import { CONTENT_TAG } from "@/lib/content/read";
 import type { ContentStore } from "@/lib/content/store";
 import { getDb } from "@/lib/db/client";
-import { hasImageWith, toMediaEntry } from "@/lib/images/lookup";
+import { type MediaEntry, hasImageWith, toMediaEntry } from "@/lib/images/lookup";
+import { processImage } from "@/lib/media/process";
+import { getMediaStorage } from "@/lib/media/storage";
 import { sources } from "@/lib/sources/registry";
 import { sourceTag } from "@/lib/sources/tags";
 import { DrizzleSnapshotStore } from "@/lib/sync/drizzle-store";
@@ -86,6 +88,28 @@ export async function deletePageAction(slug: string): Promise<ActionResult> {
     const result = await deletePage(store, slug, new Date(), await hasImageIn(store));
     if (result.status === "ok") updateTag(CONTENT_TAG);
     return result;
+  });
+}
+
+// After the browser uploaded an original: check it, render the renditions,
+// record them. The original is deleted either way; the draft then points the
+// image at the returned key (the client does that).
+export async function processUploadAction(input: { source: string; slug: string; imageId: string }): Promise<ActionResult<{ key: string; entry: MediaEntry }>> {
+  const where = { doc: workKey(input.slug), at: `upload/${input.imageId}` };
+  if (!KEBAB.test(input.slug) || !KEBAB.test(input.imageId)) return { status: "invalid", issues: [{ ...where, message: "the image needs a kebab-case id first" }] };
+  return run<{ key: string; entry: MediaEntry }>(async (store) => {
+    const storage = getMediaStorage();
+    let bytes: Buffer;
+    try {
+      bytes = await storage.readSource(input.source);
+    } catch {
+      return { status: "invalid", issues: [{ ...where, message: "The upload could not be read. Try again." }] };
+    }
+    const result = await processImage(bytes, input, storage, new Date());
+    await storage.deleteSource(input.source).catch(() => undefined);
+    if (!result.ok) return { status: "invalid", issues: [{ ...where, message: result.reason }] };
+    await store.putMedia(result.record);
+    return { status: "ok", key: result.record.key, entry: toMediaEntry(result.record) };
   });
 }
 

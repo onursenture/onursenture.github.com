@@ -23,6 +23,7 @@
     "@dnd-kit/sortable": "10.0.0",
     "@dnd-kit/utilities": "3.2.2",
     "@neondatabase/serverless": "1.2.0",
+    "@vercel/blob": "2.8.0",
     "cheerio": "1.2.0",
     "clsx": "2.1.1",
     "d3-scale": "4.0.2",
@@ -37,6 +38,7 @@
     "react-dom": "19.2.8",
     "rss-parser": "3.13.0",
     "server-only": "0.0.1",
+    "sharp": "0.35.5",
     "tailwind-merge": "3.7.0",
     "zod": "4.6.5"
   },
@@ -52,7 +54,6 @@
     "drizzle-kit": "0.31.11",
     "eslint": "9.39.5",
     "eslint-config-next": "16.3.8",
-    "sharp": "0.35.5",
     "tailwindcss": "4.3.3",
     "tsx": "4.23.15",
     "typescript": "5.9.3",

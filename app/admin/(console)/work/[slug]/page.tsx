@@ -9,6 +9,7 @@ import { requireAdminPage } from "@/lib/auth/admin";
 import { lockedIds } from "@/lib/content/ids";
 import { workKey } from "@/lib/content/keys";
 import { repoValue } from "@/lib/content/site";
+import { uploadMode } from "@/lib/media/storage";
 
 // Uploads render renditions in a server action of this page.
 export const maxDuration = 60;
@@ -35,6 +36,7 @@ async function Gate({ params }: Pick<PageProps<"/admin/work/[slug]">, "params">)
       entries={entries}
       live={live}
       hasRepo={repoValue(workKey(slug)) !== null}
+      uploadMode={uploadMode()}
     />
   );
 }

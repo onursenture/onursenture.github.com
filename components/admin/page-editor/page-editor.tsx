@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { deletePageAction } from "@/app/admin/actions";
 import { Button } from "@/components/ui/button";
-import type { Block, ProductPage } from "@/content/work/types";
+import type { Block, ProductPage, WorkImage } from "@/content/work/types";
 import type { DocEditorInit } from "@/lib/admin/results";
 import { uniqueId } from "@/lib/content/ids";
 import type { ImageEntry } from "@/lib/images/plan";
@@ -16,6 +16,7 @@ import { useKeyedList } from "../use-keyed-list";
 import { AddBlock } from "./add-block";
 import { BlockCard, blockLabel } from "./block-card";
 import { HeaderFields } from "./header-fields";
+import { UploadSlot } from "./upload-slot";
 
 export interface PageEditorProps {
   init: DocEditorInit<ProductPage>;
@@ -23,6 +24,7 @@ export interface PageEditorProps {
   entries: Record<string, ImageEntry>;
   live: boolean;
   hasRepo: boolean;
+  uploadMode: "blob" | "local" | null;
 }
 
 function deleteMessage(result: Exclude<Awaited<ReturnType<typeof deletePageAction>>, { status: "ok" }>): string {
@@ -44,12 +46,11 @@ function deleteMessage(result: Exclude<Awaited<ReturnType<typeof deletePageActio
 // A product page's editor (spec §2.3): header fields, then the blocks as
 // collapsible, reorderable cards; the open card is the one the preview outlines.
 // The route keys this by document, so switching pages remounts it.
-export function PageEditor({ init, locked, entries: initialEntries, live, hasRepo }: PageEditorProps) {
+export function PageEditor({ init, locked, entries: initialEntries, live, hasRepo, uploadMode }: PageEditorProps) {
   const router = useRouter();
   const editor = useDocEditor(init);
   const page = editor.value;
-  // Task 12 turns this into state so uploads can add entries.
-  const entries = initialEntries;
+  const [entries, setEntries] = useState(initialEntries);
   const [openKey, setOpenKey] = useState<string | null>(null);
   const set = (patch: Partial<ProductPage>) => editor.setValue((previous) => ({ ...previous, ...patch }));
   const blocks = useKeyedList(page.blocks, (next) => set({ blocks: next }));
@@ -155,6 +156,18 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
                   pageImageIds={pageImageIds}
                   entries={entries}
                   issues={shown}
+                  renderUpload={(image: WorkImage, update: (image: WorkImage) => void) => (
+                    <UploadSlot
+                      slug={page.slug}
+                      imageId={image.id}
+                      mode={uploadMode}
+                      hasImage={Boolean(image.image)}
+                      onUploaded={(key, entry) => {
+                        setEntries((current) => ({ ...current, [key]: entry }));
+                        update({ ...image, image: key });
+                      }}
+                    />
+                  )}
                   onToggle={() => setOpenKey(openKey === blocks.keys[index] ? null : blocks.keys[index])}
                   onChange={(next) => blocks.update(index, next)}
                   onRemove={() => removeBlock(index)}
