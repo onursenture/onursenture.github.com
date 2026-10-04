@@ -3,7 +3,7 @@ import { ItemLink } from "@/components/sections/item-link";
 import { DitherRule } from "@/components/ui/dither";
 import { OrgMark } from "@/components/ui/org-mark";
 import { SectionRow } from "@/components/ui/section-row";
-import { TextLink } from "@/components/ui/text-link";
+import { TextLink, isExternal } from "@/components/ui/text-link";
 import { encodeEmail } from "@/lib/resume/email";
 import type { ResumeView } from "@/lib/resume/view";
 import { EmailLink } from "./email-link";
@@ -11,6 +11,7 @@ import { EmailLink } from "./email-link";
 // The /resume/ rows (Sprint 8 spec §3.1, mockup A): header, Summary,
 // Experience, Projects, Skills, Education on the site grid, dither rules
 // between them; an empty section is left out. Every action is a text link.
+// List keys carry the index: a draft preview may repeat a title or an org.
 export function ResumeBody({ resume, bookable }: { resume: ResumeView; bookable: boolean }) {
   const contact: ReactNode[] = [
     resume.email ? <EmailLink key="email" code={encodeEmail(resume.email)} className="text-accent" /> : null,
@@ -70,8 +71,8 @@ export function ResumeBody({ resume, bookable }: { resume: ResumeView; bookable:
     resume.roles.length > 0 ? (
       <SectionRow key="experience" id="experience" label="Experience">
         <ul className="flex flex-col gap-6 type-body">
-          {resume.roles.map((role) => (
-            <li key={role.org}>
+          {resume.roles.map((role, roleIndex) => (
+            <li key={`${role.org}-${roleIndex}`}>
               <div className="flex items-baseline justify-between gap-4">
                 <span>
                   <OrgMark org={role.org} /> <span className="text-fg">{role.orgName}</span>{" "}
@@ -89,15 +90,18 @@ export function ResumeBody({ resume, bookable }: { resume: ResumeView; bookable:
               {role.products.length > 0 ? (
                 <p className="mt-2 type-meta text-fg-muted">
                   {role.products.map((product, index) => (
-                    <Fragment key={product.title}>
+                    <Fragment key={`${product.title}-${index}`}>
                       {index > 0 ? " · " : null}
-                      {product.href ? (
-                        <ItemLink href={product.href} className="text-accent">
-                          {product.title}
-                        </ItemLink>
-                      ) : (
-                        product.title
-                      )}
+                      {/* A title never wraps mid-name ("Harf / Marf"); the list wraps between titles. */}
+                      <span className="whitespace-nowrap">
+                        {product.href ? (
+                          <ItemLink href={product.href} className="text-accent">
+                            {product.title}
+                          </ItemLink>
+                        ) : (
+                          product.title
+                        )}
+                      </span>
                     </Fragment>
                   ))}
                 </p>
@@ -110,12 +114,14 @@ export function ResumeBody({ resume, bookable }: { resume: ResumeView; bookable:
     resume.projects.length > 0 ? (
       <SectionRow key="projects" id="projects" label="Projects">
         <ul className="flex flex-col gap-2 type-body">
-          {resume.projects.map((project) => (
-            <li key={project.title}>
+          {resume.projects.map((project, index) => (
+            <li key={`${project.title}-${index}`}>
+              {/* Like a Lab row: no arrow inside the site, ↗ when it leaves. */}
               {project.href ? (
-                <TextLink href={project.href} className="text-accent">
+                <ItemLink href={project.href} className="text-accent">
                   {project.title}
-                </TextLink>
+                  {isExternal(project.href) ? <span aria-hidden="true"> ↗</span> : null}
+                </ItemLink>
               ) : (
                 <span className="text-fg">{project.title}</span>
               )}{" "}
@@ -128,8 +134,8 @@ export function ResumeBody({ resume, bookable }: { resume: ResumeView; bookable:
     resume.skills.length > 0 ? (
       <SectionRow key="skills" id="skills" label="Skills">
         <dl className="grid grid-cols-[max-content_minmax(0,1fr)] gap-x-4 gap-y-1 type-body">
-          {resume.skills.map((skill) => (
-            <Fragment key={skill.group}>
+          {resume.skills.map((skill, index) => (
+            <Fragment key={`${skill.group}-${index}`}>
               <dt className="text-fg-muted">{skill.group}</dt>
               <dd className="text-fg-soft">{skill.items}</dd>
             </Fragment>
@@ -140,8 +146,8 @@ export function ResumeBody({ resume, bookable }: { resume: ResumeView; bookable:
     resume.education.length > 0 ? (
       <SectionRow key="education" id="education" label="Education">
         <ul className="flex flex-col gap-1 type-body">
-          {resume.education.map((entry) => (
-            <li key={`${entry.degree}-${entry.school}`} className="flex items-baseline justify-between gap-4">
+          {resume.education.map((entry, index) => (
+            <li key={`${entry.degree}-${entry.school}-${index}`} className="flex items-baseline justify-between gap-4">
               <span className="text-fg-soft">
                 {entry.degree}, {entry.school}
               </span>

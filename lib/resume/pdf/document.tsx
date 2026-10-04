@@ -45,6 +45,10 @@ const styles = StyleSheet.create({
   grow: { flex: 1 },
 });
 
+// A product title never wraps mid-name ("Maç / Kaçta"): its spaces become
+// non-breaking, so the line breaks only between titles.
+export const keepWhole = (title: string) => title.replace(/ /g, "\u00a0");
+
 const absolute = (href: string) => (href.startsWith("/") ? `${site.url}${href}` : href);
 const bare = (url: string) => url.replace(/^https:\/\/(www\.)?/, "").replace(/\/$/, "");
 
@@ -96,9 +100,9 @@ export function ResumeDocument({ resume }: { resume: ResumeView }) {
 
         {resume.roles.length > 0 ? (
           <Row label="Experience">
-            {resume.roles.map((role) => (
+            {resume.roles.map((role, roleIndex) => (
               // A role never splits across pages.
-              <View key={role.org} style={styles.role} wrap={false}>
+              <View key={`${role.org}-${roleIndex}`} style={styles.role} wrap={false}>
                 <View style={styles.line}>
                   <Text>
                     {role.orgName} <Text style={styles.muted}>· {role.role}</Text>
@@ -114,14 +118,14 @@ export function ResumeDocument({ resume }: { resume: ResumeView }) {
                 {role.products.length > 0 ? (
                   <Text style={[styles.muted, { marginTop: 2 }]}>
                     {role.products.map((product, index) => (
-                      <Text key={product.title}>
+                      <Text key={`${product.title}-${index}`}>
                         {index > 0 ? " · " : ""}
                         {product.href ? (
                           <Link src={absolute(product.href)} style={styles.link}>
-                            {product.title}
+                            {keepWhole(product.title)}
                           </Link>
                         ) : (
-                          product.title
+                          keepWhole(product.title)
                         )}
                       </Text>
                     ))}
@@ -134,8 +138,8 @@ export function ResumeDocument({ resume }: { resume: ResumeView }) {
 
         {resume.projects.length > 0 ? (
           <Row label="Projects">
-            {resume.projects.map((project) => (
-              <Text key={project.title} style={{ marginBottom: 2 }}>
+            {resume.projects.map((project, index) => (
+              <Text key={`${project.title}-${index}`} style={{ marginBottom: 2 }}>
                 {project.href ? (
                   <Link src={absolute(project.href)} style={styles.link}>
                     {project.title}
@@ -151,8 +155,8 @@ export function ResumeDocument({ resume }: { resume: ResumeView }) {
 
         {resume.skills.length > 0 ? (
           <Row label="Skills">
-            {resume.skills.map((skill) => (
-              <Text key={skill.group}>
+            {resume.skills.map((skill, index) => (
+              <Text key={`${skill.group}-${index}`}>
                 <Text style={styles.muted}>{skill.group} </Text>
                 <Text style={styles.soft}>{skill.items}</Text>
               </Text>
@@ -162,8 +166,8 @@ export function ResumeDocument({ resume }: { resume: ResumeView }) {
 
         {resume.education.length > 0 ? (
           <Row label="Education">
-            {resume.education.map((entry) => (
-              <View key={`${entry.degree}-${entry.school}`} style={styles.line}>
+            {resume.education.map((entry, index) => (
+              <View key={`${entry.degree}-${entry.school}-${index}`} style={styles.line}>
                 <Text style={styles.soft}>
                   {entry.degree}, {entry.school}
                 </Text>
