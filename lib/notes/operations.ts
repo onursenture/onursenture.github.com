@@ -11,6 +11,10 @@ import { type Note, type NoteContent, type NoteIssue, isPublished } from "./type
 
 export type NoteOpResult = { status: "ok"; note: Note } | { status: "conflict" } | { status: "missing" } | { status: "invalid"; issues: NoteIssue[] };
 
+// What a server action returns: the operation's result, or the two outcomes
+// that only exist at the request level.
+export type NoteActionResult = NoteOpResult | { status: "unauthorized" } | { status: "unavailable" };
+
 // `id` null creates a note; otherwise `expected` is the updatedAt last seen.
 export interface NoteInput {
   id: string | null;
