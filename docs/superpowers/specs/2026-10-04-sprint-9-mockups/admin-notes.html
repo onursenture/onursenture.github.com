@@ -1,0 +1,106 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@500;600&display=swap" rel="stylesheet">
+
+<h2>/admin/notes/: not editörü hangi düzende olsun?</h2>
+<p class="subtitle">İkisi de aynı parçaları içeriyor: 300 grafemlik sayaç, Work/Life seçimi, ek olarak <b>ya</b> 4'e kadar görsel (alt metin zorunlu) <b>ya</b> tek link kartı, "Now / Schedule" seçimi (15 dakikalık adımlar, İstanbul saati), Save draft (Cmd/Ctrl+S), Publish ve Delete. Admin ana sayfasına da "Notes" bölümü ve "New note" ekleniyor. Fark yerleşimde. Birini seç.</p>
+
+<style>
+  .fr { background:#FAFAF8; color:#1F1F22; font-family:"IBM Plex Mono", ui-monospace, Menlo, monospace; font-size:11px; line-height:16px; border:1px solid #E6E6E1; }
+  .fr .mut { color:#6E6E73; }
+  .fr .bar { display:flex; align-items:center; gap:10px; padding:7px 12px; border-bottom:1px solid #E6E6E1; }
+  .fr .bar .sp { margin-left:auto; }
+  .fr .btn { border:1px solid #E6E6E1; background:#FAFAF8; padding:2px 8px; border-radius:3px; }
+  .fr .btn.p { background:#2F55F5; color:#fff; border-color:#2F55F5; }
+  .fr .btn.g { border-color:transparent; color:#6E6E73; }
+  .fr .btn.d { border-color:transparent; color:#D92D20; }
+  .fr .body { display:flex; min-height:330px; }
+  .fr .rail { width:190px; border-right:1px solid #E6E6E1; padding:8px 0; flex-shrink:0; }
+  .fr .sec { font-size:9.5px; letter-spacing:.05em; text-transform:uppercase; color:#6E6E73; padding:8px 12px 3px; display:flex; justify-content:space-between; }
+  .fr .it { padding:5px 12px; }
+  .fr .it .t { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .fr .it small { color:#6E6E73; }
+  .fr .it.on { background:#EEF1FE; box-shadow:inset 2px 0 #2F55F5; }
+  .fr .main { flex:1; padding:14px 16px; min-width:0; }
+  .fr .ta { border:1px solid #E6E6E1; background:#fff; padding:8px; min-height:64px; border-radius:3px; }
+  .fr .row { display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap; }
+  .fr .seg { display:inline-flex; border:1px solid #E6E6E1; border-radius:3px; overflow:hidden; }
+  .fr .seg span { padding:2px 8px; }
+  .fr .seg span.on { background:#1F1F22; color:#fff; }
+  .fr .imgs { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:8px; }
+  .fr .slot { aspect-ratio:16/10; background:repeating-linear-gradient(135deg,#E9E9E4 0 6px,#F1F1EC 6px 12px); border:1px solid #E6E6E1; position:relative; }
+  .fr .slot.empty { background:none; border-style:dashed; display:flex; align-items:center; justify-content:center; color:#6E6E73; }
+  .fr .alt { font-size:9.5px; color:#6E6E73; margin-top:2px; }
+  .fr .alt.miss { color:#D92D20; }
+  .fr .lab { font-size:9.5px; letter-spacing:.05em; text-transform:uppercase; color:#6E6E73; margin:12px 0 4px; }
+  .fr .pv { border-top:1px dashed #D6D6D0; margin-top:14px; padding-top:10px; }
+  .fr .count { margin-left:auto; color:#6E6E73; }
+  .fr .compose { border-bottom:1px solid #E6E6E1; padding:14px 16px; }
+  .fr .tl { padding:6px 16px 14px; }
+  .fr .tl .n { border-top:1px solid #E6E6E1; padding:8px 0; display:grid; grid-template-columns:1fr auto; gap:10px; }
+  .fr .pill { font-size:9.5px; border:1px solid #E6E6E1; padding:0 5px; color:#6E6E73; }
+  .fr .pill.sch { color:#C27C0E; border-color:#F0D9B5; }
+  .fr .pill.dr { color:#6E6E73; }
+</style>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Solda liste, sağda editör (önerim)</h3>
+      <p>Solda üç grup var: Drafts, Scheduled ve Published. Birine tıklayınca sağda açılıyor. "New note" boş bir taslak açıyor. Editörün altında, notun sitede nasıl görüneceği canlı olarak duruyor (seçtiğin A stili). Sprint 7 editörüyle aynı yapı.</p>
+      <div class="fr">
+        <div class="bar"><span class="mut">Admin / <b style="color:#1F1F22;font-weight:500">Notes</b></span><span class="sp mut">Draft saved 14:02</span><span class="btn d">Delete</span><span class="btn">Save draft</span><span class="btn p">Schedule</span></div>
+        <div class="body">
+          <div class="rail">
+            <div class="it" style="color:#2F55F5">+ New note</div>
+            <div class="sec"><span>Drafts</span><span>2</span></div>
+            <div class="it on"><div class="t">Notes editor, first pass. The…</div><small>edited 14:02</small></div>
+            <div class="it"><div class="t">Thinking about how PrimeOne…</div><small>edited Oct 1</small></div>
+            <div class="sec"><span>Scheduled</span><span>1</span></div>
+            <div class="it"><div class="t">Resume is live. Plain links…</div><small style="color:#C27C0E">Oct 6 · 09:00</small></div>
+            <div class="sec"><span>Published</span><span>14</span></div>
+            <div class="it"><div class="t">Shipped /resume.pdf. It's…</div><small>Oct 4 · Work</small></div>
+            <div class="it"><div class="t">Yui found the one sunny…</div><small>Oct 2 · Life</small></div>
+            <div class="it"><div class="t">Good walkthrough of…</div><small>Sep 30 · Both</small></div>
+          </div>
+          <div class="main">
+            <div class="ta">Notes editor, first pass. The counter counts graphemes, not characters: 👍🏽 is one.</div>
+            <div class="row"><span class="seg"><span class="on">Work</span><span>Life</span><span>Both</span></span><span class="count">218 left</span></div>
+            <div class="lab">Attach <span class="seg" style="margin-left:6px;text-transform:none;letter-spacing:0"><span class="on">Images</span><span>Link card</span><span>None</span></span></div>
+            <div class="imgs">
+              <div><div class="slot"></div><div class="alt">Editor with counter…</div></div>
+              <div><div class="slot"></div><div class="alt miss">Alt text required</div></div>
+              <div><div class="slot empty">+ Drop</div></div>
+            </div>
+            <div class="lab">Publish</div>
+            <div class="row"><span class="seg"><span>Now</span><span class="on">Schedule</span></span><span class="btn">Oct 5, 2026</span><span class="btn">09:15</span><span class="mut">Istanbul</span></div>
+            <div class="pv"><div class="mut" style="margin-bottom:4px">Preview</div>Notes editor, first pass. The counter counts graphemes, not characters: 👍🏽 is one.<div class="imgs" style="grid-template-columns:1fr 1fr;max-width:260px"><div class="slot"></div><div class="slot"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Üstte yazma kutusu, altta zaman çizelgesi</h3>
+      <p>Sosyal medyadaki gibi: sayfanın üstünde her zaman açık bir yazma kutusu, altında bütün notlar tek listede, durum etiketleriyle. Bir nota tıklayınca yazma kutusuna yükleniyor. Hızlı not atmak için daha pratik, ama çok taslak olunca liste kalabalıklaşıyor.</p>
+      <div class="fr">
+        <div class="bar"><span class="mut">Admin / <b style="color:#1F1F22;font-weight:500">Notes</b></span><span class="sp mut">Filter: <u>All</u> · Drafts · Scheduled · Published</span></div>
+        <div class="compose">
+          <div class="ta">What are you making?</div>
+          <div class="row"><span class="seg"><span class="on">Work</span><span>Life</span><span>Both</span></span><span class="btn g">🖼 Images</span><span class="btn g">🔗 Link</span><span class="btn g">⏱ Schedule</span><span class="count">300</span><span class="btn">Save draft</span><span class="btn p">Publish</span></div>
+        </div>
+        <div class="tl">
+          <div class="n"><div>Notes editor, first pass. The counter counts graphemes…</div><span class="pill dr">Draft</span></div>
+          <div class="n"><div>Resume is live. Plain links, no buttons…</div><span class="pill sch">Oct 6 · 09:00</span></div>
+          <div class="n"><div>Shipped /resume.pdf. It's rendered on the server…</div><span class="pill">Oct 4 · Work</span></div>
+          <div class="n"><div>Yui found the one sunny square on the balcony…</div><span class="pill">Oct 2 · Life</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

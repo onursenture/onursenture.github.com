@@ -1,0 +1,102 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@500;600&display=swap" rel="stylesheet">
+
+<h2>Ana sayfadaki "Notes" satırı: bir not nasıl görünsün?</h2>
+<p class="subtitle">Üçü de aynı 3 kolonlu ızgarada (etiket | 480px içerik | aksiyon), Selected work ile Experience arasında duruyor. Son 3 Work notu gösteriliyor: biri düz metin, biri 2 görselli, biri link kartlı. Not metinleri örnek, gerçeğini sen yazacaksın. Birini seç.</p>
+
+<style>
+  .pp { background:#FAFAF8; color:#1F1F22; font-family:"IBM Plex Mono", ui-monospace, Menlo, monospace; font-size:11.5px; line-height:17px; padding:20px 22px; }
+  .pp .mut { color:#6E6E73; }
+  .pp .soft { color:#52525A; }
+  .pp a { color:#1F1F22; text-decoration:underline; text-decoration-color:#C9C9C3; text-underline-offset:2px; }
+  .pp a.acc { color:#2F55F5; text-decoration:none; }
+  .pp .g3 { display:grid; grid-template-columns:96px minmax(0,320px) 1fr; gap:16px; }
+  .pp .act { text-align:right; }
+  .pp .rule { border-top:1px dashed #D6D6D0; margin:14px 0; }
+  .pp .imgs { display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-top:6px; }
+  .pp .img { background:repeating-linear-gradient(135deg,#E9E9E4 0 6px,#F1F1EC 6px 12px); border:1px solid #E6E6E1; }
+  .pp .card { border:1px solid #E6E6E1; margin-top:6px; padding:7px 9px; background:#fff; }
+  .pp .card .t { font-weight:500; }
+  .pp .note + .note { margin-top:14px; }
+  .pp .hair + .hair { border-top:1px solid #E6E6E1; padding-top:12px; margin-top:12px; }
+  .pp .log { display:grid; grid-template-columns:52px 1fr; gap:10px; }
+  .pp .log + .log { margin-top:12px; }
+  .pp .doto { font-family:"Doto", monospace; font-weight:700; font-size:13px; letter-spacing:.02em; }
+  .pp .box { border:1px solid #E6E6E1; background:#fff; padding:9px 10px; }
+  .pp .box + .box { margin-top:8px; }
+  .pp .boxhead { display:flex; justify-content:space-between; margin-bottom:4px; }
+  .pp .strip { display:flex; gap:4px; margin-top:6px; }
+  .pp .strip .img { width:56px; height:35px; }
+</style>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Akış (önerim)</h3>
+      <p>Lab satırlarıyla aynı dil: metin, altında soluk tarih. Notlar arasında ince çizgi var. Görseller oranını koruyarak 2'li ızgarada, link kartı tek satırlık sade bir kutu. Not sayfasına tarih linkiyle gidiliyor. Sakin, siteye en uyumlu seçenek.</p>
+      <div class="pp">
+        <div class="g3">
+          <div>Notes</div>
+          <div>
+            <div class="note hair">
+              <div>Shipped /resume.pdf. It's rendered on the server from the same data as the page, so the paper copy can't drift from the site.</div>
+              <div class="mut" style="margin-top:3px"><a href="#" style="color:#6E6E73">Oct 4</a></div>
+            </div>
+            <div class="note hair">
+              <div>Notes editor, first pass. The counter counts graphemes, not characters: 👍🏽 is one.</div>
+              <div class="imgs"><div class="img" style="aspect-ratio:16/10"></div><div class="img" style="aspect-ratio:16/10"></div></div>
+              <div class="mut" style="margin-top:3px"><a href="#" style="color:#6E6E73">Oct 3</a></div>
+            </div>
+            <div class="note hair">
+              <div>Good walkthrough of publishing a personal site to the AT Protocol.</div>
+              <div class="card"><div class="t">ATProto, POSSE, and Personal Sites</div><div class="mut">stevedylan.dev</div></div>
+              <div class="mut" style="margin-top:3px"><a href="#" style="color:#6E6E73">Sep 30</a></div>
+            </div>
+          </div>
+          <div class="act mut"><a href="#">All notes</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Log: tarih solda</h3>
+      <p>Changelog gibi: içerik kolonunun içinde dar bir tarih kolonu, sağda metin. Taranması kolay, "build log" hissi en güçlü olan bu. Görseller küçük bir şerit halinde, tıklayınca not sayfası açılıyor. Ana sayfada yoğun, kısa duruyor.</p>
+      <div class="pp">
+        <div class="g3">
+          <div>Notes</div>
+          <div>
+            <div class="log"><div class="mut">Oct 4</div><div>Shipped /resume.pdf. It's rendered on the server from the same data as the page, so the paper copy can't drift from the site.</div></div>
+            <div class="log"><div class="mut">Oct 3</div><div>Notes editor, first pass. The counter counts graphemes, not characters: 👍🏽 is one.<div class="strip"><div class="img"></div><div class="img"></div></div></div></div>
+            <div class="log"><div class="mut">Sep 30</div><div>Good walkthrough of publishing a personal site to the AT Protocol. <a href="#">stevedylan.dev ↗</a></div></div>
+          </div>
+          <div class="act mut"><a href="#">All notes</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Kutular</h3>
+      <p>Her not, beyaz zeminde ince çerçeveli bir kutu. Üstte tarih, görseller kutunun genişliğinde. Sosyal medya gönderisine en yakın görünüm. Ama sitenin geri kalanında kutu yok, bu yüzden ayrı bir parça gibi duruyor.</p>
+      <div class="pp">
+        <div class="g3">
+          <div>Notes</div>
+          <div>
+            <div class="box"><div class="boxhead mut"><span>@w00f</span><span>Oct 4</span></div>Shipped /resume.pdf. It's rendered on the server from the same data as the page, so the paper copy can't drift from the site.</div>
+            <div class="box"><div class="boxhead mut"><span>@w00f</span><span>Oct 3</span></div>Notes editor, first pass. The counter counts graphemes, not characters: 👍🏽 is one.<div class="imgs"><div class="img" style="aspect-ratio:16/10"></div><div class="img" style="aspect-ratio:16/10"></div></div></div>
+            <div class="box"><div class="boxhead mut"><span>@w00f</span><span>Sep 30</span></div>Good walkthrough of publishing a personal site to the AT Protocol.<div class="card"><div class="t">ATProto, POSSE, and Personal Sites</div><div class="mut">stevedylan.dev</div></div></div>
+          </div>
+          <div class="act mut"><a href="#">All notes</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
