@@ -56,6 +56,15 @@ describe("validateSite", () => {
     ]);
   });
 
+  it("rejects an org listed twice in Experience, from its second entry on", () => {
+    const orkestra = repo.experience[0];
+    const experience = [...repo.experience, { ...orkestra, role: "Again", children: [] }, { ...orkestra, role: "Thrice", children: [] }];
+    expect(validateSite({ ...repo, experience }, hasImage)).toEqual([
+      { doc: "experience", at: "3/org", message: "Orkestra Studios is listed twice" },
+      { doc: "experience", at: "4/org", message: "Orkestra Studios is listed twice" },
+    ]);
+  });
+
   it("asks Lab links for https", () => {
     const lab = [{ title: "X", description: "Y", href: "http://x.com" }];
     expect(validateSite({ ...repo, lab }, hasImage)).toEqual([{ doc: "lab", at: "0/href", message: 'link "http://x.com" must be https' }]);
@@ -69,7 +78,7 @@ describe("validateSite", () => {
   it("accepts the repo resume, and checks its orgs against Experience", () => {
     expect(validateSite(repo, hasImage)).toEqual([]);
     const dropped = { ...repo, experience: repo.experience.filter((entry) => entry.org !== "etiya") };
-    expect(validateSite(dropped, hasImage)).toContainEqual({ doc: "resume", at: "roles/2", message: "Etiya is not in Experience" });
+    expect(validateSite(dropped, hasImage)).toContainEqual({ doc: "resume", at: "roles/2", message: "Etiya has bullets on the resume but is not in Experience; clear them on the resume first" });
     // A role with no bullets doesn't use its org, so the org can leave Experience.
     const emptied = { ...dropped, resume: { ...dropped.resume, roles: dropped.resume.roles.map((role) => (role.org === "etiya" ? { ...role, bullets: [] } : role)) } };
     expect(validateSite(emptied, hasImage)).toEqual([]);
@@ -92,7 +101,7 @@ describe("validateSite", () => {
     expect(validateSite(site, hasImage)).toEqual([
       { doc: "resume", at: "contact/email", message: "is not an email address" },
       { doc: "resume", at: "contact/linkedin", message: "use the handle (linkedin.com/in/<handle>), not the URL" },
-      { doc: "resume", at: "projects/0/href", message: "/work/gone/ is not a product page" },
+      { doc: "resume", at: "projects/0/href", message: "/work/gone/ is not a product page; change it on the resume first" },
       { doc: "resume", at: "projects/1/href", message: 'link "http://example.com" must be https' },
     ]);
   });

@@ -81,6 +81,11 @@ describe("labelIssue", () => {
       `Experience › Orkestra Studios › ${child.title}: needs years`,
     );
     expect(labelIssue({ doc: "experience", at: "0/start", message: "use YYYY-MM" }, { doc: "experience", value: experience }).text).toBe("Experience › Orkestra Studios › Start: use YYYY-MM");
+    const twice = [...experience, experience[0]];
+    expect(labelIssue({ doc: "experience", at: "3/org", message: "Orkestra Studios is listed twice" }, { doc: "experience", value: twice }).text).toBe(
+      "Experience › Orkestra Studios › Organisation: Orkestra Studios is listed twice",
+    );
+    expect(fieldMessage({ doc: "experience", at: "3/org", message: "Orkestra Studios is listed twice" })).toBe("Organisation: Orkestra Studios is listed twice");
     expect(labelIssue({ doc: "pins", at: "2", message: "nebuu/game is listed twice" }).text).toBe("Selected work › FIG. 03: nebuu/game is listed twice");
   });
 
@@ -109,8 +114,12 @@ describe("labelIssue for the resume", () => {
 
   it("names the section, the entry and the field", () => {
     expect(label("roles/1/bullets/1")).toBe("Resume › Roles › PrimeTek › Bullet 2: is required");
-    expect(label("roles/2", "Etiya is not in Experience")).toBe("Resume › Roles › Etiya: Etiya is not in Experience");
-    expect(label("projects/0/href", "/work/gone/ is not a product page")).toBe("Resume › Projects › PrimeOne › Link: /work/gone/ is not a product page");
+    expect(label("roles/2", "Etiya has bullets on the resume but is not in Experience; clear them on the resume first")).toBe(
+      "Resume › Roles › Etiya: Etiya has bullets on the resume but is not in Experience; clear them on the resume first",
+    );
+    expect(label("projects/0/href", "/work/gone/ is not a product page; change it on the resume first")).toBe(
+      "Resume › Projects › PrimeOne › Link: /work/gone/ is not a product page; change it on the resume first",
+    );
     expect(label("projects/1/line")).toBe("Resume › Projects › Theme Designer › Line: is required");
     expect(label("skills/0/items")).toBe("Resume › Skills › Design › Items: is required");
     expect(label("education/0/degree")).toBe("Resume › Education › BS Computer Science › Degree: is required");

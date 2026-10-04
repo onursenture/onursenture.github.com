@@ -15,8 +15,11 @@ export interface ResumeEditorData {
 
 // The resume's roles follow Experience: one per org, in Experience order,
 // keeping the bullets the resume already has. A role for an org no longer in
-// Experience is dropped, so the editor only ever saves valid orgs.
+// Experience is dropped, so the editor only ever saves valid orgs. An org
+// Experience lists twice (a draft; publish refuses it) gets one role, at its
+// first entry.
 export function alignRoles(roles: ResumeRole[], experience: ExperienceEntry[]): ResumeRole[] {
   const bullets = new Map(roles.map((role) => [role.org, role.bullets]));
-  return experience.map((entry) => ({ org: entry.org, bullets: bullets.get(entry.org) ?? [] }));
+  const orgs = [...new Set(experience.map((entry) => entry.org))];
+  return orgs.map((org) => ({ org, bullets: bullets.get(org) ?? [] }));
 }

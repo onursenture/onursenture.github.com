@@ -97,7 +97,7 @@ describe("publishDoc", () => {
   it("refuses an Experience publish that drops an org the resume uses", async () => {
     await saveDraft(store, "experience", experience.filter((entry) => entry.org !== "etiya"), null, t0);
     const result = await publishDoc(store, "experience", t1, any);
-    expect(result).toEqual({ status: "invalid", issues: [{ doc: "resume", at: "roles/2", message: "Etiya is not in Experience" }] });
+    expect(result).toEqual({ status: "invalid", issues: [{ doc: "resume", at: "roles/2", message: "Etiya has bullets on the resume but is not in Experience; clear them on the resume first" }] });
   });
 });
 
