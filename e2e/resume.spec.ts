@@ -34,3 +34,19 @@ test("the email is a mailto link after hydration and never one string in the HTM
   await page.goto("/resume/");
   await expect(page.locator("#resume").getByRole("link", { name: resume.contact.email })).toHaveAttribute("href", `mailto:${resume.contact.email}`);
 });
+
+test("/resume.pdf is a one- or two-page PDF, served without a trailing-slash redirect", async ({ request }) => {
+  const response = await request.get("/resume.pdf", { maxRedirects: 0 });
+  expect(response.status()).toBe(200);
+  expect(response.headers()["content-type"]).toBe("application/pdf");
+  expect(response.headers()["content-disposition"]).toBe('inline; filename="onur-senture-resume.pdf"');
+  const body = await response.body();
+  expect(body.subarray(0, 5).toString("latin1")).toBe("%PDF-");
+  const pages = (body.toString("latin1").match(/\/Type \/Page[^s]/g) ?? []).length;
+  expect(pages).toBeGreaterThanOrEqual(1);
+  expect(pages).toBeLessThanOrEqual(2);
+});
+
+test("the draft PDF preview is admin-only", async ({ request }) => {
+  expect((await request.get("/admin/preview/resume.pdf")).status()).toBe(404);
+});

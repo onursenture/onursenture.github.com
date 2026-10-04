@@ -1,0 +1,1 @@
+IBM Plex Mono (Regular, Medium) and IBM Plex Sans (SemiBold), WOFF, from the npm packages `@ibm/plex-mono@2.5.0` and `@ibm/plex-sans@1.1.0` (`fonts/complete/woff/`). SIL Open Font License 1.1: see `LICENSE.txt`. Embedded in `/resume.pdf` by `lib/resume/pdf/document.tsx`. The web pages load Plex through `next/font/google`, not these files.
