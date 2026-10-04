@@ -153,7 +153,7 @@ export function ComposeBox({
         {snap.editing ? (
           <Button
             variant="text"
-            disabled={disabled}
+            disabled={disabled || snap.uploads > 0}
             onClick={() => {
               if (window.confirm("Delete this note? This can't be undone.")) void composer.remove();
             }}
@@ -162,7 +162,7 @@ export function ComposeBox({
           </Button>
         ) : null}
         {snap.editing?.status === "scheduled" ? (
-          <Button variant="ghost" disabled={disabled} onClick={() => void composer.unschedule()}>
+          <Button variant="ghost" disabled={disabled || snap.uploads > 0} onClick={() => void composer.unschedule()}>
             Unschedule
           </Button>
         ) : null}
