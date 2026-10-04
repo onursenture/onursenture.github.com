@@ -26,7 +26,8 @@ export interface ImageView extends Omit<WorkImage, "image" | "credits"> {
 export type BlockView =
   | Extract<Block, { kind: "text" }>
   | (Omit<Extract<Block, { kind: "images" }>, "images"> & { images: ImageView[] })
-  | Extract<Block, { kind: "icons" }>;
+  | Extract<Block, { kind: "icons" }>
+  | Extract<Block, { kind: "then" }>;
 
 export interface ProductPageView extends Omit<ProductPage, "blocks"> {
   blocks: BlockView[];
