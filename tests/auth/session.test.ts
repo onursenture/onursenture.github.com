@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { signSession, verifySession } from "@/lib/auth/session";
+import { adminGithubId, signSession, verifySession } from "@/lib/auth/session";
 
 const secret = "s".repeat(40);
 const other = "o".repeat(40);
@@ -19,6 +19,14 @@ describe("session", () => {
     expect(await verifySession(token, { adminId: "123", secret, now: days(31) })).toBe(false);
     expect(await verifySession(undefined, { adminId: "123", secret, now })).toBe(false);
     expect(await verifySession("not.a.jwt", { adminId: "123", secret, now })).toBe(false);
+  });
+
+  it("ignores whitespace around the admin id", async () => {
+    const token = await signSession("123", { secret, now });
+    expect(await verifySession(token, { adminId: " 123\n", secret, now })).toBe(true);
+    expect(await verifySession(token, { adminId: "  ", secret, now })).toBe(false);
+    expect(adminGithubId(" 123\n")).toBe("123");
+    expect(adminGithubId("")).toBeUndefined();
   });
 
   it("never accepts anything without an admin id or a long enough secret", async () => {

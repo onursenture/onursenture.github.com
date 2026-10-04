@@ -73,7 +73,7 @@ export async function discardDraftAction(key: string): Promise<ActionResult> {
 export async function resetDocAction(key: string): Promise<ActionResult> {
   if (!isDocKey(key)) return badKey(key);
   return run(async (store) => {
-    const result = await resetDoc(store, key);
+    const result = await resetDoc(store, key, await hasImageIn(store));
     if (result.status === "ok") updateTag(CONTENT_TAG);
     return result;
   });

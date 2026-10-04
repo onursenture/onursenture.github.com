@@ -21,12 +21,18 @@ export async function signSession(githubId: string, options: { secret?: string; 
     .sign(signingKey);
 }
 
+// ADMIN_GITHUB_ID without stray whitespace (a pasted env value often ends in
+// a newline); undefined when unset or blank.
+export function adminGithubId(value = process.env.ADMIN_GITHUB_ID): string | undefined {
+  return value?.trim() || undefined;
+}
+
 // True only for an unexpired session signed with AUTH_SECRET for ADMIN_GITHUB_ID.
 export async function verifySession(
   token: string | undefined,
   options: { adminId?: string; secret?: string; now?: Date } = {},
 ): Promise<boolean> {
-  const adminId = options.adminId ?? process.env.ADMIN_GITHUB_ID;
+  const adminId = adminGithubId(options.adminId ?? process.env.ADMIN_GITHUB_ID);
   if (!token || !adminId) return false;
   try {
     const { payload } = await jwtVerify(token, key(options.secret ?? process.env.AUTH_SECRET), {

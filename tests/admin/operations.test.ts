@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
 import { experience } from "@/content/experience";
 import { productPages } from "@/content/work";
+import type { OrgId } from "@/content/orgs";
 import type { ProductPage } from "@/content/work/types";
 import { createPage, deletePage, discardDraft, newPage, publishDoc, resetDoc, saveDraft } from "@/lib/admin/operations";
 import { FileContentStore } from "@/lib/content/file-store";
@@ -105,6 +106,12 @@ describe("createPage", () => {
     expect((await createPage(store, { slug: "Bad Slug", org: "orkestra", title: "X", kind: "" }, t0)).status).toBe("invalid");
   });
 
+  it("refuses an org that is only an Object prototype key", async () => {
+    const result = await createPage(store, { slug: "proto", org: "toString" as OrgId, title: "P", kind: "" }, t0);
+    expect(result).toMatchObject({ status: "invalid", issues: [{ at: "org" }] });
+    expect(await store.getDoc("work/proto")).toBeNull();
+  });
+
   it("reserves the slug of the new-page form", async () => {
     expect((await createPage(store, { slug: "new", org: "orkestra", title: "New", kind: "" }, t0)).status).toBe("invalid");
   });
@@ -137,6 +144,13 @@ describe("deletePage", () => {
     expect(await store.getDoc("work/nebuu")).toBeNull();
   });
 
+  it("refuses a slug that is not kebab-case, and touches nothing", async () => {
+    await saveDraft(store, "lab", [], null, t0);
+    const result = await deletePage(store, "../lab", t1, any);
+    expect(result).toMatchObject({ status: "invalid", issues: [{ at: "slug" }] });
+    expect(await store.getDoc("lab")).not.toBeNull();
+  });
+
   it("drops a page that was never published", async () => {
     await createPage(store, { slug: "draft-only", org: "orkestra", title: "Draft", kind: "" }, t0);
     expect(await deletePage(store, "draft-only", t1, any)).toEqual({ status: "ok" });
@@ -156,9 +170,21 @@ describe("discardDraft and resetDoc", () => {
   it("resets a document to the repo, but not a page that only exists in the admin", async () => {
     await saveDraft(store, "work/nebuu", nebuu, null, t0);
     await publishDoc(store, "work/nebuu", t0, any);
-    expect(await resetDoc(store, "work/nebuu")).toEqual({ status: "ok" });
+    expect(await resetDoc(store, "work/nebuu", any)).toEqual({ status: "ok" });
     expect(await store.getDoc("work/nebuu")).toBeNull();
     await createPage(store, { slug: "admin-only", org: "orkestra", title: "A", kind: "" }, t0);
-    expect((await resetDoc(store, "work/admin-only")).status).toBe("invalid");
+    expect((await resetDoc(store, "work/admin-only", any)).status).toBe("invalid");
+  });
+
+  it("refuses a reset that would leave the site invalid", async () => {
+    // Experience without Nebuu, then Nebuu deleted: the repo Experience links
+    // it again, so going back to the repo Experience must be refused.
+    const withoutNebuu = experience.map((entry) => ({ ...entry, children: entry.children.filter((c) => c.href !== "/work/nebuu/") }));
+    await saveDraft(store, "experience", withoutNebuu, null, t0);
+    await publishDoc(store, "experience", t0, any);
+    expect(await deletePage(store, "nebuu", t1, any)).toEqual({ status: "ok" });
+    const result = await resetDoc(store, "experience", any);
+    expect(result).toMatchObject({ status: "invalid", issues: [{ doc: "experience" }] });
+    expect(await store.getDoc("experience")).not.toBeNull();
   });
 });

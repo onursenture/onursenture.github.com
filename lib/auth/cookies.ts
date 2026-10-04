@@ -14,6 +14,11 @@ export async function setSessionCookies(response: NextResponse, githubId: string
   const maxAge = SESSION_DAYS * 86_400;
   response.cookies.set(SESSION_COOKIE, await signSession(githubId), { httpOnly: true, secure: secure(), sameSite: "lax", path: "/", maxAge });
   response.cookies.set(HINT_COOKIE, "1", { httpOnly: false, secure: secure(), sameSite: "lax", path: "/", maxAge });
+  clearOAuthCookies(response);
+}
+
+// The one-time OAuth state and next path, done with whatever the outcome.
+export function clearOAuthCookies(response: NextResponse): void {
   response.cookies.delete(OAUTH_STATE_COOKIE);
   response.cookies.delete(OAUTH_NEXT_COOKIE);
 }

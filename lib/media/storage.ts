@@ -78,7 +78,9 @@ export class BlobMediaStorage implements MediaStorage {
   }
 
   async readSource(source: string): Promise<Buffer> {
-    const response = await fetch(this.url(source));
+    // No redirects: the URL was checked to be a Blob upload, and a redirect
+    // could lead the server somewhere else.
+    const response = await fetch(this.url(source), { redirect: "error" });
     if (!response.ok) throw new Error(`reading the upload failed: ${response.status}`);
     if (Number(response.headers.get("content-length") ?? 0) > MAX_BYTES) throw new Error("the upload is too large");
     // Read in chunks so a missing or wrong content-length can't bypass the cap.

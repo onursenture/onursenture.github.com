@@ -77,11 +77,17 @@ export async function discardDraft(store: ContentStore, key: DocKey): Promise<Op
 }
 
 // Back to the repo version: the row goes. A page created in the admin has no
-// repo version, so it is deleted instead (deletePage).
-export async function resetDoc(store: ContentStore, key: DocKey): Promise<OpResult> {
+// repo version, so it is deleted instead (deletePage). Like a publish, it is
+// refused when the site it leaves would be invalid (say the repo Experience
+// links a page that was deleted since).
+export async function resetDoc(store: ContentStore, key: DocKey, hasImage: (key: string) => boolean): Promise<OpResult> {
   if (slugOfKey(key) !== null && repoValue(key) === null) {
     return invalid([{ doc: key, at: "", message: "this page only exists in the admin; delete it instead" }]);
   }
+  const values = publishedValues(await store.listDocs());
+  values.delete(key);
+  const issues = validateSite(resolveSite(values), hasImage);
+  if (issues.length > 0) return invalid(issues);
   await store.deleteDoc(key);
   return { status: "ok" };
 }
@@ -116,7 +122,7 @@ export function newPage(input: NewPageInput): ProductPage {
 export async function createPage(store: ContentStore, input: NewPageInput, now: Date): Promise<OpResult<{ slug: string }>> {
   const key = workKey(input.slug);
   const issues: Issue[] = [];
-  if (!(input.org in ORGS)) issues.push({ doc: key, at: "org", message: "pick an organisation" });
+  if (!Object.hasOwn(ORGS, input.org)) issues.push({ doc: key, at: "org", message: "pick an organisation" });
   if (!input.title.trim()) issues.push({ doc: key, at: "title", message: "a page needs a title" });
   if (!KEBAB.test(input.slug)) {
     issues.push({ doc: key, at: "slug", message: "use lowercase letters, digits and hyphens" });
@@ -143,6 +149,7 @@ export async function deletePage(
   hasImage: (key: string) => boolean,
 ): Promise<OpResult> {
   const key = workKey(slug);
+  if (!KEBAB.test(slug)) return invalid([{ doc: key, at: "slug", message: `"${slug}" is not a page` }]);
   const docs = await store.listDocs();
   const values = publishedValues(docs);
   const current = indexSlugs(values);

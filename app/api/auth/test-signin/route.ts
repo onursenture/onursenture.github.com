@@ -1,6 +1,7 @@
 import { NextResponse, connection } from "next/server";
 import { setSessionCookies } from "@/lib/auth/cookies";
 import { safeNext } from "@/lib/auth/github";
+import { adminGithubId } from "@/lib/auth/session";
 
 // Signs in as ADMIN_GITHUB_ID without GitHub, for the admin e2e and local
 // development only: it answers only when ADMIN_E2E=1 and the code is not
@@ -10,7 +11,7 @@ export async function GET(request: Request) {
   // unset, and would serve that 404 forever.
   await connection();
   if (process.env.ADMIN_E2E !== "1" || process.env.VERCEL) return new Response("Not found", { status: 404 });
-  const adminId = process.env.ADMIN_GITHUB_ID;
+  const adminId = adminGithubId();
   if (!adminId) return new Response("ADMIN_GITHUB_ID is not set.", { status: 503 });
   const url = new URL(request.url);
   const response = NextResponse.redirect(new URL(safeNext(url.searchParams.get("next")), url.origin));
