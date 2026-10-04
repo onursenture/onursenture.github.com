@@ -27,7 +27,7 @@ export const countdo: ProductPage = {
       id: "then",
       year: "2013",
       body: [
-        "count.do shipped on 23 June 2013, a 640 KB app for iOS 6. On iOS 7's release day that September it already ran on the new design, and in November it went free, with no ads.",
+        "count.do shipped on 23 June 2013, a 640 KB app for iOS 6. On iOS 7's release day that September it already worked on iOS 7, and in November it went free, with no ads.",
       ],
       sources: [
         { label: "Release tweet", href: "https://x.com/w00f/status/348832940899315713" },
