@@ -73,9 +73,12 @@ export function EditorFrame({
         </div>
       ) : null}
       <div className="flex min-h-0 flex-1">
+        {/* `relative`: the column is the containing block for absolutely positioned
+            descendants (the `sr-only` file inputs), so they can't land outside the
+            overflow box and grow the document. */}
         <div
           className={cx(
-            "w-full overflow-y-auto p-4",
+            "relative w-full overflow-y-auto p-4",
             preview ? "lg:w-[440px] lg:shrink-0 lg:border-r lg:border-line" : "mx-auto max-w-[720px]",
             preview && tab === "preview" && "hidden lg:block",
           )}

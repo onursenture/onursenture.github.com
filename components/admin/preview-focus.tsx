@@ -34,7 +34,14 @@ export function PreviewFocus() {
         return;
       }
       style.textContent = `#${CSS.escape(id)} { outline: 2px solid var(--color-accent); outline-offset: -2px; }`;
-      const scroll = () => document.getElementById(id)?.scrollIntoView({ block: "start", behavior: "instant" });
+      // window.scrollTo, not scrollIntoView: that one also scrolls every ancestor
+      // viewport, which would move the editor page that holds this iframe.
+      const scroll = () => {
+        const row = document.getElementById(id);
+        if (!row) return;
+        const margin = Number.parseFloat(getComputedStyle(row).scrollMarginTop) || 0;
+        window.scrollTo({ top: window.scrollY + row.getBoundingClientRect().top - margin, behavior: "instant" });
+      };
       scroll();
       observer = new ResizeObserver(scroll);
       observer.observe(document.documentElement);
