@@ -20,8 +20,8 @@ export function pinViews(site: SiteContent, lookup: ImageLookup): PinView[] {
   return buildPins(site.pages, site.pins, lookup);
 }
 
-export function experienceViews(site: SiteContent): ExperienceView[] {
-  return resolveExperience(site.experience, site.pages);
+export function experienceViews(site: SiteContent, options: { loose?: boolean } = {}): ExperienceView[] {
+  return resolveExperience(site.experience, site.pages, options);
 }
 
 // Everything the Work home renders that the admin edits.
@@ -32,6 +32,6 @@ export interface HomeContent {
   experience: ExperienceView[];
 }
 
-export function homeContent(site: SiteContent, lookup: ImageLookup): HomeContent {
-  return { profile: site.profile, lab: site.lab, pins: pinViews(site, lookup), experience: experienceViews(site) };
+export function homeContent(site: SiteContent, lookup: ImageLookup, options: { loose?: boolean } = {}): HomeContent {
+  return { profile: site.profile, lab: site.lab, pins: pinViews(site, lookup), experience: experienceViews(site, options) };
 }

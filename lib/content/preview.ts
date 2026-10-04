@@ -23,5 +23,5 @@ export async function draftPageView(store: ContentStore | null, slug: string): P
 
 export async function draftHomeContent(store: ContentStore | null): Promise<HomeContent> {
   const { values, media } = await drafts(store);
-  return homeContent(resolveSite(values, { loose: true }), lookupWith(media));
+  return homeContent(resolveSite(values, { loose: true }), lookupWith(media), { loose: true });
 }

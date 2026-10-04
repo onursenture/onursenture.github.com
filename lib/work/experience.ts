@@ -16,15 +16,17 @@ export interface ExperienceView extends Omit<ExperienceEntry, "children"> {
   children: ExperienceChildView[];
 }
 
-export function resolveExperience(entries: ExperienceEntry[], pages: ProductPage[]): ExperienceView[] {
+// `loose` (the admin preview only) shows a draft row that has no years yet
+// instead of throwing; published content is always read strictly.
+export function resolveExperience(entries: ExperienceEntry[], pages: ProductPage[], { loose = false }: { loose?: boolean } = {}): ExperienceView[] {
   return entries.map((entry) => ({
     ...entry,
     children: entry.children.map((child): ExperienceChildView => {
       const page = child.href ? pages.find((item) => `/work/${item.slug}/` === child.href) : undefined;
-      if (child.href && !page) throw new Error(`experience: ${child.title} links ${child.href}, which is not a product page`);
+      if (child.href && !page && !loose) throw new Error(`experience: ${child.title} links ${child.href}, which is not a product page`);
       const years = page ? page.facts.find((fact) => fact.label === "Years")?.value : child.years;
-      if (!years) throw new Error(`experience: ${child.title} has no years`);
-      return { title: child.title, note: child.note, href: child.href, years };
+      if (!years && !loose) throw new Error(`experience: ${child.title} has no years`);
+      return { title: child.title, note: child.note, href: child.href, years: years ?? "" };
     }),
   }));
 }

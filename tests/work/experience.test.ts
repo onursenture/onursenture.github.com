@@ -41,4 +41,13 @@ describe("resolveExperience", () => {
     expect(() => resolveExperience([entry([{ title: "Gone", note: "x", href: "/work/gone/" }])], [page])).toThrow(/not a product page/);
     expect(() => resolveExperience([entry([{ title: "Bare", note: "x" }])], [page])).toThrow(/has no years/);
   });
+
+  it("shows an unfinished draft row loosely instead of throwing", () => {
+    const [resolved] = resolveExperience(
+      [entry([{ title: "Bare", note: "x" }, { title: "Gone", note: "x", href: "/work/gone/" }])],
+      [page],
+      { loose: true },
+    );
+    expect(resolved.children.map((child) => child.years)).toEqual(["", ""]);
+  });
 });

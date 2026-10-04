@@ -2,7 +2,7 @@ import "server-only";
 import type { ProductPage } from "@/content/work/types";
 import { getContentStore } from "@/lib/content/get-store";
 import type { DocKey } from "@/lib/content/keys";
-import { indexSlugs, publishedValues, repoValue } from "@/lib/content/site";
+import { indexSlugs, publishedValues, repoValue, resolveSite } from "@/lib/content/site";
 import type { ContentDoc } from "@/lib/content/store";
 import { lookupWith, type MediaEntry, toMediaEntry } from "@/lib/images/lookup";
 import type { ImageEntry } from "@/lib/images/plan";
@@ -60,4 +60,16 @@ export async function loadPageContext(page: ProductPage): Promise<{ entries: Rec
     if (entry) entries[key] = entry;
   }
   return { entries, live };
+}
+
+// The live product pages, for Experience rows that link one.
+export async function loadPageOptions(): Promise<{ href: string; title: string }[]> {
+  let values = new Map<string, unknown>();
+  try {
+    const store = getContentStore();
+    if (store) values = publishedValues(await store.listDocs());
+  } catch (e) {
+    console.warn("[admin] loading pages failed:", e instanceof Error ? e.message : e);
+  }
+  return resolveSite(values).pages.map((page) => ({ href: `/work/${page.slug}/`, title: page.title }));
 }
