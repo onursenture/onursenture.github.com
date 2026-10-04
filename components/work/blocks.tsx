@@ -7,12 +7,14 @@ import type { BlockView, ImageView, ProductPageView } from "@/lib/work/derive";
 import type { IconSet } from "@/lib/work/icons";
 import { CreditLine } from "./credit-line";
 import { IconGrid } from "./icon-grid";
+import { LinkLine } from "./link-line";
 import { MediaButton } from "./media-button";
 
 type Columns = 1 | 2 | 3;
 type TextBlockView = Extract<Block, { kind: "text" }>;
 type ImagesBlockView = Extract<BlockView, { kind: "images" }>;
 type IconsBlockView = Extract<Block, { kind: "icons" }>;
+type ThenBlockView = Extract<Block, { kind: "then" }>;
 
 // An images grid's columns from md: 1 is one image per row, 2 is two, 3 is two
 // from md and three from lg. Always one below md.
@@ -33,7 +35,8 @@ export function imageGridSizes(columns: Columns): string {
   return `(min-width: 1024px) ${lg}, (min-width: 768px) ${md}, calc(100vw - 32px)`;
 }
 
-// A text block: the heading in the label column, the body in the 480px column.
+// A text block: the heading in the label column, the body in the 480px column,
+// and its links (Orkestra pages only) in a muted line under the body.
 export function TextBlock({ block }: { block: TextBlockView }) {
   return (
     <SectionRow id={block.id} label={block.heading}>
@@ -43,6 +46,40 @@ export function TextBlock({ block }: { block: TextBlockView }) {
             {paragraph}
           </p>
         ))}
+        {block.links?.length ? (
+          <p className="type-meta text-fg-muted">
+            <LinkLine links={block.links} />
+          </p>
+        ) : null}
+      </div>
+    </SectionRow>
+  );
+}
+
+// The project in its moment: "Then" and the year (Doto, accent) as the label
+// column's heading, the sourced sentences in the 480px column, then the
+// sources. validateWork keeps it the first block.
+export function ThenBlock({ block }: { block: ThenBlockView }) {
+  return (
+    <SectionRow
+      id={block.id}
+      label={
+        <>
+          <span className="block text-fg-muted">Then</span> <span className="mt-1.5 block type-name text-accent">{block.year}</span>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-2.5">
+        {block.body.map((paragraph, index) => (
+          <p key={index} className="type-body text-fg-soft">
+            {paragraph}
+          </p>
+        ))}
+        {block.sources?.length ? (
+          <p className="type-meta text-fg-muted">
+            Sources: <LinkLine links={block.sources} />
+          </p>
+        ) : null}
       </div>
     </SectionRow>
   );
@@ -100,6 +137,8 @@ function renderBlock(block: BlockView, icons: IconSet | undefined): ReactNode {
     case "icons":
       // Only PrimeIcons has the set (validateWork keeps the block there).
       return icons ? <IconsBlock block={block} icons={icons} /> : null;
+    case "then":
+      return <ThenBlock block={block} />;
   }
 }
 
