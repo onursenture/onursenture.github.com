@@ -2,7 +2,7 @@
 
 S2 (platform skeleton) is complete and live at https://onursenture.vercel.app (production branch `v2`). The per-task and whole-branch reviews deferred the items below. Each one names the sprint that should pick it up. Items fixed in the final fix wave are not listed.
 
-## Before launch (S6)
+## Before launch (Sprint 12)
 
 - **Fixture mode guard.** Add a `VERCEL_ENV !== "production"` guard to the `SOURCE_FIXTURES` branch in `lib/sources/read.ts`. Fixture mode is env-gated today, but a misconfigured env would silently mask the database.
 - **Sync cadence.** Raise the `isDue` slack to about 30 min and key "due" on `lastSuccessAt`, not `lastAttemptAt`, in `lib/sync/run.ts`. GitHub Actions start jitter currently skips about 1 in 5 hourly runs, and a failure waits a full interval before retrying.

@@ -18,4 +18,4 @@
 - A deleted published block or image id becomes reusable once the deletion is published: ids are locked from the currently published page, so after publish nothing reserves the old id. Old `#anchor` and `?fig=` links could then point at different content. Keeping a tombstone list of retired ids would close it.
 - Restore a deleted repo page (no UI): once Delete page removes a repo page from the published `work-index`, the admin has no way to list it again; it takes a manual edit of the `work-index` row.
 - Exporting published content back into the repo (`content/`), for git history.
-- After launch (Sprint 8): add `https://onursenture.com/api/auth/callback/` to the OAuth app's Redirect URIs and update its homepage URL.
+- After launch (Sprint 12): add `https://onursenture.com/api/auth/callback/` to the OAuth app's Redirect URIs and update its homepage URL.

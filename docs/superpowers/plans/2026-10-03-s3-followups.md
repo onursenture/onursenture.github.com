@@ -11,7 +11,7 @@ Closed in Sprint 4:
 
 Moot after Sprint 4 (they only concerned the removed dashboard view): the S7 items for Stat and PanelGrid on `/system/`, the dashboard heatmap at 390px (S8), the panel header counts (S8) and the "dashboard detail" e2e for the photo page (S8). The other items under the old S7 and S8 headings stay open for the sprints that now own them (Sprint 7 admin, Sprint 10 personal layer). "Before merge" is the historical `s3` checklist.
 
-Moved to Sprint 8 (launch), as the Sprint 4 spec §7 names them:
+Moved to Sprint 8 (launch), as the Sprint 4 spec §7 names them, and on to Sprint 12 (launch) when the launch became its own sprint on 2026-10-04:
 - DataTable at 390px
 - the ThemeToggle hydration flash
 - 404 titles

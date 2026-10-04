@@ -195,11 +195,11 @@ The existing conventions carry over:
 
 ### Launch scope (the "presentable professionally" line)
 
-| In launch (S6) | After launch |
-|---|---|
-| Two-tier home, Work (the PrimeTek series plus selected Orkestra work), Lab, Resume (web + PDF), Book a call, Life (ported widgets), photos, feed, theme and view toggles | Admin layer, Notes, theatre, Instapaper cards, changelog, paddle effect |
+> Revised 2026-10-04: the move to onursenture.com is now Sprint 12, after Sprint 11's polish, so everything on the roadmap ships before launch. Until then the site lives at onursenture.vercel.app and `master` keeps serving the Eleventy site on onursenture.com.
 
-Until the admin layer ships, the resume reads only from `content/resume.ts`.
+| At launch (Sprint 12) | After launch |
+|---|---|
+| Everything in Sprints 4–11: the home, Work and the product pages, Lab, the admin, Resume (web + PDF), Book a call, Notes, Life with its sub-pages (theatre, Instapaper cards), photos, feed, changelog and the polish items | Admin follow-ups (version history, media cleanup) and whatever the launch review defers |
 
 ### Cutover steps
 
@@ -214,6 +214,8 @@ Until the admin layer ships, the resume reads only from `content/resume.ts`.
 Onur and Claude design together, using Mobbin MCP, Figma MCP and reference sites Onur shares, and subagents build. The sprints in the table below run in order, with no separate design and platform tracks. The early sprints don't block each other.
 
 > Revised 2026-10-03 (Sprint 4): sprints are named "Sprint N"; the S1 direction and the dashboard view were replaced (see `2026-10-03-sprint-4-visual-direction-design.md`).
+>
+> Revised 2026-10-04 (after Sprint 7): the launch moves out of Sprint 8 into its own Sprint 12, after the polish. Sprint 8 keeps Resume and Book a call.
 
 | Sprint | Contents |
 |---|---|
@@ -221,10 +223,11 @@ Onur and Claude design together, using Mobbin MCP, Figma MCP and reference sites
 | Sprint 5 | Work I: PrimeTek — see `2026-10-03-sprint-5-work-primetek-design.md` (case studies, inline posts, Figma images; new projects PrimeStore 2025 and PrimeDesigner deferred to Sprint 6) |
 | Sprint 6 | Work II: Orkestra and Lab |
 | Sprint 7 | Admin: GitHub auth, media upload into placeholder slots, simple page editing — done: see 2026-10-04-sprint-7-admin-design.md |
-| Sprint 8 | Resume, Book a call, launch |
+| Sprint 8 | Resume, Book a call |
 | Sprint 9 | Notes |
 | Sprint 10 | Personal layer and Life sub-pages |
 | Sprint 11 | Polish: changelog, paddle effect, Konami easter egg, performance and accessibility |
+| Sprint 12 | Launch: the launch-readiness fixes from the follow-ups, then the cutover steps above (onursenture.com on Vercel, `v2` into `master`, GitHub Pages off) |
 
 Priority within the roadmap is intentional. The professional core (portfolio, resume, booking) is what the site exists for. Personal touches come last and can always be added later.
 

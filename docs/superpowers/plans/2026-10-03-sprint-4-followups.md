@@ -35,12 +35,17 @@ Sprint 4 (visual direction: tokens, Dither Kit, Work home, Life side) is complet
 - `/system/` lost its fixture coverage for the Sources synced column.
 - `PREFERENCE_COOKIE` is an unused export.
 
-## Sprint 8 (launch)
+## Sprint 8 (Book a call)
+
+- `PrimaryButton`'s glyph should be `↗` when the booking URL is external.
+
+## Sprint 12 (launch)
+
+Moved from Sprint 8 on 2026-10-04, when the launch became its own sprint after the polish.
 
 - `Toggle` and the ghost button use `border-line`, which is low contrast.
 - The build-line e2e hard-codes `v2.0.0`.
 - `LiveClock` renders `--:--` in the server HTML.
-- `PrimaryButton`'s glyph should be `↗` when the booking URL is external.
 
 ## Sprint 11 (polish)
 
