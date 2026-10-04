@@ -66,7 +66,7 @@ export const nebuu: ProductPage = {
       heading: "Highlights",
       columns: 3,
       images: [
-        { id: "game", caption: "Game", pin: { order: 5, title: "Nebuu", note: "A Turkish party word game, live since 2013" } },
+        { id: "game", caption: "Game", pin: { title: "Nebuu", note: "A Turkish party word game, live since 2013" } },
         { id: "cards", caption: "Cards" },
         { id: "site", caption: "nebuu.com" },
       ],

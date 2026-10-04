@@ -49,7 +49,7 @@ export const beatografi: ProductPage = {
         {
           id: "marketplace",
           caption: "Marketplace",
-          pin: { order: 6, title: "Beatografi", note: "A marketplace for Turkish beatmakers" },
+          pin: { title: "Beatografi", note: "A marketplace for Turkish beatmakers" },
         },
         { id: "beat-page", caption: "Beat page" },
         { id: "campaigns", caption: "Campaigns" },

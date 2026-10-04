@@ -17,7 +17,7 @@ function page(overrides: Partial<ProductPage> = {}): ProductPage {
         kind: "images",
         id: "highlights",
         columns: 3,
-        images: [{ id: "components", caption: "Components", pin: { order: 1, title: "Components", note: "A kit." } }, { id: "tokens" }],
+        images: [{ id: "components", caption: "Components", pin: { title: "Components", note: "A kit." } }, { id: "tokens" }],
       },
     ],
     ...overrides,
@@ -48,12 +48,6 @@ describe("validateWork", () => {
 
   it("allows the same image id on two pages", () => {
     expect(validateWork([page({ blocks: [images("one", ["a"])] }), page({ slug: "primeblocks", blocks: [images("one", ["a"])] })])).toEqual([]);
-  });
-
-  it("rejects a duplicate pin order across pages", () => {
-    const pinned = (order: number): Block => ({ kind: "images", id: "highlights", images: [{ id: "a", pin: { order, title: "T", note: "N" } }] });
-    const errors = validateWork([page({ blocks: [pinned(1)] }), page({ slug: "primeblocks", blocks: [pinned(1)] })]);
-    expect(errors).toEqual([expect.stringContaining("duplicate pin order 1")]);
   });
 
   it("rejects columns other than 1, 2 or 3", () => {

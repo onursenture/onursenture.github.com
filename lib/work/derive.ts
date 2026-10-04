@@ -1,3 +1,4 @@
+import type { PinRef } from "@/content/pins";
 import type { Block, Credit, Pin, ProductPage, WorkImage, WorkSlug } from "@/content/work/types";
 import type { ImageEntry } from "@/lib/images/plan";
 
@@ -42,6 +43,8 @@ export interface PinView {
   blockId: string;
   image: ImageView;
   pin: Pin;
+  // 1-based position on the home.
+  order: number;
 }
 
 export interface CreditGroup {
@@ -102,19 +105,23 @@ export function buildProductPage(page: ProductPage, lookup: ImageLookup): Produc
   return { ...page, blocks, images: ordered.map((image) => views.get(image.id)!) };
 }
 
-// Every pinned image across pages, sorted by `pin.order`.
-export function buildPins(pages: ProductPage[], lookup: ImageLookup): PinView[] {
-  const pins: PinView[] = [];
+// Every pinned image across pages, in `order` (the pins document). Pinned
+// images it doesn't list follow in page order; refs to images that are gone or
+// no longer pinned are skipped, and a ref listed twice counts once.
+export function buildPins(pages: ProductPage[], order: PinRef[], lookup: ImageLookup): PinView[] {
+  const found = new Map<string, Omit<PinView, "order">>();
   for (const page of pages) {
     const view = buildProductPage(page, lookup);
     for (const block of view.blocks) {
       if (block.kind !== "images") continue;
       for (const image of block.images) {
-        if (image.pin) pins.push({ slug: page.slug, pageTitle: page.title, blockId: block.id, image, pin: image.pin });
+        if (image.pin) found.set(`${page.slug}/${image.id}`, { slug: page.slug, pageTitle: page.title, blockId: block.id, image, pin: image.pin });
       }
     }
   }
-  return pins.sort((a, b) => a.pin.order - b.pin.order);
+  const keys = [...new Set(order.map((ref) => `${ref.slug}/${ref.imageId}`))].filter((key) => found.has(key));
+  for (const key of found.keys()) if (!keys.includes(key)) keys.push(key);
+  return keys.map((key, index) => ({ ...found.get(key)!, order: index + 1 }));
 }
 
 // Credits by role, in first-seen order; a missing role means design.

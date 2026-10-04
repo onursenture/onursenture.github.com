@@ -36,7 +36,7 @@ export const templates: ProductPage = {
         {
           id: "apollo",
           caption: "Apollo",
-          pin: { order: 3, title: "Apollo", note: "A dark-concept template with a horizontal menu bar" },
+          pin: { title: "Apollo", note: "A dark-concept template with a horizontal menu bar" },
         },
         { id: "diamond", caption: "Diamond" },
         { id: "ultima", caption: "Ultima" },

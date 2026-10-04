@@ -22,7 +22,7 @@ export function SelectedWorkItem({ pin, sizes = SELECTED_WORK_SIZES }: { pin: Pi
   return (
     <li data-pin={pin.slug} className="min-w-0">
       <Link href={href} aria-hidden="true" tabIndex={-1} className="block">
-        <MediaFigure media={pin.image} sizes={sizes} label={`FIG. ${pad2(pin.pin.order)} · ${pin.pin.title}`} />
+        <MediaFigure media={pin.image} sizes={sizes} label={`FIG. ${pad2(pin.order)} · ${pin.pin.title}`} />
       </Link>
       <p className="mt-2 type-body">{pin.pin.title}</p>
       <p className="truncate type-meta text-fg-muted">{pin.pin.note}</p>

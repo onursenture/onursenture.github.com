@@ -48,7 +48,7 @@ describe("content/work", () => {
 
   it("pins the curated Selected work, each the first highlight of its page", () => {
     const pins = getPins();
-    expect(pins.map((pin) => [pin.pin.order, pin.slug, pin.blockId])).toEqual([
+    expect(pins.map((pin) => [pin.order, pin.slug, pin.blockId])).toEqual([
       [1, "primeone", "highlights"],
       [2, "primeblocks", "highlights"],
       [3, "templates", "highlights"],
