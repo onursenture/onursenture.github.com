@@ -75,9 +75,28 @@ function scheduleOf(note: Note | null): ScheduleValue {
   return { on: true, ...utcToZoned(note.publishAt) };
 }
 
-// Schedule fields only count while the schedule is on.
-function comparable(value: NoteContent, schedule: ScheduleValue): string {
-  return JSON.stringify({ value, schedule: schedule.on ? schedule : OFF });
+// Key order must not matter: the server hands back images and cards with
+// their keys in another order than the client built them.
+function canonical(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
+  if (value && typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .filter(([, item]) => item !== undefined)
+      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+    return `{${entries.map(([key, item]) => `${JSON.stringify(key)}:${canonical(item)}`).join(",")}}`;
+  }
+  return JSON.stringify(value) ?? "null";
+}
+
+// The schedule only counts while editing a scheduled note, and only while it
+// is on: Save draft persists neither, so for a new note or a draft it is not
+// an unsaved edit.
+function comparable(value: NoteContent, schedule: ScheduleValue, scheduled: boolean): string {
+  return canonical({ value, schedule: scheduled && schedule.on ? schedule : OFF });
+}
+
+function comparableOf(note: Note): string {
+  return comparable(contentOf(note), scheduleOf(note), note.status === "scheduled");
 }
 
 function byUpdated(a: Note, b: Note): number {
@@ -108,7 +127,7 @@ export class NoteComposerState {
     this.blocked = !init.available;
     this.lastSide = init.side;
     this.value = emptyValue(init.side);
-    this.baseline = comparable(this.value, OFF);
+    this.baseline = comparable(this.value, OFF, false);
     this.snapshot = this.build();
   }
 
@@ -122,14 +141,20 @@ export class NoteComposerState {
   getSnapshot = () => this.snapshot;
 
   get hasUnsaved(): boolean {
-    return this.busy || this.snapshot.dirty;
+    return this.busy || this.uploads > 0 || this.snapshot.dirty;
   }
 
   private build(): ComposerSnapshot {
     const count = graphemeCount(this.value.text);
     const over = count > MAX_GRAPHEMES;
-    const dirty = comparable(this.value, this.schedule) !== this.baseline;
     const status = this.editing?.status;
+    const dirty = comparable(this.value, this.schedule, status === "scheduled") !== this.baseline;
+    // Save never writes a schedule change; on a scheduled note that is what
+    // Reschedule, Publish now and Unschedule are for.
+    const scheduleMoved =
+      this.editing !== null &&
+      status === "scheduled" &&
+      canonical(scheduleOf(this.editing)) !== canonical(this.schedule.on ? this.schedule : OFF);
     const primary = status === "published" ? "update" : this.schedule.on ? "schedule" : "publish";
     const primaryLabel =
       primary === "update" ? "Save" : primary === "schedule" ? (status === "scheduled" ? "Reschedule" : "Schedule") : status === "scheduled" ? "Publish now" : "Publish";
@@ -154,7 +179,7 @@ export class NoteComposerState {
       primary,
       primaryLabel,
       saveLabel,
-      canSave: free && dirty && saveLabel !== null,
+      canSave: free && dirty && saveLabel !== null && !scheduleMoved,
       canPrimary: free && !over && hasContent && (primary !== "update" || dirty),
     };
   }
@@ -177,7 +202,7 @@ export class NoteComposerState {
     this.editing = note;
     this.value = note ? contentOf(note) : emptyValue(side);
     this.schedule = scheduleOf(note);
-    this.baseline = comparable(this.value, this.schedule);
+    this.baseline = note ? comparableOf(note) : comparable(this.value, OFF, false);
   }
 
   // The side remembered in this browser, applied to an untouched new note.
@@ -233,6 +258,7 @@ export class NoteComposerState {
 
   // The caller asks before dropping unsaved edits (LEAVE_QUESTION).
   open(id: string) {
+    if (this.busy) return;
     const note = this.notes.find((item) => item.id === id);
     if (!note) return;
     this.load(note, note.side);
@@ -240,6 +266,7 @@ export class NoteComposerState {
   }
 
   startNew() {
+    if (this.busy) return;
     this.load(null, this.lastSide);
     this.changed();
   }
@@ -286,7 +313,7 @@ export class NoteComposerState {
       (note) => {
         this.lastSide = note.side;
         this.editing = note;
-        this.baseline = comparable(contentOf(note), scheduleOf(note));
+        this.baseline = comparableOf(note);
         this.status = "saved";
       },
     );
@@ -300,7 +327,7 @@ export class NoteComposerState {
         () => this.actions.save(this.input()),
         (note) => {
           this.editing = note;
-          this.baseline = comparable(contentOf(note), scheduleOf(note));
+          this.baseline = comparableOf(note);
           this.status = "saved";
         },
       );

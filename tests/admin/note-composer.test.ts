@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { type NoteActions, NoteComposerState } from "@/lib/admin/note-composer";
 import type { NoteActionResult, NoteInput, NoteRef } from "@/lib/notes/operations";
-import type { Note, NoteImage } from "@/lib/notes/types";
+import type { Note, NoteContent, NoteImage } from "@/lib/notes/types";
 
 const NOW = new Date("2026-10-04T11:07:00.000Z"); // 14:07 in Istanbul
 
@@ -171,6 +171,44 @@ describe("scheduling", () => {
   });
 });
 
+describe("dirty and the schedule", () => {
+  it("does not count the schedule for a new note or a draft", async () => {
+    const c = make();
+    c.edit({ text: "Draft." });
+    await c.save();
+    expect(c.getSnapshot().dirty).toBe(false);
+    c.setSchedule({ on: true });
+    expect(c.getSnapshot()).toMatchObject({ dirty: false, canSave: false, canPrimary: true, primaryLabel: "Schedule" });
+  });
+
+  it("sends a moved schedule on a scheduled note through Reschedule, not Save", () => {
+    const c = make([stored({ status: "scheduled", publishAt: "2026-10-06T06:00:00.000Z" })]);
+    c.open("n1");
+    c.setSchedule({ time: "10:00" });
+    expect(c.getSnapshot()).toMatchObject({ dirty: true, canSave: false, canPrimary: true, primaryLabel: "Reschedule" });
+    c.setSchedule({ on: false });
+    expect(c.getSnapshot()).toMatchObject({ canSave: false, canPrimary: true, primaryLabel: "Publish now" });
+    c.setSchedule({ on: true, time: "09:00" });
+    c.edit({ text: "Reworded." });
+    expect(c.getSnapshot()).toMatchObject({ canSave: true, primaryLabel: "Reschedule" });
+  });
+
+  it("ignores key order when comparing against what the server returned", async () => {
+    const reordered = (input: NoteInput): Note => {
+      const content = input.content as NoteContent;
+      const embed = content.embed?.kind === "images" ? { kind: "images" as const, images: content.embed.images.map((i) => ({ baseUrl: i.baseUrl, widths: i.widths, height: i.height, width: i.width, alt: i.alt, key: i.key })) } : content.embed;
+      return stored({ id: "saved", text: content.text, embed, updatedAt: "2026-10-04T11:07:00.000Z" });
+    };
+    const c = make([], actions({ save: vi.fn(async (input: NoteInput): Promise<NoteActionResult> => ({ status: "ok", note: reordered(input) })) }));
+    c.addImage(image());
+    c.setAlt(0, "A photo");
+    c.edit({ text: "With a picture." });
+    await c.save();
+    expect(c.getSnapshot()).toMatchObject({ status: "saved", dirty: false });
+    expect(c.hasUnsaved).toBe(false);
+  });
+});
+
 describe("a published note", () => {
   it("saves in place with one Save button, enabled only when changed", async () => {
     const a = actions({
@@ -232,7 +270,7 @@ describe("deleting and switching", () => {
     expect(c.getSnapshot()).toMatchObject({ status: "deleted", editing: null, notes: [] });
   });
 
-  it("reports unsaved changes, including an action in flight", () => {
+  it("reports unsaved changes", () => {
     const c = make([stored()]);
     expect(c.hasUnsaved).toBe(false);
     c.open("n1");
@@ -240,5 +278,52 @@ describe("deleting and switching", () => {
     expect(c.hasUnsaved).toBe(true);
     c.startNew();
     expect(c.hasUnsaved).toBe(false);
+  });
+
+  it("reports an action in flight as unsaved", async () => {
+    let release: (r: NoteActionResult) => void = () => {};
+    const c = make([], actions({ save: vi.fn(() => new Promise<NoteActionResult>((resolve) => (release = resolve))) }));
+    c.edit({ text: "x" });
+    const pending = c.save();
+    expect(c.getSnapshot().dirty).toBe(true);
+    release({ status: "ok", note: stored({ id: "saved", text: "x" }) });
+    await pending;
+    expect(c.hasUnsaved).toBe(false);
+    // An action in flight counts even when nothing is dirty.
+    let release2: (r: NoteActionResult) => void = () => {};
+    const d = make([stored({ status: "scheduled", publishAt: "2026-10-06T06:00:00.000Z" })], actions({ unschedule: vi.fn(() => new Promise<NoteActionResult>((resolve) => (release2 = resolve))) }));
+    d.open("n1");
+    expect(d.hasUnsaved).toBe(false);
+    const un = d.unschedule();
+    expect(d.getSnapshot()).toMatchObject({ busy: true, dirty: false });
+    expect(d.hasUnsaved).toBe(true);
+    release2({ status: "ok", note: stored({ status: "draft", updatedAt: "2026-10-04T11:08:00.000Z" }) });
+    await un;
+    expect(d.hasUnsaved).toBe(false);
+  });
+
+  it("counts a running upload as unsaved", () => {
+    const c = make();
+    expect(c.hasUnsaved).toBe(false);
+    c.uploadStarted();
+    expect(c.hasUnsaved).toBe(true);
+    c.uploadFinished();
+    expect(c.hasUnsaved).toBe(false);
+  });
+
+  it("ignores open and new while an action is in flight, and stays bound to the saved note", async () => {
+    let release: (r: NoteActionResult) => void = () => {};
+    const a = actions({ save: vi.fn(() => new Promise<NoteActionResult>((resolve) => (release = resolve))) });
+    const c = make([stored({ id: "A", text: "A text" }), stored({ id: "b", text: "B text", updatedAt: "2026-10-04T09:00:00.000Z" })], a);
+    c.open("A");
+    c.edit({ text: "A edited" });
+    const pending = c.save();
+    c.open("b");
+    expect(c.getSnapshot()).toMatchObject({ editing: { id: "A" }, value: { text: "A edited" } });
+    c.startNew();
+    expect(c.getSnapshot()).toMatchObject({ editing: { id: "A" }, value: { text: "A edited" } });
+    release({ status: "ok", note: stored({ id: "A", text: "A edited", updatedAt: "2026-10-04T11:07:00.000Z" }) });
+    await pending;
+    expect(c.getSnapshot()).toMatchObject({ editing: { id: "A", text: "A edited" }, value: { text: "A edited" }, dirty: false });
   });
 });
