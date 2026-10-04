@@ -26,6 +26,9 @@ export interface Profile {
   };
 }
 
+// The part of the profile the admin edits (Sprint 7): the home's lead and bio.
+export type ProfileCopy = Pick<Profile, "lead" | "bio">;
+
 export const profile: Profile = {
   name: "Onur Senture",
   role: "Designer who builds",

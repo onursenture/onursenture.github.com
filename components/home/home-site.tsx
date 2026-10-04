@@ -5,10 +5,9 @@ import { PrimaryButton } from "@/components/ui/primary-button";
 import { SectionRow } from "@/components/ui/section-row";
 import { StatusGlyph } from "@/components/ui/status-glyph";
 import { TextLink } from "@/components/ui/text-link";
-import { labIndex } from "@/content/lab-index";
 import { profile } from "@/content/profile";
 import { NAV_ITEMS } from "@/lib/nav";
-import { getExperience, getPins } from "@/lib/work";
+import type { HomeContent } from "@/lib/work/views";
 import { Bio } from "./bio";
 import { Contributions } from "./contributions-row";
 import { ExperienceList } from "./experience-list";
@@ -24,8 +23,8 @@ function sectionLink(label: string, href: string) {
 
 // The Work home: identity, Lab, Selected work, experience and contributions,
 // separated by dither rules.
-export function HomeSite() {
-  const pins = getPins();
+export function HomeSite({ content }: { content: HomeContent }) {
+  const { pins } = content;
   const rows = [
     <SectionRow
       key="identity"
@@ -49,23 +48,23 @@ export function HomeSite() {
       }
     >
       <h1 className="mb-2.5 type-lead">
-        {profile.lead.strong} <span className="text-fg-muted">{profile.lead.rest}</span>
+        {content.profile.lead.strong} <span className="text-fg-muted">{content.profile.lead.rest}</span>
       </h1>
-      <Bio paragraphs={profile.bio} />
+      <Bio paragraphs={content.profile.bio} />
       {profile.bookingUrl ? (
         <div className="mt-3.5">
           <PrimaryButton href={profile.bookingUrl}>Book a call →</PrimaryButton>
         </div>
       ) : null}
     </SectionRow>,
-    labIndex.length > 0 ? (
+    content.lab.length > 0 ? (
       <SectionRow key="lab" id="lab" label="Lab" action={sectionLink("All lab", "/lab/")}>
-        <LabGrid entries={labIndex} />
+        <LabGrid entries={content.lab} />
       </SectionRow>
     ) : null,
     pins.length > 0 ? <SelectedWork key="selected-work" pins={pins} /> : null,
     <SectionRow key="experience" id="experience" label="Experience" action={sectionLink("Resume", "/resume/")}>
-      <ExperienceList entries={getExperience()} />
+      <ExperienceList entries={content.experience} />
     </SectionRow>,
     <SectionRow
       key="contributions"

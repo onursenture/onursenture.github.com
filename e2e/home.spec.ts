@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { pinOrder } from "../content/pins";
 import { productPages } from "../content/work";
 import { buildPins } from "../lib/work/derive";
 
-const pins = buildPins(productPages, () => undefined);
+const pins = buildPins(productPages, pinOrder, () => undefined);
 
 test("the home leads with the lead line, the role and a live Ankara clock", async ({ page }) => {
   await page.goto("/");
@@ -39,7 +40,7 @@ test("Selected work shows the curated pins in order, each linking to its images 
     const item = items.nth(index);
     await expect(item).toContainText(pin.pin.title);
     await expect(item).toContainText(pin.pin.note);
-    await expect(item).toContainText(`FIG. ${String(pin.pin.order).padStart(2, "0")} · ${pin.pin.title}`);
+    await expect(item).toContainText(`FIG. ${String(pin.order).padStart(2, "0")} · ${pin.pin.title}`);
     // One link per item for assistive tech: the source link. The frame links
     // to the same place, hidden and out of the tab order.
     const source = item.getByRole("link");

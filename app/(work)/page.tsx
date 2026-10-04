@@ -1,5 +1,6 @@
 import { HomeSite } from "@/components/home/home-site";
+import { getHomeContent } from "@/lib/work";
 
-export default function HomePage() {
-  return <HomeSite />;
+export default async function HomePage() {
+  return <HomeSite content={await getHomeContent()} />;
 }

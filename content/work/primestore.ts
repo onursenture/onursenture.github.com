@@ -35,7 +35,7 @@ export const primestore: ProductPage = {
         {
           id: "store",
           caption: "Store",
-          pin: { order: 4, title: "PrimeStore 2025", note: "The template store, redesigned end to end" },
+          pin: { title: "PrimeStore 2025", note: "The template store, redesigned end to end" },
         },
         { id: "template-detail", caption: "Template detail" },
         { id: "dashboard", caption: "Dashboard" },

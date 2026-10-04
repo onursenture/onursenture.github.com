@@ -34,7 +34,7 @@ export const primeone: ProductPage = {
         {
           id: "components",
           caption: "Components",
-          pin: { order: 1, title: "Components", note: "The Figma kit behind the Prime libraries" },
+          pin: { title: "Components", note: "The Figma kit behind the Prime libraries" },
         },
         { id: "tokens", caption: "Tokens" },
         { id: "themes", caption: "Themes" },

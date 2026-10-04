@@ -5,22 +5,9 @@ import type { OrgId } from "../orgs";
 // are permanent once published: block ids are the anchors Selected work links
 // to, and image ids key image files (work/<slug>/<id>) and ?fig= URLs.
 
-export type WorkSlug =
-  | "primeone"
-  | "primeblocks"
-  | "primeicons"
-  | "templates"
-  | "primestore"
-  | "theme-designer"
-  | "nebuu"
-  | "rebound-line"
-  | "hi-jump"
-  | "imparator"
-  | "harf-marf"
-  | "beatografi"
-  | "countdo"
-  | "mac-kacta"
-  | "gonna";
+// Slugs are kebab-case and permanent once published. Since Sprint 7 the
+// admin can create pages, so this is a plain string; validateSite checks it.
+export type WorkSlug = string;
 
 // Only designers are credited. href is kept as provenance and NOT rendered
 // (PrimeTek pages carry no external links; credits never link anywhere).
@@ -30,10 +17,9 @@ export interface Credit { name: string; role?: string; href?: string }
 // PrimeTek pages.
 export interface Link { label: string; href: string }
 
-// Pinned to the home's Selected work.
+// Pinned to the home's Selected work. The order lives in the `pins` document
+// (content/pins.ts in the repo), not on the image.
 export interface Pin {
-  // Display order on the home, unique across all pins.
-  order: number;
   title: string;
   // One line of context.
   note: string;

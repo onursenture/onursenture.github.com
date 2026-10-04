@@ -15,7 +15,7 @@ const VARIANTS: Record<ButtonVariant, string> = {
 
 export function buttonClass(variant: ButtonVariant = "ghost", className?: string): string {
   return cx(
-    "inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-control px-3 type-body font-medium whitespace-nowrap",
+    "inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-control px-3 type-body font-medium whitespace-nowrap disabled:pointer-events-none disabled:opacity-40",
     VARIANTS[variant],
     className,
   );

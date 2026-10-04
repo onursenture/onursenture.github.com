@@ -17,7 +17,7 @@ import type { ProductPage } from "./types";
 
 // Product pages, in registry order: PrimeTek (PrimeOne, PrimeBlocks,
 // PrimeIcons, Templates, PrimeStore, Theme Designer), then Orkestra in
-// Experience order. The home's Selected work orders its pins by `pin.order`.
+// Experience order. The home's Selected work orders its pins by content/pins.ts.
 export const productPages: ProductPage[] = [
   primeone,
   primeblocks,

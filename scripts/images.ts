@@ -12,6 +12,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import sharp from "sharp";
+import { encodeRendition } from "../lib/images/encode";
 import { IMAGE_SETTINGS, isUpToDate, type ImageManifest, widthsFor } from "../lib/images/plan";
 
 // Run from the repo root (npm run images does this).
@@ -86,15 +87,8 @@ async function main() {
 
     mkdirSync(dirname(join(OUT_DIR, key)), { recursive: true });
     for (const w of widths) {
-      const resized = sharp(source).rotate().resize({ width: w, withoutEnlargement: true });
-      await resized
-        .clone()
-        .avif({ quality: 60, chromaSubsampling: "4:2:0" })
-        .toFile(join(OUT_DIR, `${key}-${w}.avif`));
-      await resized
-        .clone()
-        .jpeg({ quality: 82, progressive: true, mozjpeg: true })
-        .toFile(join(OUT_DIR, `${key}-${w}.jpg`));
+      writeFileSync(join(OUT_DIR, `${key}-${w}.avif`), await encodeRendition(source, w, "avif"));
+      writeFileSync(join(OUT_DIR, `${key}-${w}.jpg`), await encodeRendition(source, w, "jpg"));
     }
 
     const largest = widths[widths.length - 1];

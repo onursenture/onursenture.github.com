@@ -110,7 +110,7 @@ export default async function SystemPage() {
   const statuses = await readSourceStatuses();
   const [photo] = photos;
   // A real pin (no invented sample), for the work specimens.
-  const [pin] = getPins();
+  const [pin] = await getPins();
 
   return (
     <main className="pb-8">

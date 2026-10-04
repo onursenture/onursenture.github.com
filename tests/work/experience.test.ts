@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { ExperienceEntry } from "@/content/experience";
 import type { ProductPage } from "@/content/work/types";
 import { resolveExperience } from "@/lib/work/experience";
@@ -37,8 +37,45 @@ describe("resolveExperience", () => {
     expect(resolved.children[0].href).toBeUndefined();
   });
 
-  it("throws on a link to a page that does not exist, and on a row without a year", () => {
-    expect(() => resolveExperience([entry([{ title: "Gone", note: "x", href: "/work/gone/" }])], [page])).toThrow(/not a product page/);
-    expect(() => resolveExperience([entry([{ title: "Bare", note: "x" }])], [page])).toThrow(/has no years/);
+  it("fails soft on published data that breaks the rules: warns, drops a dead link, leaves the year empty", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const [resolved] = resolveExperience(
+      [
+        entry([
+          { title: "Gone", note: "x", href: "/work/gone/" },
+          { title: "Gone with years", note: "x", href: "/work/gone/", years: "2014" },
+          { title: "Bare", note: "x" },
+        ]),
+      ],
+      [page],
+    );
+    expect(resolved.children).toEqual([
+      { title: "Gone", note: "x", years: "" },
+      { title: "Gone with years", note: "x", years: "2014" },
+      { title: "Bare", note: "x", href: undefined, years: "" },
+    ]);
+    expect(warn).toHaveBeenCalledTimes(3);
+    warn.mockRestore();
+  });
+
+  it("falls back to the row's own years when the linked page has no Years fact", () => {
+    const bare = { ...page, facts: page.facts.filter((fact) => fact.label !== "Years") };
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const [resolved] = resolveExperience([entry([{ title: "PrimeOne", note: "x", href: "/work/primeone/" }])], [bare]);
+    expect(resolved.children[0]).toEqual({ title: "PrimeOne", note: "x", href: "/work/primeone/", years: "" });
+    expect(warn).toHaveBeenCalledTimes(1);
+    warn.mockRestore();
+  });
+
+  it("shows an unfinished draft row quietly", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const [resolved] = resolveExperience(
+      [entry([{ title: "Bare", note: "x" }, { title: "Gone", note: "x", href: "/work/gone/" }])],
+      [page],
+      { loose: true },
+    );
+    expect(resolved.children.map((child) => child.years)).toEqual(["", ""]);
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
   });
 });

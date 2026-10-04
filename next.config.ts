@@ -13,6 +13,20 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_BUILD_DATE: new Date().toISOString().slice(0, 10),
     NEXT_PUBLIC_BUILD_COMMIT: (process.env.VERCEL_GIT_COMMIT_SHA ?? "").slice(0, 7),
   },
+  // The admin can't be framed by another site (clickjacking). Its own draft
+  // preview is a same-origin iframe, which 'self' keeps working. Admin only:
+  // the public pages' headers stay as they are.
+  async headers() {
+    return [
+      {
+        source: "/admin/:path*",
+        headers: [
+          { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+        ],
+      },
+    ];
+  },
   // Photos moved under the Life side in Sprint 4. 308 keeps old links and
   // the Eleventy-era URLs working.
   async redirects() {

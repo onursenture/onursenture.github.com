@@ -52,3 +52,8 @@ next-env.d.ts
 # Local Figma frame refs and export lock from the removed `npm run figma` path: still kept out of the public repo
 /figma.local.json
 /figma.lock.local.json
+
+# Sprint 7 admin: local content store, local media and the admin e2e's data
+/.content-dev.json
+/.media-dev/
+/.e2e-admin/

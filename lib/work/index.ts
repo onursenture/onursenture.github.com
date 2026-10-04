@@ -1,34 +1,36 @@
-import { experience } from "@/content/experience";
-import { productPages } from "@/content/work";
-import type { WorkSlug } from "@/content/work/types";
-import { findImage, hasImage } from "@/lib/images/manifest";
-import { type PinView, type ProductPageView, buildPins, buildProductPage } from "./derive";
-import { type ExperienceView, resolveExperience } from "./experience";
-import { validateWork } from "./validate";
+import { getPublishedContent } from "@/lib/content/read";
+import { repoSite } from "@/lib/content/site";
+import { formatIssue } from "@/lib/content/issues";
+import { validateSite } from "@/lib/content/validate-site";
+import { lookupWith } from "@/lib/images/lookup";
+import { hasImage } from "@/lib/images/manifest";
+import type { PinView, ProductPageView } from "./derive";
+import { type HomeContent, homeContent, pinViews, productPageView, productSlugs } from "./views";
 
-// The server-side read API for the product pages and the home's Selected
-// work: content bound to the image manifest. Sprint 7's admin overlay will
-// merge its edits here.
+// The server-side read API for the product pages and the Work home: the
+// published site (lib/content/read.ts: admin documents over the repo content)
+// bound to the image manifest and uploaded media.
 
-// A broken registry fails the build instead of shipping a broken page.
-const errors = validateWork(productPages, hasImage);
-if (errors.length > 0) throw new Error(`content/work is invalid:\n${errors.join("\n")}`);
+// The repo content is the seed and the fallback, so it must stay valid: a
+// broken registry fails the build instead of shipping a broken page.
+const issues = validateSite(repoSite(), hasImage);
+if (issues.length > 0) throw new Error(`content is invalid:\n${issues.map(formatIssue).join("\n")}`);
 
-export function getProductSlugs(): WorkSlug[] {
-  return productPages.map((page) => page.slug);
+export async function getProductSlugs(): Promise<string[]> {
+  return productSlugs((await getPublishedContent()).site);
 }
 
-export function getProductPage(slug: string): ProductPageView | null {
-  const page = productPages.find((item) => item.slug === slug);
-  return page ? buildProductPage(page, findImage) : null;
+export async function getProductPage(slug: string): Promise<ProductPageView | null> {
+  const { site, media } = await getPublishedContent();
+  return productPageView(site, slug, lookupWith(media));
 }
 
-// Every pinned image across the pages, sorted by pin.order.
-export function getPins(): PinView[] {
-  return buildPins(productPages, findImage);
+export async function getPins(): Promise<PinView[]> {
+  const { site, media } = await getPublishedContent();
+  return pinViews(site, lookupWith(media));
 }
 
-// The home's Experience rows, each product with its year (resolveExperience).
-export function getExperience(): ExperienceView[] {
-  return resolveExperience(experience, productPages);
+export async function getHomeContent(): Promise<HomeContent> {
+  const { site, media } = await getPublishedContent();
+  return homeContent(site, lookupWith(media));
 }

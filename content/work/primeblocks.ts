@@ -34,7 +34,7 @@ export const primeblocks: ProductPage = {
         {
           id: "application-blocks",
           caption: "Application blocks",
-          pin: { order: 2, title: "Application blocks", note: "Relaunched in 2024 on Tailwind CSS" },
+          pin: { title: "Application blocks", note: "Relaunched in 2024 on Tailwind CSS" },
         },
         { id: "marketing-blocks", caption: "Marketing blocks" },
         { id: "design-file", caption: "Design file" },

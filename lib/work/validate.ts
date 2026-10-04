@@ -11,7 +11,6 @@ const COLUMNS: readonly number[] = [1, 2, 3];
 export function validateWork(pages: ProductPage[], hasImage: (key: string) => boolean = () => true): string[] {
   const errors: string[] = [];
   const slugs = new Set<string>();
-  const pinOrders = new Map<number, string>();
 
   const credits = (where: string, list: Credit[] = []) => {
     for (const credit of list) {
@@ -65,11 +64,6 @@ export function validateWork(pages: ProductPage[], hasImage: (key: string) => bo
         imageIds.add(image.id);
         if (image.image && !hasImage(image.image)) errors.push(`${where}: image "${image.image}" is not in the manifest`);
         credits(`${where}/${image.id}`, image.credits);
-        if (image.pin) {
-          const other = pinOrders.get(image.pin.order);
-          if (other) errors.push(`${where}/${image.id}: duplicate pin order ${image.pin.order} (also ${other})`);
-          else pinOrders.set(image.pin.order, `${where}/${image.id}`);
-        }
       }
     }
   }

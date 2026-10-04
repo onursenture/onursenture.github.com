@@ -76,7 +76,8 @@ const pin: PinView = {
   pageTitle: "PrimeOne",
   blockId: "highlights",
   image: { id: "components", caption: "Components", credits: [], image: null, fig: 1, label: "FIG. 01", context: "Highlights" },
-  pin: { order: 1, title: "Components", note: "The Figma kit" },
+  pin: { title: "Components", note: "The Figma kit" },
+  order: 1,
 };
 
 describe("SelectedWork", () => {

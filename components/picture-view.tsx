@@ -22,7 +22,7 @@ export function PictureView({
     <picture>
       <source type="image/avif" srcSet={srcSet(image, entry, "avif")} sizes={sizes} />
       <img
-        src={renditionUrl(image, entry.width, "jpg")}
+        src={renditionUrl(image, entry.width, "jpg", entry.baseUrl)}
         srcSet={srcSet(image, entry, "jpg")}
         sizes={sizes}
         width={entry.width}
