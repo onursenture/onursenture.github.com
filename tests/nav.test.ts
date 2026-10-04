@@ -3,11 +3,11 @@ import { NAV_ITEMS, headerItems, isActive, readyItems } from "@/lib/nav";
 
 describe("nav config", () => {
   it("lists the Work-side items in IA order; Life is reached by the switch, not the nav", () => {
-    expect(NAV_ITEMS.map((i) => i.label)).toEqual(["Lab", "Resume"]);
+    expect(NAV_ITEMS.map((i) => i.label)).toEqual(["Lab", "Resume", "Notes"]);
   });
 
-  it("marks Resume ready for the home's section link but keeps it out of the header, which has no nav", () => {
-    expect(readyItems().map((i) => i.label)).toEqual(["Resume"]);
+  it("marks Resume and Notes ready for the home's section links but keeps them out of the header, which has no nav", () => {
+    expect(readyItems().map((i) => i.label)).toEqual(["Resume", "Notes"]);
     expect(headerItems()).toEqual([]);
     expect(headerItems([{ label: "X", href: "/x/", ready: true, inHeader: true }]).map((i) => i.label)).toEqual(["X"]);
     expect(headerItems([{ label: "Y", href: "/y/", ready: false, inHeader: true }])).toEqual([]);
