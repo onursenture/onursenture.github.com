@@ -13,6 +13,7 @@
     "test:watch": "vitest",
     "e2e": "playwright test",
     "e2e:fixtures": "playwright test --config playwright.fixtures.config.ts",
+    "e2e:admin": "playwright test --config playwright.admin.config.ts",
     "images": "tsx scripts/images.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts --force",

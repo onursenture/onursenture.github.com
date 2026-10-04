@@ -30,6 +30,9 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run e2e
+      # The admin flow against the same build: JSON-file store, local media,
+      # test sign-in (playwright.admin.config.ts). Before the fixture build.
+      - run: npm run e2e:admin
       # Second pass: a build in fixture data mode, so /life renders real rows.
       # The normal e2e above must keep running against the non-fixture build.
       - run: SOURCE_FIXTURES=1 npm run build
@@ -40,6 +43,8 @@ jobs:
         if: failure()
         with:
           name: playwright-traces
-          path: test-results/
+          path: |
+            test-results/
+            .e2e-admin/content.json
           retention-days: 7
           if-no-files-found: ignore
