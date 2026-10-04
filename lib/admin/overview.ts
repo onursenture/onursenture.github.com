@@ -37,6 +37,11 @@ export function docRows(docs: ContentDoc[]): { pages: DocRow[]; home: DocRow[] }
     pages.push(row(doc.key, resolvePage(drafts, slug, { loose: true })?.title || slug, `/admin/work/${slug}/`, "new"));
   }
 
-  const home = [row("profile", "Bio", "/admin/bio/"), row("lab", "Lab", "/admin/lab/"), row("experience", "Experience", "/admin/experience/")];
+  const home = [
+    row("profile", "Bio", "/admin/bio/"),
+    row("lab", "Lab", "/admin/lab/"),
+    row("experience", "Experience", "/admin/experience/"),
+    row("resume", "Resume", "/admin/resume/"),
+  ];
   return { pages, home };
 }

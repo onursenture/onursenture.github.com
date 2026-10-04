@@ -18,6 +18,7 @@ describe("docRows", () => {
       ["Bio", "/admin/bio/"],
       ["Lab", "/admin/lab/"],
       ["Experience", "/admin/experience/"],
+      ["Resume", "/admin/resume/"],
     ]);
   });
 

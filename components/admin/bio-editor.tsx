@@ -1,8 +1,9 @@
 "use client";
 
 import { type ReactNode, useRef } from "react";
+import { bookingEnabled } from "@/content/booking";
 import { ORGS, type OrgId } from "@/content/orgs";
-import type { BioSegment, ProfileCopy } from "@/content/profile";
+import { type BioSegment, type ProfileCopy, homeSwitches } from "@/content/profile";
 import type { DocEditorInit } from "@/lib/admin/results";
 import { bioToText, textToBio } from "@/lib/content/bio-tokens";
 import { type Issue, issuesAt } from "@/lib/content/issues";
@@ -62,11 +63,24 @@ export function BioEditor({ init }: { init: DocEditorInit<ProfileCopy> }) {
   const copy = editor.value;
   const set = (patch: Partial<ProfileCopy>) => editor.setValue((previous) => ({ ...previous, ...patch }));
   const paragraphs = useKeyedList(copy.bio, (bio) => set({ bio }));
+  const switches = homeSwitches(copy);
   // Field messages go away with the first edit; the banner keeps the list.
   const at = (path: string) => (editor.status === "invalid" ? issuesAt(editor.issues, "profile", path) : []);
   return (
     <EditorFrame crumbs={["Bio"]} editor={editor} preview="/admin/preview/home/" focusId="identity" openHref="/">
       <div className="flex flex-col gap-4">
+        <fieldset className="flex flex-col gap-2">
+          <legend className="mb-1 type-label text-fg-muted">On the home</legend>
+          <label className="flex items-center gap-2 type-body">
+            <input type="checkbox" checked={switches.available} onChange={(event) => set({ available: event.target.checked })} />
+            Open to work
+          </label>
+          <label className="flex items-center gap-2 type-body">
+            <input type="checkbox" checked={switches.bookOnHome} disabled={!bookingEnabled()} onChange={(event) => set({ bookOnHome: event.target.checked })} />
+            Book a call on home
+          </label>
+          {bookingEnabled() ? null : <p className="type-meta text-fg-muted">Booking isn&apos;t set up (content/booking.ts).</p>}
+        </fieldset>
         <TextField label="Lead" value={copy.lead.strong} onChange={(strong) => set({ lead: { ...copy.lead, strong } })} issues={at("lead/strong")} />
         <TextAreaField label="Lead, continued" rows={2} value={copy.lead.rest} onChange={(rest) => set({ lead: { ...copy.lead, rest } })} />
         <span className="type-label text-fg-muted">Bio</span>
