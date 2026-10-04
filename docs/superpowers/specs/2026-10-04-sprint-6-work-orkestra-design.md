@@ -49,7 +49,7 @@ export type WorkSlug =
 export interface Link { label: string; href: string } // https only
 
 export type Block =
-  | { kind: "text"; id: string; heading: string; body: string[] }
+  | { kind: "text"; id: string; heading: string; body: string[]; links?: Link[] } // links: Orkestra only
   | { kind: "images"; id: string; heading?: string; columns?: 1 | 2 | 3; images: WorkImage[] }
   | { kind: "icons"; id: string; heading?: string }
   // New. Places the project in its moment. `year` is display text ("2013").
@@ -67,7 +67,7 @@ export interface ProductPage {
 
 ### Validator additions (`lib/work/validate.ts`)
 
-- `links` and `then.sources` are rejected on `org: "primetek"` pages.
+- `links`, `then.sources` and text-block `links` are rejected on `org: "primetek"` pages.
 - Every `Link.href` is `https://`.
 - A `then` block appears at most once and only as `blocks[0]`, right after the header.
 - A `then` block has a non-empty `year` and `body`.
@@ -95,19 +95,19 @@ The structure is common to every page:
 
 Facts are Role, Years and At, plus Platform on Orkestra pages.
 
-| Slug | Org | Experience note | Years (draft, confirmed in the questionnaire) | Then | Extra blocks | Live |
+| Slug | Org | Experience note | Years (confirmed in the questionnaire) | Then | Extra blocks | Live |
 |---|---|---|---|---|---|---|
 | `primestore` | PrimeTek | template store | 2025 | — | — | — |
 | `theme-designer` | PrimeTek | theme editor | 2023–2025 | — | "From PrimeDesigner to Theme Designer" (text) | — |
-| `nebuu` | Orkestra | word game, iOS · Android | 2013–now | 2013: Heads Up! reached the US App Store on 2013-05-02 and Nebuu on 2013-08-06; it took the format into Turkish, with local words and decks | Editions (Indovina Chi è 2015, Guessy 2016); Decks (to 100+ by 2021, Nebuu Çocuk) | App Store, Google Play, nebuu.com |
-| `rebound-line` | Orkestra | casual game, iOS | 2019 | only if sourced | — | App Store (still listed) |
-| `hi-jump` | Orkestra | casual game, iOS | 2018 | only if sourced | — | App Store (still listed) |
-| `imparator` | Orkestra | football card manager, iOS | 2017 | only if sourced | — | App Store (still listed) |
-| `harf-marf` | Orkestra | word puzzle, iOS | 2016 | only if sourced | — | App Store (still listed) |
-| `beatografi` | Orkestra | beat marketplace, web | 2013 | 2013: an online marketplace for Turkish beatmakers, live 2013-12-24 to 2016 | — | — (dead; sources may link Wayback) |
-| `countdo` | Orkestra | countdown app, iOS | 2013 | 2013: shipped 2013-06-23, three months before iOS 7 (sources: the release tweet, and Apple's iOS 7 release date) | — | countdo.orkestra.co (the 2026 remaster) |
-| `mac-kacta` | Orkestra | football fixtures, iOS | 2013 | only if sourced | — | — |
-| `gonna` | Orkestra | social agenda, web · iOS | 2012–2013 | only if sourced (Gonnasphere on the web in 2012, the iOS app in 2013) | Recognition (2nd place at MIT EF Turkey among 2,800+ projects, the US trip) | — |
+| `nebuu` | Orkestra | word game | 2013–now | 2013: Heads Up! reached the US App Store on 2013-05-02 and Nebuu on 2013-08-06; it took the format into Turkish, with local words and decks | Editions (Indovina Chi è 2015, Guessy 2016); Decks (to 100+ by 2021, Nebuu Çocuk) | App Store, Google Play, nebuu.com |
+| `rebound-line` | Orkestra | arcade game | 2019 | only if sourced | — | App Store (still listed) |
+| `hi-jump` | Orkestra | arcade game | 2018 | only if sourced | — | App Store (still listed) |
+| `imparator` | Orkestra | football card game | 2017–2018 | only if sourced | — | App Store (still listed) |
+| `harf-marf` | Orkestra | word puzzle | 2016–2017 | only if sourced | — | App Store (still listed) |
+| `beatografi` | Orkestra | beat marketplace | 2013–2016 | 2013: an online marketplace for Turkish beatmakers, live 2013-12-24 to 2016 | — | — (dead; sources may link Wayback) |
+| `countdo` | Orkestra | countdown app | 2013–2016 | 2013: shipped 2013-06-23, three months before iOS 7 (sources: the release tweet, and Apple's iOS 7 release date) | — | countdo.orkestra.co (the 2026 remaster) |
+| `mac-kacta` | Orkestra | football fixtures | 2013–2014 | only if sourced | — | — |
+| `gonna` | Orkestra | social agenda | 2012–2014 | 2012: three Bilkent students, a social to-do network a year before the iPhone app; press abroad; visitors from 100 countries | Recognition (MIT EF Turkey, the US trip, #1 New Social Networking TR Mar 2013); What I learned (the 2014 post-mortem, linked) | — |
 
 - **Page copy:** the Then sentences above are directions, not copy. Final copy is written in the content task from tagged facts and the questionnaire answers.
 - **`kind`:** each page's `kind` equals its Experience note in the table.
@@ -157,7 +157,7 @@ Display order: the existing site entry, then these. The copy is a draft for Onur
 
 Sources for the drafts: the Cehennem Rebirth `/bilgi` page, the Dönerverse README, the tanerman.com bio, and Onur's own lines.
 
-## 7. The questionnaire (Task 1, controller)
+## 7. The questionnaire (Task 1, controller) — done 2026-10-04, answers in `.superpowers/research/orkestra-answers.md`
 
 Asked through AskUserQuestion, grouped by project, with the known facts shown as defaults to confirm:
 
