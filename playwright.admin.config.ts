@@ -26,6 +26,13 @@ export default defineConfig({
       ADMIN_E2E: "1",
       ADMIN_GITHUB_ID: "1",
       AUTH_SECRET: "e2e-only-secret-e2e-only-secret-000000",
+      // Blanked so a local .env.local can never point the e2e at production
+      // Neon, Blob or GitHub OAuth: @next/env doesn't override a key that is
+      // already set, even to "", and getDb()/uploadMode() treat "" as unset.
+      DATABASE_URL: "",
+      BLOB_READ_WRITE_TOKEN: "",
+      AUTH_GITHUB_ID: "",
+      AUTH_GITHUB_SECRET: "",
     },
   },
 });

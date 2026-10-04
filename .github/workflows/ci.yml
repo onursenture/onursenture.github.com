@@ -48,3 +48,4 @@ jobs:
             .e2e-admin/content.json
           retention-days: 7
           if-no-files-found: ignore
+          include-hidden-files: true
