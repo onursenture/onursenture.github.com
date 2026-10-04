@@ -11,8 +11,8 @@ import { SortableList } from "./sortable-list";
 import { useDocEditor } from "./use-doc-editor";
 import { useKeyedList } from "./use-keyed-list";
 
-// The home&apos;s Selected work order (spec §2.2): drag or ↑/↓, then Publish. Pin
-// and unpin happen on the image card in each page&apos;s editor.
+// The home's Selected work order (spec §2.2): drag or ↑/↓, then Publish. Pin
+// and unpin happen on the image card in each page's editor.
 export function PinsEditor({ init, items }: { init: DocEditorInit<{ order: PinRef[] }>; items: PinItem[] }) {
   const editor = useDocEditor(init);
   const order = editor.value.order;
@@ -22,7 +22,7 @@ export function PinsEditor({ init, items }: { init: DocEditorInit<{ order: PinRe
   return (
     <div className="flex flex-col gap-3">
       <DocToolbar editor={editor} />
-      <IssuesList issues={editor.issues} />
+      <IssuesList issues={editor.issues} blocking={editor.status === "invalid"} />
       <SortableList keys={list.keys} onMove={list.move}>
         {(index, controls) => {
           const ref = order[index];
