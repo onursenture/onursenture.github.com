@@ -1,12 +1,14 @@
 import "server-only";
+import type { PinRef } from "@/content/pins";
 import type { ProductPage } from "@/content/work/types";
 import { getContentStore } from "@/lib/content/get-store";
 import type { DocKey } from "@/lib/content/keys";
-import { indexSlugs, publishedValues, repoValue, resolveSite } from "@/lib/content/site";
+import { draftValues, indexSlugs, publishedValues, repoValue, resolveSite } from "@/lib/content/site";
 import type { ContentDoc } from "@/lib/content/store";
 import { lookupWith, type MediaEntry, toMediaEntry } from "@/lib/images/lookup";
 import type { ImageEntry } from "@/lib/images/plan";
-import { imageKey, pageImages } from "@/lib/work/derive";
+import { buildPins, imageKey, pageImages } from "@/lib/work/derive";
+import { pinItems, type PinItem } from "./pin-items";
 import type { DocEditorInit } from "./results";
 
 export interface LoadedDoc<T> extends DocEditorInit<T> {
@@ -72,4 +74,34 @@ export async function loadPageOptions(): Promise<{ href: string; title: string }
     console.warn("[admin] loading pages failed:", e instanceof Error ? e.message : e);
   }
   return resolveSite(values).pages.map((page) => ({ href: `/work/${page.slug}/`, title: page.title }));
+}
+
+// The pins order as it would publish: the stored order (draft, else
+// published, else the repo's), with pinned images it misses appended. Drafted
+// pages count, so a newly pinned image is in the list before its page is live.
+export async function loadPinsEditor(): Promise<{ init: DocEditorInit<{ order: PinRef[] }>; items: PinItem[] }> {
+  const loaded = await loadDoc<{ order: PinRef[] }>("pins");
+  let values = new Map<string, unknown>();
+  let media: MediaEntry[] = [];
+  try {
+    const store = getContentStore();
+    if (store) {
+      const [docs, records] = await Promise.all([store.listDocs(), store.listMedia()]);
+      values = draftValues(docs);
+      media = records.map(toMediaEntry);
+    }
+  } catch (e) {
+    console.warn("[admin] loading pins failed:", e instanceof Error ? e.message : e);
+  }
+  const site = resolveSite(values, { loose: true });
+  const items = pinItems(buildPins(site.pages, loaded.value.order, lookupWith(media)));
+  const init: DocEditorInit<{ order: PinRef[] }> = {
+    docKey: loaded.docKey,
+    value: { order: items.map(({ slug, imageId }) => ({ slug, imageId })) },
+    draftUpdatedAt: loaded.draftUpdatedAt,
+    hasDraft: loaded.hasDraft,
+    publishedAt: loaded.publishedAt,
+    available: loaded.available,
+  };
+  return { init, items };
 }

@@ -2,10 +2,12 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { buttonClass } from "@/components/ui/button";
 import { docRows } from "@/lib/admin/overview";
+import { loadPinsEditor } from "@/lib/admin/load";
 import { readSourceRows } from "@/lib/admin/sources";
 import { getContentStore } from "@/lib/content/get-store";
 import type { ContentDoc } from "@/lib/content/store";
 import { DocState } from "./doc-state";
+import { PinsEditor } from "./pins-editor";
 import { SourcesPanel } from "./sources-panel";
 
 function Section({ title, action, children }: { title: string; action?: ReactNode; children: ReactNode }) {
@@ -29,9 +31,9 @@ async function loadDocs(): Promise<ContentDoc[] | null> {
   }
 }
 
-// The admin home (spec §2.2). Selected work is added in Task 14.
+// The admin home (spec §2.2).
 export async function AdminHome() {
-  const [docs, sources] = await Promise.all([loadDocs(), readSourceRows()]);
+  const [docs, sources, pins] = await Promise.all([loadDocs(), readSourceRows(), loadPinsEditor()]);
   const { pages, home } = docRows(docs ?? []);
   const list = (rows: typeof pages) => (
     <ul className="type-body">
@@ -65,6 +67,9 @@ export async function AdminHome() {
         {list(pages)}
       </Section>
       <Section title="Home">{list(home)}</Section>
+      <Section title="Selected work">
+        <PinsEditor init={pins.init} items={pins.items} />
+      </Section>
       <Section title="Sources">
         <SourcesPanel rows={sources} />
       </Section>
