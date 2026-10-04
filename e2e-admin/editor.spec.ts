@@ -27,7 +27,7 @@ async function publish(page: Page) {
 
 test("the admin home lists pages, home documents, Selected work and sources", async ({ page }) => {
   await signIn(page, "/admin/");
-  for (const name of ["Pages", "Home", "Selected work", "Sources"]) await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
+  for (const name of ["Pages", "Home", "Selected work", "Notes", "Sources"]) await expect(page.getByRole("heading", { name, exact: true })).toBeVisible();
   const nebuu = page.getByRole("listitem").filter({ has: page.getByRole("link", { name: "Nebuu", exact: true }) });
   await expect(nebuu).toContainText("repo");
   await expect(page.getByText("Database unavailable.")).toBeVisible();

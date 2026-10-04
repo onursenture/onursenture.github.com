@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import { NoteList } from "@/components/notes/note-list";
 import { DitherRule } from "@/components/ui/dither";
 import { LiveClock } from "@/components/ui/live-clock";
 import { SectionRow } from "@/components/ui/section-row";
@@ -7,6 +8,7 @@ import { TextLink } from "@/components/ui/text-link";
 import { bookingEnabled } from "@/content/booking";
 import { homeSwitches, profile } from "@/content/profile";
 import { NAV_ITEMS } from "@/lib/nav";
+import type { PublishedNote } from "@/lib/notes/types";
 import type { HomeContent } from "@/lib/work/views";
 import { Bio } from "./bio";
 import { Contributions } from "./contributions-row";
@@ -21,9 +23,9 @@ function sectionLink(label: string, href: string) {
   return item?.ready ? <TextLink href={href}>{label}</TextLink> : undefined;
 }
 
-// The Work home: identity, Lab, Selected work, experience and contributions,
+// The Work home: identity, Lab, Selected work, Notes, Experience and contributions,
 // separated by dither rules.
-export function HomeSite({ content }: { content: HomeContent }) {
+export function HomeSite({ content, notes = [] }: { content: HomeContent; notes?: PublishedNote[] }) {
   const { pins } = content;
   const switches = homeSwitches(content.profile);
   const rows = [
@@ -67,6 +69,11 @@ export function HomeSite({ content }: { content: HomeContent }) {
       </SectionRow>
     ) : null,
     pins.length > 0 ? <SelectedWork key="selected-work" pins={pins} /> : null,
+    notes.length > 0 ? (
+      <SectionRow key="notes" id="notes" label="Notes" action={sectionLink("All notes", "/notes/")}>
+        <NoteList notes={notes} side="work" dates="full" />
+      </SectionRow>
+    ) : null,
     <SectionRow key="experience" id="experience" label="Experience" action={sectionLink("Resume", "/resume/")}>
       <ExperienceList entries={content.experience} />
     </SectionRow>,

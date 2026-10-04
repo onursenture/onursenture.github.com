@@ -1,4 +1,4 @@
-import { integer, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { integer, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 // One row per external source. Written by the sync job, read by pages.
 export const sourceSnapshots = pgTable("source_snapshots", {
@@ -32,4 +32,20 @@ export const media = pgTable("media", {
   sourceHash: text("source_hash").notNull(),
   settings: text("settings").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+});
+
+// Notes (Sprint 9): one row per note, any status. tid is set the first time a
+// note is published and never changes (its URL). Expand-only migration.
+export const notes = pgTable("notes", {
+  id: uuid("id").primaryKey(),
+  tid: text("tid").unique(),
+  text: text("text").notNull(),
+  side: text("side").notNull(),
+  lang: text("lang").notNull().default("en"),
+  embed: jsonb("embed"),
+  status: text("status").notNull(),
+  publishAt: timestamp("publish_at", { withTimezone: true }),
+  publishedAt: timestamp("published_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
 });

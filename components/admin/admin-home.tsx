@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { buttonClass } from "@/components/ui/button";
+import { noteCounts } from "@/lib/admin/notes";
 import { docRows } from "@/lib/admin/overview";
 import { loadPinsEditor } from "@/lib/admin/load";
 import { readSourceRows } from "@/lib/admin/sources";
@@ -33,7 +34,7 @@ async function loadDocs(): Promise<ContentDoc[] | null> {
 
 // The admin home (spec §2.2).
 export async function AdminHome() {
-  const [docs, sources, pins] = await Promise.all([loadDocs(), readSourceRows(), loadPinsEditor()]);
+  const [docs, sources, pins, counts] = await Promise.all([loadDocs(), readSourceRows(), loadPinsEditor(), noteCounts()]);
   const { pages, home } = docRows(docs ?? []);
   const list = (rows: typeof pages) => (
     <ul className="type-body">
@@ -69,6 +70,23 @@ export async function AdminHome() {
       <Section title="Home">{list(home)}</Section>
       <Section title="Selected work">
         <PinsEditor init={pins.init} items={pins.items} />
+      </Section>
+      <Section
+        title="Notes"
+        action={
+          <Link href="/admin/notes/" className={buttonClass("ghost")}>
+            New note
+          </Link>
+        }
+      >
+        <p className="type-body">
+          <Link href="/admin/notes/" className="text-accent hover:underline">
+            All notes
+          </Link>{" "}
+          <span className="type-meta text-fg-muted">
+            {counts ? `· ${counts.drafts} drafts · ${counts.scheduled} scheduled · ${counts.published} published` : "· database unavailable"}
+          </span>
+        </p>
       </Section>
       <Section title="Sources">
         <SourcesPanel rows={sources} />

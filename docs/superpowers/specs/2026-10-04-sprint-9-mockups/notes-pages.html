@@ -1,0 +1,117 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@500;600&display=swap" rel="stylesheet">
+
+<h2>/notes/ sayfası, tek not sayfası ve Life görünümü</h2>
+<p class="subtitle">Not, ana sayfada seçtiğin A stilinde. Üstte /notes/ listesi için iki seçenek var, birini seç. Altta tek not sayfasının ve Life tarafının önerilen hali var; onlar için yorum yeterli.</p>
+
+<style>
+  .pp { background:#FAFAF8; color:#1F1F22; font-family:"IBM Plex Mono", ui-monospace, Menlo, monospace; font-size:11.5px; line-height:17px; padding:20px 22px; }
+  .pp.dark { background:#0B0B0C; color:#EDEDED; }
+  .pp .mut { color:#6E6E73; }
+  .pp.dark .mut { color:#8A8A90; }
+  .pp a { color:inherit; text-decoration:underline; text-decoration-color:#C9C9C3; text-underline-offset:2px; }
+  .pp.dark a { text-decoration-color:#3A3A3F; }
+  .pp a.m { color:#6E6E73; }
+  .pp.dark a.m { color:#8A8A90; }
+  .pp .g3 { display:grid; grid-template-columns:96px minmax(0,320px) 1fr; gap:16px; }
+  .pp .act { text-align:right; }
+  .pp .rule { border-top:1px dashed #D6D6D0; margin:14px 0; }
+  .pp.dark .rule { border-top-color:#2A2A2E; }
+  .pp .imgs { display:grid; grid-template-columns:1fr 1fr; gap:4px; margin-top:6px; }
+  .pp .img { background:repeating-linear-gradient(135deg,#E9E9E4 0 6px,#F1F1EC 6px 12px); border:1px solid #E6E6E1; }
+  .pp.dark .img { background:repeating-linear-gradient(135deg,#1A1A1D 0 6px,#141416 6px 12px); border-color:#222225; }
+  .pp .card { border:1px solid #E6E6E1; margin-top:6px; padding:7px 9px; background:#fff; }
+  .pp .card .t { font-weight:500; }
+  .pp .hair + .hair { border-top:1px solid #E6E6E1; padding-top:12px; margin-top:12px; }
+  .pp.dark .hair + .hair { border-top-color:#222225; }
+  .pp .doto { font-family:"Doto", monospace; font-weight:700; font-size:15px; letter-spacing:.02em; }
+  .pp .lead { font-family:"IBM Plex Sans", system-ui, sans-serif; font-weight:500; font-size:15px; line-height:21px; }
+  .pp .yr + .yr { margin-top:18px; }
+  .pp .mon { font-size:10px; letter-spacing:.04em; text-transform:uppercase; color:#6E6E73; margin:12px 0 6px; }
+  .pp .mon:first-child { margin-top:0; }
+  .pp .tag { font-size:10px; border:1px solid #D6D6D0; padding:0 4px; color:#6E6E73; margin-left:6px; }
+  .demo h3 { margin-top:26px; }
+</style>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Yıllara bölünmüş akış (önerim)</h3>
+      <p>Etiket kolonunda Doto ile yıl yazıyor, ürün sayfalarındaki "Then" bloğuyla aynı dil. Notlar yeniden eskiye. Her yıl ayrı bir satır. 30 nottan sonra "Older notes →" ile sayfalanıyor.</p>
+      <div class="pp">
+        <div class="g3"><div class="mut">← Home</div><div><div class="lead">Notes <span class="mut">What I'm making, in short.</span></div></div><div class="act mut"><a href="#">RSS</a></div></div>
+        <div class="rule"></div>
+        <div class="g3">
+          <div class="doto">2026</div>
+          <div>
+            <div class="hair">Shipped /resume.pdf. It's rendered on the server from the same data as the page, so the paper copy can't drift from the site.<div style="margin-top:3px"><a href="#" class="m">Oct 4</a></div></div>
+            <div class="hair">Notes editor, first pass. The counter counts graphemes, not characters: 👍🏽 is one.<div class="imgs"><div class="img" style="aspect-ratio:16/10"></div><div class="img" style="aspect-ratio:16/10"></div></div><div style="margin-top:3px"><a href="#" class="m">Oct 3</a></div></div>
+          </div>
+          <div></div>
+        </div>
+        <div class="rule"></div>
+        <div class="g3">
+          <div class="doto">2025</div>
+          <div><div class="hair">PrimeIcons crossed another milestone this week.<div style="margin-top:3px"><a href="#" class="m">Dec 12</a></div></div></div>
+          <div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Tek düz akış, ay başlıkları</h3>
+      <p>Tek satır, etiket kolonunda sadece "Notes" yazıyor. Akışın içinde küçük ay başlıkları var. Daha kompakt, ama yıllık ritim kayboluyor.</p>
+      <div class="pp">
+        <div class="g3"><div class="mut">← Home</div><div><div class="lead">Notes <span class="mut">What I'm making, in short.</span></div></div><div class="act mut"><a href="#">RSS</a></div></div>
+        <div class="rule"></div>
+        <div class="g3">
+          <div>Notes</div>
+          <div>
+            <div class="mon">October 2026</div>
+            <div class="hair">Shipped /resume.pdf. It's rendered on the server from the same data as the page, so the paper copy can't drift from the site.<div style="margin-top:3px"><a href="#" class="m">Oct 4</a></div></div>
+            <div class="hair">Notes editor, first pass. The counter counts graphemes, not characters: 👍🏽 is one.<div class="imgs"><div class="img" style="aspect-ratio:16/10"></div><div class="img" style="aspect-ratio:16/10"></div></div><div style="margin-top:3px"><a href="#" class="m">Oct 3</a></div></div>
+            <div class="mon">December 2025</div>
+            <div class="hair">PrimeIcons crossed another milestone this week.<div style="margin-top:3px"><a href="#" class="m">Dec 12</a></div></div>
+          </div>
+          <div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="demo">
+  <h3>Tek not sayfası: /notes/3m2k7xq4ab2c/</h3>
+  <p class="subtitle">Not büyük okunuyor. Tam tarih ve saat görünüyor. Altta aynı taraftaki önceki ve sonraki not var. Sayfa başlığı ve og:description notun metni. Görselli notlarda og:image ilk görselin JPEG'i (mevcut kural). Sadece Life'a ait bir not /life/notes/&lt;tid&gt;/ adresinde, koyu temada açılıyor.</p>
+  <div class="pp">
+    <div class="g3"><div class="mut">← Notes</div>
+      <div>
+        <div class="lead" style="font-weight:400">Notes editor, first pass. The counter counts graphemes, not characters: 👍🏽 is one.</div>
+        <div class="imgs" style="margin-top:10px"><div class="img" style="aspect-ratio:16/10"></div><div class="img" style="aspect-ratio:16/10"></div></div>
+        <div class="mut" style="margin-top:8px">Oct 3, 2026 · 14:15</div>
+      </div>
+      <div class="act mut"></div>
+    </div>
+    <div class="rule"></div>
+    <div class="g3"><div class="mut">More</div><div><div style="display:flex;justify-content:space-between"><a href="#">← Good walkthrough of publishing…</a><a href="#">Shipped /resume.pdf… →</a></div></div><div></div></div>
+  </div>
+
+  <h3>Life tarafı: /life/ üzerinde bir "Notes" bölümü ve /life/notes/</h3>
+  <p class="subtitle">Aynı A stili, koyu temada. /life/'ta Writing bölümünün üstünde son 3 Life notu duruyor. Boot readout'a bir "note" satırı ekleniyor. İki tarafa da giden notlar her iki listede görünüyor ama ayrıca işaretlenmiyor.</p>
+  <div class="pp dark">
+    <div class="g3">
+      <div>Notes</div>
+      <div>
+        <div class="hair">Notes editor, first pass. The counter counts graphemes, not characters: 👍🏽 is one.<div style="margin-top:3px"><a href="#" class="m">Oct 3</a></div></div>
+        <div class="hair">Yui found the one sunny square on the balcony again.<div class="imgs"><div class="img" style="aspect-ratio:4/5"></div><div class="img" style="aspect-ratio:4/5"></div></div><div style="margin-top:3px"><a href="#" class="m">Oct 2</a></div></div>
+      </div>
+      <div class="act mut"><a href="#">All notes</a></div>
+    </div>
+  </div>
+</div>

@@ -22,6 +22,16 @@ describe("buildReadout", () => {
     expect(lines.find((l) => l.key === "photo")!.href).toBe("/life/photos/night-boulevard/");
   });
 
+  it("adds the latest Life note on one line, after the photo", () => {
+    const lines = buildReadout({
+      photo: { title: "Night Boulevard", slug: "night-boulevard" },
+      note: { text: "Yui found the sun\nagain.", href: "/life/notes/3m2k7xq4ab2c2/" },
+      post: { title: "Hello", link: "https://w00f.org/hello" },
+    });
+    expect(lines.map(readoutText)).toEqual(["last photo: Night Boulevard", "note: Yui found the sun again.", "writing: Hello"]);
+    expect(lines.find((l) => l.key === "note")!.href).toBe("/life/notes/3m2k7xq4ab2c2/");
+  });
+
   it("omits a source with no data instead of faking a line", () => {
     const lines = buildReadout({ film: undefined, contributions: { total: 0, weeks: [] } });
     expect(lines).toEqual([]);

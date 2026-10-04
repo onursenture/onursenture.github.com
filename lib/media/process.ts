@@ -11,12 +11,19 @@ export interface UploadTarget {
   imageId: string;
 }
 
+// Where the renditions go and which sizes are accepted: product pages use
+// 16:10 under media/work/ (processImage), notes any ratio under media/notes/.
+export interface ProcessOptions {
+  key: (sourceHash: string) => string;
+  check: (width: number, height: number) => string | null;
+}
+
 // Checks an uploaded original and renders its renditions (the same widths and
 // encoder as `npm run images`) into storage. Nothing is written for a
 // rejected file; the caller records the returned MediaRecord.
-export async function processImage(
+export async function processImageWith(
   input: Buffer,
-  target: UploadTarget,
+  options: ProcessOptions,
   storage: MediaStorage,
   now: Date,
 ): Promise<{ ok: true; record: MediaRecord } | { ok: false; reason: string }> {
@@ -33,11 +40,11 @@ export async function processImage(
   }
   if (!width || !height) return { ok: false, reason: "The file is not a readable image." };
   if (format !== "png" && format !== "jpeg") return { ok: false, reason: "Use a PNG or JPEG." };
-  const problem = checkDimensions(width, height);
+  const problem = options.check(width, height);
   if (problem) return { ok: false, reason: problem };
 
   const sourceHash = createHash("sha256").update(input).digest("hex");
-  const key = `media/work/${target.slug}/${target.imageId}-${sourceHash.slice(0, 8)}`;
+  const key = options.key(sourceHash);
   const widths = widthsFor(width);
   const largest = widths[widths.length - 1];
   // One decode, scaled to the largest rendition; every rendition is cut from it.
@@ -59,4 +66,8 @@ export async function processImage(
     ok: true,
     record: { key, baseUrl, width: largest, height: Math.round((height * largest) / width), widths, sourceHash, settings: IMAGE_SETTINGS, createdAt: now },
   };
+}
+
+export function processImage(input: Buffer, target: UploadTarget, storage: MediaStorage, now: Date) {
+  return processImageWith(input, { key: (hash) => `media/work/${target.slug}/${target.imageId}-${hash.slice(0, 8)}`, check: checkDimensions }, storage, now);
 }

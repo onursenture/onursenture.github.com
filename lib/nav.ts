@@ -12,10 +12,11 @@ export interface NavItem {
 // header still shows no nav. The product pages are reached from the home page
 // (Selected work, Experience), not the header: there is no /work/ index (it
 // redirects to /). Life is not a nav item: the Life switch in the header
-// reaches it. Notes returns in Sprint 9.
+// reaches it. Notes shipped in Sprint 9 (the home's Notes row links it).
 export const NAV_ITEMS: NavItem[] = [
   { label: "Lab", href: "/lab/", ready: false, inHeader: true },
   { label: "Resume", href: "/resume/", ready: true, inHeader: false },
+  { label: "Notes", href: "/notes/", ready: true, inHeader: false },
 ];
 
 export function readyItems(items: NavItem[] = NAV_ITEMS): NavItem[] {

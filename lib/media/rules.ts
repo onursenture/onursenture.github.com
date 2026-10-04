@@ -14,3 +14,15 @@ export function checkDimensions(width: number, height: number): string | null {
   if (width < MIN_WIDTH) return `The image is ${width}px wide; it needs at least ${MIN_WIDTH}px.`;
   return null;
 }
+
+// Notes (Sprint 9 spec §4.3): any ratio from 1:3 to 3:1 (screenshots, phone
+// photos), at least 320px wide. The 16:10 rule above stays for product pages.
+export const NOTE_MIN_WIDTH = 320;
+const NOTE_MAX_RATIO = 3;
+
+export function checkNoteDimensions(width: number, height: number): string | null {
+  const ratio = width / height;
+  if (ratio > NOTE_MAX_RATIO || ratio < 1 / NOTE_MAX_RATIO) return `The image is ${width}×${height}; notes take ratios from 1:3 to 3:1.`;
+  if (width < NOTE_MIN_WIDTH) return `The image is ${width}px wide; it needs at least ${NOTE_MIN_WIDTH}px.`;
+  return null;
+}

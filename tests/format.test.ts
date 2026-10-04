@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatClock, formatDate, formatDateTime, formatRelative } from "@/lib/format";
+import { formatClock, formatDate, formatDateTime, formatMonthDay, formatNoteStamp, formatRelative } from "@/lib/format";
 
 describe("format", () => {
   it("formats in Europe/Istanbul", () => {
@@ -35,5 +35,13 @@ describe("formatClock", () => {
   it("prints 24-hour HH:mm in the given zone", () => {
     expect(formatClock(Date.parse("2026-10-03T11:32:00.000Z"), "Europe/Istanbul")).toBe("14:32");
     expect(formatClock(Date.parse("2026-10-03T21:05:00.000Z"), "Europe/Istanbul")).toBe("00:05");
+  });
+});
+
+describe("note dates", () => {
+  it("formats in Istanbul time", () => {
+    expect(formatMonthDay("2026-10-04T11:00:00.000Z")).toBe("Oct 4");
+    expect(formatMonthDay("2026-10-04T22:30:00.000Z")).toBe("Oct 5");
+    expect(formatNoteStamp("2026-10-03T11:15:00.000Z")).toBe("Oct 3, 2026 · 14:15");
   });
 });
