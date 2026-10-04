@@ -24,6 +24,7 @@
     "@dnd-kit/sortable": "10.0.0",
     "@dnd-kit/utilities": "3.2.2",
     "@neondatabase/serverless": "1.2.0",
+    "@react-pdf/renderer": "4.9.0",
     "@vercel/blob": "2.8.0",
     "cheerio": "1.2.0",
     "clsx": "2.1.1",

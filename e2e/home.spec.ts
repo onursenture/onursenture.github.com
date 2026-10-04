@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { bookingEnabled } from "../content/booking";
 import { pinOrder } from "../content/pins";
 import { productPages } from "../content/work";
 import { buildPins } from "../lib/work/derive";
@@ -130,6 +131,24 @@ test("a leftover view cookie from the old dashboard view is ignored", async ({ p
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(page.locator("[data-view]")).toHaveCount(0);
+});
+
+test("the Experience row links the resume, and the header still has no nav", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("#experience").getByRole("link", { name: "Resume" })).toHaveAttribute("href", "/resume/");
+  await expect(page.getByRole("navigation", { name: "Main" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Menu" })).toHaveCount(0);
+});
+
+test("Book a call is a plain text link under the bio while booking is set up", async ({ page }) => {
+  await page.goto("/");
+  const book = page.locator("#identity").getByRole("link", { name: "Book a call" });
+  if (!bookingEnabled()) {
+    await expect(book).toHaveCount(0);
+    return;
+  }
+  await expect(book).toHaveAttribute("href", "/book/");
+  await expect(book).not.toHaveClass(/bg-/);
 });
 
 test.describe("at 390px", () => {

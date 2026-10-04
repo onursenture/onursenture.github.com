@@ -5,6 +5,7 @@ import { type LabEntry, labIndex } from "@/content/lab-index";
 import { ORGS } from "@/content/orgs";
 import { type PinRef, pinOrder } from "@/content/pins";
 import { type ProfileCopy, profile } from "@/content/profile";
+import { type Resume, resume } from "@/content/resume";
 import { productPages } from "@/content/work";
 import type { ProductPage } from "@/content/work/types";
 import { isDocKey, slugOfKey, workKey } from "@/lib/content/keys";
@@ -16,8 +17,10 @@ import {
   looseExperienceSchema,
   looseLabSchema,
   looseProductPageSchema,
+  looseResumeSchema,
   productPageSchema,
   profileSchema,
+  resumeSchema,
   schemaFor,
   workIndexSchema,
 } from "@/lib/content/schemas";
@@ -27,7 +30,7 @@ describe("document keys", () => {
     expect(workKey("nebuu")).toBe("work/nebuu");
     expect(slugOfKey("work/nebuu")).toBe("nebuu");
     expect(slugOfKey("lab")).toBeNull();
-    for (const key of ["work/nebuu", "work-index", "pins", "lab", "profile", "experience"]) expect(isDocKey(key), key).toBe(true);
+    for (const key of ["work/nebuu", "work-index", "pins", "lab", "profile", "experience", "resume"]) expect(isDocKey(key), key).toBe(true);
     for (const key of ["work/Nebuu", "work/", "settings", "work/a/b"]) expect(isDocKey(key), key).toBe(false);
   });
 });
@@ -39,6 +42,7 @@ describe("schemas", () => {
     expectTypeOf<z.infer<typeof profileSchema>>().toEqualTypeOf<ProfileCopy>();
     expectTypeOf<z.infer<typeof experienceSchema>>().toEqualTypeOf<ExperienceEntry[]>();
     expectTypeOf<z.infer<typeof pinsSchema>["order"]>().toEqualTypeOf<PinRef[]>();
+    expectTypeOf<z.infer<typeof resumeSchema>>().toEqualTypeOf<Resume>();
   });
 
   it("list every organisation", () => {
@@ -52,6 +56,7 @@ describe("schemas", () => {
     expect(labSchema.safeParse(labIndex).success).toBe(true);
     expect(profileSchema.safeParse({ lead: profile.lead, bio: profile.bio }).success).toBe(true);
     expect(experienceSchema.safeParse(experience).success).toBe(true);
+    expect(resumeSchema.safeParse(resume).success).toBe(true);
   });
 
   it("reject a malformed month, an unknown block kind and an empty title", () => {
@@ -92,5 +97,18 @@ describe("schemas", () => {
     expect(schemaFor("work/nebuu")).toBe(productPageSchema);
     expect(schemaFor("lab")).toBe(labSchema);
     expect(schemaFor("experience")).toBe(experienceSchema);
+    expect(schemaFor("resume")).toBe(resumeSchema);
+  });
+
+  it("reject an empty bullet, project line or degree in the resume, but not in its loose variant", () => {
+    const rough = {
+      ...resume,
+      roles: [{ org: "primetek", bullets: [""] }],
+      projects: [{ title: "PrimeOne", line: "" }],
+      education: [{ degree: "", school: "Bilkent University" }],
+    };
+    expect(resumeSchema.safeParse(rough).success).toBe(false);
+    expect(looseResumeSchema.safeParse(rough).success).toBe(true);
+    expect(resumeSchema.safeParse({ ...resume, roles: [{ org: "nowhere", bullets: [] }] }).success).toBe(false);
   });
 });

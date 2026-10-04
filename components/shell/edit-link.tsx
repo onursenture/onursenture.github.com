@@ -4,8 +4,9 @@ import { usePathname } from "next/navigation";
 import { useSyncExternalStore } from "react";
 import { HINT_COOKIE } from "@/lib/auth/names";
 
-// The editor for the page you're on: a product page's editor, else the admin home.
+// The editor for the page you're on: a product page's or the resume's editor, else the admin home.
 export function editHref(pathname: string): string {
+  if (pathname === "/resume/") return "/admin/resume/";
   const match = /^\/work\/([a-z0-9-]+)\/$/.exec(pathname);
   return match ? `/admin/work/${match[1]}/` : "/admin/";
 }

@@ -1,5 +1,8 @@
 import "server-only";
+import { safeSpan } from "@/content/experience";
+import { ORGS } from "@/content/orgs";
 import type { PinRef } from "@/content/pins";
+import type { Resume } from "@/content/resume";
 import type { ProductPage } from "@/content/work/types";
 import { getContentStore } from "@/lib/content/get-store";
 import type { DocKey } from "@/lib/content/keys";
@@ -10,6 +13,7 @@ import type { ImageEntry } from "@/lib/images/plan";
 import { buildPins, imageKey, pageImages } from "@/lib/work/derive";
 import { pinItems, type PinItem } from "./pin-items";
 import type { DocEditorInit } from "./results";
+import { alignRoles, type ResumeEditorData } from "./resume";
 
 export interface LoadedDoc<T> extends DocEditorInit<T> {
   // The live value (published, else repo): ids in it are locked.
@@ -104,4 +108,42 @@ export async function loadPinsEditor(): Promise<{ init: DocEditorInit<{ order: P
     available: loaded.available,
   };
   return { init, items };
+}
+
+// The resume editor: the document (roles aligned to the live Experience), the
+// Experience orgs for the Roles cards, and the "Add from…" options.
+export async function loadResumeEditor(): Promise<ResumeEditorData> {
+  const loaded = await loadDoc<Resume>("resume");
+  let values = new Map<string, unknown>();
+  try {
+    const store = getContentStore();
+    if (store) values = publishedValues(await store.listDocs());
+  } catch (e) {
+    console.warn("[admin] loading the resume context failed:", e instanceof Error ? e.message : e);
+  }
+  const site = resolveSite(values);
+  const roles = alignRoles(loaded.value.roles, site.experience);
+  return {
+    init: {
+      docKey: loaded.docKey,
+      value: { ...loaded.value, roles },
+      // Aligned roles are not what is stored: open with that as an unsaved edit,
+      // so Save draft and Publish write the aligned value.
+      dirty: loaded.available && JSON.stringify(roles) !== JSON.stringify(loaded.value.roles),
+      draftUpdatedAt: loaded.draftUpdatedAt,
+      hasDraft: loaded.hasDraft,
+      publishedAt: loaded.publishedAt,
+      available: loaded.available,
+    },
+    roles: site.experience.map((entry) => ({
+      org: entry.org,
+      name: ORGS[entry.org].name,
+      role: entry.role,
+      span: safeSpan(entry.start, entry.end),
+    })),
+    sources: [
+      ...site.pages.map((page) => ({ kind: "Page" as const, title: page.title, href: `/work/${page.slug}/` })),
+      ...site.lab.flatMap((entry) => (entry.href ? [{ kind: "Lab" as const, title: entry.title, href: entry.href }] : [])),
+    ],
+  };
 }

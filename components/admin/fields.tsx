@@ -141,9 +141,9 @@ export function SelectField<T extends string>({
   );
 }
 
-export function AddButton({ onClick, children }: { onClick: () => void; children: ReactNode }) {
+export function AddButton({ onClick, disabled, children }: { onClick: () => void; disabled?: boolean; children: ReactNode }) {
   return (
-    <button type="button" onClick={onClick} className="self-start type-meta text-accent hover:underline">
+    <button type="button" onClick={onClick} disabled={disabled} className="self-start type-meta text-accent hover:underline disabled:opacity-40">
       + {children}
     </button>
   );

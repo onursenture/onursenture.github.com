@@ -3,6 +3,7 @@ import { type ExperienceEntry, experience } from "@/content/experience";
 import { type LabEntry, labIndex } from "@/content/lab-index";
 import { type PinRef, pinOrder } from "@/content/pins";
 import { type ProfileCopy, profile } from "@/content/profile";
+import { type Resume, resume } from "@/content/resume";
 import { productPages } from "@/content/work";
 import type { ProductPage } from "@/content/work/types";
 import { type DocKey, slugOfKey, workKey } from "./keys";
@@ -11,6 +12,7 @@ import {
   labSchema,
   looseExperienceSchema,
   looseLabSchema,
+  looseResumeSchema,
   loosePinsSchema,
   looseProductPageSchema,
   looseProfileSchema,
@@ -18,6 +20,7 @@ import {
   pinsSchema,
   productPageSchema,
   profileSchema,
+  resumeSchema,
   workIndexSchema,
 } from "./schemas";
 
@@ -32,6 +35,7 @@ export interface SiteContent {
   lab: LabEntry[];
   profile: ProfileCopy;
   experience: ExperienceEntry[];
+  resume: Resume;
 }
 
 // The part of a stored document resolution needs (ContentDoc extends it).
@@ -45,7 +49,7 @@ export interface DocSnapshot {
 export type DocValues = Map<string, unknown>;
 
 export function repoSite(): SiteContent {
-  return { pages: productPages, pins: pinOrder, lab: labIndex, profile: { lead: profile.lead, bio: profile.bio }, experience };
+  return { pages: productPages, pins: pinOrder, lab: labIndex, profile: { lead: profile.lead, bio: profile.bio, available: profile.available, bookOnHome: profile.bookOnHome }, experience, resume };
 }
 
 // A document's repo value, the editor's starting point when nothing is stored.
@@ -65,6 +69,8 @@ export function repoValue(key: DocKey): unknown {
       return repo.profile;
     case "experience":
       return repo.experience;
+    case "resume":
+      return repo.resume;
     default:
       return null;
   }
@@ -118,5 +124,6 @@ export function resolveSite(values: DocValues, options: ResolveOptions = {}): Si
     lab: parsed(values, "lab", loose ? looseLabSchema : labSchema) ?? repo.lab,
     profile: parsed(values, "profile", loose ? looseProfileSchema : profileSchema) ?? repo.profile,
     experience: parsed(values, "experience", loose ? looseExperienceSchema : experienceSchema) ?? repo.experience,
+    resume: parsed(values, "resume", loose ? looseResumeSchema : resumeSchema) ?? repo.resume,
   };
 }

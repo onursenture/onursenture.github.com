@@ -1,6 +1,7 @@
 import type { ExperienceEntry } from "@/content/experience";
 import type { LabEntry } from "@/content/lab-index";
 import { ORGS } from "@/content/orgs";
+import type { Resume, ResumeRole } from "@/content/resume";
 import type { Block, ProductPage, WorkImage } from "@/content/work/types";
 import type { Issue } from "./issues";
 import { type DocKey, slugOfKey } from "./keys";
@@ -31,13 +32,14 @@ export interface IssueContext {
   value: unknown;
 }
 
-type Scope = "page" | "block" | "image" | "lab" | "profile" | "role" | "product" | "pin" | "index";
+type Scope = "page" | "block" | "image" | "lab" | "profile" | "role" | "product" | "pin" | "index" | "resume";
 
 const DOC_NAMES: Partial<Record<DocKey, string>> = {
   lab: "Lab",
   profile: "Bio",
   experience: "Experience",
   pins: "Selected work",
+  resume: "Resume",
   "work-index": "Pages",
 };
 
@@ -65,6 +67,12 @@ const NAMES: Record<string, string> = {
   note: "Note",
   order: "Order",
   slugs: "Pages",
+  line: "Line",
+  group: "Group",
+  items: "Items",
+  degree: "Degree",
+  school: "School",
+  summary: "Summary",
 };
 
 const COLUMNS: Record<string, string> = { label: "label", value: "value", href: "URL", name: "name", role: "role" };
@@ -98,6 +106,10 @@ function fieldName(scope: Scope, rest: string[]): string | null {
     }
     case "href":
       return scope === "product" ? "Page" : "Link";
+    case "bullets":
+      return numbered ? `Bullet ${ordinal(second)}` : "Bullets";
+    case "contact":
+      return second === "email" ? "Email" : second === "linkedin" ? "LinkedIn" : "Contact";
     default:
       return rest.length === 1 && NAMES[head] ? NAMES[head] : rest.join("/");
   }
@@ -193,6 +205,35 @@ function walkPins(segments: string[]): Walk {
   return { parts: [`FIG. ${pad2(ordinal(path[0]))}`], target: null, scope: "pin", rest: path.slice(1) };
 }
 
+// The resume's lists: the section's name and what names an entry in it.
+const RESUME_LISTS: Record<string, { section: string; name: (item: Record<string, unknown>) => unknown; fallback: string }> = {
+  projects: { section: "Projects", name: (item) => item.title, fallback: "Project" },
+  skills: { section: "Skills", name: (item) => item.group, fallback: "Group" },
+  education: { section: "Education", name: (item) => item.degree, fallback: "Entry" },
+};
+
+function walkResume(resume: Resume | undefined, segments: string[]): Walk {
+  const [section, index] = segments;
+  if (section === "roles" && index !== undefined) {
+    const role = at<ResumeRole>(resume?.roles, index);
+    if (!role) return unresolved(["Roles"], segments.slice(1));
+    return { parts: ["Roles", ORGS[role.org]?.name ?? `Role ${ordinal(index)}`], target: null, scope: "resume", rest: segments.slice(2) };
+  }
+  const list = RESUME_LISTS[section];
+  if (list && index !== undefined) {
+    const item = at<Record<string, unknown>>((resume as unknown as Record<string, unknown> | undefined)?.[section], index);
+    if (!item) return unresolved([list.section], segments.slice(1));
+    const name = list.name(item);
+    return {
+      parts: [list.section, typeof name === "string" && name.trim() ? name.trim() : `${list.fallback} ${ordinal(index)}`],
+      target: null,
+      scope: "resume",
+      rest: segments.slice(2),
+    };
+  }
+  return { parts: [], target: null, scope: "resume", rest: segments };
+}
+
 function walk(doc: DocKey, segments: string[], value: unknown): Walk {
   if (slugOfKey(doc) !== null) return walkPage(value as ProductPage | undefined, segments);
   switch (doc) {
@@ -204,6 +245,8 @@ function walk(doc: DocKey, segments: string[], value: unknown): Walk {
       return walkPins(segments);
     case "profile":
       return { parts: [], target: null, scope: "profile", rest: segments };
+    case "resume":
+      return walkResume(value as Resume | undefined, segments);
     default:
       return { parts: [], target: null, scope: "index", rest: segments };
   }
@@ -244,6 +287,9 @@ function fieldPath(doc: DocKey, segments: string[]): { scope: Scope; rest: strin
       return a === "order" && index(b) ? { scope: "pin", rest: segments.slice(2) } : null;
     case "profile":
       return { scope: "profile", rest: segments };
+    case "resume":
+      if (a === "roles" || a === "projects" || a === "skills" || a === "education") return index(b) ? { scope: "resume", rest: segments.slice(2) } : null;
+      return { scope: "resume", rest: segments };
     default:
       return null;
   }

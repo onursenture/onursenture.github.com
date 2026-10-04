@@ -6,6 +6,12 @@ const { version } = JSON.parse(readFileSync("package.json", "utf8")) as { versio
 const nextConfig: NextConfig = {
   cacheComponents: true,
   trailingSlash: true,
+  // The resume PDF reads its vendored fonts from disk when a publish
+  // regenerates it, so they must ship with these two routes.
+  outputFileTracingIncludes: {
+    "/resume.pdf": ["./lib/resume/pdf/fonts/**"],
+    "/admin/preview/resume.pdf": ["./lib/resume/pdf/fonts/**"],
+  },
   // Build metadata for the footer line (lib/build-info.ts). Inlined at build
   // time; the commit only exists on Vercel.
   env: {

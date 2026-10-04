@@ -1,11 +1,11 @@
 import { Fragment } from "react";
 import { DitherRule } from "@/components/ui/dither";
 import { LiveClock } from "@/components/ui/live-clock";
-import { PrimaryButton } from "@/components/ui/primary-button";
 import { SectionRow } from "@/components/ui/section-row";
 import { StatusGlyph } from "@/components/ui/status-glyph";
 import { TextLink } from "@/components/ui/text-link";
-import { profile } from "@/content/profile";
+import { bookingEnabled } from "@/content/booking";
+import { homeSwitches, profile } from "@/content/profile";
 import { NAV_ITEMS } from "@/lib/nav";
 import type { HomeContent } from "@/lib/work/views";
 import { Bio } from "./bio";
@@ -25,6 +25,7 @@ function sectionLink(label: string, href: string) {
 // separated by dither rules.
 export function HomeSite({ content }: { content: HomeContent }) {
   const { pins } = content;
+  const switches = homeSwitches(content.profile);
   const rows = [
     <SectionRow
       key="identity"
@@ -40,7 +41,7 @@ export function HomeSite({ content }: { content: HomeContent }) {
         </>
       }
       action={
-        profile.available ? (
+        switches.available ? (
           <span>
             Open to work <StatusGlyph status="ok" />
           </span>
@@ -51,10 +52,13 @@ export function HomeSite({ content }: { content: HomeContent }) {
         {content.profile.lead.strong} <span className="text-fg-muted">{content.profile.lead.rest}</span>
       </h1>
       <Bio paragraphs={content.profile.bio} />
-      {profile.bookingUrl ? (
-        <div className="mt-3.5">
-          <PrimaryButton href={profile.bookingUrl}>Book a call →</PrimaryButton>
-        </div>
+      {switches.bookOnHome && bookingEnabled() ? (
+        // A text link, not a button: the home has no call to action (Sprint 8).
+        <p className="mt-2 type-body">
+          <TextLink href="/book/" className="text-accent">
+            Book a call
+          </TextLink>
+        </p>
       ) : null}
     </SectionRow>,
     content.lab.length > 0 ? (

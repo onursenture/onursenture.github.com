@@ -1,4 +1,5 @@
 import { type Page, expect, test } from "@playwright/test";
+import { bookingEnabled } from "../content/booking";
 
 test.describe.configure({ mode: "serial" });
 
@@ -241,4 +242,45 @@ test("Gonna: a publish issue names its field, opens its card, and a pin publishe
   const item = page.locator("#selected-work li").filter({ hasText: "Gonna for iPhone" });
   await expect(item).toHaveCount(1);
   await expect(item.locator("p.text-fg-muted")).toHaveCount(0);
+});
+
+test("Resume: add a bullet, publish, see it on /resume/ and in a new PDF", async ({ page, request }) => {
+  const before = await (await request.get("/resume.pdf")).body();
+  await signIn(page, "/admin/resume/");
+  await expect(page.frameLocator('iframe[title="Preview"]').locator("#experience")).toBeVisible();
+  const primetek = page.getByTestId("resume-role").filter({ hasText: "PrimeTek" });
+  await primetek.getByRole("button", { name: "Add bullet" }).click();
+  // A role name, not getByLabel: "Remove PrimeTek bullet N" buttons match that too.
+  await primetek.getByRole("textbox", { name: /^PrimeTek bullet \d+$/ }).last().fill("Shipped an e2e bullet from the admin.");
+  await publish(page);
+  await page.goto("/resume/");
+  await expect(page.locator("#experience")).toContainText("Shipped an e2e bullet from the admin.");
+  await expect.poll(async () => (await (await request.get("/resume.pdf")).body()).equals(before), { timeout: 15_000 }).toBe(false);
+  await expect(page.getByRole("link", { name: "Download PDF" })).toBeVisible();
+});
+
+test("Resume: the draft PDF preview opens for the signed-in admin", async ({ page }) => {
+  await signIn(page, "/admin/resume/");
+  const response = await page.request.get("/admin/preview/resume.pdf");
+  expect(response.status()).toBe(200);
+  expect(response.headers()["content-type"]).toBe("application/pdf");
+});
+
+test("Bio: Open to work and Book a call on home switch the home", async ({ page }) => {
+  await signIn(page, "/admin/bio/");
+  await page.getByLabel("Open to work").uncheck();
+  if (bookingEnabled()) await page.getByLabel("Book a call on home").uncheck();
+  await publish(page);
+  await page.goto("/");
+  await expect(page.locator("#identity")).not.toContainText("Open to work");
+  await expect(page.locator("#identity").getByRole("link", { name: "Book a call" })).toHaveCount(0);
+  if (bookingEnabled()) {
+    await page.goto("/resume/");
+    await expect(page.locator("#resume").getByRole("link", { name: "Book a call" })).toBeVisible();
+  }
+  // Back as they were, for the tests after this one.
+  await signIn(page, "/admin/bio/");
+  await page.getByLabel("Open to work").check();
+  if (bookingEnabled()) await page.getByLabel("Book a call on home").check();
+  await publish(page);
 });

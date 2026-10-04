@@ -49,9 +49,19 @@ describe("validateSite", () => {
 
   it("asks an unlinked Experience row for its own years, and an end after the start", () => {
     const experience = [{ ...repo.experience[2], end: "2013-01", children: [{ title: "Portal", note: "web" }] }];
-    expect(validateSite({ ...repo, experience }, hasImage)).toEqual([
+    const resume = { ...repo.resume, roles: [repo.resume.roles[2]] };
+    expect(validateSite({ ...repo, experience, resume }, hasImage)).toEqual([
       { doc: "experience", at: "0/end", message: "the end is before the start" },
       { doc: "experience", at: "0/children/0", message: "Portal needs a page or its own years" },
+    ]);
+  });
+
+  it("rejects an org listed twice in Experience, from its second entry on", () => {
+    const orkestra = repo.experience[0];
+    const experience = [...repo.experience, { ...orkestra, role: "Again", children: [] }, { ...orkestra, role: "Thrice", children: [] }];
+    expect(validateSite({ ...repo, experience }, hasImage)).toEqual([
+      { doc: "experience", at: "3/org", message: "Orkestra Studios is listed twice" },
+      { doc: "experience", at: "4/org", message: "Orkestra Studios is listed twice" },
     ]);
   });
 
@@ -63,6 +73,42 @@ describe("validateSite", () => {
   it("rejects an unknown organisation token in the bio", () => {
     const profile = { ...repo.profile, bio: [["At {acme} since 2020."]] };
     expect(validateSite({ ...repo, profile }, hasImage)).toEqual([{ doc: "profile", at: "bio/0", message: 'unknown organisation "{acme}"' }]);
+  });
+
+  it("accepts the repo resume, and checks its orgs against Experience", () => {
+    expect(validateSite(repo, hasImage)).toEqual([]);
+    const dropped = { ...repo, experience: repo.experience.filter((entry) => entry.org !== "etiya") };
+    expect(validateSite(dropped, hasImage)).toContainEqual({ doc: "resume", at: "roles/2", message: "Etiya has bullets on the resume but is not in Experience; clear them on the resume first" });
+    // A role with no bullets doesn't use its org, so the org can leave Experience.
+    const emptied = { ...dropped, resume: { ...dropped.resume, roles: dropped.resume.roles.map((role) => (role.org === "etiya" ? { ...role, bullets: [] } : role)) } };
+    expect(validateSite(emptied, hasImage)).toEqual([]);
+    const twice = { ...repo, resume: { ...repo.resume, roles: [...repo.resume.roles, repo.resume.roles[0]] } };
+    expect(validateSite(twice, hasImage)).toContainEqual({ doc: "resume", at: "roles/3", message: "Orkestra Studios is listed twice" });
+  });
+
+  it("checks the resume's email, LinkedIn handle and project links", () => {
+    const site = {
+      ...repo,
+      resume: {
+        ...repo.resume,
+        contact: { email: "not-an-email", linkedin: "https://www.linkedin.com/in/someone/" },
+        projects: [
+          { title: "Gone", line: "A page that doesn't exist.", href: "/work/gone/" },
+          { title: "Plain", line: "An http link.", href: "http://example.com" },
+        ],
+      },
+    };
+    expect(validateSite(site, hasImage)).toEqual([
+      { doc: "resume", at: "contact/email", message: "is not an email address" },
+      { doc: "resume", at: "contact/linkedin", message: "use the handle (linkedin.com/in/<handle>), not the URL" },
+      { doc: "resume", at: "projects/0/href", message: "/work/gone/ is not a product page; change it on the resume first" },
+      { doc: "resume", at: "projects/1/href", message: 'link "http://example.com" must be https' },
+    ]);
+  });
+
+  it("allows a blank email and LinkedIn handle", () => {
+    const site = { ...repo, resume: { ...repo.resume, contact: { email: "", linkedin: "" } } };
+    expect(validateSite(site, hasImage)).toEqual([]);
   });
 });
 

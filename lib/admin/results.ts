@@ -18,4 +18,7 @@ export interface DocEditorInit<T> {
   publishedAt: string | null;
   // False without a database: the editor shows the content but can't save.
   available: boolean;
+  // The loaded value differs from the stored one (e.g. resume roles aligned to
+  // Experience): start with it as an unsaved edit.
+  dirty?: boolean;
 }

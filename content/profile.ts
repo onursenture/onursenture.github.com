@@ -12,9 +12,10 @@ export interface Profile {
   // The home h1: a strong opening and a muted continuation.
   lead: { strong: string; rest: string };
   bio: BioSegment[][];
+  // "Open to work ●" on the home (the admin switches it, Sprint 8).
   available: boolean;
-  // "Book a call" renders only when this is set (Sprint 8).
-  bookingUrl?: string;
+  // "Book a call →" under the home bio, while booking is set up (content/booking.ts).
+  bookOnHome: boolean;
   // Handles, not URLs; socialLinks() builds the URLs.
   social: {
     x: string;
@@ -26,8 +27,16 @@ export interface Profile {
   };
 }
 
-// The part of the profile the admin edits (Sprint 7): the home's lead and bio.
-export type ProfileCopy = Pick<Profile, "lead" | "bio">;
+// The part of the profile the admin edits: the home's lead and bio (Sprint 7)
+// and its two switches (Sprint 8). The switches are optional so a profile
+// document published before Sprint 8 still parses; homeSwitches() reads a
+// missing one from the repo.
+export interface ProfileCopy {
+  lead: { strong: string; rest: string };
+  bio: BioSegment[][];
+  available?: boolean;
+  bookOnHome?: boolean;
+}
 
 export const profile: Profile = {
   name: "Onur Senture",
@@ -54,6 +63,7 @@ export const profile: Profile = {
     ],
   ],
   available: true,
+  bookOnHome: true,
   social: {
     x: "w00f",
     dribbble: "onursenture",
@@ -78,4 +88,9 @@ export function socialLinks(p: Profile = profile): SocialLink[] {
     { label: "X", href: `https://x.com/${p.social.x}` },
     { label: "Dribbble", href: `https://dribbble.com/${p.social.dribbble}` },
   ];
+}
+
+// The home's switches, with a missing stored value read from the repo.
+export function homeSwitches(copy: ProfileCopy, repo: Profile = profile): { available: boolean; bookOnHome: boolean } {
+  return { available: copy.available ?? repo.available, bookOnHome: copy.bookOnHome ?? repo.bookOnHome };
 }

@@ -71,3 +71,11 @@ function month(ym: string): string {
 export function formatSpan(start: string, end: string | null): string {
   return `${month(start)}–${end ? month(end) : "now"}`;
 }
+
+const MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
+
+// formatSpan once both months are real, else "": a half-filled draft has
+// blank months, which formatSpan would print as "undefined".
+export function safeSpan(start: string, end: string | null): string {
+  return MONTH.test(start) && (end === null || MONTH.test(end)) ? formatSpan(start, end) : "";
+}

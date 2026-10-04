@@ -1,0 +1,119 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@500;600&display=swap" rel="stylesheet">
+
+<h2>/resume/ on the web: which layout?</h2>
+<p class="subtitle">The copy is a <b>draft</b> built from LinkedIn facts. You fill in the real text in the admin. The PDF is a separate question on the next screen; here we only pick the web page. Click one.</p>
+
+<style>
+  .pp { background:#FAFAF8; color:#1F1F22; font-family:"IBM Plex Mono", ui-monospace, Menlo, monospace; font-size:11.5px; line-height:17px; padding:20px 22px; }
+  .pp .mut { color:#6E6E73; }
+  .pp .soft { color:#45454A; }
+  .pp a { color:#2F55F5; text-decoration:none; }
+  .pp .lead { font-family:"IBM Plex Sans", system-ui, sans-serif; font-weight:600; font-size:17px; line-height:22px; }
+  .pp .rule { border-top:1px dashed #D6D6D0; margin:14px 0; }
+  .pp .g3 { display:grid; grid-template-columns:96px minmax(0,300px) 1fr; gap:16px; }
+  .pp .act { text-align:right; }
+  .pp .btn { display:inline-block; background:#2F55F5; color:#fff; padding:3px 9px; border-radius:3px; font-size:10.5px; }
+  .pp .lbl { font-size:10px; letter-spacing:.04em; text-transform:uppercase; color:#6E6E73; }
+  .pp .org { display:flex; justify-content:space-between; gap:8px; }
+  .pp .mark { display:inline-block; width:12px; height:12px; background:#1F1F22; color:#fff; font-size:8px; line-height:12px; text-align:center; margin-right:5px; vertical-align:-1px; }
+  .pp ul { margin:4px 0 0; padding-left:14px; }
+  .pp li { margin:2px 0; }
+  .pp .doto { font-family:"Doto", monospace; font-weight:700; }
+  .pp .sheet { background:#fff; border:1px solid #E6E6E1; max-width:440px; margin:0 auto; padding:22px 26px; }
+  .pp .bar { display:flex; justify-content:space-between; max-width:440px; margin:0 auto 10px; }
+  .pp .two { display:grid; grid-template-columns:130px 1fr; gap:18px; }
+  .pp .side { border-right:1px solid #E6E6E1; padding-right:14px; }
+  .pp h4 { margin:10px 0 3px; font-size:10px; letter-spacing:.04em; text-transform:uppercase; color:#6E6E73; font-weight:500; }
+</style>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>On the site grid (my pick)</h3>
+      <p>Same rows as the home and product pages: label | content | action, with a dither rule between rows. Download PDF and Book a call sit in the header row's action column. Product names link to their pages. It reads as part of the site, not a pasted-in document.</p>
+      <div class="pp">
+        <div class="g3">
+          <div class="mut">← Home</div>
+          <div>
+            <div class="lead">Onur Senture <span class="mut">Designer who builds.</span></div>
+            <div class="mut" style="margin-top:6px">Ankara · remote / hybrid</div>
+            <div style="margin-top:2px"><a href="#">hello@…</a> · <a href="#">onursenture.com</a> · <a href="#">LinkedIn ↗</a></div>
+          </div>
+          <div class="act"><span class="btn">Download PDF</span><div style="margin-top:6px"><a href="#">Book a call →</a></div></div>
+        </div>
+        <div class="rule"></div>
+        <div class="g3"><div class="mut">Summary</div><div class="soft">Designer who builds: ten years leading design at PrimeTek on a design system used across Vue, Angular and React, and a decade of iOS games and apps at Orkestra, designed and shipped end to end.</div><div></div></div>
+        <div class="rule"></div>
+        <div class="g3"><div class="mut">Experience</div>
+          <div>
+            <div class="org"><span><span class="mark">P</span>PrimeTek <span class="mut">· Design lead</span></span><span class="mut">2016–2026</span></div>
+            <ul class="soft"><li>Built <a href="#">PrimeOne</a>, the Figma design system behind PrimeVue, PrimeNG and PrimeReact.</li><li>Designed <a href="#">PrimeBlocks</a>, <a href="#">PrimeIcons</a> and 25+ app <a href="#">templates</a>.</li></ul>
+            <div class="org" style="margin-top:10px"><span><span class="mark">O</span>Orkestra Studios <span class="mut">· Co-founder, designer</span></span><span class="mut">2013–now</span></div>
+            <ul class="soft"><li><a href="#">Nebuu</a>: #1 in Turkish word games (2014).</li><li><a href="#">count.do</a>: 300k+ users (Dec 2014).</li></ul>
+            <div class="org" style="margin-top:10px"><span><span class="mark">e</span>Etiya <span class="mut">· Design specialist</span></span><span class="mut">2014–2016</span></div>
+          </div><div></div></div>
+        <div class="rule"></div>
+        <div class="g3"><div class="mut">Projects</div><div class="soft">PrimeOne · PrimeBlocks · Nebuu · Theme Designer</div><div></div></div>
+        <div class="rule"></div>
+        <div class="g3"><div class="mut">Skills</div><div class="soft"><span class="mut">Design</span> Design systems, Figma, icons<br><span class="mut">Build</span> Vue, React, Angular, iOS</div><div></div></div>
+        <div class="rule"></div>
+        <div class="g3"><div class="mut">Education</div><div class="org soft"><span>BS Computer Science, Bilkent</span><span class="mut">—</span></div><div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>A paper sheet on the page</h3>
+      <p>A white A4 sheet centered on the page, the same as the PDF, with a small bar above it. What you see is what downloads. But it reads like a document inside a website, and the sheet gets cramped on mobile.</p>
+      <div class="pp">
+        <div class="bar"><span class="mut">← Home</span><span><a href="#">Book a call →</a> &nbsp; <span class="btn">Download PDF</span></span></div>
+        <div class="sheet">
+          <div class="lead">Onur Senture</div>
+          <div class="mut">Designer who builds · Ankara · hello@… · onursenture.com</div>
+          <h4>Summary</h4><div class="soft">Designer who builds: ten years leading design at PrimeTek…</div>
+          <h4>Experience</h4>
+          <div class="org"><b style="font-weight:500">PrimeTek, Design lead</b><span class="mut">2016–2026</span></div>
+          <ul class="soft"><li>Built PrimeOne, the Figma design system…</li></ul>
+          <div class="org"><b style="font-weight:500">Orkestra Studios, Co-founder</b><span class="mut">2013–now</span></div>
+          <ul class="soft"><li>Nebuu: #1 in Turkish word games (2014).</li></ul>
+          <h4>Skills</h4><div class="soft">Design systems, Figma · Vue, React, Angular, iOS</div>
+          <h4>Education</h4><div class="soft">BS Computer Science, Bilkent</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Two-column classic</h3>
+      <p>Contact, skills and education in a narrow left column, and summary, experience and projects on the right. It's the familiar resume shape and scans fast, but it's the template look and leaves the site's grid.</p>
+      <div class="pp">
+        <div class="lead" style="margin-bottom:10px">Onur Senture <span class="mut">Designer who builds.</span></div>
+        <div class="two">
+          <div class="side">
+            <h4 style="margin-top:0">Contact</h4><div class="soft">hello@…<br>onursenture.com<br>LinkedIn ↗</div>
+            <h4>Skills</h4><div class="soft">Design systems<br>Figma<br>Vue · React<br>Angular · iOS</div>
+            <h4>Education</h4><div class="soft">BS CS, Bilkent</div>
+            <div style="margin-top:12px"><span class="btn">Download PDF</span></div>
+          </div>
+          <div>
+            <h4 style="margin-top:0">Summary</h4><div class="soft">Designer who builds: ten years leading design at PrimeTek…</div>
+            <h4>Experience</h4>
+            <div class="org"><span>PrimeTek <span class="mut">· Design lead</span></span><span class="mut">2016–2026</span></div>
+            <ul class="soft"><li>Built PrimeOne…</li></ul>
+            <div class="org"><span>Orkestra <span class="mut">· Co-founder</span></span><span class="mut">2013–now</span></div>
+            <ul class="soft"><li>Nebuu: #1 in Turkish word games…</li></ul>
+            <h4>Projects</h4><div class="soft">PrimeOne · PrimeBlocks · Nebuu</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

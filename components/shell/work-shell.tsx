@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { LifeSwitch } from "@/components/life-switch";
 import { DitherStrip } from "@/components/ui/dither";
 import { profile } from "@/content/profile";
-import { readyItems } from "@/lib/nav";
+import { headerItems } from "@/lib/nav";
 import { MenuDialog } from "./menu-dialog";
 import { NavLinks } from "./nav-links";
 import { SideFade } from "./side-fade";
@@ -11,7 +11,7 @@ import { SiteFooter } from "./site-footer";
 
 // The Work side (light only): dither strip, a header with the dot-matrix
 // name followed by the Life switch, the nav on the right once an item is
-// ready (none is yet, so no nav and no Menu button), then the page and the
+// listed there (none is, so no nav and no Menu button), then the page and the
 // footer. Pages pad themselves (SectionRow does).
 export function WorkShell({ children }: { children: ReactNode }) {
   const name = (
@@ -19,7 +19,7 @@ export function WorkShell({ children }: { children: ReactNode }) {
       {profile.name}
     </Link>
   );
-  const items = readyItems();
+  const items = headerItems();
   return (
     <SideFade>
       <div className="flex min-h-dvh flex-col bg-bg text-fg">

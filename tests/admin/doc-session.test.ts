@@ -429,3 +429,67 @@ describe("discard", () => {
     expect(session.getSnapshot()).toMatchObject({ status: "offline", blocked: false });
   });
 });
+
+describe("a dirty init", () => {
+  it("opens with the loaded value as an unsaved edit", () => {
+    const { session } = setup({ value: "aligned", dirty: true });
+    expect(session.getSnapshot()).toMatchObject({ value: "aligned", status: "dirty", canSave: true, canPublish: true });
+    expect(session.hasUnsaved).toBe(true);
+  });
+
+  it("saves the value first when publishing, then publishes", async () => {
+    const { actions, session } = setup({ value: "aligned", dirty: true, draftUpdatedAt: "t0", hasDraft: true });
+    await session.publish();
+    expect(actions.save).toHaveBeenCalledWith("lab", "aligned", "t0");
+    expect(actions.publish).toHaveBeenCalledWith("lab", "t1");
+    expect(actions.save.mock.invocationCallOrder[0]).toBeLessThan(actions.publish.mock.invocationCallOrder[0]);
+    expect(session.getSnapshot().status).toBe("published");
+  });
+
+  // The aligned value was never stored: leaving drops later edits but keeps it
+  // unsaved, so a later Publish can't send the stored, unaligned draft.
+  it("keeps the loaded value unsaved after abandon(), until it is saved", async () => {
+    const { actions, session } = setup({ value: "aligned", dirty: true, draftUpdatedAt: "t0", hasDraft: true });
+    session.abandon();
+    expect(session.getSnapshot()).toMatchObject({ value: "aligned", status: "dirty", canSave: true });
+    expect(session.hasUnsaved).toBe(true);
+    edit(session, "x");
+    session.abandon();
+    expect(session.getSnapshot()).toMatchObject({ value: "aligned", status: "dirty", canSave: true });
+    await session.publish();
+    expect(actions.save).toHaveBeenCalledTimes(1);
+    expect(actions.save).toHaveBeenCalledWith("lab", "aligned", "t0");
+    expect(actions.publish).toHaveBeenCalledWith("lab", "t1");
+  });
+
+  it("goes clean on abandon() once the loaded value is saved", async () => {
+    const { actions, session } = setup({ value: "aligned", dirty: true });
+    await session.save();
+    edit(session, "x");
+    session.abandon();
+    expect(session.getSnapshot()).toMatchObject({ value: "aligned", status: "idle", canSave: false });
+    expect(session.hasUnsaved).toBe(false);
+    expect(actions.save).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the loaded value for the next save when a save in flight at abandon() fails", async () => {
+    const first = deferred<ActionResult<{ draftUpdatedAt: string }>>();
+    const { actions, session } = setup({ value: "aligned", dirty: true });
+    actions.save.mockImplementationOnce(() => first.promise);
+    edit(session, "x");
+    const done = session.save();
+    await vi.advanceTimersByTimeAsync(0);
+    session.abandon();
+    expect(session.hasUnsaved).toBe(true);
+    first.resolve({ status: "unavailable" });
+    await done;
+    expect(session.getSnapshot()).toMatchObject({ value: "aligned", status: "unavailable", canSave: true });
+    await session.save();
+    expect(actions.save).toHaveBeenLastCalledWith("lab", "aligned", null);
+  });
+
+  it("is unchanged without dirty, and ignored without a database", () => {
+    expect(setup().session.getSnapshot()).toMatchObject({ status: "idle", canSave: false });
+    expect(setup({ dirty: true, available: false }).session.getSnapshot()).toMatchObject({ status: "unavailable", canSave: false });
+  });
+});
