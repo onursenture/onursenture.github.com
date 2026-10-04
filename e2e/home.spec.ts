@@ -154,5 +154,8 @@ test.describe("at 390px", () => {
     const year = row.locator("span").last();
     await expect(year).toBeInViewport();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+    const note = row.locator("span").nth(1);
+    await expect(note).toHaveText("football card game");
+    expect(await note.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(true);
   });
 });

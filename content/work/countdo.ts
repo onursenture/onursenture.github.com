@@ -1,8 +1,7 @@
 import type { ProductPage } from "./types";
 
 // Facts: orkestra-projects.md §3 and orkestra-answers.md. "300,000+ users" is
-// orkestra.co, Dec 2014 (Onur chose it over the 100k figure). The 640 KB size
-// is from Can Bülbül's page (Oct 2014).
+// orkestra.co, Dec 2014 (Onur chose it over the 100k figure).
 export const countdo: ProductPage = {
   slug: "countdo",
   org: "orkestra",
@@ -27,13 +26,12 @@ export const countdo: ProductPage = {
       id: "then",
       year: "2013",
       body: [
-        "count.do shipped on 23 June 2013, a 640 KB app for iOS 6. On iOS 7's release day that September it already worked on iOS 7, and in November it went free, with no ads.",
+        "count.do shipped on 23 June 2013 for iOS 6. On iOS 7's release day that September it already worked on iOS 7, and in November it went free, with no ads.",
       ],
       sources: [
         { label: "Release tweet", href: "https://x.com/w00f/status/348832940899315713" },
         { label: "iOS 7 tweet", href: "https://x.com/w00f/status/380393852739137536" },
         { label: "Free, no ads", href: "https://x.com/w00f/status/404206994212814848" },
-        { label: "640 KB", href: "https://web.archive.org/web/20141018090049/http://countdo.co/" },
       ],
     },
     {

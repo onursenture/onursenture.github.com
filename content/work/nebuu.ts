@@ -3,6 +3,7 @@ import type { ProductPage } from "./types";
 // Facts: .superpowers/research/orkestra-projects.md §2 and orkestra-answers.md.
 // "#1 in Turkey's word-game category" is self-reported (orkestra.co, Dec 2014),
 // published with its year on Onur's say-so.
+// The word count (50,000+, 2026) is Onur's own figure (2026-10-04).
 export const nebuu: ProductPage = {
   slug: "nebuu",
   org: "orkestra",
@@ -49,7 +50,7 @@ export const nebuu: ProductPage = {
       id: "decks",
       heading: "Decks",
       body: [
-        "The word list grew with the game: an English-learning deck in 2017, 100 decks by 2021, Nebuu Çocuk, a kids' deck written with two psychologists, and 28 new decks in 2024. Today it holds more than 30,000 Turkish words.",
+        "The word list grew with the game: an English-learning deck in 2017, 100 decks by 2021, Nebuu Çocuk, a kids' deck written with two psychologists, and 28 new decks in 2024. In 2026 it holds more than 50,000 Turkish words.",
       ],
     },
     {

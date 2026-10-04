@@ -11,7 +11,7 @@ export const imparator: ProductPage = {
     rest: "A Turkish football card game: build a squad from two decades of Turkish football.",
   },
   intro:
-    "Collect players, legends included, set your tactics, and play friendlies and league matches to win more cards. Its last update brought the 2018/19 Süper Lig season.",
+    "Collect players, legends included, set your tactics, and play friendlies and league matches to win more cards. Its 2018 update brought the 2018/19 Süper Lig season.",
   facts: [
     { label: "Role", value: "Product, design" },
     { label: "Years", value: "2017–2018" },

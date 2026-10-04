@@ -77,7 +77,7 @@ export interface ProductPage {
 ## 2. Renderers (`components/work/`)
 
 - **Then block** (`blocks.tsx`), a row on `ROW_GRID`:
-  - **Label column:** "Then" (`type-meta text-fg-muted`), and under it the year in Doto at display size, in the accent colour.
+  - **Label column:** "Then" (muted, `text-fg-muted`, inheriting the row label's `type-body` like the other row labels, as in mockup option A), and under it the year in Doto at display size, in the accent colour.
   - **480px column:** the body paragraphs (`type-body text-fg-soft`).
   - **Sources:** one `type-meta text-fg-muted` line, "Sources: A · B", each an external `TextLink`.
   - The row's anchor is the block `id`.
