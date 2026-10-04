@@ -147,6 +147,19 @@ describe("labIndex", () => {
     expect(labIndex.every((entry) => !("placeholder" in entry))).toBe(true);
     expect(labIndex.some((entry) => /^Project 0\d$/.test(entry.title))).toBe(false);
   });
+
+  it("lists this site, then Onur's six 2026 projects in his order, each linked over https", () => {
+    expect(labIndex.map((entry) => entry.title)).toEqual([
+      "onursenture.com",
+      "Cehennem Rebirth",
+      "count.do Remastered",
+      "Motif",
+      "tanerman.com",
+      "Dönerverse",
+      "Nebuu Deck Studio",
+    ]);
+    for (const entry of labIndex) expect(entry.href, entry.title).toMatch(/^https:\/\//);
+  });
 });
 
 describe("Heatmap", () => {

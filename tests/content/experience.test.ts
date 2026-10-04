@@ -28,6 +28,28 @@ describe("experience", () => {
     }
   });
 
+  it("nests the nine Orkestra products, newest first, each linked to its page with the page's title and kind", () => {
+    const orkestra = experience.find((e) => e.org === "orkestra")!;
+    expect(orkestra.children.map((c) => c.title)).toEqual([
+      "Nebuu",
+      "Rebound Line",
+      "Hi Jump",
+      "İmparator",
+      "Harf Marf",
+      "Beatografi",
+      "count.do",
+      "Maç Kaçta",
+      "Gonna",
+    ]);
+    for (const child of orkestra.children) {
+      const page = productPages.find((p) => `/work/${p.slug}/` === child.href);
+      expect(page, child.title).toBeDefined();
+      expect(child.title).toBe(page!.title);
+      expect(child.note).toBe(page!.kind);
+      expect(child.years, child.title).toBeUndefined();
+    }
+  });
+
   it("resolves every row's year for the home", () => {
     for (const entry of getExperience()) for (const child of entry.children) expect(child.years, child.title).toMatch(/^\d{4}(–(\d{4}|now))?$/);
   });

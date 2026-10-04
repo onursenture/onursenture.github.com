@@ -70,20 +70,22 @@ test("Selected work sizes its frames for three columns in the wide row", async (
   for (const width of frames) expect(Math.round(width)).toBe(Math.round((1440 - 308 - 32) / 3));
 });
 
-test("Experience shows product rows with confirmed dates", async ({ page }) => {
+test("Experience shows every product as a linked row with its year", async ({ page }) => {
   await page.goto("/");
   const tree = page.locator("#experience");
   await expect(tree).toContainText("Jun 2013–now");
   await expect(tree).toContainText("May 2016–Apr 2026");
   await expect(tree).toContainText("Apr 2014–Mar 2016");
-  const products = tree.getByRole("list", { name: "PrimeTek work" });
-  await expect(products.getByRole("listitem")).toHaveCount(6);
-  await expect(products.getByRole("link")).toHaveCount(6);
-  await expect(products.getByRole("listitem").first()).toContainText("2022–2026");
+  const primetek = tree.getByRole("list", { name: "PrimeTek work" });
+  await expect(primetek.getByRole("listitem")).toHaveCount(6);
+  await expect(primetek.getByRole("link")).toHaveCount(6);
+  const orkestra = tree.getByRole("list", { name: "Orkestra Studios work" });
+  await expect(orkestra.getByRole("listitem")).toHaveCount(9);
+  await expect(orkestra.getByRole("link")).toHaveCount(9);
+  await expect(orkestra.getByRole("listitem").first()).toContainText("2013–now");
+  await expect(orkestra.getByRole("listitem").last()).toContainText("2012–2014");
   await expect(tree.getByRole("link", { name: "PrimeIcons" })).toHaveAttribute("href", "/work/primeicons/");
-  // Nebuu has no page: plain text, not a link.
-  await expect(tree).toContainText("Nebuu");
-  await expect(tree.getByRole("link", { name: "Nebuu" })).toHaveCount(0);
+  await expect(tree.getByRole("link", { name: "Nebuu" })).toHaveAttribute("href", "/work/nebuu/");
   const text = (await tree.textContent()) ?? "";
   expect(text).not.toMatch(/[├└]/);
 });
@@ -100,7 +102,7 @@ test("Lab lists text rows without glyphs or avatars; only linked entries link", 
   const lab = page.locator("#lab");
   await expect(lab).toContainText("onursenture.com");
   await expect(lab).not.toContainText("Project 0");
-  await expect(lab.getByRole("link")).toHaveCount(1);
+  await expect(lab.getByRole("link")).toHaveCount(7);
   await expect(lab.getByRole("img")).toHaveCount(0);
   await expect(lab.locator("canvas")).toHaveCount(0);
 });
@@ -140,6 +142,17 @@ test.describe("at 390px", () => {
     const width = await page.locator("#selected-work li").first().evaluate((el) => el.getBoundingClientRect().width);
     expect(Math.round(width)).toBe(390 - 32);
     // The truncated note never widens the page.
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  });
+
+  test("Experience keeps the year visible and truncates the note", async ({ page }) => {
+    await page.goto("/");
+    const row = page.getByRole("list", { name: "Orkestra Studios work" }).getByRole("listitem").nth(3);
+    await expect(row).toContainText("2017–2018");
+    // toBeInViewport doesn't scroll; the row is far below the fold, so bring it in first.
+    await row.scrollIntoViewIfNeeded();
+    const year = row.locator("span").last();
+    await expect(year).toBeInViewport();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
   });
 });
