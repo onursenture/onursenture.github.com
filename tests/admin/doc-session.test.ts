@@ -98,14 +98,100 @@ describe("manual save", () => {
     expect(session.getSnapshot()).toMatchObject({ status: "saved", previewVersion: 2 });
   });
 
-  it("writes nothing when the editor goes away with an unsaved edit", async () => {
+  it("returns the queued save to a second press instead of queueing another", async () => {
+    const first = deferred<ActionResult<{ draftUpdatedAt: string }>>();
     const { actions, session } = setup();
-    const listener = vi.fn();
-    const unsubscribe = session.subscribe(listener);
+    actions.save.mockImplementationOnce(() => first.promise);
     edit(session, "a");
-    unsubscribe();
-    await vi.advanceTimersByTimeAsync(LONG);
+    const one = session.save();
+    const two = session.save();
+    expect(two).toBe(one);
+    first.resolve(saved(1));
+    await two;
+    expect(actions.save).toHaveBeenCalledTimes(1);
+  });
+
+  it("can't save while a publish, discard or reset is in flight, even after an edit", async () => {
+    const release = deferred<ActionResult<{ publishedAt: string }>>();
+    const { actions, session } = setup();
+    actions.publish.mockImplementationOnce(() => release.promise);
+    edit(session, "a");
+    const done = session.publish();
+    await vi.advanceTimersByTimeAsync(0);
+    edit(session, "b");
+    expect(session.getSnapshot().canSave).toBe(false);
+    release.resolve({ status: "ok", publishedAt: "p1" });
+    await done;
+    expect(session.getSnapshot().canSave).toBe(true);
+
+    const discarding = deferred<ActionResult>();
+    actions.discard.mockImplementationOnce(() => discarding.promise);
+    const discard = session.discard();
+    edit(session, "c");
+    expect(session.getSnapshot().canSave).toBe(false);
+    discarding.resolve({ status: "unavailable" });
+    await discard;
+    expect(session.getSnapshot().canSave).toBe(true);
+  });
+});
+
+describe("leaving without saving", () => {
+  it("abandon() goes back to the init value and leaves nothing unsaved or written", async () => {
+    const { actions, session } = setup();
+    edit(session, "a");
+    session.abandon();
+    expect(session.getSnapshot()).toMatchObject({ value: "v0", status: "idle", canSave: false, canPublish: false });
+    expect(session.hasUnsaved).toBe(false);
+    await session.save();
+    await vi.advanceTimersByTimeAsync(60_000);
     expect(actions.save).not.toHaveBeenCalled();
+  });
+
+  it("abandon() goes back to the last saved draft, so a later publish can't carry the dropped edit", async () => {
+    const { actions, session } = setup();
+    edit(session, "a");
+    await session.save();
+    edit(session, "b");
+    session.abandon();
+    expect(session.getSnapshot()).toMatchObject({ value: "a", hasDraft: true, canSave: false });
+    await session.publish();
+    expect(actions.save).toHaveBeenCalledTimes(1);
+    expect(actions.save).toHaveBeenCalledWith("lab", "a", null);
+    expect(actions.publish).toHaveBeenCalledWith("lab", "t1");
+  });
+
+  it("shows the stored value when a save in flight lands after abandon()", async () => {
+    const first = deferred<ActionResult<{ draftUpdatedAt: string }>>();
+    const { actions, session } = setup();
+    actions.save.mockImplementationOnce(() => first.promise);
+    edit(session, "a");
+    const done = session.save();
+    await vi.advanceTimersByTimeAsync(0);
+    session.abandon();
+    expect(session.hasUnsaved).toBe(true);
+    first.resolve(saved(1));
+    await done;
+    expect(session.getSnapshot()).toMatchObject({ value: "a", status: "saved" });
+    expect(session.hasUnsaved).toBe(false);
+  });
+
+  it("idle() waits for a save in flight and writes no unsaved edit", async () => {
+    const first = deferred<ActionResult<{ draftUpdatedAt: string }>>();
+    const { actions, session } = setup();
+    actions.save.mockImplementationOnce(() => first.promise);
+    edit(session, "a");
+    void session.save();
+    await vi.advanceTimersByTimeAsync(0);
+    edit(session, "b");
+    let settled = false;
+    const waiting = session.idle().then(() => {
+      settled = true;
+    });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(settled).toBe(false);
+    first.resolve(saved(1));
+    await waiting;
+    expect(actions.save).toHaveBeenCalledTimes(1);
     expect(session.hasUnsaved).toBe(true);
   });
 });

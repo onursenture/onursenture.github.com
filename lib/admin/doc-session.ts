@@ -63,6 +63,15 @@ export class DocSession<T> {
   private saving = false;
   private blocked: boolean;
   private chain: Promise<unknown> = Promise.resolve();
+  // Requests queued or running (save, publish, discard, reset). Save draft
+  // waits for all of them, so repeated presses can't stack saves.
+  private busy = 0;
+  // The save queued or running, returned to a second save() instead of
+  // queueing another.
+  private queuedSave: Promise<void> | null = null;
+  // The value last stored (the init value, then each saved draft): what
+  // abandon() goes back to.
+  private baseline: T;
 
   constructor(
     init: DocEditorInit<T>,
@@ -71,6 +80,7 @@ export class DocSession<T> {
     this.docKey = init.docKey;
     this.expected = init.draftUpdatedAt;
     this.blocked = !init.available;
+    this.baseline = init.value;
     this.snapshot = {
       value: init.value,
       status: init.available ? "idle" : "unavailable",
@@ -107,8 +117,26 @@ export class DocSession<T> {
   };
 
   // Writes the unsaved edit as the draft, after the work in flight. Nothing to
-  // write (or a stopped session) is a no-op that still waits for that work.
-  save = (): Promise<void> => this.enqueue(() => this.write());
+  // write (or a stopped session) is a no-op that still waits for that work. A
+  // save already queued or running is returned rather than queued again.
+  save = (): Promise<void> => {
+    if (this.queuedSave) return this.queuedSave;
+    const run = this.enqueue(() => this.write()).finally(() => {
+      if (this.queuedSave === run) this.queuedSave = null;
+    });
+    this.queuedSave = run;
+    return run;
+  };
+
+  // Waits for the requests queued or running, writing nothing.
+  idle = (): Promise<void> => this.enqueue(async () => undefined);
+
+  // Leave without saving: back to the last stored value, nothing unsaved. A
+  // save already in flight still lands (and its value is then shown).
+  abandon = () => {
+    this.pending = false;
+    this.set({ value: this.baseline, ...(this.blocked ? {} : { status: "idle" as const }) });
+  };
 
   publish = (): Promise<void> => {
     return this.enqueue(async () => {
@@ -180,11 +208,15 @@ export class DocSession<T> {
     this.pending = false;
     this.saving = true;
     this.set({ status: "saving" });
-    const result = await this.attempt(() => this.actions.save(this.docKey, this.snapshot.value, this.expected));
+    const sent = this.snapshot.value;
+    const result = await this.attempt(() => this.actions.save(this.docKey, sent, this.expected));
     this.saving = false;
     if (result.status === "ok") {
       this.expected = result.draftUpdatedAt;
+      this.baseline = sent;
       this.set({
+        // Abandoned while it ran: show what was stored.
+        ...(this.pending ? {} : { value: sent }),
         savedAt: result.draftUpdatedAt,
         hasDraft: true,
         status: this.pending ? "dirty" : "saved",
@@ -207,7 +239,12 @@ export class DocSession<T> {
   }
 
   private enqueue<R>(work: () => Promise<R>): Promise<R> {
-    const run = this.chain.then(work);
+    this.busy++;
+    this.set({});
+    const run = this.chain.then(work).finally(() => {
+      this.busy--;
+      this.set({});
+    });
     this.chain = run.catch(() => undefined);
     return run;
   }
@@ -219,7 +256,7 @@ export class DocSession<T> {
 
   private set(patch: Partial<SessionSnapshot<T>>) {
     const next = { ...this.snapshot, ...patch, blocked: this.blocked };
-    const canSave = this.pending && !this.saving && !this.blocked && next.status !== "publishing";
+    const canSave = this.pending && this.busy === 0 && !this.blocked;
     this.snapshot = { ...next, canPublish: this.computeCanPublish(next), canSave };
     for (const listener of this.listeners) listener();
   }

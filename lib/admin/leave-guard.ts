@@ -4,6 +4,9 @@
 
 export const LEAVE_QUESTION = "You have unsaved changes. Leave without saving?";
 
+// The message the preview iframe posts to its editor on Cmd/Ctrl+S.
+export const PREVIEW_SAVE = "preview-save";
+
 interface Keys {
   key: string;
   metaKey: boolean;

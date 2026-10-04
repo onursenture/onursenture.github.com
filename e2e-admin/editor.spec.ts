@@ -8,8 +8,9 @@ async function signIn(page: Page, next: string) {
 }
 
 // The toolbar status. dnd-kit adds its own role="status" element, so the
-// selector names the paragraph.
-const status = (page: Page) => page.locator('p[role="status"]').first();
+// selector names the paragraph; Next keeps a route it left mounted but hidden,
+// hence :visible.
+const status = (page: Page) => page.locator('p[role="status"]:visible').first();
 
 // Drafts are saved only by hand: Save draft (or Cmd/Ctrl+S). Publish saves an
 // unsaved edit first, so a test that publishes needs no save of its own.
@@ -67,6 +68,27 @@ test("Lab: edits stay unsaved until saved by hand, leaving warns, publish to the
   await expect(page).toHaveURL(/\/admin\/lab\/$/);
   await expect(row.getByLabel("Description")).toHaveValue("Edited again by the admin e2e.");
 
+  // Accepting leaves and drops the edit: coming back (in-app, then after a
+  // reload) shows the saved draft, with nothing unsaved.
+  page.once("dialog", (dialog) => void dialog.accept());
+  await page.getByRole("navigation", { name: "Breadcrumb" }).getByRole("link", { name: "Admin" }).click();
+  await expect(page).toHaveURL(/\/admin\/$/);
+  await page.getByRole("link", { name: "Lab", exact: true }).click();
+  await expect(page).toHaveURL(/\/admin\/lab\/$/);
+  const back = page.getByTestId("lab-row").filter({ visible: true }).last();
+  await expect(back.getByLabel("Description")).toHaveValue("Added by the admin e2e.");
+  await expect(status(page)).not.toHaveText("Unsaved changes");
+  await page.reload();
+  await expect(page.getByTestId("lab-row").last().getByLabel("Description")).toHaveValue("Added by the admin e2e.");
+  await expect(status(page)).toContainText("Draft saved");
+
+  // Cmd/Ctrl+S inside the preview saves too.
+  await page.getByTestId("lab-row").last().getByLabel("Description").fill("Edited again by the admin e2e.");
+  await page.frameLocator('iframe[title="Preview"]').locator("#lab h2").click();
+  await page.keyboard.press("ControlOrMeta+s");
+  await expect(status(page)).toContainText("Draft saved", { timeout: 10_000 });
+  await expect(preview).toContainText("Edited again by the admin e2e.");
+
   await publish(page);
   await page.goto("/");
   await expect(page.locator("#lab")).toContainText("E2E Lab");
@@ -104,10 +126,31 @@ test("Nebuu: add, move and delete blocks, upload an image, publish", async ({ pa
   await expect(page.locator('#highlights img[src*="/api/media-dev/media/work/nebuu/cards-"]')).toHaveCount(1);
 });
 
-test("Bio: edit the lead and publish it to the home", async ({ page }) => {
-  await signIn(page, "/admin/bio/");
+// A cancelable beforeunload, as closing the tab sends: true when the page asks.
+const asksBeforeUnload = (page: Page) =>
+  page.evaluate(() => {
+    const event = new Event("beforeunload", { cancelable: true });
+    window.dispatchEvent(event);
+    return event.defaultPrevented;
+  });
+
+test("Bio: an edit left by Back still warns on close, then publish it to the home", async ({ page }) => {
+  await signIn(page, "/admin/");
+  await page.getByRole("link", { name: "Bio", exact: true }).click();
+  await expect(page).toHaveURL(/\/admin\/bio\/$/);
   await page.getByLabel("Lead, continued").fill("Edited by the admin e2e.");
+  await expect(status(page)).toHaveText("Unsaved changes");
+  expect(await asksBeforeUnload(page)).toBe(true);
+  // Back is a soft navigation with no prompt; the edit stays in the hidden
+  // editor, so closing the tab still asks, and Forward shows it again.
+  await page.goBack();
+  await expect(page).toHaveURL(/\/admin\/$/);
+  expect(await asksBeforeUnload(page)).toBe(true);
+  await page.goForward();
+  await expect(page).toHaveURL(/\/admin\/bio\/$/);
+  await expect(page.getByLabel("Lead, continued")).toHaveValue("Edited by the admin e2e.");
   await saveDraft(page);
+  expect(await asksBeforeUnload(page)).toBe(false);
   await publish(page);
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Edited by the admin e2e.");
