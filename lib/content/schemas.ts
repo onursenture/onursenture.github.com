@@ -65,6 +65,9 @@ function build(strict: boolean) {
   const profileSchema = z.object({
     lead: z.object({ strong: text(), rest: z.string() }),
     bio: z.array(z.array(z.union([z.string(), z.object({ org: orgIdSchema })]))),
+    // Sprint 8; optional so rows published before it still parse.
+    available: z.boolean().optional(),
+    bookOnHome: z.boolean().optional(),
   });
 
   // YYYY-MM

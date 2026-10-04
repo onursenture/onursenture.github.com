@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { profile, socialLinks } from "@/content/profile";
+import { homeSwitches, profile, socialLinks } from "@/content/profile";
 
 describe("profile", () => {
   it("builds the footer links from the handles, in footer order", () => {
@@ -12,7 +12,11 @@ describe("profile", () => {
     ]);
   });
 
-  it("ships without a booking link until Sprint 8 sets one", () => {
-    expect(profile.bookingUrl).toBeUndefined();
+  it("turns both home switches on in the repo, and reads a missing stored switch from the repo", () => {
+    expect(profile.available).toBe(true);
+    expect(profile.bookOnHome).toBe(true);
+    expect(homeSwitches({ lead: profile.lead, bio: profile.bio })).toEqual({ available: true, bookOnHome: true });
+    expect(homeSwitches({ lead: profile.lead, bio: profile.bio, available: false })).toEqual({ available: false, bookOnHome: true });
+    expect(homeSwitches({ lead: profile.lead, bio: profile.bio, bookOnHome: false })).toEqual({ available: true, bookOnHome: false });
   });
 });

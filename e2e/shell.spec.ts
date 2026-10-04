@@ -1,9 +1,12 @@
 import { expect, test } from "@playwright/test";
+import { bookingEnabled } from "../content/booking";
 
 test("the Work shell has the top bar, the switch and the footer", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("link", { name: "Onur Senture" })).toHaveAttribute("href", "/");
-  await expect(page.getByRole("link", { name: /Book a call/ })).toHaveCount(0);
+  if (bookingEnabled()) {
+    await expect(page.getByRole("link", { name: /Book a call/ })).toHaveCount(1);
+  }
   await expect(page.getByRole("switch", { name: "Life" }).filter({ visible: true })).toBeVisible();
 
   const footer = page.locator("footer");

@@ -45,7 +45,7 @@ export interface DocSnapshot {
 export type DocValues = Map<string, unknown>;
 
 export function repoSite(): SiteContent {
-  return { pages: productPages, pins: pinOrder, lab: labIndex, profile: { lead: profile.lead, bio: profile.bio }, experience };
+  return { pages: productPages, pins: pinOrder, lab: labIndex, profile: { lead: profile.lead, bio: profile.bio, available: profile.available, bookOnHome: profile.bookOnHome }, experience };
 }
 
 // A document's repo value, the editor's starting point when nothing is stored.
