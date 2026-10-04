@@ -13,7 +13,7 @@ const plexMono = IBM_Plex_Mono({
   variable: "--font-plex-mono",
 });
 const plexSans = IBM_Plex_Sans({
-  weight: ["500", "600"],
+  weight: ["400", "500", "600"],
   subsets: ["latin", "latin-ext"],
   display: "swap",
   variable: "--font-plex-sans",

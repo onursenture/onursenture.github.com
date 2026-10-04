@@ -10,7 +10,7 @@ import { getPhotos } from "@/lib/content/photos";
 import { buildReadout } from "@/lib/life/readout";
 import { pageMetadata } from "@/lib/metadata";
 import { getPublishedNotes } from "@/lib/notes/read";
-import { notePathOn, onSide } from "@/lib/notes/views";
+import { notePathOn, noteTitle, onSide } from "@/lib/notes/views";
 import { readSource } from "@/lib/sources/read";
 
 export const metadata: Metadata = pageMetadata("Life");
@@ -32,7 +32,7 @@ export default async function LifePage() {
     books: books.data.currentlyReading,
     article: articles.data[0],
     photo: photos[0],
-    note: latestNote ? { text: latestNote.text, href: notePathOn(latestNote, "life") } : undefined,
+    note: latestNote ? { text: noteTitle(latestNote), href: notePathOn(latestNote, "life") } : undefined,
     post: writing.data[0],
     contributions: github.data,
   });

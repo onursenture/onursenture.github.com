@@ -12,8 +12,12 @@ import { canonicalPath } from "@/lib/notes/views";
 export const FEED_LIMIT = 50;
 const DESCRIPTION = "Notes and photos by Onur Senture.";
 
+// Characters XML 1.0 forbids (control characters, U+FFFE, U+FFFF); one in a
+// note would make the whole feed unparseable.
+const ILLEGAL_XML = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g;
+
 export function escapeXml(value: string): string {
-  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+  return value.replace(ILLEGAL_XML, "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
 }
 
 function absolute(siteUrl: string, url: string): string {
@@ -47,6 +51,8 @@ export function noteHtml(note: PublishedNote, siteUrl: string): string {
 interface FeedItem {
   title: string | null;
   link: string;
+  guid: string;
+  guidIsPermaLink: boolean;
   description: string;
   date: string;
 }
@@ -60,10 +66,20 @@ export interface FeedInput {
 
 export function buildFeed({ siteUrl, title, notes, photos }: FeedInput): string {
   const items: FeedItem[] = [
-    ...notes.map((note) => ({ title: null, link: `${siteUrl}${canonicalPath(note)}`, description: noteHtml(note, siteUrl), date: note.publishedAt })),
+    ...notes.map((note) => ({
+      title: null,
+      link: `${siteUrl}${canonicalPath(note)}`,
+      // Stable and side-independent, so Life→Both never duplicates the item in a reader.
+      guid: `tag:onursenture.com,2026:note/${note.tid}`,
+      guidIsPermaLink: false,
+      description: noteHtml(note, siteUrl),
+      date: note.publishedAt,
+    })),
     ...photos.map(({ photo, entry }) => ({
       title: photo.title,
       link: `${siteUrl}/life/photos/${photo.slug}/`,
+      guid: `${siteUrl}/life/photos/${photo.slug}/`,
+      guidIsPermaLink: true,
       description: `<p><img src="${escapeXml(feedImage(siteUrl, photo.image, entry))}" alt="${escapeXml(photo.title)}"></p>`,
       date: `${photo.date}T00:00:00.000Z`,
     })),
@@ -88,7 +104,7 @@ export function buildFeed({ siteUrl, title, notes, photos }: FeedInput): string 
         "<item>",
         item.title ? `<title>${escapeXml(item.title)}</title>` : "",
         `<link>${escapeXml(item.link)}</link>`,
-        `<guid isPermaLink="true">${escapeXml(item.link)}</guid>`,
+        `<guid isPermaLink="${item.guidIsPermaLink}">${escapeXml(item.guid)}</guid>`,
         `<pubDate>${rfc822(item.date)}</pubDate>`,
         `<description>${escapeXml(item.description)}</description>`,
         "</item>",

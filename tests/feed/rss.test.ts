@@ -58,12 +58,26 @@ describe("buildFeed", () => {
     const items = xml.split("<item>").slice(1);
     expect(items).toHaveLength(2);
     expect(items[0]).not.toContain("<title>");
-    expect(items[0]).toContain('<guid isPermaLink="true">https://onursenture.com/notes/3m2k7xq4ab2c2/</guid>');
+    expect(items[0]).toContain("<link>https://onursenture.com/notes/3m2k7xq4ab2c2/</link>");
+    expect(items[0]).toContain('<guid isPermaLink="false">tag:onursenture.com,2026:note/3m2k7xq4ab2c2</guid>');
     expect(items[0]).toContain("<pubDate>Sun, 04 Oct 2026 11:00:00 GMT</pubDate>");
     expect(items[0]).toContain("<description>&lt;p&gt;Fish &amp;amp; chips");
     expect(items[1]).toContain("<title>Stabilo &amp; co</title>");
     expect(items[1]).toContain("<link>https://onursenture.com/life/photos/stabilo/</link>");
+    expect(items[1]).toContain('<guid isPermaLink="true">https://onursenture.com/life/photos/stabilo/</guid>');
     expect(items[1]).toContain("https://onursenture.com/images/photos/stabilo-1280.jpg");
+  });
+
+  it("keeps a note's guid when its side changes", () => {
+    const guid = (side: PublishedNote["side"]) => buildFeed({ siteUrl: SITE, title: "T", notes: [note({ side })], photos: [] }).match(/<guid[^>]*>[^<]*<\/guid>/)?.[0];
+    expect(guid("life")).toBe(guid("both"));
+    expect(guid("life")).toBe('<guid isPermaLink="false">tag:onursenture.com,2026:note/3m2k7xq4ab2c2</guid>');
+  });
+
+  it("drops characters XML 1.0 forbids", () => {
+    const xml = buildFeed({ siteUrl: SITE, title: "T", notes: [note({ text: "Ding\u0007 dong\u000B\uFFFE ok\tfine\nnext" })], photos: [] });
+    expect(xml).not.toMatch(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/);
+    expect(xml).toContain("Ding dong ok");
   });
 
   it("links a Life note to its Life page and keeps the newest 50 items", () => {

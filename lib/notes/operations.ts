@@ -54,6 +54,12 @@ function fieldsOf(note: Note): NoteFields {
   };
 }
 
+// Onur's rule: a published note's side only ever widens, to Both.
+function sideIssue(current: Note | null, side: NoteContent["side"]): NoteIssue[] {
+  if (!current || !isPublished(current) || side === current.side || side === "both") return [];
+  return [{ at: "side", message: "A published note can only widen to Both." }];
+}
+
 function fromWrite(write: NoteWrite): NoteOpResult {
   if (write.ok) return { status: "ok", note: write.note };
   return write.reason === "missing" ? { status: "missing" } : { status: "conflict" };
@@ -77,7 +83,7 @@ export async function saveNote(store: NoteStore, input: NoteInput, now: Date): P
   if (!current) return fromWrite(await store.create({ ...parsed.value, status: "draft", tid: null, publishAt: null, publishedAt: null }, now));
   // A scheduled or published note is live, or about to be: it must stay publishable.
   if (current.status !== "draft") {
-    const issues = publishIssues(parsed.value);
+    const issues = [...publishIssues(parsed.value), ...sideIssue(current, parsed.value.side)];
     if (issues.length > 0) return invalid(issues);
   }
   return fromWrite(await write(store, current, input, { ...fieldsOf(current), ...parsed.value }, now));
@@ -90,6 +96,8 @@ export async function publishNote(store: NoteStore, input: NoteInput, now: Date)
   if (issues.length > 0) return invalid(issues);
   const current = await loadCurrent(store, input.id);
   if (current === "missing") return { status: "missing" };
+  const sideIssues = sideIssue(current, parsed.value.side);
+  if (sideIssues.length > 0) return invalid(sideIssues);
   for (let attempt = 0; attempt < TID_ATTEMPTS; attempt++) {
     // Published once: the TID and the date never change.
     const fields: NoteFields =
@@ -131,7 +139,8 @@ export async function deleteNote(store: NoteStore, ref: NoteRef): Promise<NoteOp
 // The cron's step (spec §5): every scheduled note whose time has come goes
 // live with a TID from its scheduled time (notes sharing a time get 1µs
 // apart). A note edited or deleted meanwhile is skipped; the next run picks it
-// up if it is still due. Running twice publishes nothing new.
+// up if it is still due. A note whose update throws is skipped (and logged) so
+// it can't block the others. Running twice publishes nothing new.
 export async function publishDue(store: NoteStore, now: Date): Promise<Note[]> {
   const published: Note[] = [];
   const sameTime = new Map<string, number>();
@@ -140,11 +149,15 @@ export async function publishDue(store: NoteStore, now: Date): Promise<Note[]> {
     const at = new Date(note.publishAt);
     const offset = sameTime.get(note.publishAt) ?? 0;
     sameTime.set(note.publishAt, offset + 1);
-    for (let attempt = 0; attempt < TID_ATTEMPTS; attempt++) {
-      const fields: NoteFields = { ...fieldsOf(note), status: "published", tid: tidFromTime(at.getTime(), offset, randomClockId()), publishAt: null, publishedAt: at };
-      const result = await store.update(note.id, fields, note.updatedAt, now);
-      if (result.ok) published.push(result.note);
-      if (result.ok || result.reason !== "duplicate-tid") break;
+    try {
+      for (let attempt = 0; attempt < TID_ATTEMPTS; attempt++) {
+        const fields: NoteFields = { ...fieldsOf(note), status: "published", tid: tidFromTime(at.getTime(), offset, randomClockId()), publishAt: null, publishedAt: at };
+        const result = await store.update(note.id, fields, note.updatedAt, now);
+        if (result.ok) published.push(result.note);
+        if (result.ok || result.reason !== "duplicate-tid") break;
+      }
+    } catch (e) {
+      console.warn(`[notes] publishing ${note.id} failed:`, e instanceof Error ? e.message : e);
     }
   }
   return published;

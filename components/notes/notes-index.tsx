@@ -15,8 +15,8 @@ const HEADER = {
 } as const;
 
 // /notes/ and /life/notes/ (mockup A): a header row, then one row per year
-// (the year in Doto in the label column), 30 notes per page, the pager in the
-// last row's action column.
+// (the year in Doto in the label column), 30 notes per page, the pager in a
+// row of its own after the last year.
 export async function NotesIndex({ side, page }: { side: NotesSide; page: number }) {
   const slice = pageOf(onSide(await getPublishedNotes(), side), page);
   if (!slice) notFound();
@@ -24,11 +24,11 @@ export async function NotesIndex({ side, page }: { side: NotesSide; page: number
   const groups = groupByYear(slice.items);
   const pager =
     slice.pages > 1 ? (
-      <span className="flex flex-wrap gap-x-4 gap-y-1 lg:justify-end">
+      <div className="flex flex-wrap gap-x-4 gap-y-1">
         {slice.page > 1 ? <ItemLink href={pagePath(side, slice.page - 1)}>← Newer notes</ItemLink> : null}
         {slice.page < slice.pages ? <ItemLink href={pagePath(side, slice.page + 1)}>Older notes →</ItemLink> : null}
-      </span>
-    ) : undefined;
+      </div>
+    ) : null;
 
   const rows = [
     <SectionRow
@@ -56,16 +56,22 @@ export async function NotesIndex({ side, page }: { side: NotesSide; page: number
             <Empty>No notes yet.</Empty>
           </SectionRow>,
         ]
-      : groups.map((group, index) => (
+      : groups.map((group) => (
           <SectionRow
             key={group.year}
             id={`year-${group.year}`}
             label={<span className="type-name">{group.year}</span>}
-            action={index === groups.length - 1 ? pager : undefined}
           >
             <NoteList notes={group.notes} side={side} dates="month-day" />
           </SectionRow>
         ))),
+    ...(pager
+      ? [
+          <SectionRow key="pager" label={null}>
+            {pager}
+          </SectionRow>,
+        ]
+      : []),
   ];
 
   return (

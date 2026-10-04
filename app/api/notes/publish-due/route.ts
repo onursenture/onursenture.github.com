@@ -27,6 +27,8 @@ export async function POST(request: Request) {
     return Response.json({ published: published.length });
   } catch (e) {
     console.warn("[notes] publish-due failed:", e instanceof Error ? e.message : e);
+    // Some notes may have gone live before the failure; harmless when none did.
+    revalidateTag(NOTES_TAG, { expire: 0 });
     return Response.json({ error: "publishing failed" }, { status: 500 });
   }
 }

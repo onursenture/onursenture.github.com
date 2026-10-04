@@ -49,12 +49,14 @@ function Segmented<T extends string>({
   value,
   onChange,
   disabled,
+  allowed = () => true,
 }: {
   label: string;
   options: [T, string][];
   value: T;
   onChange: (next: T) => void;
   disabled: boolean;
+  allowed?: (key: T) => boolean;
 }) {
   return (
     <div role="radiogroup" aria-label={label} className="inline-flex overflow-hidden rounded-control border">
@@ -64,7 +66,7 @@ function Segmented<T extends string>({
           type="button"
           role="radio"
           aria-checked={value === key}
-          disabled={disabled}
+          disabled={disabled || !allowed(key)}
           onClick={() => onChange(key)}
           className={cx("min-h-8 px-3 type-meta", value === key ? "bg-fg text-bg" : "text-fg hover:bg-line")}
         >
@@ -91,6 +93,8 @@ export function ComposeBox({
   // Switching notes mid-write or mid-upload would drop the result.
   const switching = snap.busy || snap.uploads > 0;
   const left = MAX_GRAPHEMES - snap.count;
+  // A published note's side only widens, to Both (the server enforces it too).
+  const storedSide = snap.editing?.status === "published" ? snap.editing.side : null;
   const textId = useId();
   return (
     <section aria-label="Compose" className="flex flex-col gap-3">
@@ -129,6 +133,7 @@ export function ComposeBox({
           value={snap.value.side}
           onChange={(side) => composer.edit({ side })}
           disabled={disabled}
+          allowed={(side) => storedSide === null || side === storedSide || side === "both"}
         />
         <Segmented<NoteLang>
           label="Language"
@@ -144,7 +149,7 @@ export function ComposeBox({
           {left} left
         </span>
       </div>
-      <Attachments composer={composer} snap={snap} uploadMode={uploadMode} disabled={disabled} />
+      <Attachments key={snap.generation} composer={composer} snap={snap} uploadMode={uploadMode} disabled={disabled} />
       <ScheduleField composer={composer} snap={snap} disabled={disabled} />
       <div className="flex flex-wrap items-center gap-2">
         <p role="status" className="mr-auto type-meta text-fg-muted">

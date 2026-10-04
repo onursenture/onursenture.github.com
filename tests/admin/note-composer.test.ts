@@ -228,6 +228,22 @@ describe("a published note", () => {
   });
 });
 
+describe("generation", () => {
+  it("increments when a note is opened, a new one started, or a write clears the box", async () => {
+    const c = make([stored()]);
+    expect(c.getSnapshot().generation).toBe(0);
+    c.open("n1");
+    expect(c.getSnapshot().generation).toBe(1);
+    c.startNew();
+    expect(c.getSnapshot().generation).toBe(2);
+    c.edit({ text: "Live." });
+    await c.primaryAction();
+    expect(c.getSnapshot()).toMatchObject({ status: "published", generation: 3 });
+    c.edit({ text: "Typing." });
+    expect(c.getSnapshot().generation).toBe(3);
+  });
+});
+
 describe("attachments", () => {
   it("keeps one kind: images replace a link card and a link card replaces images", () => {
     const c = make();

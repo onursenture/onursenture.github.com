@@ -137,6 +137,8 @@ function LinkField({ composer, snap, disabled, onClose }: { composer: NoteCompos
   async function fetchCard() {
     setBusy(true);
     setError(null);
+    // A running fetch counts as an upload: the rows, Save and Publish wait for it.
+    composer.uploadStarted();
     try {
       const result = await fetchLinkCardAction(url);
       if (result.status === "ok") composer.setLink(result.card);
@@ -144,6 +146,7 @@ function LinkField({ composer, snap, disabled, onClose }: { composer: NoteCompos
     } catch {
       setError("Fetching the card failed. Try again.");
     } finally {
+      composer.uploadFinished();
       setBusy(false);
     }
   }

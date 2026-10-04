@@ -1,7 +1,7 @@
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { FileNoteStore } from "@/lib/notes/file-store";
 import { type NoteOpResult, deleteNote, publishDue, publishNote, saveNote, scheduleNote, unscheduleNote } from "@/lib/notes/operations";
 import type { NoteStore } from "@/lib/notes/store";
@@ -45,6 +45,32 @@ describe("saveNote", () => {
     expect(await saveNote(store, { id: live.id, expected: live.updatedAt, content: content({ text: "x".repeat(301) }) }, t1)).toMatchObject({ status: "invalid" });
     const edited = await ok(saveNote(store, { id: live.id, expected: live.updatedAt, content: content({ text: "Edited." }) }, t1));
     expect(edited).toMatchObject({ status: "published", tid: live.tid, publishedAt: live.publishedAt, text: "Edited." });
+  });
+});
+
+describe("the side of a published note", () => {
+  const sideIssue = { status: "invalid", issues: [{ at: "side", message: "A published note can only widen to Both." }] };
+
+  it("refuses narrowing or switching, in saveNote and in a re-publish", async () => {
+    const work = await ok(publishNote(store, { id: null, expected: null, content: content({ side: "work" }) }, t0));
+    expect(await saveNote(store, { id: work.id, expected: work.updatedAt, content: content({ side: "life" }) }, t1)).toEqual(sideIssue);
+    expect(await publishNote(store, { id: work.id, expected: work.updatedAt, content: content({ side: "life" }) }, t1)).toEqual(sideIssue);
+    const both = await ok(saveNote(store, { id: work.id, expected: work.updatedAt, content: content({ side: "both" }) }, t1));
+    expect(both.side).toBe("both");
+    expect(await saveNote(store, { id: both.id, expected: both.updatedAt, content: content({ side: "work" }) }, t2)).toEqual(sideIssue);
+    expect(await publishNote(store, { id: both.id, expected: both.updatedAt, content: content({ side: "life" }) }, t2)).toEqual(sideIssue);
+  });
+
+  it("allows life to widen to both, and keeping the side", async () => {
+    const life = await ok(publishNote(store, { id: null, expected: null, content: content({ side: "life" }) }, t0));
+    const same = await ok(saveNote(store, { id: life.id, expected: life.updatedAt, content: content({ side: "life", text: "Edited." }) }, t1));
+    const both = await ok(publishNote(store, { id: same.id, expected: same.updatedAt, content: content({ side: "both" }) }, t2));
+    expect(both).toMatchObject({ side: "both", tid: life.tid });
+  });
+
+  it("leaves drafts and scheduled notes free to change side", async () => {
+    const draft = await ok(saveNote(store, { id: null, expected: null, content: content({ side: "work" }) }, t0));
+    expect((await ok(saveNote(store, { id: draft.id, expected: draft.updatedAt, content: content({ side: "life" }) }, t1))).side).toBe("life");
   });
 });
 
@@ -126,5 +152,27 @@ describe("publishDue", () => {
     expect((await store.get(a.id))?.status).toBe("published");
     expect((await store.get(b.id))?.status).toBe("published");
     expect(await publishDue(store, new Date("2026-10-04T10:16:00.000Z"))).toEqual([]);
+  });
+
+  it("skips a note whose update throws and still publishes the others", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const at = "2026-10-04T10:15:00.000Z";
+    const bad = await ok(scheduleNote(store, { id: null, expected: null, content: content({ text: "Bad" }), publishAt: at }, t0));
+    const good = await ok(scheduleNote(store, { id: null, expected: null, content: content({ text: "Good" }), publishAt: at }, t0));
+    const flaky: NoteStore = {
+      list: () => store.list(),
+      listPublished: () => store.listPublished(),
+      get: (id) => store.get(id),
+      create: (fields, now) => store.create(fields, now),
+      remove: (id, expected) => store.remove(id, expected),
+      due: (now) => store.due(now),
+      update: (id, fields, expected, now) => (id === bad.id ? Promise.reject(new Error("boom")) : store.update(id, fields, expected, now)),
+    };
+    const published = await publishDue(flaky, new Date("2026-10-04T10:16:00.000Z"));
+    expect(published.map((n) => n.id)).toEqual([good.id]);
+    expect((await store.get(bad.id))?.status).toBe("scheduled");
+    expect((await store.get(good.id))?.status).toBe("published");
+    expect(warn).toHaveBeenCalledWith(`[notes] publishing ${bad.id} failed:`, "boom");
+    warn.mockRestore();
   });
 });

@@ -45,6 +45,9 @@ export interface ComposerSnapshot {
   dirty: boolean;
   busy: boolean;
   uploads: number;
+  // Counts every note loaded into the box (open, new, after a write that
+  // clears it), so the UI can reset local state with it as a key.
+  generation: number;
   status: ComposerStatus;
   issues: NoteIssue[];
   // Writes are off until a reload: another tab won, the session ended, the
@@ -111,6 +114,7 @@ export class NoteComposerState {
   private baseline: string;
   private busy = false;
   private uploads = 0;
+  private generation = 0;
   private status: ComposerStatus = "idle";
   private issues: NoteIssue[] = [];
   private blocked: boolean;
@@ -172,6 +176,7 @@ export class NoteComposerState {
       dirty,
       busy: this.busy,
       uploads: this.uploads,
+      generation: this.generation,
       status: this.status,
       issues: this.issues,
       blocked: this.blocked,
@@ -199,6 +204,7 @@ export class NoteComposerState {
   }
 
   private load(note: Note | null, side: NoteSide) {
+    this.generation++;
     this.editing = note;
     this.value = note ? contentOf(note) : emptyValue(side);
     this.schedule = scheduleOf(note);
