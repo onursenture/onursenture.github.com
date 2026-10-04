@@ -1,0 +1,101 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@500;600&display=swap" rel="stylesheet">
+
+<h2>An Orkestra page, and the look of the "Then" block</h2>
+<p class="subtitle">Nebuu as the example, with real facts from the research and draft copy. The page is the same product page as PrimeTek (header, then blocks on the site grid), plus two Orkestra additions: <b>Live</b> links in the facts, and the new <b>Then</b> block straight after the header. The three options differ only in how the Then block looks. Click one.</p>
+
+<style>
+  .pp { background:#FAFAF8; color:#1F1F22; font-family:"IBM Plex Mono", ui-monospace, Menlo, monospace; font-size:11.5px; line-height:17px; padding:20px 22px; }
+  .pp .mut { color:#6E6E73; }
+  .pp .acc { color:#2F55F5; }
+  .pp a { color:#2F55F5; text-decoration:none; }
+  .pp .lead { font-family:"IBM Plex Sans", system-ui, sans-serif; font-weight:600; font-size:17px; line-height:22px; }
+  .pp .img { background:repeating-linear-gradient(0deg,#ECECE8 0 2px,#F3F3F0 2px 4px); border:1px solid #E6E6E1; aspect-ratio:16/10; position:relative; }
+  .pp .img span { position:absolute; left:6px; bottom:4px; font-size:9px; color:#9A9A9F; }
+  .pp .rule { border-top:1px dashed #D6D6D0; margin:16px 0; }
+  .pp .g3 { display:grid; grid-template-columns:96px minmax(0,250px) 1fr; gap:16px; }
+  .pp .wide { grid-column: 2 / span 2; }
+  .pp .facts { display:grid; grid-template-columns:62px 1fr; gap:2px 10px; margin-top:8px; }
+  .pp .c3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  .pp .doto { font-family:"Doto", monospace; font-weight:700; letter-spacing:.02em; }
+  .pp .cap { font-size:10px; color:#6E6E73; margin-top:4px; }
+  /* variant B */
+  .pp .then-b { border-left:2px solid #2F55F5; padding-left:12px; }
+  /* variant C */
+  .pp .then-c { background:#141416; color:#E9E9EC; padding:14px 16px; display:grid; grid-template-columns:96px minmax(0,250px) 1fr; gap:16px; margin:0 -22px; padding-left:22px; }
+  .pp .then-c .mut { color:#8E8E95; }
+</style>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Year stamp in the label column (my pick)</h3>
+      <p>The label column holds "Then" and, under it, the year set large in Doto, the dot-matrix face we already use for display numbers. The text sits in the 480px column like any text block. It's the quietest option, and the big year carries the "this was 2013" feeling on its own.</p>
+      <div class="pp">
+        <div class="g3"><div class="mut">← Home</div><div class="wide">
+          <div class="lead">Nebuu. <span class="mut">A word-guessing party game: the phone on your forehead, friends giving clues.</span></div>
+          <p style="margin:8px 0 0">Orkestra's longest-running product, built in Ankara and still updated every year since 2013.</p>
+          <div class="facts"><span class="mut">Role</span><span>Co-founder, designer</span><span class="mut">Years</span><span>2013–now</span><span class="mut">At</span><span>Orkestra Studios</span><span class="mut">Live</span><span><a href="#">App Store →</a> &nbsp;<a href="#">Google Play →</a> &nbsp;<a href="#">nebuu.com →</a></span></div>
+        </div></div>
+        <div class="rule"></div>
+        <div class="g3">
+          <div><div class="mut">Then</div><div class="doto acc" style="font-size:30px;line-height:34px;margin-top:4px">2013</div></div>
+          <div>Heads Up! had reached the US App Store three months earlier. Nebuu took the forehead game into Turkish: 30,000+ local words, and decks for Turkish pop culture, cities and each year's in-jokes.</div>
+          <div></div>
+        </div>
+        <div class="rule"></div>
+        <div class="g3"><div class="mut">What I did</div><div>Designed the app, its cards and nebuu.com, and kept the decks growing: more than 100 by 2021.</div><div></div></div>
+        <div class="rule"></div>
+        <div class="g3"><div class="mut">Screens</div><div class="wide"><div class="c3"><div><div class="img"><span>FIG</span></div><div class="cap">2013 launch</div></div><div><div class="img"><span>FIG</span></div><div class="cap">Winter update, 2014</div></div><div><div class="img"><span>FIG</span></div><div class="cap">Today</div></div></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Accent rule, year inline</h3>
+      <p>An ultramarine bar on the left, like a pull quote, with "Then · Aug 2013" as the first line. It reads as an aside, and the year is precise to the month, but it's less of a visual signature.</p>
+      <div class="pp">
+        <div class="g3"><div class="mut">← Home</div><div class="wide">
+          <div class="lead">Nebuu. <span class="mut">A word-guessing party game: the phone on your forehead, friends giving clues.</span></div>
+          <div class="facts"><span class="mut">Years</span><span>2013–now</span><span class="mut">Live</span><span><a href="#">App Store →</a> &nbsp;<a href="#">nebuu.com →</a></span></div>
+        </div></div>
+        <div class="rule"></div>
+        <div class="g3">
+          <div></div>
+          <div class="then-b"><div class="acc" style="margin-bottom:4px">Then · Aug 2013</div>Heads Up! had reached the US App Store three months earlier. Nebuu took the forehead game into Turkish: 30,000+ local words, and decks for Turkish pop culture, cities and each year's in-jokes.</div>
+          <div></div>
+        </div>
+        <div class="rule"></div>
+        <div class="g3"><div class="mut">Screens</div><div class="wide"><div class="c3"><div class="img"><span>FIG</span></div><div class="img"><span>FIG</span></div><div class="img"><span>FIG</span></div></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Dark time-capsule band</h3>
+      <p>A full-width dark band, borrowing Life's palette, with the year in Doto and the context in light text. It's the strongest "step back in time" signal, but it brings a second palette into the light Work side, which the polish round kept light-only.</p>
+      <div class="pp">
+        <div class="g3"><div class="mut">← Home</div><div class="wide">
+          <div class="lead">Nebuu. <span class="mut">A word-guessing party game: the phone on your forehead, friends giving clues.</span></div>
+          <div class="facts"><span class="mut">Years</span><span>2013–now</span><span class="mut">Live</span><span><a href="#">App Store →</a> &nbsp;<a href="#">nebuu.com →</a></span></div>
+        </div></div>
+        <div style="height:16px"></div>
+        <div class="then-c">
+          <div><div class="mut">Then</div><div class="doto" style="font-size:30px;line-height:34px;margin-top:4px;color:#8FA5FF">2013</div></div>
+          <div>Heads Up! had reached the US App Store three months earlier. Nebuu took the forehead game into Turkish: 30,000+ local words, and decks for Turkish pop culture, cities and each year's in-jokes.</div>
+          <div></div>
+        </div>
+        <div style="height:16px"></div>
+        <div class="g3"><div class="mut">Screens</div><div class="wide"><div class="c3"><div class="img"><span>FIG</span></div><div class="img"><span>FIG</span></div><div class="img"><span>FIG</span></div></div></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<p class="subtitle" style="margin-top:16px">All copy is a draft. Every claim maps to a source in the fact sheet: Heads Up! went live on 2013-05-02 and Nebuu on 2013-08-06; 30,000+ words and the 100-deck milestone (2021) come from the App Store. "Co-founder, designer" is the role on Experience today. <b>"What I did" is a guess</b>: no source states your role on Nebuu, so you will correct it.</p>
