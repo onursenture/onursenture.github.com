@@ -1,7 +1,9 @@
+import { experience } from "@/content/experience";
 import { productPages } from "@/content/work";
 import type { WorkSlug } from "@/content/work/types";
 import { findImage, hasImage } from "@/lib/images/manifest";
 import { type PinView, type ProductPageView, buildPins, buildProductPage } from "./derive";
+import { type ExperienceView, resolveExperience } from "./experience";
 import { validateWork } from "./validate";
 
 // The server-side read API for the product pages and the home's Selected
@@ -24,4 +26,9 @@ export function getProductPage(slug: string): ProductPageView | null {
 // Every pinned image across the pages, sorted by pin.order.
 export function getPins(): PinView[] {
   return buildPins(productPages, findImage);
+}
+
+// The home's Experience rows, each product with its year (resolveExperience).
+export function getExperience(): ExperienceView[] {
+  return resolveExperience(experience, productPages);
 }

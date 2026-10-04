@@ -5,6 +5,8 @@ export interface ExperienceChild {
   title: string;
   note: string;
   href?: string;
+  // Only for a row without a product page; a linked row reads its page's Years fact.
+  years?: string;
 }
 
 export interface ExperienceEntry {
@@ -23,7 +25,7 @@ export const experience: ExperienceEntry[] = [
     role: "Co-founder, designer",
     start: "2013-06",
     end: null,
-    children: [{ title: "Nebuu", note: "word game, iOS" }],
+    children: [{ title: "Nebuu", note: "word game, iOS", years: "2013–now" }],
   },
   {
     org: "primetek",
