@@ -22,7 +22,7 @@ export function PinsEditor({ init, items }: { init: DocEditorInit<{ order: PinRe
   return (
     <div className="flex flex-col gap-3">
       <DocToolbar editor={editor} />
-      <IssuesList issues={editor.issues} blocking={editor.status === "invalid"} />
+      <IssuesList issues={editor.issues} blocking={editor.status === "invalid"} context={{ doc: editor.docKey, value: editor.value }} />
       <SortableList keys={list.keys} onMove={list.move}>
         {(index, controls) => {
           const ref = order[index];

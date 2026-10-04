@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import type { Block, ProductPage, WorkImage } from "@/content/work/types";
 import type { DocEditorInit } from "@/lib/admin/results";
 import { uniqueId } from "@/lib/content/ids";
+import type { IssueTarget } from "@/lib/content/issue-labels";
 import type { ImageEntry } from "@/lib/images/plan";
 import { pageImages } from "@/lib/work/derive";
 import { EditorFrame } from "../editor-frame";
@@ -52,6 +53,9 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
   const page = editor.value;
   const [entries, setEntries] = useState(initialEntries);
   const [openKey, setOpenKey] = useState<string | null>(null);
+  // The issue picked in the banner: its block opens here, its image card opens
+  // itself (ImageCard), and EditorFrame scrolls to it.
+  const [revealed, setRevealed] = useState<IssueTarget | null>(null);
   const set = (patch: Partial<ProductPage>) => editor.setValue((previous) => ({ ...previous, ...patch }));
   const blocks = useKeyedList(page.blocks, (next) => set({ blocks: next }));
   const lockedBlocks = new Set(locked.blocks);
@@ -77,6 +81,13 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
     seenPublishedAt.current = publishedAt;
     router.refresh();
   }, [publishedAt, router]);
+
+  function openIssue(target: IssueTarget) {
+    const index = page.blocks.findIndex((block) => block.id === target.block);
+    if (index < 0) return;
+    setOpenKey(blocks.keys[index]);
+    setRevealed(target);
+  }
 
   function addBlock(kind: Block["kind"]) {
     // Published ids are reserved for good: a new block never takes the id of
@@ -149,6 +160,7 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
       // A page never published has no version to go back to; Delete page
       // removes the draft instead.
       hideDiscard={!live && !editor.publishedAt}
+      onIssue={openIssue}
     >
       <div className="flex flex-col gap-6">
         {deleteError ? (
@@ -183,6 +195,7 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
                   pageImageIds={pageImageIds}
                   entries={entries}
                   issues={shown}
+                  revealed={revealed}
                   renderUpload={(image: WorkImage) => (
                     <UploadSlot
                       slug={page.slug}
@@ -195,7 +208,11 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
                       }}
                     />
                   )}
-                  onToggle={() => setOpenKey(openKey === blocks.keys[index] ? null : blocks.keys[index])}
+                  onToggle={() => {
+                    // A card reopened by hand starts closed again, not revealed.
+                    setRevealed(null);
+                    setOpenKey(openKey === blocks.keys[index] ? null : blocks.keys[index]);
+                  }}
                   onChange={(next) => blocks.update(index, next)}
                   onRemove={() => removeBlock(index)}
                 />

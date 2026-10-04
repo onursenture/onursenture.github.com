@@ -127,3 +127,40 @@ test("the footer offers Edit after sign-in", async ({ page }) => {
   await page.goto("/work/nebuu/");
   await expect(page.locator("footer").getByRole("link", { name: "Edit" })).toHaveAttribute("href", "/admin/work/nebuu/");
 });
+
+test("Gonna: a publish issue names its field, opens its card, and a pin publishes without a note", async ({ page }) => {
+  await signIn(page, "/admin/work/gonna/");
+  const block = page.locator('[data-block="highlights"]');
+  await block.locator("button[aria-expanded]").first().click();
+  const card = page.locator('[data-image="gonna-iphone"]');
+  await card.locator("button[aria-expanded]").click();
+  await card.getByLabel("Pin to Selected work").check();
+  await card.getByLabel("Pin title").fill("");
+  await expect(card.getByText("One line, optional")).toBeVisible();
+  // Close both cards: the banner has to open them again.
+  await block.locator("button[aria-expanded]").first().click();
+  await saved(page);
+  await page.getByRole("button", { name: "Publish" }).click();
+
+  const banner = page.getByRole("alert").filter({ hasText: "Publishing is blocked:" });
+  const issue = banner.getByRole("button", { name: "Gonna › Highlights › Gonna for iPhone › Pin title: is required" });
+  await expect(issue).toBeVisible();
+  await issue.click();
+  const toggle = card.locator("button[aria-expanded]");
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await expect(toggle).toBeFocused();
+  await expect(card).toContainText("Pin title: is required");
+  // The form column scrolled, not the document.
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+  await expect(card).toBeInViewport();
+
+  await card.getByLabel("Pin title").fill("Gonna for iPhone");
+  await saved(page);
+  await publish(page);
+  await expect(page.getByRole("alert").filter({ hasText: "Gonna for iPhone" })).toHaveCount(0);
+
+  await page.goto("/");
+  const item = page.locator("#selected-work li").filter({ hasText: "Gonna for iPhone" });
+  await expect(item).toHaveCount(1);
+  await expect(item.locator("p.text-fg-muted")).toHaveCount(0);
+});

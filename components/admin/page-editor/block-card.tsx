@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import type { Block, WorkImage } from "@/content/work/types";
 import { followId, uniqueId } from "@/lib/content/ids";
+import type { IssueTarget } from "@/lib/content/issue-labels";
 import { type Issue, issuesAt } from "@/lib/content/issues";
 import type { DocKey } from "@/lib/content/keys";
 import type { ImageEntry } from "@/lib/images/plan";
@@ -42,6 +43,8 @@ export interface BlockCardProps {
   entries: Record<string, ImageEntry>;
   // The issues to show now (none until a publish has failed).
   issues: Issue[];
+  // The issue picked in the banner; its image card opens.
+  revealed?: IssueTarget | null;
   // Task 12: renders the upload area for one image.
   renderUpload?: (image: WorkImage, update: (image: WorkImage) => void) => ReactNode;
   onToggle: () => void;
@@ -127,7 +130,7 @@ export function BlockCard(props: BlockCardProps) {
           ) : null}
           {block.kind === "icons" ? <p className="type-meta text-fg-muted">The live PrimeIcons 7.0.0 set, rendered from the pinned package.</p> : null}
           {block.kind === "images" ? <ImagesField {...props} block={block} /> : null}
-          <IssueText issues={own} />
+          <IssueText issues={own} named />
         </div>
       ) : null}
     </div>
@@ -135,7 +138,7 @@ export function BlockCard(props: BlockCardProps) {
 }
 
 function ImagesField(props: BlockCardProps & { block: Extract<Block, { kind: "images" }> }) {
-  const { block, index: blockIndex, onChange, slug, lockedImages, pageImageIds, entries, issues, docKey } = props;
+  const { block, index: blockIndex, onChange, slug, lockedImages, pageImageIds, entries, issues, docKey, revealed } = props;
   // Ids to avoid: the page's own, and every published one (even if deleted).
   const reserved = [...pageImageIds, ...lockedImages];
   const list = useKeyedList(block.images, (images) => onChange({ ...block, images }));
@@ -163,6 +166,7 @@ function ImagesField(props: BlockCardProps & { block: Extract<Block, { kind: "im
               entry={entries[key]}
               controls={controls}
               locked={lockedImages.has(image.id)}
+              revealed={revealed?.block === block.id ? revealed : null}
               takenIds={reserved.filter((id) => id !== image.id)}
               issues={[...issuesAt(issues, docKey, `${block.id}/${image.id}`), ...issuesAt(issues, docKey, `blocks/${blockIndex}/images/${index}`)]}
               uploadSlot={props.renderUpload?.(image, update)}

@@ -2,6 +2,7 @@
 
 import { type ReactNode, useId } from "react";
 import { optional } from "@/lib/admin/list";
+import { fieldMessage } from "@/lib/content/issue-labels";
 import type { Issue } from "@/lib/content/issues";
 import { cx } from "@/lib/cx";
 import { useKeyedList } from "./use-keyed-list";
@@ -13,11 +14,13 @@ const CONTROL_BASE =
   "min-w-0 rounded-control border border-line bg-bg px-2 py-1.5 type-body text-fg focus:border-accent focus:outline-none disabled:text-fg-muted";
 export const CONTROL = `w-full ${CONTROL_BASE}`;
 
-export function IssueText({ issues, id }: { issues?: Issue[]; id?: string }) {
+// `named`: the text sits under a card or group of several fields, so each
+// message says which field it is about ("Pin note: is required").
+export function IssueText({ issues, id, named = false }: { issues?: Issue[]; id?: string; named?: boolean }) {
   if (!issues?.length) return null;
   return (
     <p id={id} className="type-meta text-danger">
-      {issues.map((issue) => issue.message).join("; ")}
+      {issues.map((issue) => (named ? fieldMessage(issue) : issue.message)).join("; ")}
     </p>
   );
 }
@@ -228,7 +231,7 @@ export function PairsField<T extends { [K in keyof T]: string | undefined }>({
         </div>
       ))}
       <AddButton onClick={() => list.insert(value.length, create())}>{addLabel}</AddButton>
-      <IssueText issues={issues} />
+      <IssueText issues={issues} named />
     </fieldset>
   );
 }

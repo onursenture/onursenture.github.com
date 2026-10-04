@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import type { Credit, WorkImage } from "@/content/work/types";
 import { optional } from "@/lib/admin/list";
 import { followId } from "@/lib/content/ids";
+import type { IssueTarget } from "@/lib/content/issue-labels";
 import type { Issue } from "@/lib/content/issues";
 import { type ImageEntry, renditionUrl } from "@/lib/images/plan";
 import { IssueText, PairsField, RemoveButton, TextField } from "../fields";
@@ -30,6 +31,7 @@ export function ImageCard({
   entry,
   controls,
   locked,
+  revealed = null,
   takenIds,
   issues,
   uploadSlot,
@@ -41,13 +43,22 @@ export function ImageCard({
   entry?: ImageEntry;
   controls: ReactNode;
   locked: boolean;
+  // The issue picked in the banner: when it is this image, the card opens.
+  revealed?: IssueTarget | null;
   takenIds: string[];
   issues: Issue[];
   uploadSlot?: ReactNode;
   onChange: (image: WorkImage) => void;
   onRemove: () => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(() => revealed?.image === image.id);
+  // Open when the banner picks this image (state adjusted while rendering, not
+  // in an effect). A card that mounts with it, its block just opened, starts open.
+  const [seen, setSeen] = useState(revealed);
+  if (revealed !== seen) {
+    setSeen(revealed);
+    if (revealed?.image === image.id) setOpen(true);
+  }
   const name = image.caption || image.id;
   return (
     <div data-image={image.id} className="border border-line">
@@ -116,7 +127,7 @@ export function ImageCard({
               <TextField label="Pin note" hint="One line, optional" value={image.pin.note} onChange={(note) => onChange({ ...image, pin: { ...image.pin!, note } })} />
             </>
           ) : null}
-          <IssueText issues={issues} />
+          <IssueText issues={issues} named />
         </div>
       ) : null}
     </div>

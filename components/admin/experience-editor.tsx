@@ -70,7 +70,7 @@ function Products({
                 </select>
               </Field>
               {child.href ? null : <TextField label="Years" value={child.years ?? ""} hint="e.g. 2014–2016" onChange={(years) => list.update(index, { ...child, years: optional(years) })} />}
-              <IssueText issues={at(`${roleIndex}/children/${index}`)} />
+              <IssueText issues={at(`${roleIndex}/children/${index}`)} named />
             </div>
           );
         }}
