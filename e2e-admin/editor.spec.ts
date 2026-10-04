@@ -155,6 +155,10 @@ test("Gonna: a publish issue names its field, opens its card, and a pin publishe
   await expect(card).toBeInViewport();
 
   await card.getByLabel("Pin title").fill("Gonna for iPhone");
+  // After an edit the banner keeps the label as text, no longer a button.
+  const found = page.getByRole("alert").filter({ hasText: "The last publish attempt found:" });
+  await expect(found).toContainText("Gonna › Highlights › Gonna for iPhone › Pin title: is required");
+  await expect(found.getByRole("button")).toHaveCount(0);
   await saved(page);
   await publish(page);
   await expect(page.getByRole("alert").filter({ hasText: "Gonna for iPhone" })).toHaveCount(0);

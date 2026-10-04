@@ -43,6 +43,15 @@ describe("labelIssue", () => {
     expect(label(`blocks/${then}/year`).parts[1]).toMatch(/^Then \d{4}$/);
   });
 
+  it("reads a block id that is also a page key as the block", () => {
+    const page = { ...gonna, blocks: [...gonna.blocks, { kind: "images" as const, id: "links", heading: "Links", images: [{ id: "shot", caption: "Shot" }] }] };
+    const on = { doc: "work/gonna" as const, value: page };
+    expect(labelIssue({ doc: "work/gonna", at: "links", message: "a" }, on)).toMatchObject({ text: "Gonna › Links: a", target: { block: "links" } });
+    expect(labelIssue({ doc: "work/gonna", at: "links/shot", message: "a" }, on)).toMatchObject({ text: "Gonna › Links › Shot: a", target: { block: "links", image: "shot" } });
+    // A zod path into the page's own links is still the page field.
+    expect(labelIssue({ doc: "work/gonna", at: "links/0/href", message: "a" }, on)).toMatchObject({ text: "Gonna › Live links 1 URL: a", target: null });
+  });
+
   it("names the header fields", () => {
     expect(label("facts", "Experience links this page, so it needs a Years fact").text).toBe("Gonna › Facts: Experience links this page, so it needs a Years fact");
     expect(label("facts/1/value").text).toBe("Gonna › Facts 2 value: is required");

@@ -156,9 +156,11 @@ function walkPage(page: ProductPage | undefined, segments: string[]): Walk {
     }
     return { parts, target, scope: "block", rest: inner };
   }
-  if (PAGE_KEYS.has(first)) return { parts: [], target: null, scope: "page", rest: segments };
-  // validateWork: <block id> or <block id>/<image id>.
+  // validateWork: <block id> or <block id>/<image id>. A block id can equal a
+  // page key ("links"), so a block that has the path wins over the page field.
   const block = page?.blocks?.find((item) => item.id === first);
+  const blockHasPath = block && (more.length === 0 || (block.kind === "images" && block.images.some((image) => image.id === more[0])));
+  if (!blockHasPath && PAGE_KEYS.has(first)) return { parts: [], target: null, scope: "page", rest: segments };
   if (!block) return unresolved([], segments);
   if (more.length === 0) return { parts: [blockName(block)], target: { block: block.id }, scope: "block", rest: [] };
   const index = block.kind === "images" ? block.images.findIndex((image) => image.id === more[0]) : -1;

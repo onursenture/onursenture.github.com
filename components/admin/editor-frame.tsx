@@ -47,6 +47,12 @@ export function EditorFrame({
   const [tab, setTab] = useState<"form" | "preview">("form");
   const column = useRef<HTMLDivElement>(null);
   const [reveal, setReveal] = useState<{ target: IssueTarget } | null>(null);
+  // The issues are named against the value they were found in, kept from the
+  // render that brought them: after an edit (the banner then says what the
+  // last attempt found) a zod index into the current value could name another
+  // block. They stop being buttons then too, for the same reason.
+  const [found, setFound] = useState({ issues: editor.issues, value: editor.value });
+  if (found.issues !== editor.issues) setFound({ issues: editor.issues, value: editor.value });
 
   // After the render that opened the card. The column is the scroll container:
   // scrollIntoView would also move the document.
@@ -100,8 +106,8 @@ export function EditorFrame({
       <IssuesList
         issues={editor.issues}
         blocking={editor.status === "invalid"}
-        context={{ doc: editor.docKey, value: editor.value }}
-        onSelect={onIssue ? selectIssue : undefined}
+        context={{ doc: editor.docKey, value: found.value }}
+        onSelect={onIssue && editor.status === "invalid" ? selectIssue : undefined}
       />
       {preview ? (
         <div role="tablist" aria-label="Editor view" className="flex gap-4 border-b border-line px-4 py-1.5 type-meta lg:hidden">
