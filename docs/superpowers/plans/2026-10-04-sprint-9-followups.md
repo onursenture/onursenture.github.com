@@ -14,7 +14,7 @@
 
 **Resolved, check once on production:**
 
-- [ ] Root cause of the stale `/life/` seen on `next start` after publish-due: a render still in flight when "notes" is revalidated is stored afterwards with a write-time stamp, so Next's tag check treats it as fresh. Mitigated by publish-due's delayed second revalidation (5 s, via `after()`). Still check once on production (Vercel) with a real scheduled note.
+- [ ] Root cause of the stale `/life/` seen on `next start` after publish-due: a render still in flight when "notes" is revalidated is stored afterwards with a write-time stamp, so Next's tag check treats it as fresh. Known and not mitigated: it is rare in practice (a render of a notes page has to be in flight exactly while the cron revalidates, and the workflow's warm-up requests start after the response), and the worst case is a page keeping the old list until its own revalidate. Still check once on production (Vercel) with a real scheduled note.
 
 **Controller (Task 13):**
 
@@ -22,5 +22,6 @@
 
 **Later:**
 
+- [ ] Close the publish-due race: a second revalidation from a separate request (e.g. publish-notes.yml sleeps ~5 s and calls a revalidate-only mode of the endpoint), verified by checking the tags manifest moves.
 - [ ] Bluesky cross-posting.
 - [ ] Media cleanup for deleted notes' Blob files.

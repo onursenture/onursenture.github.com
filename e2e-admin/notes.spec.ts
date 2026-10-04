@@ -94,8 +94,7 @@ test("a scheduled Life note goes live only when publish-due runs after its time"
   // Wait for the /life/ prefetch from this page to finish: a render still in
   // flight when publish-due revalidates "notes" is stored afterwards and looks
   // fresh to Next's tag check (stamped at write time), so /life/ would keep the
-  // old list. publish-due's delayed second revalidation covers that in
-  // production; the test waits so it doesn't depend on that delay.
+  // old list. The test waits so it doesn't hit that race.
   await page.goto("/life/notes/", { waitUntil: "networkidle" });
   await expect(page.locator("main")).not.toContainText("E2E scheduled note");
 
