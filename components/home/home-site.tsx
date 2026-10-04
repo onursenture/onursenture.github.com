@@ -5,11 +5,10 @@ import { PrimaryButton } from "@/components/ui/primary-button";
 import { SectionRow } from "@/components/ui/section-row";
 import { StatusGlyph } from "@/components/ui/status-glyph";
 import { TextLink } from "@/components/ui/text-link";
-import { experience } from "@/content/experience";
 import { labIndex } from "@/content/lab-index";
 import { profile } from "@/content/profile";
 import { NAV_ITEMS } from "@/lib/nav";
-import { getPins } from "@/lib/work";
+import { getExperience, getPins } from "@/lib/work";
 import { Bio } from "./bio";
 import { Contributions } from "./contributions-row";
 import { ExperienceList } from "./experience-list";
@@ -66,7 +65,7 @@ export function HomeSite() {
     ) : null,
     pins.length > 0 ? <SelectedWork key="selected-work" pins={pins} /> : null,
     <SectionRow key="experience" id="experience" label="Experience" action={sectionLink("Resume", "/resume/")}>
-      <ExperienceList entries={experience} />
+      <ExperienceList entries={getExperience()} />
     </SectionRow>,
     <SectionRow
       key="contributions"

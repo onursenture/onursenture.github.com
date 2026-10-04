@@ -38,29 +38,36 @@ describe("Bio indent", () => {
 });
 
 describe("ExperienceList", () => {
+  const markup = html(
+    <ExperienceList
+      entries={[
+        {
+          org: "primetek",
+          role: "Design lead",
+          start: "2016-05",
+          end: "2026-04",
+          children: [
+            { title: "PrimeOne", note: "design system", href: "/work/primeone/", years: "2022–2026" },
+            { title: "Nebuu", note: "word game", years: "2013–now" },
+          ],
+        },
+        { org: "etiya", role: "Design specialist", start: "2014-04", end: "2016-03", children: [] },
+      ]}
+    />,
+  );
+
   it("renders each role's products as rows, linked only when they have a page, with no tree glyphs", () => {
-    const markup = html(
-      <ExperienceList
-        entries={[
-          {
-            org: "primetek",
-            role: "Design lead",
-            start: "2016-05",
-            end: "2026-04",
-            children: [
-              { title: "PrimeOne", note: "design system", href: "/work/primeone/" },
-              { title: "Nebuu", note: "word game, iOS" },
-            ],
-          },
-          { org: "etiya", role: "Design specialist", start: "2014-04", end: "2016-03", children: [] },
-        ]}
-      />,
-    );
     expect(markup).toContain('href="/work/primeone/"');
     expect(markup).toContain("Nebuu");
     expect(markup.match(/<a /g)).toHaveLength(1);
     expect(markup).not.toMatch(/[├└]/);
     expect(markup).toContain("May 2016–Apr 2026");
+  });
+
+  it("gives every product row a third, right-aligned year column", () => {
+    expect(markup).toContain("grid-cols-[minmax(0,140px)_minmax(0,1fr)_auto]");
+    expect(markup).toMatch(/<span class="[^"]*tabular-nums[^"]*">2022–2026<\/span>/);
+    expect(markup).toMatch(/<span class="[^"]*tabular-nums[^"]*">2013–now<\/span>/);
   });
 });
 
@@ -139,6 +146,19 @@ describe("labIndex", () => {
   it("holds only real projects, no placeholders", () => {
     expect(labIndex.every((entry) => !("placeholder" in entry))).toBe(true);
     expect(labIndex.some((entry) => /^Project 0\d$/.test(entry.title))).toBe(false);
+  });
+
+  it("lists this site, then Onur's six 2026 projects in his order, each linked over https", () => {
+    expect(labIndex.map((entry) => entry.title)).toEqual([
+      "onursenture.com",
+      "Cehennem Rebirth",
+      "count.do Remastered",
+      "Motif",
+      "tanerman.com",
+      "Dönerverse",
+      "Nebuu Deck Studio",
+    ]);
+    for (const entry of labIndex) expect(entry.href, entry.title).toMatch(/^https:\/\//);
   });
 });
 

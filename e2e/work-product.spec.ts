@@ -35,13 +35,33 @@ test("Templates shows the six named templates and credits Genesis's designer", a
   await expect(block.locator("[data-credits]")).toHaveText("Design: Ümit Çelik");
 });
 
-test("the product pages link out only to @w00f posts (there are none today)", async ({ page }) => {
-  for (const { slug } of productPages) {
+test("PrimeTek product pages carry no external links", async ({ page }) => {
+  for (const { slug } of productPages.filter((p) => p.org === "primetek")) {
     await page.goto(`/work/${slug}/`);
     await expect(page.locator("main")).toBeVisible();
-    const hrefs = await page.locator('main a[href^="http"]').evaluateAll((els) => els.map((el) => (el as HTMLAnchorElement).href));
-    for (const href of hrefs) expect(href, slug).toMatch(/^https:\/\/(x|twitter)\.com\/w00f\/status\//);
+    await expect(page.locator('main a[href^="http"]'), slug).toHaveCount(0);
   }
+});
+
+test("an Orkestra page shows its Then block first and its Live links", async ({ page }) => {
+  await page.goto("/work/nebuu/");
+  const main = page.locator("main");
+  const ids = await main.locator("section[id]").evaluateAll((sections) => sections.map((s) => s.id));
+  expect(ids[0]).toBe("then");
+  await expect(main.locator("#then h2")).toHaveText("Then 2013");
+  await expect(main.locator("#then")).toContainText("Sources:");
+  const live = main.locator("dl dd").last();
+  await expect(main.locator("dl dt").last()).toHaveText("Live");
+  for (const name of ["App Store", "Google Play", "nebuu.com"]) {
+    const link = live.getByRole("link", { name });
+    await expect(link).toHaveAttribute("href", /^https:\/\//);
+    await expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  }
+});
+
+test("an ended Orkestra product has no Live row", async ({ page }) => {
+  await page.goto("/work/beatografi/");
+  await expect(page.locator("main dl dt", { hasText: "Live" })).toHaveCount(0);
 });
 
 test("a page with only placeholders has no og:image", async ({ page }) => {

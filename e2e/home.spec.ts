@@ -30,17 +30,16 @@ test("the bio names PrimeTek, Orkestra and Bilkent with inline marks", async ({ 
   for (const name of ["PrimeTek", "Orkestra Studios", "Bilkent"]) await expect(identity).toContainText(name);
 });
 
-test("Selected work shows the four pins in order, each linking to its images block", async ({ page }) => {
+test("Selected work shows the curated pins in order, each linking to its images block", async ({ page }) => {
   await page.goto("/");
   const work = page.locator("#selected-work");
   const items = work.getByRole("listitem");
-  await expect(items).toHaveCount(4);
-  expect(pins.map((pin) => pin.slug)).toEqual(["primeone", "primeblocks", "primeicons", "templates"]);
+  await expect(items).toHaveCount(pins.length);
   for (const [index, pin] of pins.entries()) {
     const item = items.nth(index);
     await expect(item).toContainText(pin.pin.title);
     await expect(item).toContainText(pin.pin.note);
-    await expect(item).toContainText(`FIG. 0${index + 1} · ${pin.pin.title}`);
+    await expect(item).toContainText(`FIG. ${String(pin.pin.order).padStart(2, "0")} · ${pin.pin.title}`);
     // One link per item for assistive tech: the source link. The frame links
     // to the same place, hidden and out of the tab order.
     const source = item.getByRole("link");
@@ -54,8 +53,8 @@ test("Selected work shows the four pins in order, each linking to its images blo
 
 test("a Selected work source link lands on its product page's images block", async ({ page }) => {
   await page.goto("/");
-  await page.locator("#selected-work").getByRole("link", { name: "PrimeIcons" }).click();
-  await expect(page).toHaveURL(/\/work\/primeicons\/#highlights$/);
+  await page.locator("#selected-work").getByRole("link", { name: "Templates" }).click();
+  await expect(page).toHaveURL(/\/work\/templates\/#highlights$/);
   await expect(page.locator("#highlights")).toBeInViewport();
 });
 
@@ -71,19 +70,22 @@ test("Selected work sizes its frames for three columns in the wide row", async (
   for (const width of frames) expect(Math.round(width)).toBe(Math.round((1440 - 308 - 32) / 3));
 });
 
-test("Experience shows product rows with confirmed dates", async ({ page }) => {
+test("Experience shows every product as a linked row with its year", async ({ page }) => {
   await page.goto("/");
   const tree = page.locator("#experience");
   await expect(tree).toContainText("Jun 2013–now");
   await expect(tree).toContainText("May 2016–Apr 2026");
   await expect(tree).toContainText("Apr 2014–Mar 2016");
-  const products = tree.getByRole("list", { name: "PrimeTek work" });
-  await expect(products.getByRole("listitem")).toHaveCount(4);
-  await expect(products.getByRole("link")).toHaveCount(4);
+  const primetek = tree.getByRole("list", { name: "PrimeTek work" });
+  await expect(primetek.getByRole("listitem")).toHaveCount(6);
+  await expect(primetek.getByRole("link")).toHaveCount(6);
+  const orkestra = tree.getByRole("list", { name: "Orkestra Studios work" });
+  await expect(orkestra.getByRole("listitem")).toHaveCount(9);
+  await expect(orkestra.getByRole("link")).toHaveCount(9);
+  await expect(orkestra.getByRole("listitem").first()).toContainText("2013–now");
+  await expect(orkestra.getByRole("listitem").last()).toContainText("2012–2014");
   await expect(tree.getByRole("link", { name: "PrimeIcons" })).toHaveAttribute("href", "/work/primeicons/");
-  // Nebuu has no page: plain text, not a link.
-  await expect(tree).toContainText("Nebuu");
-  await expect(tree.getByRole("link", { name: "Nebuu" })).toHaveCount(0);
+  await expect(tree.getByRole("link", { name: "Nebuu" })).toHaveAttribute("href", "/work/nebuu/");
   const text = (await tree.textContent()) ?? "";
   expect(text).not.toMatch(/[├└]/);
 });
@@ -100,7 +102,7 @@ test("Lab lists text rows without glyphs or avatars; only linked entries link", 
   const lab = page.locator("#lab");
   await expect(lab).toContainText("onursenture.com");
   await expect(lab).not.toContainText("Project 0");
-  await expect(lab.getByRole("link")).toHaveCount(1);
+  await expect(lab.getByRole("link")).toHaveCount(7);
   await expect(lab.getByRole("img")).toHaveCount(0);
   await expect(lab.locator("canvas")).toHaveCount(0);
 });
@@ -135,11 +137,25 @@ test.describe("at 390px", () => {
   test("Selected work has one column", async ({ page }) => {
     await page.goto("/");
     const lefts = await page.locator("#selected-work li").evaluateAll((els) => els.map((el) => Math.round(el.getBoundingClientRect().left)));
-    expect(lefts).toHaveLength(4);
+    expect(lefts).toHaveLength(pins.length);
     expect(new Set(lefts).size).toBe(1);
     const width = await page.locator("#selected-work li").first().evaluate((el) => el.getBoundingClientRect().width);
     expect(Math.round(width)).toBe(390 - 32);
     // The truncated note never widens the page.
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  });
+
+  test("Experience keeps the year visible and truncates the note", async ({ page }) => {
+    await page.goto("/");
+    const row = page.getByRole("list", { name: "Orkestra Studios work" }).getByRole("listitem").nth(3);
+    await expect(row).toContainText("2017–2018");
+    // toBeInViewport doesn't scroll; the row is far below the fold, so bring it in first.
+    await row.scrollIntoViewIfNeeded();
+    const year = row.locator("span").last();
+    await expect(year).toBeInViewport();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+    const note = row.locator("span").nth(1);
+    await expect(note).toHaveText("football card game");
+    expect(await note.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(true);
   });
 });

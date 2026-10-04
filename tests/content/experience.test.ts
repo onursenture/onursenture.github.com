@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { experience, formatSpan } from "@/content/experience";
 import { ORGS } from "@/content/orgs";
+import { productPages } from "@/content/work";
+import { getExperience } from "@/lib/work";
 
 describe("formatSpan", () => {
   it("formats month spans, with an open end as now", () => {
@@ -15,9 +17,40 @@ describe("experience", () => {
     for (const entry of experience) expect(ORGS[entry.org]).toBeDefined();
   });
 
-  it("nests PrimeTek's products under it", () => {
+  it("nests PrimeTek's products under it, each linked to its page with the page's title and kind", () => {
     const primetek = experience.find((e) => e.org === "primetek")!;
-    expect(primetek.children.map((c) => c.title)).toEqual(["PrimeOne", "PrimeBlocks", "PrimeIcons", "Templates"]);
-    expect(primetek.children.every((c) => c.href?.startsWith("/work/"))).toBe(true);
+    expect(primetek.children.map((c) => c.title)).toEqual(["PrimeOne", "PrimeBlocks", "PrimeIcons", "Templates", "PrimeStore", "Theme Designer"]);
+    for (const child of primetek.children) {
+      const page = productPages.find((p) => `/work/${p.slug}/` === child.href);
+      expect(page, child.title).toBeDefined();
+      expect(child.title).toBe(page!.title);
+      expect(child.note).toBe(page!.kind);
+    }
+  });
+
+  it("nests the nine Orkestra products, newest first, each linked to its page with the page's title and kind", () => {
+    const orkestra = experience.find((e) => e.org === "orkestra")!;
+    expect(orkestra.children.map((c) => c.title)).toEqual([
+      "Nebuu",
+      "Rebound Line",
+      "Hi Jump",
+      "İmparator",
+      "Harf Marf",
+      "Beatografi",
+      "count.do",
+      "Maç Kaçta",
+      "Gonna",
+    ]);
+    for (const child of orkestra.children) {
+      const page = productPages.find((p) => `/work/${p.slug}/` === child.href);
+      expect(page, child.title).toBeDefined();
+      expect(child.title).toBe(page!.title);
+      expect(child.note).toBe(page!.kind);
+      expect(child.years, child.title).toBeUndefined();
+    }
+  });
+
+  it("resolves every row's year for the home", () => {
+    for (const entry of getExperience()) for (const child of entry.children) expect(child.years, child.title).toMatch(/^\d{4}(–(\d{4}|now))?$/);
   });
 });

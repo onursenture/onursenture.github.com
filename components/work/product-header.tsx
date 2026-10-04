@@ -2,9 +2,11 @@ import { Fragment } from "react";
 import { ItemLink } from "@/components/sections/item-link";
 import { SectionRow } from "@/components/ui/section-row";
 import type { ProductPageView } from "@/lib/work/derive";
+import { LinkLine } from "./link-line";
 
 // A product page's header row: the way home in the label column; the lead,
-// the intro and the facts (Role, Years, At) in the wide content.
+// the intro and the facts (Role, Years, At, and Platform on Orkestra pages)
+// and, while the product runs, its Live links in the wide content.
 export function ProductHeader({ page }: { page: ProductPageView }) {
   return (
     <SectionRow
@@ -27,6 +29,14 @@ export function ProductHeader({ page }: { page: ProductPageView }) {
             <dd>{fact.value}</dd>
           </Fragment>
         ))}
+        {page.links?.length ? (
+          <>
+            <dt className="text-fg-muted">Live</dt>
+            <dd>
+              <LinkLine links={page.links} />
+            </dd>
+          </>
+        ) : null}
       </dl>
     </SectionRow>
   );

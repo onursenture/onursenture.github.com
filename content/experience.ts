@@ -1,10 +1,12 @@
 import type { OrgId } from "./orgs";
 
-// Roles and dates as on Onur's LinkedIn (read 2026-10-03). Only confirmed facts. PrimeTek products link to their case studies (Sprint 5).
+// Roles and dates as on Onur's LinkedIn (read 2026-10-03). Only confirmed facts. Every product links its page; the row's year comes from that page (lib/work/experience.ts).
 export interface ExperienceChild {
   title: string;
   note: string;
   href?: string;
+  // Only for a row without a product page; a linked row reads its page's Years fact.
+  years?: string;
 }
 
 export interface ExperienceEntry {
@@ -23,7 +25,17 @@ export const experience: ExperienceEntry[] = [
     role: "Co-founder, designer",
     start: "2013-06",
     end: null,
-    children: [{ title: "Nebuu", note: "word game, iOS" }],
+    children: [
+      { title: "Nebuu", note: "word game", href: "/work/nebuu/" },
+      { title: "Rebound Line", note: "arcade game", href: "/work/rebound-line/" },
+      { title: "Hi Jump", note: "arcade game", href: "/work/hi-jump/" },
+      { title: "İmparator", note: "football card game", href: "/work/imparator/" },
+      { title: "Harf Marf", note: "word puzzle", href: "/work/harf-marf/" },
+      { title: "Beatografi", note: "beat marketplace", href: "/work/beatografi/" },
+      { title: "count.do", note: "countdown app", href: "/work/countdo/" },
+      { title: "Maç Kaçta", note: "football fixtures", href: "/work/mac-kacta/" },
+      { title: "Gonna", note: "social agenda", href: "/work/gonna/" },
+    ],
   },
   {
     org: "primetek",
@@ -35,6 +47,8 @@ export const experience: ExperienceEntry[] = [
       { title: "PrimeBlocks", note: "UI blocks", href: "/work/primeblocks/" },
       { title: "PrimeIcons", note: "icon set", href: "/work/primeicons/" },
       { title: "Templates", note: "app templates", href: "/work/templates/" },
+      { title: "PrimeStore", note: "template store", href: "/work/primestore/" },
+      { title: "Theme Designer", note: "theme editor", href: "/work/theme-designer/" },
     ],
   },
   {
