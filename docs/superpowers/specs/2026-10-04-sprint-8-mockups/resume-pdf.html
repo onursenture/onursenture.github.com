@@ -1,0 +1,126 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<h2>/resume.pdf: what does the paper look like?</h2>
+<p class="subtitle">A4, one page as the goal (two at most), real selectable text with the fonts embedded. The three options differ in how much of the site's identity carries over to paper. The draft copy is the same in all three. Click one.</p>
+
+<style>
+  .sheets { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; }
+  .a4 { background:#fff; border:1px solid #DADAD4; aspect-ratio:1/1.414; padding:16px 16px; color:#1F1F22; font-size:6.4px; line-height:9.2px; overflow:hidden; box-shadow:0 1px 0 #0000000a; }
+  .a4 .mut { color:#6E6E73; }
+  .a4 .soft { color:#3A3A3F; }
+  .a4 a { color:#2F55F5; text-decoration:none; }
+  .a4 ul { margin:2px 0 0; padding-left:8px; }
+  .a4 li { margin:1px 0; }
+  .a4 .row { display:flex; justify-content:space-between; gap:4px; }
+  /* A: site, mono */
+  .a4.a { font-family:"IBM Plex Mono", monospace; }
+  .a4.a .name { font-family:"IBM Plex Sans"; font-weight:600; font-size:13px; line-height:15px; }
+  .a4.a .g { display:grid; grid-template-columns:44px 1fr; gap:8px; }
+  .a4.a .hr { border-top:0.5px solid #D6D6D0; margin:6px 0; }
+  /* B: plain */
+  .a4.b { font-family:"IBM Plex Sans"; }
+  .a4.b .name { font-weight:600; font-size:13px; line-height:15px; }
+  .a4.b h5 { margin:7px 0 2px; font-size:6.6px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; border-bottom:0.5px solid #1F1F22; padding-bottom:1px; }
+  /* C: branded */
+  .a4.c { font-family:"IBM Plex Mono", monospace; padding:0; }
+  .a4.c .dither { height:26px; background:
+     radial-gradient(#2F55F5 0.6px, transparent 0.7px) 0 0/3px 3px; opacity:.55; }
+  .a4.c .in { padding:10px 16px; }
+  .a4.c .name { font-family:"Doto"; font-weight:700; font-size:15px; line-height:16px; letter-spacing:.02em; }
+  .a4.c .g { display:grid; grid-template-columns:44px 1fr; gap:8px; }
+  .a4.c .hr { border-top:0.5px dashed #C9C9C2; margin:6px 0; }
+  .a4.c .lbl { color:#2F55F5; }
+  .cap { font-size:12px; margin-top:6px; color:var(--text-secondary, #666); }
+</style>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>The site on paper (my pick)</h3>
+      <p>The same label | content columns as the web page, in Plex Mono with the name in Plex Sans. Hairline rules, black ink, and the accent only on links. Anyone who has seen the site recognises it, and it stays a quiet, single-column text flow, so ATS parsers read it fine.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Plain, ATS-first</h3>
+      <p>All Plex Sans, ruled section heads, no label column, no colour. Recruiters' systems parse it the most reliably and it's the most familiar shape, but it says nothing about you as a designer.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Branded</h3>
+      <p>A dither strip at the top, the name in Doto, accent labels. It's the most "you" on paper, but in a stack of PDFs it's also the loudest, the dither has to be embedded as an image, and grayscale printing turns it to mud.</p>
+    </div>
+  </div>
+</div>
+
+<div class="sheets" style="margin-top:16px">
+  <div>
+    <div class="a4 a">
+      <div class="row"><div><div class="name">Onur Senture</div><div class="mut">Designer who builds · Ankara · remote / hybrid</div></div><div class="mut" style="text-align:right">hello@…<br><a>onursenture.com</a><br><a>linkedin.com/in/…</a></div></div>
+      <div class="hr"></div>
+      <div class="g"><div class="mut">Summary</div><div class="soft">Designer who builds: ten years leading design at PrimeTek on a design system used across Vue, Angular and React, and a decade of iOS games and apps at Orkestra, designed and shipped end to end.</div></div>
+      <div class="hr"></div>
+      <div class="g"><div class="mut">Experience</div><div>
+        <div class="row"><span>PrimeTek <span class="mut">· Design lead</span></span><span class="mut">May 2016–Apr 2026</span></div>
+        <ul class="soft"><li>Built PrimeOne, the Figma design system behind PrimeVue, PrimeNG and PrimeReact.</li><li>Designed PrimeBlocks, PrimeIcons and 25+ app templates.</li><li>Led PrimeStore and Theme Designer 2025.</li></ul>
+        <div class="row" style="margin-top:4px"><span>Orkestra Studios <span class="mut">· Co-founder, designer</span></span><span class="mut">Jun 2013–now</span></div>
+        <ul class="soft"><li>Nebuu: #1 in Turkish word games (2014).</li><li>count.do: 300k+ users (Dec 2014).</li><li>Nine iOS games and apps, designed and shipped.</li></ul>
+        <div class="row" style="margin-top:4px"><span>Etiya <span class="mut">· Design specialist</span></span><span class="mut">Apr 2014–Mar 2016</span></div>
+        <ul class="soft"><li>Telaura Suite, Ofisim.com, Somemto.</li></ul>
+      </div></div>
+      <div class="hr"></div>
+      <div class="g"><div class="mut">Projects</div><div class="soft">PrimeOne — design system · PrimeBlocks — UI blocks · Nebuu — word game · Theme Designer — theme editor</div></div>
+      <div class="hr"></div>
+      <div class="g"><div class="mut">Skills</div><div class="soft"><span class="mut">Design</span> Design systems, Figma, icons<br><span class="mut">Build</span> Vue, React, Angular, iOS</div></div>
+      <div class="hr"></div>
+      <div class="g"><div class="mut">Education</div><div class="soft">BS Computer Science, Bilkent University</div></div>
+    </div>
+    <div class="cap">A · The site on paper</div>
+  </div>
+
+  <div>
+    <div class="a4 b">
+      <div class="name">Onur Senture</div>
+      <div class="mut">Designer who builds · Ankara · hello@… · onursenture.com · linkedin.com/in/…</div>
+      <h5>Summary</h5><div class="soft">Designer who builds: ten years leading design at PrimeTek on a design system used across Vue, Angular and React, and a decade of iOS games and apps at Orkestra.</div>
+      <h5>Experience</h5>
+      <div class="row"><b style="font-weight:600">PrimeTek, Design lead</b><span class="mut">May 2016–Apr 2026</span></div>
+      <ul class="soft"><li>Built PrimeOne, the Figma design system behind PrimeVue, PrimeNG and PrimeReact.</li><li>Designed PrimeBlocks, PrimeIcons and 25+ app templates.</li></ul>
+      <div class="row"><b style="font-weight:600">Orkestra Studios, Co-founder, designer</b><span class="mut">Jun 2013–now</span></div>
+      <ul class="soft"><li>Nebuu: #1 in Turkish word games (2014).</li><li>count.do: 300k+ users (Dec 2014).</li></ul>
+      <div class="row"><b style="font-weight:600">Etiya, Design specialist</b><span class="mut">Apr 2014–Mar 2016</span></div>
+      <h5>Projects</h5><div class="soft">PrimeOne · PrimeBlocks · Nebuu · Theme Designer</div>
+      <h5>Skills</h5><div class="soft">Design systems, Figma, icons · Vue, React, Angular, iOS</div>
+      <h5>Education</h5><div class="soft">BS Computer Science, Bilkent University</div>
+    </div>
+    <div class="cap">B · Plain, ATS-first</div>
+  </div>
+
+  <div>
+    <div class="a4 c">
+      <div class="dither"></div>
+      <div class="in">
+        <div class="row"><div><div class="name">ONUR SENTURE</div><div class="mut">Designer who builds · Ankara</div></div><div class="mut" style="text-align:right">hello@…<br><a>onursenture.com</a></div></div>
+        <div class="hr"></div>
+        <div class="g"><div class="lbl">Summary</div><div class="soft">Designer who builds: ten years leading design at PrimeTek, and a decade of iOS games and apps at Orkestra.</div></div>
+        <div class="hr"></div>
+        <div class="g"><div class="lbl">Experience</div><div>
+          <div class="row"><span>PrimeTek <span class="mut">· Design lead</span></span><span class="mut">2016–2026</span></div>
+          <ul class="soft"><li>Built PrimeOne, the Figma design system…</li><li>Designed PrimeBlocks, PrimeIcons…</li></ul>
+          <div class="row" style="margin-top:4px"><span>Orkestra <span class="mut">· Co-founder</span></span><span class="mut">2013–now</span></div>
+          <ul class="soft"><li>Nebuu: #1 in Turkish word games (2014).</li></ul>
+        </div></div>
+        <div class="hr"></div>
+        <div class="g"><div class="lbl">Skills</div><div class="soft">Design systems, Figma · Vue, React, iOS</div></div>
+        <div class="hr"></div>
+        <div class="g"><div class="lbl">Education</div><div class="soft">BS Computer Science, Bilkent</div></div>
+      </div>
+    </div>
+    <div class="cap">C · Branded</div>
+  </div>
+</div>

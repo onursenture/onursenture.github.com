@@ -1,0 +1,103 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@500;600&display=swap" rel="stylesheet">
+
+<h2>/book/: how do you pick a call type?</h2>
+<p class="subtitle">Three call types on the site grid. The cal.com calendar (light theme, ultramarine brand colour, cal.com's own event details hidden) opens on the same page. The options differ only in how you choose a type and where the calendar shows up. The copy and durations are drafts. Click one.</p>
+
+<style>
+  .pp { background:#FAFAF8; color:#1F1F22; font-family:"IBM Plex Mono", ui-monospace, Menlo, monospace; font-size:11.5px; line-height:17px; padding:20px 22px; }
+  .pp .mut { color:#6E6E73; }
+  .pp .soft { color:#45454A; }
+  .pp a { color:#2F55F5; text-decoration:none; }
+  .pp .lead { font-family:"IBM Plex Sans", system-ui, sans-serif; font-weight:600; font-size:17px; line-height:22px; }
+  .pp .rule { border-top:1px dashed #D6D6D0; margin:12px 0; }
+  .pp .hair { border-top:1px solid #E6E6E1; }
+  .pp .g3 { display:grid; grid-template-columns:96px minmax(0,300px) 1fr; gap:16px; }
+  .pp .wide { grid-column:2 / span 2; }
+  .pp .act { text-align:right; }
+  .pp .typ { display:grid; grid-template-columns:1fr auto; gap:10px; padding:8px 0; border-bottom:1px solid #E6E6E1; }
+  .pp .typ.on { color:#1F1F22; }
+  .pp .typ.on .t { color:#2F55F5; }
+  .pp .cal { border:1px solid #E6E6E1; background:#fff; display:grid; grid-template-columns:1.3fr 1fr; gap:14px; padding:12px; margin-top:10px; font-family:system-ui, sans-serif; font-size:10px; }
+  .pp .days { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; text-align:center; }
+  .pp .days span { padding:3px 0; color:#9A9AA0; }
+  .pp .days b { padding:3px 0; background:#EEF1FE; color:#2F55F5; font-weight:500; border-radius:3px; }
+  .pp .days i { padding:3px 0; background:#2F55F5; color:#fff; font-style:normal; border-radius:3px; }
+  .pp .slots div { border:1px solid #D9DEFB; color:#2F55F5; border-radius:3px; text-align:center; padding:3px 0; margin-bottom:4px; }
+  .pp .seg { display:inline-flex; border:1px solid #D6D6D0; border-radius:3px; overflow:hidden; }
+  .pp .seg span { padding:3px 10px; border-right:1px solid #D6D6D0; }
+  .pp .seg span:last-child { border-right:0; }
+  .pp .seg .on { background:#1F1F22; color:#fff; }
+  .pp .btn { display:inline-block; background:#2F55F5; color:#fff; padding:3px 9px; border-radius:3px; font-size:10.5px; }
+</style>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Rows that open in place (my pick)</h3>
+      <p>Three hairline rows. Choosing one opens the calendar under it, and the others stay visible as rows, so you can switch with one click. The choice lives in the URL hash (<code>/book/#project</code>), so it can be shared, the page stays one static HTML, and the CDN cache holds. Home and resume links can point straight at a type.</p>
+      <div class="pp">
+        <div class="g3"><div class="mut">← Home</div><div class="wide"><div class="lead">Book a call. <span class="mut">Pick what it's about; times are shown in your time zone.</span></div></div></div>
+        <div class="rule"></div>
+        <div class="g3"><div class="mut">Call type</div>
+          <div class="wide">
+            <div class="typ"><div><span class="t">Role / hiring</span> <span class="mut">· 30 min</span><div class="soft">You're hiring for a design or design-engineering role.</div></div><div><a href="#">Choose →</a></div></div>
+            <div class="typ on"><div><span class="t">Project / freelance ●</span> <span class="mut">· 30 min</span><div class="soft">A product, design system or app you want built.</div></div><div class="mut">Selected</div></div>
+            <div class="cal">
+              <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><b style="font-weight:600">October 2026</b><span class="mut">‹ ›</span></div>
+                <div class="days"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+                  <span></span><span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                  <b>6</b><b>7</b><i>8</i><b>9</b><b>10</b><span>11</span><span>12</span>
+                  <b>13</b><b>14</b><b>15</b><b>16</b><b>17</b><span>18</span><span>19</span></div></div>
+              <div class="slots"><div style="border:0;color:#1F1F22;text-align:left">Thu 8</div><div>10:00</div><div>11:30</div><div>14:00</div><div>16:30</div></div>
+            </div>
+            <div class="typ" style="margin-top:8px"><div><span class="t">Mentoring / intro</span> <span class="mut">· 20 min</span><div class="soft">Portfolio feedback, design systems, a first hello.</div></div><div><a href="#">Choose →</a></div></div>
+          </div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Segmented control above one calendar</h3>
+      <p>A three-way switch, with the calendar always open under it. It's more compact, but the type descriptions only fit as one short line, and the calendar sits there before you've chosen anything.</p>
+      <div class="pp">
+        <div class="g3"><div class="mut">← Home</div><div class="wide"><div class="lead">Book a call.</div></div></div>
+        <div class="rule"></div>
+        <div class="g3"><div class="mut">Call type</div>
+          <div class="wide">
+            <div class="seg"><span>Role · 30</span><span class="on">Project · 30</span><span>Mentoring · 20</span></div>
+            <div class="soft" style="margin-top:6px">A product, design system or app you want built.</div>
+            <div class="cal">
+              <div><div style="margin-bottom:6px"><b style="font-weight:600">October 2026</b></div>
+                <div class="days"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+                  <b>6</b><b>7</b><i>8</i><b>9</b><b>10</b><span>11</span><span>12</span></div></div>
+              <div class="slots"><div>10:00</div><div>11:30</div></div>
+            </div>
+          </div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Rows that open cal.com's popup</h3>
+      <p>The same three rows, but "Book →" opens cal.com's modal over the page. The page stays short and calm, but the calendar then lives in a floating layer styled by cal.com, and Back doesn't close it.</p>
+      <div class="pp">
+        <div class="g3"><div class="mut">← Home</div><div class="wide"><div class="lead">Book a call.</div></div></div>
+        <div class="rule"></div>
+        <div class="g3"><div class="mut">Call type</div>
+          <div class="wide">
+            <div class="typ"><div><span class="t">Role / hiring</span> <span class="mut">· 30 min</span><div class="soft">You're hiring for a design or design-engineering role.</div></div><div><span class="btn">Book</span></div></div>
+            <div class="typ"><div><span class="t">Project / freelance</span> <span class="mut">· 30 min</span><div class="soft">A product, design system or app you want built.</div></div><div><span class="btn">Book</span></div></div>
+            <div class="typ"><div><span class="t">Mentoring / intro</span> <span class="mut">· 20 min</span><div class="soft">Portfolio feedback, design systems, a first hello.</div></div><div><span class="btn">Book</span></div></div>
+          </div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
