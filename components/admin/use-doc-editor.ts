@@ -3,14 +3,15 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { discardDraftAction, publishAction, resetDocAction, saveDraftAction } from "@/app/admin/actions";
 import { type DocActions, DocSession, type EditorStatus } from "@/lib/admin/doc-session";
+import { isSaveShortcut, LEAVE_QUESTION, leavesPage } from "@/lib/admin/leave-guard";
 import type { DocEditorInit } from "@/lib/admin/results";
 import type { Issue } from "@/lib/content/issues";
 import type { DocKey } from "@/lib/content/keys";
 
 // React binding for DocSession (lib/admin/doc-session.ts holds the rules:
-// autosave, ordering of save and publish, retry, concurrency).
+// manual save, ordering of save and publish, concurrency), plus the window
+// listeners: Cmd/Ctrl+S saves, and leaving with unsaved changes warns.
 
-export { AUTOSAVE_MS } from "@/lib/admin/doc-session";
 export type { EditorStatus };
 
 export interface DocEditorState {
@@ -23,8 +24,8 @@ export interface DocEditorState {
   previewVersion: number;
   canPublish: boolean;
   blocked: boolean;
-  retrying: boolean;
-  flush: () => Promise<void>;
+  canSave: boolean;
+  save: () => Promise<void>;
   publish: () => Promise<void>;
   discard: () => Promise<void>;
   reset: () => Promise<void>;
@@ -48,20 +49,44 @@ export function useDocEditor<T>(init: DocEditorInit<T>): DocEditor<T> {
   const [session] = useState(() => new DocSession<T>(init, ACTIONS));
   const snapshot = useSyncExternalStore(session.subscribe, session.getSnapshot, session.getSnapshot);
 
-  // Leaving with an unsaved change: save it and let the browser ask. An
-  // in-app navigation unmounts the editor, which saves the same way.
+  // Leaving with an unsaved change (or a save in flight) warns and never saves:
+  // the browser asks before an unload, and an in-app link asks with confirm()
+  // (capture phase on window, so it runs before next/link's handler). Nothing
+  // is written when the editor unmounts. Cmd/Ctrl+S saves while mounted.
   useEffect(() => {
-    session.attach();
+    // Set once the user agreed to leave through a link, so a link that
+    // reloads the document isn't asked about twice.
+    let leaving = false;
     function onBeforeUnload(event: BeforeUnloadEvent) {
-      if (!session.hasUnsaved) return;
-      void session.flush();
+      if (leaving || !session.hasUnsaved) return;
       event.preventDefault();
     }
+    function onClick(event: MouseEvent) {
+      if (!session.hasUnsaved || !(event.target instanceof Element)) return;
+      const anchor = event.target.closest("a[href]");
+      if (!(anchor instanceof HTMLAnchorElement)) return;
+      const target = { href: anchor.href, target: anchor.target, download: anchor.hasAttribute("download") };
+      if (!leavesPage(event, target, window.location.href)) return;
+      if (window.confirm(LEAVE_QUESTION)) {
+        leaving = true;
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (!isSaveShortcut(event)) return;
+      event.preventDefault();
+      // Not while a save is in flight, nor with nothing to save.
+      if (session.getSnapshot().canSave) void session.save();
+    }
     window.addEventListener("beforeunload", onBeforeUnload);
+    window.addEventListener("click", onClick, true);
+    window.addEventListener("keydown", onKeyDown);
     return () => {
       window.removeEventListener("beforeunload", onBeforeUnload);
-      void session.flush();
-      session.dispose();
+      window.removeEventListener("click", onClick, true);
+      window.removeEventListener("keydown", onKeyDown);
     };
   }, [session]);
 
@@ -76,7 +101,7 @@ export function useDocEditor<T>(init: DocEditorInit<T>): DocEditor<T> {
     docKey: session.docKey,
     ...snapshot,
     setValue: session.setValue,
-    flush: session.flush,
+    save: session.save,
     publish: session.publish,
     discard: () => runAndReload("Discard the draft and go back to the published version?", session.discard),
     reset: () => runAndReload("Reset to the repo version? The published edits are removed from the site.", session.reset),
