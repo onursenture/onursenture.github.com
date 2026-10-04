@@ -33,7 +33,7 @@ CI runs typecheck, lint, test, build, e2e, `e2e:admin`, then a fixture build and
 - `GH_PAT`: GitHub GraphQL token for the contributions source.
 - `GOODREADS_USER_ID`: optional; the code has a default.
 - `SOURCE_FIXTURES=1`: dev/CI only. Serves `tests/fixtures/` through the real parsers. Never set it on Vercel.
-- `AUTH_SECRET` (32+ chars), `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`: the GitHub OAuth app (one per host: production, localhost).
+- `AUTH_SECRET` (32+ chars), `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`: one GitHub OAuth app (`onursenture.com admin`) whose Redirect URIs list both `https://onursenture.vercel.app/api/auth/callback/` and `http://localhost:3000/api/auth/callback/`; production and `.env.local` use the same client id and secret, each with its own `AUTH_SECRET`.
 - `ADMIN_GITHUB_ID`: the only GitHub user id that may sign in.
 - `BLOB_READ_WRITE_TOKEN`: the Vercel Blob store (public) for uploads.
 - `CONTENT_STORE_FILE`: dev/e2e only. Admin content goes to this JSON file instead of Neon. Set it in `.env.local` so local editing never touches production. It is refused on Vercel.
@@ -126,7 +126,7 @@ CI runs typecheck, lint, test, build, e2e, `e2e:admin`, then a fixture build and
 - **Discard draft** is hidden on a page that was never published (nothing to go back to; Delete page removes it). After a publish the page editor calls `router.refresh()` so `live` and the locked ids follow; the route keys the editor by document, so the session survives the refresh.
 - **Headers.** `next.config.ts` `headers()` sends `frame-ancestors 'self'` and `X-Frame-Options: SAMEORIGIN` on `/admin/:path*` only (the preview iframe is same-origin). Public routes get no extra headers.
 - **Delete page.** Errors show inline in a `role="alert"` paragraph in the form column and leave the editor status alone. Experience linking the page blocks the delete ("Can't delete: ... Remove it from Experience first.").
-- **Preview deployments** have no admin sign-in (one OAuth callback host) but show published content (shared database).
+- **Preview deployments** have no admin sign-in (the AUTH_* env is Production-only and per-deployment preview URLs aren't registered redirect URIs) but show published content (shared database).
 - **E2E.** `e2e-admin/` and `playwright.admin.config.ts` run a production build with `CONTENT_STORE_FILE=.e2e-admin/content.json`, local media and the test sign-in. Serial, one worker; `.e2e-admin/` is gitignored and wiped by the global setup. The config blanks `DATABASE_URL`, `BLOB_READ_WRITE_TOKEN`, `AUTH_GITHUB_ID` and `AUTH_GITHUB_SECRET` so a local `.env.local` can never point the e2e at production Neon, Blob or OAuth.
 
 ## Sources and sync

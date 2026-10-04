@@ -239,3 +239,4 @@ Where the shipped admin differs from this spec:
 - **The session check** (§4.2) is `isAdmin()` / `requireAdminPage()` in `lib/auth/admin.ts`; `lib/auth/session.ts` only signs and verifies the JWT.
 - **The admin e2e** (§6) uses a JSON file content store (`CONTENT_STORE_FILE`, `lib/content/file-store.ts`), not PGlite. The database store keeps its own PGlite tests.
 - **The toolbar shows no change count** (§2.2): the status reads "Draft saved 4s ago", "Published …" or "Repo version", without "· N unpublished changes".
+- One GitHub OAuth App instead of two: GitHub's OAuth App form now takes up to 10 Redirect URIs, so production and localhost share one app (§4.3, §7).
