@@ -27,6 +27,15 @@ describe("resumeView", () => {
     warn.mockRestore();
   });
 
+  it("ignores an empty role for an org that left Experience without a warning", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const roles = repo.resume.roles.map((role) => (role.org === "etiya" ? { ...role, bullets: [] } : role));
+    const gone = { ...repo, experience: repo.experience.filter((entry) => entry.org !== "etiya"), resume: { ...repo.resume, roles } };
+    expect(resumeView(gone).roles.map((role) => role.org)).not.toContain("etiya");
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
   it("drops a project link to a missing page, and hides blank contact fields", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const site = {

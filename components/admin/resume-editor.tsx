@@ -60,7 +60,7 @@ export function ResumeEditor({ data }: { data: ResumeEditorData }) {
   const [source, setSource] = useState("");
 
   function addFromSource() {
-    const item = data.sources.find((option) => option.href === source);
+    const item = data.sources.find((option) => `${option.kind}:${option.href}` === source);
     if (!item) return;
     projects.insert(resume.projects.length, { title: item.title, line: "", href: item.href });
     setSource("");
@@ -135,13 +135,13 @@ export function ResumeEditor({ data }: { data: ResumeEditorData }) {
               <select value={source} onChange={(event) => setSource(event.target.value)} className={CONTROL}>
                 <option value="">Pick a page or Lab entry</option>
                 {data.sources.map((option) => (
-                  <option key={option.href} value={option.href}>
+                  <option key={`${option.kind}:${option.href}`} value={`${option.kind}:${option.href}`}>
                     {option.kind} · {option.title}
                   </option>
                 ))}
               </select>
             </Field>
-            <AddButton onClick={addFromSource}>Add from list</AddButton>
+            <AddButton onClick={addFromSource} disabled={!source}>Add from list</AddButton>
             <AddButton onClick={() => projects.insert(resume.projects.length, { title: "", line: "" })}>Add blank</AddButton>
           </div>
         </Group>

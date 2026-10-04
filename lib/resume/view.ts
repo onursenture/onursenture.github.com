@@ -57,8 +57,10 @@ export function resumeView(site: SiteContent, { loose = false }: { loose?: boole
   };
   const { resume } = site;
   const orgs = new Set(site.experience.map((entry) => entry.org));
+  // A role with bullets uses its org (validateSite refuses that on publish);
+  // an empty role for an org that left Experience is ignored without a word.
   for (const role of resume.roles) {
-    if (!orgs.has(role.org)) warn(`${ORGS[role.org].name} is not in Experience; leaving its bullets out`);
+    if (role.bullets.length > 0 && !orgs.has(role.org)) warn(`${ORGS[role.org].name} is not in Experience; leaving its bullets out`);
   }
   const bullets = new Map(resume.roles.map((role) => [role.org, role.bullets]));
   const pages = new Set(site.pages.map((page) => `/work/${page.slug}/`));

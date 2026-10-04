@@ -429,3 +429,25 @@ describe("discard", () => {
     expect(session.getSnapshot()).toMatchObject({ status: "offline", blocked: false });
   });
 });
+
+describe("a dirty init", () => {
+  it("opens with the loaded value as an unsaved edit", () => {
+    const { session } = setup({ value: "aligned", dirty: true });
+    expect(session.getSnapshot()).toMatchObject({ value: "aligned", status: "dirty", canSave: true, canPublish: true });
+    expect(session.hasUnsaved).toBe(true);
+  });
+
+  it("saves the value first when publishing, then publishes", async () => {
+    const { actions, session } = setup({ value: "aligned", dirty: true, draftUpdatedAt: "t0", hasDraft: true });
+    await session.publish();
+    expect(actions.save).toHaveBeenCalledWith("lab", "aligned", "t0");
+    expect(actions.publish).toHaveBeenCalledWith("lab", "t1");
+    expect(actions.save.mock.invocationCallOrder[0]).toBeLessThan(actions.publish.mock.invocationCallOrder[0]);
+    expect(session.getSnapshot().status).toBe("published");
+  });
+
+  it("is unchanged without dirty, and ignored without a database", () => {
+    expect(setup().session.getSnapshot()).toMatchObject({ status: "idle", canSave: false });
+    expect(setup({ dirty: true, available: false }).session.getSnapshot()).toMatchObject({ status: "unavailable", canSave: false });
+  });
+});

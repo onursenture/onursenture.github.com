@@ -124,10 +124,14 @@ export async function loadResumeEditor(): Promise<ResumeEditorData> {
     console.warn("[admin] loading the resume context failed:", e instanceof Error ? e.message : e);
   }
   const site = resolveSite(values);
+  const roles = alignRoles(loaded.value.roles, site.experience);
   return {
     init: {
       docKey: loaded.docKey,
-      value: { ...loaded.value, roles: alignRoles(loaded.value.roles, site.experience) },
+      value: { ...loaded.value, roles },
+      // Aligned roles are not what is stored: open with that as an unsaved edit,
+      // so Save draft and Publish write the aligned value.
+      dirty: loaded.available && JSON.stringify(roles) !== JSON.stringify(loaded.value.roles),
       draftUpdatedAt: loaded.draftUpdatedAt,
       hasDraft: loaded.hasDraft,
       publishedAt: loaded.publishedAt,

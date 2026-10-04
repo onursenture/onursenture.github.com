@@ -76,13 +76,15 @@ export function validateSite(site: SiteContent, hasImage: (key: string) => boole
   });
 
   // The resume (Sprint 8 spec §1.3). Checked on every publish, so publishing
-  // Experience without an org the resume uses is refused too.
+  // Experience without an org the resume uses is refused too. A role uses its
+  // org only when it has bullets: to drop an org from Experience, clear its
+  // bullets on the resume and publish that first.
   const { resume } = site;
   const experienceOrgs = new Set(site.experience.map((entry) => entry.org));
   const listed = new Set<string>();
   resume.roles.forEach((role, index) => {
     const name = ORGS[role.org].name;
-    if (!experienceOrgs.has(role.org)) issues.push({ doc: "resume", at: `roles/${index}`, message: `${name} is not in Experience` });
+    if (role.bullets.length > 0 && !experienceOrgs.has(role.org)) issues.push({ doc: "resume", at: `roles/${index}`, message: `${name} is not in Experience` });
     if (listed.has(role.org)) issues.push({ doc: "resume", at: `roles/${index}`, message: `${name} is listed twice` });
     listed.add(role.org);
   });

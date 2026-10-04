@@ -70,6 +70,9 @@ describe("validateSite", () => {
     expect(validateSite(repo, hasImage)).toEqual([]);
     const dropped = { ...repo, experience: repo.experience.filter((entry) => entry.org !== "etiya") };
     expect(validateSite(dropped, hasImage)).toContainEqual({ doc: "resume", at: "roles/2", message: "Etiya is not in Experience" });
+    // A role with no bullets doesn't use its org, so the org can leave Experience.
+    const emptied = { ...dropped, resume: { ...dropped.resume, roles: dropped.resume.roles.map((role) => (role.org === "etiya" ? { ...role, bullets: [] } : role)) } };
+    expect(validateSite(emptied, hasImage)).toEqual([]);
     const twice = { ...repo, resume: { ...repo.resume, roles: [...repo.resume.roles, repo.resume.roles[0]] } };
     expect(validateSite(twice, hasImage)).toContainEqual({ doc: "resume", at: "roles/3", message: "Orkestra Studios is listed twice" });
   });

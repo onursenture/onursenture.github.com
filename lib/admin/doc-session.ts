@@ -80,10 +80,14 @@ export class DocSession<T> {
     this.docKey = init.docKey;
     this.expected = init.draftUpdatedAt;
     this.blocked = !init.available;
+    // With init.dirty the value is the loaded one, not the stored one; the
+    // session starts with it unsaved. The baseline stays the loaded value, so
+    // abandon() never brings back the stored, misaligned one.
     this.baseline = init.value;
+    this.pending = !!init.dirty && init.available;
     this.snapshot = {
       value: init.value,
-      status: init.available ? "idle" : "unavailable",
+      status: !init.available ? "unavailable" : this.pending ? "dirty" : "idle",
       hasDraft: init.hasDraft,
       savedAt: init.draftUpdatedAt,
       publishedAt: init.publishedAt,
@@ -91,7 +95,7 @@ export class DocSession<T> {
       previewVersion: 0,
       canPublish: false,
       blocked: this.blocked,
-      canSave: false,
+      canSave: this.pending,
     };
     this.snapshot.canPublish = this.computeCanPublish(this.snapshot);
   }
