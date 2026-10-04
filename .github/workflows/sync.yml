@@ -37,8 +37,8 @@ jobs:
 
       # revalidateTag("max") serves stale content to the first visitor after a
       # sync while the page regenerates in the background. Request the pages
-      # here so that first visitor is this job instead of a human. Both views
-      # are warmed: the site view (no cookie) and the dashboard view (cookie).
+      # here so that first visitor is this job instead of a human. The Work home
+      # and /life/ are warmed.
       # Never fail the job on a bad response; the sync step already succeeded.
       - name: Warm the cache
         env:
@@ -49,5 +49,4 @@ jobs:
           }
           for path in /life/ /; do
             warm "${SITE_URL%/}${path}"
-            warm -H "Cookie: view=dashboard" "${SITE_URL%/}${path}"
           done

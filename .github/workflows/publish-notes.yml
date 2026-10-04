@@ -1,0 +1,44 @@
+name: Publish scheduled notes
+
+# Lives on master because GitHub only runs scheduled workflows from the
+# default branch. Calls the v2 site's publish-due endpoint one minute after
+# each quarter hour; skipped until the SITE_URL repository variable is set.
+on:
+  schedule:
+    - cron: "1,16,31,46 * * * *"
+  workflow_dispatch:
+
+# No token scopes needed: the job only uses curl against the site.
+permissions: {}
+
+concurrency:
+  group: publish-notes
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: ${{ vars.SITE_URL != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish due notes
+        id: publish
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          SYNC_SECRET: ${{ secrets.SYNC_SECRET }}
+        run: |
+          body=$(curl --fail-with-body --silent --show-error --max-time 60 \
+            -X POST "${SITE_URL%/}/api/notes/publish-due/" \
+            -H "Authorization: Bearer ${SYNC_SECRET}")
+          echo "$body"
+          echo "published=$(echo "$body" | jq -r '.published // 0')" >> "$GITHUB_OUTPUT"
+
+      # Request the pages that list notes so the first visitor after a publish
+      # isn't the one who waits for the render. Never fails the job.
+      - name: Warm the cache
+        if: ${{ steps.publish.outputs.published != '0' }}
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: |
+          for path in / /notes/ /life/ /life/notes/ /feed.xml; do
+            curl --silent --show-error --output /dev/null --max-time 60 "${SITE_URL%/}${path}" || true
+          done
