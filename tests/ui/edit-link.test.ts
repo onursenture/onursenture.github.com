@@ -7,5 +7,6 @@ describe("editHref", () => {
     expect(editHref("/")).toBe("/admin/");
     expect(editHref("/life/")).toBe("/admin/");
     expect(editHref("/work/nebuu/extra/")).toBe("/admin/");
+    expect(editHref("/resume/")).toBe("/admin/resume/");
   });
 });

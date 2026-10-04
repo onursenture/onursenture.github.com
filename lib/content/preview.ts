@@ -2,6 +2,7 @@ import "server-only";
 import { type MediaEntry, lookupWith, toMediaEntry } from "@/lib/images/lookup";
 import { buildProductPage, type ProductPageView } from "@/lib/work/derive";
 import { type HomeContent, homeContent } from "@/lib/work/views";
+import { type ResumeView, resumeView } from "@/lib/resume/view";
 import { type DocValues, draftValues, resolvePage, resolveSite } from "./site";
 import type { ContentStore } from "./store";
 
@@ -24,4 +25,9 @@ export async function draftPageView(store: ContentStore | null, slug: string): P
 export async function draftHomeContent(store: ContentStore | null): Promise<HomeContent> {
   const { values, media } = await drafts(store);
   return homeContent(resolveSite(values, { loose: true }), lookupWith(media), { loose: true });
+}
+
+export async function draftResumeView(store: ContentStore | null): Promise<ResumeView> {
+  const { values } = await drafts(store);
+  return resumeView(resolveSite(values, { loose: true }), { loose: true });
 }
