@@ -1,6 +1,6 @@
 "use client";
 
-import { type ExperienceChild, type ExperienceEntry, formatSpan } from "@/content/experience";
+import { type ExperienceChild, type ExperienceEntry, safeSpan } from "@/content/experience";
 import { ORGS, type OrgId } from "@/content/orgs";
 import { optional } from "@/lib/admin/list";
 import type { DocEditorInit } from "@/lib/admin/results";
@@ -13,12 +13,9 @@ import { useKeyedList } from "./use-keyed-list";
 
 type PageOption = { href: string; title: string };
 const ORG_OPTIONS = (Object.keys(ORGS) as OrgId[]).map((id) => ({ value: id, label: ORGS[id].name }));
-const MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
-
-// The role's span, once its months are real; a draft with a blank month would
-// make formatSpan print "undefined".
+// The role's span, once its months are real; "dates" until then.
 function spanOf(role: ExperienceEntry): string {
-  return MONTH.test(role.start) && (role.end === null || MONTH.test(role.end)) ? formatSpan(role.start, role.end) : "dates";
+  return safeSpan(role.start, role.end) || "dates";
 }
 
 function Products({

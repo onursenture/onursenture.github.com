@@ -1,5 +1,5 @@
 import "server-only";
-import { formatSpan } from "@/content/experience";
+import { safeSpan } from "@/content/experience";
 import { ORGS } from "@/content/orgs";
 import type { PinRef } from "@/content/pins";
 import type { Resume } from "@/content/resume";
@@ -110,8 +110,6 @@ export async function loadPinsEditor(): Promise<{ init: DocEditorInit<{ order: P
   return { init, items };
 }
 
-const MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
-
 // The resume editor: the document (roles aligned to the live Experience), the
 // Experience orgs for the Roles cards, and the "Add from…" options.
 export async function loadResumeEditor(): Promise<ResumeEditorData> {
@@ -141,7 +139,7 @@ export async function loadResumeEditor(): Promise<ResumeEditorData> {
       org: entry.org,
       name: ORGS[entry.org].name,
       role: entry.role,
-      span: MONTH.test(entry.start) && (entry.end === null || MONTH.test(entry.end)) ? formatSpan(entry.start, entry.end) : "",
+      span: safeSpan(entry.start, entry.end),
     })),
     sources: [
       ...site.pages.map((page) => ({ kind: "Page" as const, title: page.title, href: `/work/${page.slug}/` })),

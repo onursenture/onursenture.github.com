@@ -70,4 +70,8 @@ describe("firstSentence", () => {
     expect(firstSentence("No full stop")).toBe("No full stop");
     expect(firstSentence("  ")).toBe("");
   });
+
+  it("finds the first sentence across a line break", () => {
+    expect(firstSentence("Designer who builds\nfull apps. Ten years at PrimeTek.")).toBe("Designer who builds\nfull apps.");
+  });
 });

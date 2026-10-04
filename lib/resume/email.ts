@@ -2,8 +2,10 @@
 // protection, Sprint 8 spec §3.1): the server passes it base64-encoded and
 // renders it in pieces; the client turns it into a mailto: link.
 
+// UTF-8 bytes, then base64, without Node's Buffer: EmailLink (a client
+// component) imports this module.
 export function encodeEmail(address: string): string {
-  return Buffer.from(address, "utf8").toString("base64");
+  return btoa(String.fromCharCode(...new TextEncoder().encode(address)));
 }
 
 export function decodeEmail(code: string): string {

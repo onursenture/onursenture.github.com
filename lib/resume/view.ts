@@ -1,4 +1,4 @@
-import { formatSpan } from "@/content/experience";
+import { safeSpan } from "@/content/experience";
 import { ORGS, type OrgId } from "@/content/orgs";
 import { profile } from "@/content/profile";
 import { type ResumeEducation, type ResumeSkill, linkedinUrl } from "@/content/resume";
@@ -44,13 +44,6 @@ export interface ResumeView {
   education: ResumeEducation[];
 }
 
-const MONTH = /^\d{4}-(0[1-9]|1[0-2])$/;
-
-// A half-filled draft has blank months; formatSpan would print "undefined".
-function span(start: string, end: string | null): string {
-  return MONTH.test(start) && (end === null || MONTH.test(end)) ? formatSpan(start, end) : "";
-}
-
 export function resumeView(site: SiteContent, { loose = false }: { loose?: boolean } = {}): ResumeView {
   const warn = (message: string) => {
     if (!loose) console.warn(`[resume] ${message}`);
@@ -78,7 +71,7 @@ export function resumeView(site: SiteContent, { loose = false }: { loose?: boole
       org: entry.org,
       orgName: ORGS[entry.org].name,
       role: entry.role,
-      span: span(entry.start, entry.end),
+      span: safeSpan(entry.start, entry.end),
       bullets: bullets.get(entry.org) ?? [],
       products: entry.children.map((child) => (child.href ? { title: child.title, href: child.href } : { title: child.title })),
     })),
@@ -97,5 +90,5 @@ export function resumeView(site: SiteContent, { loose = false }: { loose?: boole
 // The summary's first sentence: the page's meta description.
 export function firstSentence(text: string): string {
   const trimmed = text.trim();
-  return /^.*?[.!?](?=\s|$)/.exec(trimmed)?.[0] ?? trimmed;
+  return /^[\s\S]*?[.!?](?=\s|$)/.exec(trimmed)?.[0] ?? trimmed;
 }
