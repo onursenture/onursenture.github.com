@@ -20,6 +20,20 @@ export function formatDateTime(iso: string): string {
   return Number.isNaN(time) ? "" : dateTimeFormat.format(time);
 }
 
+const monthDayFormat = new Intl.DateTimeFormat("en", { month: "short", day: "numeric", timeZone: "Europe/Istanbul" });
+
+// "Oct 4": a note's date under its year label (/notes/).
+export function formatMonthDay(iso: string): string {
+  const time = new Date(iso).getTime();
+  return Number.isNaN(time) ? "" : monthDayFormat.format(time);
+}
+
+// "Oct 3, 2026 · 14:15": a note's own page.
+export function formatNoteStamp(iso: string): string {
+  const time = new Date(iso).getTime();
+  return Number.isNaN(time) ? "" : `${dateFormat.format(time)} · ${formatClock(time, "Europe/Istanbul")}`;
+}
+
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
