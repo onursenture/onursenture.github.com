@@ -11,9 +11,9 @@ function Render({ data }: { data: ArchiveItem[] }) {
   if (data.length === 0) return <Empty />;
   return (
     <ul className={COVER_GRID}>
-      {data.map((play) => (
-        <li key={play.key}>
-          <a href={play.href} rel="noopener noreferrer" className="group flex flex-col gap-1">
+      {data.map((play) => {
+        const body = (
+          <>
             {play.image ? (
               <Cover src={play.image} alt="" width={96} className="mb-1" />
             ) : (
@@ -23,9 +23,20 @@ function Render({ data }: { data: ArchiveItem[] }) {
               {play.title}
             </span>
             <span className="type-label truncate text-fg-muted">{play.meta[0] ?? ""}</span>
-          </a>
-        </li>
-      ))}
+          </>
+        );
+        return (
+          <li key={play.key}>
+            {play.href ? (
+              <a href={play.href} rel="noopener noreferrer" className="group flex flex-col gap-1">
+                {body}
+              </a>
+            ) : (
+              <div className="flex flex-col gap-1">{body}</div>
+            )}
+          </li>
+        );
+      })}
     </ul>
   );
 }

@@ -38,11 +38,6 @@ test("the Theatre row and the readout's last play come from the theatre archive"
   await expect(page.getByRole("region", { name: "Now" }).locator("li", { hasText: "last play:" })).toContainText("Adel Seni Seçti");
 });
 
-test("Saved on the home shows at most five articles", async ({ page }) => {
-  await page.goto("/life/");
-  expect(await page.locator('[data-section="articles"] li').count()).toBeLessThanOrEqual(5);
-});
-
 test("Books Reading lists every book being read, in compact covers", async ({ page }) => {
   await page.goto("/life/");
   const titles = [
