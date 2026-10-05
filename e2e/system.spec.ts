@@ -18,6 +18,7 @@ const PRIMITIVES = [
   "RelativeTime",
   "LiveClock",
   "Cover",
+  "ArchiveTile",
   "DataTable",
   "Empty",
   "Picture",
