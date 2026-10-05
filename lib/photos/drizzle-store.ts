@@ -90,8 +90,11 @@ export class DrizzlePhotoStore implements PhotoStore {
         .set({ ...fields, updatedAt: now })
         .where(and(eq(photos.id, id), eq(photos.updatedAt, new Date(expected))))
         .returning();
-      const photo = rows[0] ? toPhoto(rows[0]) : null;
-      if (photo) return { ok: true, photo };
+      if (rows[0]) {
+        const photo = toPhoto(rows[0]);
+        if (photo) return { ok: true, photo };
+        throw new Error("the updated photo is unreadable");
+      }
     } catch (e) {
       if (isUniqueViolation(e)) return { ok: false, reason: "duplicate-slug" };
       throw e;
@@ -104,8 +107,11 @@ export class DrizzlePhotoStore implements PhotoStore {
       .delete(photos)
       .where(and(eq(photos.id, id), eq(photos.updatedAt, new Date(expected))))
       .returning();
-    const photo = rows[0] ? toPhoto(rows[0]) : null;
-    if (photo) return { ok: true, photo };
+    if (rows[0]) {
+      const photo = toPhoto(rows[0]);
+      if (photo) return { ok: true, photo };
+      throw new Error("the removed photo is unreadable");
+    }
     return { ok: false, reason: (await this.exists(id)) ? "conflict" : "missing" };
   }
 

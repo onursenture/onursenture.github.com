@@ -102,5 +102,16 @@ export function describePhotoStore(name: string, make: () => Promise<PhotoStore>
       expect(await store.get(created.photo.id)).toBeNull();
       expect(await store.remove(created.photo.id, created.photo.updatedAt)).toEqual({ ok: false, reason: "missing" });
     });
+
+    it("updates a published photo while keeping its own slug", async () => {
+      const created = await store.create(published("kept-slug", "2026-01-01T00:00:00"), t0);
+      if (!created.ok) throw new Error("create failed");
+      const updated = await store.update(created.photo.id, published("kept-slug", "2026-06-01T00:00:00"), created.photo.updatedAt, t1);
+      expect(updated.ok).toBe(true);
+      if (updated.ok) {
+        expect(updated.photo.takenAt).toBe("2026-06-01T00:00:00");
+        expect(updated.photo.slug).toBe("kept-slug");
+      }
+    });
   });
 }
