@@ -1,7 +1,7 @@
 import type { SavedItem } from "@/lib/life/archive";
 import { cx } from "@/lib/cx";
 import { initialOf } from "./archive-tile";
-import { TileFallback } from "./tile-fallback";
+import { RemoteImage } from "./remote-image";
 
 // The Saved list (mockup reading-list option 3): site and length in the label
 // column, title and description in the 480px column, a 16:10 image on the
@@ -23,20 +23,7 @@ export function SavedList({ items }: { items: SavedItem[] }) {
               {item.description ? <span className="line-clamp-2 type-meta text-fg-soft">{item.description}</span> : null}
             </span>
             <span className="order-1 block w-full lg:order-3 lg:w-[104px] lg:justify-self-end">
-              {item.image ? (
-                // eslint-disable-next-line @next/next/no-img-element -- remote og:image; no optimization by design
-                <img
-                  src={item.image}
-                  alt=""
-                  width={208}
-                  height={130}
-                  loading="lazy"
-                  decoding="async"
-                  className="block aspect-[16/10] w-full bg-line object-cover"
-                />
-              ) : (
-                <TileFallback initial={initialOf(item.site)} shape="wide" />
-              )}
+              <RemoteImage src={item.image} initial={initialOf(item.site)} shape="wide" width={208} />
             </span>
           </a>
         </li>

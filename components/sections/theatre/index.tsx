@@ -1,6 +1,6 @@
-import { COVER_GRID, Cover } from "@/components/ui/cover";
+import { COVER_GRID } from "@/components/ui/cover";
 import { initialOf } from "@/components/life/archive/archive-tile";
-import { TileFallback } from "@/components/life/archive/tile-fallback";
+import { RemoteImage } from "@/components/life/archive/remote-image";
 import { type ArchiveItem, latestPlays } from "@/lib/life/archive";
 import { readLifeLog } from "@/lib/life-log/read";
 import { Empty } from "../empty";
@@ -14,11 +14,7 @@ function Render({ data }: { data: ArchiveItem[] }) {
       {data.map((play) => {
         const body = (
           <>
-            {play.image ? (
-              <Cover src={play.image} alt="" width={96} className="mb-1" />
-            ) : (
-              <TileFallback initial={initialOf(play.title)} className="mb-1" />
-            )}
+            <RemoteImage src={play.image} initial={initialOf(play.title)} width={96} className="mb-1" />
             <span className="type-label truncate text-fg group-hover:underline group-hover:underline-offset-[0.2em]">
               {play.title}
             </span>

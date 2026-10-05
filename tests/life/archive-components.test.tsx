@@ -14,6 +14,8 @@ describe("ArchiveTile", () => {
     expect(html).toContain('href="https://letterboxd.com/onur/film/pickled/"');
     expect(html).toContain('rel="noopener noreferrer"');
     expect(html).toContain('src="https://a.ltrbxd.com/p.jpg"');
+    // Hot-linked: some hosts refuse a request that carries our referrer.
+    expect(html).toMatch(/referrerpolicy="no-referrer"/i);
     expect(html).toContain("Pickled");
     expect(html).toContain("Sep 8");
   });
@@ -72,5 +74,16 @@ describe("SavedList", () => {
     for (const text of ["rauno.me", "6 min", "Designing Depth", "How do you distill…", 'src="https://rauno.me/og.png"', 'href="https://rauno.me/craft/depth"']) {
       expect(html).toContain(text);
     }
+    expect(html).toMatch(/referrerpolicy="no-referrer"/i);
+    expect(html).toContain("aspect-[16/10]");
+  });
+
+  it("renders the wide fallback with the site's initial when there is no image", () => {
+    const html = renderToStaticMarkup(
+      <SavedList items={[{ link: "https://rauno.me/craft/depth", title: "Designing Depth", site: "rauno.me", minutes: 6, description: "", image: "" }]} />,
+    );
+    expect(html).not.toContain("<img");
+    expect(html).toContain(">R<");
+    expect(html).toContain("aspect-[16/10]");
   });
 });
