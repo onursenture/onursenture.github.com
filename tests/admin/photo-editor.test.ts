@@ -250,7 +250,7 @@ describe("PhotoEditorState: one thing at a time", () => {
   });
 });
 
-describe("PhotoEditorState: fix round 1", () => {
+describe("PhotoEditorState: guards and outcomes", () => {
   it("edits are ignored while a save is in flight (value unchanged, dirty unchanged)", async () => {
     const pending = deferred();
     const a = actions({ save: vi.fn(() => pending.promise) });

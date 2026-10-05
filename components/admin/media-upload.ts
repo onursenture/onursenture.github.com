@@ -14,10 +14,13 @@ export type SourceResult = { status: "ok"; source: string } | { status: "invalid
 // long side is still more than the largest rendition (2560).
 const MAX_CONVERT_SIDE = 4096;
 
-// PNG and JPEG upload as they are. Anything the browser can decode (HEIC on
-// an iPhone, WebP) is redrawn as a JPEG first, because the server's sharp
-// can't read HEIC. The redraw drops EXIF: read it before calling this.
-async function prepare(file: File, check: (width: number, height: number) => string | null): Promise<File | string> {
+// Only a PNG with keepPng set uploads as it is (screenshots stay lossless).
+// Everything else (JPEG, HEIC from an iPhone, WebP, a PNG without keepPng) is
+// redrawn as a JPEG: the server's sharp can't read HEIC, and the redraw drops
+// all metadata, location data included, so no GPS-bearing original ever lands
+// in the public uploads/ object. createImageBitmap applies EXIF orientation,
+// so the picture stays upright. Read EXIF from the original before calling.
+async function prepare(file: File, keepPng: boolean, check: (width: number, height: number) => string | null): Promise<File | string> {
   if (file.size > MAX_BYTES) return "The file is larger than 25 MB.";
   let bitmap: ImageBitmap;
   try {
@@ -30,7 +33,7 @@ async function prepare(file: File, check: (width: number, height: number) => str
     bitmap.close();
     return problem;
   }
-  if (file.type === "image/png" || file.type === "image/jpeg") {
+  if (keepPng && file.type === "image/png") {
     bitmap.close();
     return file;
   }
@@ -56,9 +59,9 @@ async function signedOut(): Promise<boolean> {
 export async function uploadOriginal(
   original: File,
   mode: "blob" | "local",
-  options: { folder: string; check: (width: number, height: number) => string | null },
+  options: { folder: string; keepPng: boolean; check: (width: number, height: number) => string | null },
 ): Promise<SourceResult> {
-  const prepared = await prepare(original, options.check);
+  const prepared = await prepare(original, options.keepPng, options.check);
   if (typeof prepared === "string") return { status: "invalid", message: prepared };
   if (mode === "blob") {
     const extension = prepared.type === "image/png" ? "png" : "jpg";

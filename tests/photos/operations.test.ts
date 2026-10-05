@@ -90,6 +90,31 @@ describe("publishPhoto", () => {
       expect(result.status === "ok" && result.photo.slug).toBe(expectedSlug);
     }
   });
+
+  // A store whose update reports a taken slug for the first `failures` calls.
+  function racing(failures: number) {
+    const update = vi.fn(async (...args: Parameters<FilePhotoStore["update"]>) => {
+      if (update.mock.calls.length <= failures) return { ok: false as const, reason: "duplicate-slug" as const };
+      return store.update(...args);
+    });
+    return { stub: Object.assign(Object.create(store), { update }) as FilePhotoStore, update };
+  }
+
+  it("retries when another publish takes the slug first", async () => {
+    const photo = await draft();
+    const { stub, update } = racing(1);
+    const result = await publishPhoto(stub, { id: photo.id, expected: photo.updatedAt, content: content(photo, { title: "Stabilo" }) }, t1);
+    expect(result.status === "ok" && result.photo).toMatchObject({ slug: "stabilo", status: "published" });
+    expect(update).toHaveBeenCalledTimes(2);
+  });
+
+  it("gives up with a conflict after three slug races", async () => {
+    const photo = await draft();
+    const { stub, update } = racing(Infinity);
+    const result = await publishPhoto(stub, { id: photo.id, expected: photo.updatedAt, content: content(photo, { title: "Stabilo" }) }, t1);
+    expect(result).toEqual({ status: "conflict" });
+    expect(update).toHaveBeenCalledTimes(3);
+  });
 });
 
 describe("deletePhoto", () => {
