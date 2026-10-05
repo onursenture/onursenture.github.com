@@ -4689,12 +4689,15 @@ The controller does this, not a subagent.
 
 - [ ] **Step 4: Visual check.** Take screenshots of the fixture build (Task 10 Step 5 list plus `/life/`) at 1440 and 390, and look at each one. Freeze-frame nothing; there are no new animations.
 - [ ] **Step 5: Push and open the PR** after asking Onur (AskUserQuestion: "Push edip PR açayım mı?"). The PR body covers the scope, the new tables and their migration (expand-only), the import plan, and the follow-ups. End it with the attribution line. After it opens, call `get_status` and `bind_pr` if needed.
-- [ ] **Step 6: After CI is green, ask Onur to merge** (he checks on production). After the merge, the migration runs on the production build. Then:
-  1. `DATABASE_URL=<prod> npm run import:letterboxd -- ../letterboxd-export.zip --posters` (about 15 minutes for the posters).
-  2. `curl -X POST -H "Authorization: Bearer $SYNC_SECRET" "https://onursenture.vercel.app/api/sync/?force=1"`. This seeds Theatre, archives the RSS window, starts the enrichments, and revalidates every archive tag.
-  3. Check on production:
-     - `/life/films/`, `/life/films/2025/`, `/life/books/`, `/life/theatre/` and `/life/saved/` return 200 and are CDN-cached (`x-vercel-cache` HIT on the second request);
-     - the year counts are plausible against Letterboxd's "This year";
+- [ ] **Step 6: Roll out in this order** (re-sequenced by the final review, I4). Steps 1 and 2 are outward actions against production: the controller confirms each with Onur first (AskUserQuestion), and runs them before the merge.
+  1. `DATABASE_URL=<prod> npm run db:migrate`. Expand-only (two new tables, one nullable column): the running v2 code selects named columns and never touches the new tables, so this is safe before the merge. The import in step 2 needs `life_log` to exist.
+  2. `DATABASE_URL=<prod> npm run import:letterboxd -- ../letterboxd-export.zip --posters`, from Onur's machine (a residential IP, and no cron racing the poster fill; about 15 minutes). Put the row counts it prints in the PR body.
+  3. After CI is green, ask Onur to merge. The production build's `generateStaticParams` prerenders every film year that now has data.
+  4. Sync each source on its own, one POST at a time, instead of one `?force=1`: `/api/sync/theatre/`, then `/api/sync/letterboxd/`, `/api/sync/instapaper/`, `/api/sync/goodreads/` (`curl -X POST -H "Authorization: Bearer $SYNC_SECRET" "https://onursenture.vercel.app/api/sync/<source>/"`). Each stays well inside the 60 s limit and revalidates its own tags. Check that each returns ok.
+  5. Check on production:
+     - the 2026 count on `/life/films/` is 70, matching Letterboxd's "This year" (this also checks that the RSS and CSV keys agree);
+     - the second request for `/life/films/2025/` returns `x-vercel-cache: HIT`;
+     - `/life/films/`, `/life/books/`, `/life/theatre/` and `/life/saved/` return 200;
      - posters fill;
      - the admin Sources panel shows the archive notes.
 - [ ] **Step 7: Clean up and record.**

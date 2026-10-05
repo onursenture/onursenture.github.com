@@ -1,10 +1,10 @@
 // The 77 theatre watches before the theatre source started (Sprint 10), with
 // the year each was logged, read once from tiyatrolar.com.tr's relative
-// times by scripts/theatre-history.ts. The years are still to be checked by
-// Onur: edit a year here to correct it (the theatre archive step re-seeds
-// every run). The oldest year is shown as "and earlier": it is the bulk
-// entry made when the account was set up, which also holds plays seen
-// before then.
+// times by scripts/theatre-history.ts. Onur checked the years on
+// 2026-10-05. Edit a year here to correct it (the theatre archive step
+// re-seeds every run, and readLifeLog merges this file in at read time).
+// The oldest year is shown as "and earlier": it is the bulk entry made when
+// the account was set up, which also holds plays seen before then.
 //
 // Generated file: re-run `npx tsx scripts/theatre-history.ts` only to
 // rebuild it from scratch, then re-apply Onur's corrections.
