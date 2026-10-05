@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidateTag, updateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { type NewPageInput, createPage, deletePage, discardDraft, publishDoc, resetDoc, saveDraft } from "@/lib/admin/operations";
 import type { ActionResult } from "@/lib/admin/results";
 import { isAdmin } from "@/lib/auth/admin";
@@ -10,11 +10,12 @@ import { CONTENT_TAG } from "@/lib/content/read";
 import type { ContentStore } from "@/lib/content/store";
 import { getDb } from "@/lib/db/client";
 import { type MediaEntry, hasImageWith, toMediaEntry } from "@/lib/images/lookup";
+import { archiveStores } from "@/lib/life-log/drizzle-store";
 import { processImage } from "@/lib/media/process";
 import { getMediaStorage } from "@/lib/media/storage";
 import { sources } from "@/lib/sources/registry";
-import { sourceTag } from "@/lib/sources/tags";
 import { DrizzleSnapshotStore } from "@/lib/sync/drizzle-store";
+import { revalidateResults } from "@/lib/sync/respond";
 import { type SyncResult, syncAll } from "@/lib/sync/run";
 
 // Server actions for the admin UI. Each checks the session first, then the
@@ -126,10 +127,10 @@ export async function syncNowAction(): Promise<ActionResult<{ results: SyncResul
   try {
     const db = getDb();
     if (!db) return { status: "unavailable" };
-    const results = await syncAll(Object.values(sources), new DrizzleSnapshotStore(db), { fetch: globalThis.fetch, env: process.env }, new Date(), {
+    const results = await syncAll(Object.values(sources), new DrizzleSnapshotStore(db), { fetch: globalThis.fetch, env: process.env, stores: archiveStores(db) }, new Date(), {
       force: true,
     });
-    for (const result of results) if (result.status === "ok") revalidateTag(sourceTag(result.source), "max");
+    revalidateResults(results);
     return { status: "ok", results };
   } catch (e) {
     console.warn("[admin] sync now failed:", e instanceof Error ? e.message : e);

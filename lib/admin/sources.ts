@@ -11,6 +11,7 @@ export interface SourceRow {
   lastSuccessAt: string | null;
   lastError: string | null;
   itemCount: number;
+  archiveNote: string | null;
 }
 
 export async function readSourceRows(): Promise<SourceRow[] | null> {
@@ -27,6 +28,7 @@ export async function readSourceRows(): Promise<SourceRow[] | null> {
           lastSuccessAt: snapshot?.lastSuccessAt?.toISOString() ?? null,
           lastError: snapshot?.lastError ?? null,
           itemCount: snapshot?.itemCount ?? 0,
+          archiveNote: snapshot?.archiveNote ?? null,
         };
       }),
     );

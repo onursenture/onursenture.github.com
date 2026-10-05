@@ -26,6 +26,7 @@ export class DrizzleSnapshotStore implements SnapshotStore {
       lastAttemptAt: row.lastAttemptAt,
       lastError: row.lastError,
       itemCount: row.itemCount,
+      archiveNote: row.archiveNote,
     };
   }
 
@@ -57,5 +58,11 @@ export class DrizzleSnapshotStore implements SnapshotStore {
         target: sourceSnapshots.source,
         set: { lastAttemptAt: at, lastError: error },
       });
+  }
+
+  // `at` is part of the SnapshotStore signature; there is no column for it.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async recordArchive(source: SourceId, note: string, _at: Date): Promise<void> {
+    await this.db.update(sourceSnapshots).set({ archiveNote: note }).where(eq(sourceSnapshots.source, source));
   }
 }

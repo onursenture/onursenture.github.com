@@ -1,5 +1,6 @@
 import type {
   AnySourceDefinition,
+  ArchiveOutcome,
   SourceContext,
   SourceDefinition,
   SourceId,
@@ -11,7 +12,7 @@ import type { Snapshot, SnapshotStore } from "./store";
 const SLACK_MINUTES = 5;
 
 export type SyncResult =
-  | { source: SourceId; status: "ok"; itemCount: number }
+  | { source: SourceId; status: "ok"; itemCount: number; archive?: ArchiveOutcome }
   | { source: SourceId; status: "error"; error: string }
   | { source: SourceId; status: "skipped" };
 
@@ -24,6 +25,27 @@ export function isDue(
   const elapsedMinutes =
     (now.getTime() - snapshot.lastAttemptAt.getTime()) / 60_000;
   return elapsedMinutes >= definition.intervalMinutes - SLACK_MINUTES;
+}
+
+// The optional archive step (Sprint 10). It runs only with database stores
+// and after the snapshot is saved; its own failure never fails the sync,
+// because the snapshot is already good. Its note is kept for the admin.
+async function runArchive<T>(
+  definition: SourceDefinition<T>,
+  data: T,
+  store: SnapshotStore,
+  ctx: SourceContext,
+  now: Date,
+): Promise<ArchiveOutcome | undefined> {
+  if (!definition.archive || !ctx.stores) return undefined;
+  let outcome: ArchiveOutcome;
+  try {
+    outcome = await definition.archive(data, { stores: ctx.stores, fetch: ctx.fetch, now });
+  } catch (e) {
+    outcome = { note: `archive failed: ${e instanceof Error ? e.message : String(e)}`, tags: [] };
+  }
+  await store.recordArchive(definition.id, outcome.note, now);
+  return outcome;
 }
 
 // `previous` is the stored snapshot (null if none). A fetch that parses fine
@@ -45,7 +67,8 @@ export async function syncSource<T>(
       throw new Error(`upstream returned 0 items; kept previous ${previous.itemCount}`);
     }
     await store.recordSuccess(definition.id, data, itemCount, now);
-    return { source: definition.id, status: "ok", itemCount };
+    const archive = await runArchive(definition, data, store, ctx, now);
+    return { source: definition.id, status: "ok", itemCount, ...(archive ? { archive } : {}) };
   } catch (e) {
     const error = e instanceof Error ? e.message : String(e);
     await store.recordFailure(definition.id, error, now);

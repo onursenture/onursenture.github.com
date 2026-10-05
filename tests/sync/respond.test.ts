@@ -29,4 +29,10 @@ describe("syncResponse", () => {
     expect(response.status).toBe(502);
     expect((await response.json()).results).toHaveLength(3);
   });
+
+  it("revalidates an ok result's archive tags too", () => {
+    syncResponse([{ source: "letterboxd", status: "ok", itemCount: 1, archive: { note: "+1", tags: ["life:letterboxd"] } }]);
+    expect(revalidateTag).toHaveBeenCalledWith("source:letterboxd", "max");
+    expect(revalidateTag).toHaveBeenCalledWith("life:letterboxd", "max");
+  });
 });

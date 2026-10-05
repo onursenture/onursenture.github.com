@@ -53,6 +53,11 @@ export function SourcesPanel({ rows }: { rows: SourceRow[] | null }) {
               )}
             </span>
             <span className="text-right tabular-nums text-fg-muted">{row.itemCount}</span>
+            {row.archiveNote ? (
+              <span className="col-start-2 col-end-4 truncate text-fg-muted" title={row.archiveNote}>
+                {row.archiveNote}
+              </span>
+            ) : null}
           </li>
         ))}
       </ul>

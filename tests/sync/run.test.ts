@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import type { SourceDefinition, SourceId } from "@/lib/sources/types";
+import { MemoryEnrichmentStore, MemoryLifeLogStore } from "@/lib/life-log/memory-store";
+import type { ArchiveArgs, SourceDefinition, SourceId } from "@/lib/sources/types";
 import { MemorySnapshotStore } from "@/lib/sync/memory-store";
 import { isDue, syncAll, syncSource } from "@/lib/sync/run";
 
@@ -138,6 +139,7 @@ describe("isDue", () => {
       lastSuccessAt: t0,
       lastAttemptAt: t0,
       lastError: null,
+      archiveNote: null,
     };
     expect(isDue(def, snapshot, minutes(54))).toBe(false);
     expect(isDue(def, snapshot, minutes(55))).toBe(true);
@@ -191,5 +193,44 @@ describe("syncAll", () => {
       },
     ]);
     expect((await store.get("writing"))?.payload).toEqual(["a"]);
+  });
+});
+
+describe("syncSource archive step", () => {
+  const stores = () => ({ lifeLog: new MemoryLifeLogStore(), enrichments: new MemoryEnrichmentStore() });
+
+  it("runs after a successful sync and records its note", async () => {
+    const store = new MemorySnapshotStore();
+    const seen: unknown[] = [];
+    const def = {
+      ...source(async () => ["a"]),
+      archive: async (data: string[], args: ArchiveArgs) => {
+        seen.push(data, args.now);
+        return { note: "+1 thing", tags: ["life:letterboxd"] };
+      },
+    };
+    const result = await syncSource(def, store, { ...ctx, stores: stores() }, t0, null);
+    expect(result).toEqual({ source: "writing", status: "ok", itemCount: 1, archive: { note: "+1 thing", tags: ["life:letterboxd"] } });
+    expect(seen).toEqual([["a"], t0]);
+    expect((await store.get("writing"))?.archiveNote).toBe("+1 thing");
+  });
+
+  it("is skipped without stores and never runs after a failed fetch", async () => {
+    let calls = 0;
+    const archive = async () => {
+      calls++;
+      return { note: "x", tags: [] };
+    };
+    const store = new MemorySnapshotStore();
+    await syncSource({ ...source(async () => ["a"]), archive }, store, ctx, t0, null);
+    await syncSource({ ...source(async () => { throw new Error("down"); }), archive }, store, { ...ctx, stores: stores() }, t0, null);
+    expect(calls).toBe(0);
+  });
+
+  it("keeps the sync ok when the archive step throws, and notes the error", async () => {
+    const store = new MemorySnapshotStore();
+    const def = { ...source(async () => ["a"]), archive: async () => { throw new Error("db gone"); } };
+    const result = await syncSource(def, store, { ...ctx, stores: stores() }, t0, null);
+    expect(result).toEqual({ source: "writing", status: "ok", itemCount: 1, archive: { note: "archive failed: db gone", tags: [] } });
   });
 });

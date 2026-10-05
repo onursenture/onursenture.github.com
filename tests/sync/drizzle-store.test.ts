@@ -29,6 +29,7 @@ describe("DrizzleSnapshotStore", () => {
       lastAttemptAt: t0,
       lastError: null,
       itemCount: 1,
+      archiveNote: null,
     });
   });
 
@@ -42,6 +43,7 @@ describe("DrizzleSnapshotStore", () => {
       lastAttemptAt: t1,
       lastError: "boom",
       itemCount: 1,
+      archiveNote: null,
     });
   });
 
@@ -53,6 +55,12 @@ describe("DrizzleSnapshotStore", () => {
       lastError: "GH_PAT is not set",
       itemCount: 0,
     });
+  });
+
+  it("records an archive note without touching the snapshot", async () => {
+    await store.recordSuccess("letterboxd", [{ title: "A" }], 1, t0);
+    await store.recordArchive("letterboxd", "+2 films", t1);
+    expect(await store.get("letterboxd")).toMatchObject({ payload: [{ title: "A" }], itemCount: 1, archiveNote: "+2 films" });
   });
 
   it("clears the error on the next success", async () => {

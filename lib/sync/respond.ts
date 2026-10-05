@@ -8,11 +8,17 @@ export function syncStatusCode(results: SyncResult[]): number {
   return results.some((r) => r.status === "error") ? 502 : 200;
 }
 
-export function syncResponse(results: SyncResult[]): Response {
+// Stale-while-revalidate for every source that synced, plus the archive tags
+// (life:<source>, enrichments) its archive step reported.
+export function revalidateResults(results: SyncResult[]): void {
   for (const result of results) {
-    // Stale-while-revalidate: the next visitor gets the old page while the
-    // new one renders in the background.
-    if (result.status === "ok") revalidateTag(sourceTag(result.source), "max");
+    if (result.status !== "ok") continue;
+    revalidateTag(sourceTag(result.source), "max");
+    for (const tag of result.archive?.tags ?? []) revalidateTag(tag, "max");
   }
+}
+
+export function syncResponse(results: SyncResult[]): Response {
+  revalidateResults(results);
   return Response.json({ results }, { status: syncStatusCode(results) });
 }

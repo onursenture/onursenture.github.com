@@ -7,6 +7,7 @@ export interface Snapshot {
   lastAttemptAt: Date | null;
   lastError: string | null;
   itemCount: number;
+  archiveNote: string | null;
 }
 
 // Persistence for source snapshots. The Drizzle implementation backs
@@ -21,4 +22,6 @@ export interface SnapshotStore {
   ): Promise<void>;
   // Must leave payload, lastSuccessAt and itemCount untouched.
   recordFailure(source: SourceId, error: string, at: Date): Promise<void>;
+  // Records the last archive step's summary; touches nothing else.
+  recordArchive(source: SourceId, note: string, at: Date): Promise<void>;
 }

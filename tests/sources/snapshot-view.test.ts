@@ -19,6 +19,7 @@ const snapshot = (payload: unknown) => ({
   lastAttemptAt: at,
   lastError: null,
   itemCount: 1,
+  archiveNote: null,
 });
 
 describe("toSourceView", () => {
