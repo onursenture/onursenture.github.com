@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { fetchJson, hostname, httpUrl } from "./http";
+import { enrichPending } from "../life-log/enrich";
+import { ENRICHMENTS_TAG } from "../life-log/tags";
 import type { SourceDefinition } from "./types";
 
 // The public profile (instapaper.com/p/w00f) is a client-rendered SPA; this
@@ -83,4 +85,12 @@ export const instapaper: SourceDefinition<Article[], "instapaper"> = {
   schema: articlesSchema,
   fetch: ({ fetch }) => fetchAll(fetch),
   count: (articles) => articles.length,
+  // Sprint 10: og: image and description for /life/saved/, ten new links a run.
+  archive: async (articles, { stores, fetch, now }) => {
+    const { fetched, failed } = await enrichPending(stores.enrichments, fetch, articles.map((a) => a.link), now);
+    return {
+      note: `${fetched} links enriched${failed ? ` · ${failed} failed` : ""}`,
+      tags: fetched + failed > 0 ? [ENRICHMENTS_TAG] : [],
+    };
+  },
 };

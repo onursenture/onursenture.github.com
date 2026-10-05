@@ -62,3 +62,20 @@ describe("instapaper.fetch", () => {
     expect(articles.map((a) => a.title)).toEqual(["Article 1", "Article 2", "Article 3"]);
   });
 });
+
+import { MemoryEnrichmentStore, MemoryLifeLogStore } from "@/lib/life-log/memory-store";
+
+describe("instapaper.archive", () => {
+  it("enriches new article URLs and reports the enrichments tag", async () => {
+    const enrichments = new MemoryEnrichmentStore();
+    const fetch = (async () => new Response('<meta property="og:title" content="T">')) as typeof globalThis.fetch;
+    const articles = parseInstapaper({ bookmarks: [bookmark(1), bookmark(2)] });
+    const outcome = await instapaper.archive!(articles, {
+      stores: { lifeLog: new MemoryLifeLogStore(), enrichments },
+      fetch,
+      now: new Date("2026-10-05T10:00:00Z"),
+    });
+    expect(outcome).toEqual({ note: "2 links enriched", tags: ["enrichments"] });
+    expect(await enrichments.all()).toHaveLength(2);
+  });
+});
