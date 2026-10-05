@@ -7,6 +7,7 @@ export const SOURCE_IDS = [
   "instapaper",
   "writing",
   "github",
+  "theatre",
 ] as const;
 
 export type SourceId = (typeof SOURCE_IDS)[number];
@@ -18,6 +19,7 @@ export const SOURCE_LABELS: Record<SourceId, string> = {
   instapaper: "Instapaper",
   writing: "w00f.org",
   github: "GitHub",
+  theatre: "tiyatrolar.com.tr",
 };
 
 export function isSourceId(value: string): value is SourceId {

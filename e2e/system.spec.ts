@@ -35,8 +35,8 @@ test("/system/ renders every primitive, the type scale and the Sources row", asy
   // This run has no database, so every source is never synced.
   const sources = page.locator("section", { has: page.getByRole("heading", { name: "Sources", exact: true }) });
   await expect(sources).toBeVisible();
-  await expect(sources.locator("tbody tr")).toHaveCount(5);
-  await expect(sources.locator('[data-health="never"]')).toHaveCount(5);
+  await expect(sources.locator("tbody tr")).toHaveCount(6);
+  await expect(sources.locator('[data-health="never"]')).toHaveCount(6);
 });
 
 test("the Life palette block is dark on the light page", async ({ page }) => {

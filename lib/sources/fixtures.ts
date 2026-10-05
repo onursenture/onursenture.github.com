@@ -5,6 +5,7 @@ import { parseGithub } from "./github";
 import { parseGoodreadsShelf } from "./goodreads";
 import { parseInstapaper } from "./instapaper";
 import { parseLetterboxd } from "./letterboxd";
+import { parseActivity } from "./theatre";
 import type { SourceData } from "./registry";
 import type { SourceId } from "./types";
 import { parseWriting } from "./writing";
@@ -33,6 +34,7 @@ const loaders: { [K in SourceId]: () => Promise<SourceData<K>> } = {
   instapaper: async () => parseInstapaper(JSON.parse(await readFixture("instapaper.json"))),
   writing: async () => parseWriting(await readFixture("writing.xml")),
   github: async () => parseGithub(JSON.parse(await readFixture("github.json"))),
+  theatre: async () => parseActivity(JSON.parse(await readFixture("theatre-activity.json")).html).watches,
 };
 
 export function loadFixtureData<K extends SourceId>(id: K): Promise<SourceData<K>> {
