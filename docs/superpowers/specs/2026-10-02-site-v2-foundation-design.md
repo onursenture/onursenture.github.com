@@ -225,8 +225,9 @@ Onur and Claude design together, using Mobbin MCP, Figma MCP and reference sites
 | Sprint 7 | Admin: GitHub auth, media upload into placeholder slots, simple page editing — done: see 2026-10-04-sprint-7-admin-design.md |
 | Sprint 8 | Resume, Book a call |
 | Sprint 9 | Notes — done: see 2026-10-04-sprint-9-notes-design.md |
-| Sprint 10 | Personal layer and Life sub-pages (spec: 2026-10-05-sprint-10-life-archives-design.md) |
-| Sprint 11 | Polish: changelog, paddle effect, Konami easter egg, performance and accessibility |
+| Sprint 10 | Personal layer and Life sub-pages — done: see 2026-10-05-sprint-10-life-archives-design.md |
+| Sprint 11 | Photos in the admin (spec: 2026-10-05-sprint-11-photos-admin-design.md) |
+| Sprint 11b | Polish: changelog, paddle effect, Konami easter egg, performance and accessibility (own brainstorm) |
 | Sprint 12 | Launch: the launch-readiness fixes from the follow-ups, then the cutover steps above (onursenture.com on Vercel, `v2` into `master`, GitHub Pages off) |
 
 Priority within the roadmap is intentional. The professional core (portfolio, resume, booking) is what the site exists for. Personal touches come last and can always be added later.
