@@ -282,3 +282,13 @@ There is no new editor. The **Sources** panel lists `theatre`. For `letterboxd`,
 - The paddle effect and other Sprint 11 polish.
 - Per-photo changes. Photos stay as they are.
 - An admin editor for archive rows. Theatre corrections go through the committed file.
+
+## Errata (implementation)
+
+- `/life/films/<year>/` uses `generateStaticParams`. It returns the years, or `undated` as a placeholder, because `cacheComponents` needs one param; this is the notes routes' pattern. The spec said "no generateStaticParams".
+- Saved titles use `type-lead` (Plex Sans 20). The mockup's 15px isn't a type class, and type comes only from `type-*`.
+- `theatre.fetch` returns the first page's watches when nothing new was found, so the snapshot (health only) is never empty. The archive step ignores watches that are already known. (Superseded in part by the Theatre ruling below.)
+- `life_log` upserts collapse duplicate (source, key) rows within a batch before writing (`lib/life-log/collapse.ts`: data merged in batch order, date from the last occurrence), and incoming `data` goes through JSON semantics (undefined fields dropped), so the memory and Drizzle stores behave identically and Postgres never sees a key twice in one statement.
+- Films posters: a failed lookup stamps `posterTriedAt` on the row; `fillPosters` skips rows tried less than 7 days ago, so permanent failures don't block older films. The import script's `--posters` loop stops when a batch has no candidates.
+- Theatre: `theatre.fetch` returns every watch on the pages it crawled (known ones included) and stops at the first page holding a known id (history ids + `life_log` keys); it throws only when the crawl finds no watches. The archive step tags `life:theatre` whenever the history re-seed or the fresh upsert touched rows. `andEarlier` is no longer stored in `content/theatre-history.ts`: `historyRows()` derives it as "the oldest year in the file", so a corrected year moves the flag automatically.
+- The Life home caps (Saved 5, Theatre 6) are covered by unit tests (`tests/sections/home-caps.test.ts`) instead of a fixture e2e that couldn't fail.

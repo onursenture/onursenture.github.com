@@ -9,6 +9,7 @@ onursenture.com v2: Next.js 16 on Vercel, Postgres (Neon) via Drizzle. A profess
 - S1 visual direction (only the "Faces to avoid" list still binds): `docs/superpowers/specs/2026-10-02-s1-visual-direction-design.md`
 - Sprint 8 (Resume, Book a call): `docs/superpowers/specs/2026-10-04-sprint-8-resume-book-design.md`
 - Sprint 9 (Notes): `docs/superpowers/specs/2026-10-04-sprint-9-notes-design.md`
+- Sprint 10 (Life archives): `docs/superpowers/specs/2026-10-05-sprint-10-life-archives-design.md`
 - Plans: `docs/superpowers/plans/`
 
 ## Commands
@@ -23,6 +24,7 @@ npm run e2e:fixtures   # port 3219; run `SOURCE_FIXTURES=1 npm run build` first
 npm run e2e:admin      # the admin flow on port 3221; run `npm run build` first (uses the `SYNC_SECRET` already set in `playwright.admin.config.ts`)
 npm run images         # optimize images-src/ into public/images/ + manifest
 npm run db:generate    # drizzle-kit generate; db:migrate applies it (--force)
+npm run import:letterboxd -- <export.zip> [--posters]  # one-off: Letterboxd export → life_log (needs DATABASE_URL)
 npm run screenshots -- <dir> <path>...  # 1440 + 390 (build first; Work is light, Life dark)
 ```
 
@@ -68,7 +70,7 @@ CI runs typecheck, lint, test, build, e2e, `e2e:admin`, then a fixture build and
 - Primitives are in `components/ui/`. `/system/` is the Sprint 4 style tile (not in the nav, `noindex`): every token, type class, dither specimen and primitive, plus a Life palette block that proves the dark tokens and dither repaint inside a Life subtree on a light page. Each specimen has a `data-primitive` attribute; add new primitives there.
 - The Work home (`components/home/home-site.tsx`) runs identity, Lab, Selected work, Notes, Experience, Contributions (Notes hidden while there are no Work notes), with a `DitherRule` between rows. The bio is justified mono with no first-line indent. Lab is a single column of text rows (`title ↗ · year`, the description under it), no status glyph or avatar, new entries appended at the end; the row is hidden while the lab list (`getHomeContent().lab`: the published Lab document, else `labIndex`) is empty, and it holds only real projects, no placeholders. Experience is a header line per role (org mark, name, `· role`, span right-aligned) with its products as hairline rows (title, muted note, and the year read from the product page's Years fact through `getHomeContent()` (`lib/work/index.ts` → `lib/work/experience.ts`); a row without a page sets `years` itself) under it, in `components/home/experience-list.tsx`; a product links only when its `ExperienceChild` has an `href`, and there are no tree glyphs. Contributions is "N contributions in the last 12 months" over `components/ui/heatmap.tsx`, coloured in five accent steps (the line colour, the accent mixed in at 25/50/75%, then the accent). The GitHub source has no Life section: `/life/` only reads it for the boot readout.
 - The identity row reads its switches through `homeSwitches(content.profile)`: "Open to work ●" in the action column, and "Book a call →" (a `TextLink`, never a button) under the bio while `bookOnHome` is on and `bookingEnabled()`.
-- `/life/` opens with the "Now" block on the same grid as the home rows (`ROW_GRID` in `components/ui/section-row.tsx`, shared so they cannot drift): the avatar in the 200px label column and the boot readout in the 480px content column, so its left edge matches the home bio. Each readout line is one visual line (`truncate`; the full text stays in the DOM). The reading line lists every book on the currently-reading shelf, comma-separated, with no link; the film line is the title only. No ratings render on Life (films show the year, the Read list shows title and author). Films, the Books Reading shelf and the `/life/` photo row share `COVER_GRID` (`components/ui/cover.tsx`: 4 columns on mobile, 10 from md, 96px `Cover`s, a `type-label` title and a muted year or author, each on one truncated line); `PhotoGrid` takes `density="compact"` for that row with `PHOTO_GRID_COMPACT_SIZES`, and `/life/photos/` keeps the default density. Books Reading maps every `currentlyReading` book (the source keeps up to 10).
+- `/life/` opens with the "Now" block on the same grid as the home rows (`ROW_GRID` in `components/ui/section-row.tsx`, shared so they cannot drift): the avatar in the 200px label column and the boot readout in the 480px content column, so its left edge matches the home bio. Each readout line is one visual line (`truncate`; the full text stays in the DOM). The reading line lists every book on the currently-reading shelf, comma-separated, with no link; the film line is the title only. No ratings render on Life (films show the year, the Read list shows title and author). Films, the Books Reading shelf and the `/life/` photo row share `COVER_GRID` (`components/ui/cover.tsx`: 4 columns on mobile, 10 from md, 96px `Cover`s, a `type-label` title and a muted year or author, each on one truncated line); `PhotoGrid` takes `density="compact"` for that row with `PHOTO_GRID_COMPACT_SIZES`, and `/life/photos/` keeps the default density. Books Reading maps every `currentlyReading` book (the source keeps up to 10). Films, Books and Saved rows link "All →" to their archive pages; Theatre (the latest six plays) follows Books; the readout has a `last play:` line.
 - Shells are in `components/shell/` (`WorkShell`, `LifeShell`). Both headers are the same: the dot-matrix name with the Life switch right after it, in one left group, so the switch sits in the same place on both sides. The Work header adds the nav on the right only when an item in `lib/nav.ts` is `ready && inHeader` (`headerItems`; desktop `NavLinks`, below md a `MenuDialog` Menu button holding the same links); `ready` alone lets section links render (Resume is ready: the home's Experience row links it); no item is both yet, so the header shows no nav. The product pages are reached from the home page (Selected work and Experience), not the header.
 - The Life switch (`components/life-switch.tsx`) is a real link with `role="switch"`. A plain click runs `router.push` inside a React transition tagged `life-enter` or `life-exit` (`lib/side.ts`); `SideFade` (a `ViewTransition` named `side` in both shells) animates the pair, and every other navigation stays instant. It works across the two layouts only through `router.push`.
 - Entering Life with the switch sets a boot flag (`components/life/boot-flag.ts`, `sessionStorage`) so the boot readout types itself in. The flag expires after 3s, so a stale one never types on a later direct load; a direct load always gets the final server HTML.
@@ -163,12 +165,44 @@ CI runs typecheck, lint, test, build, e2e, `e2e:admin`, then a fixture build and
 - **Feed.** `/feed.xml` (`lib/feed/rss.ts`) holds all notes plus photos, newest 50. Note items have no title, and their `<guid>` is `tag:onursenture.com,2026:note/<tid>` (isPermaLink false), so a side change never duplicates an item. Images are the ≤1280 JPEG rendition, as absolute URLs. Descriptions are HTML-escaped once for HTML and again for XML, so an apostrophe is `&amp;apos;` in the raw XML; that is correct.
 - **E2E.** After a client navigation Next keeps the previous route hidden, so counts use `:visible`. Playwright reuses a running server locally on 3217/3219/3221: stop stale `next start` processes first (`lsof -ti :3217 -ti :3219 -ti :3221`).
 
+## Life archives (Sprint 10)
+
+- Spec: `docs/superpowers/specs/2026-10-05-sprint-10-life-archives-design.md`.
+- **Pages.**
+  - `/life/films/` shows the newest year; `/life/films/<year>/` and `/life/films/undated/` show the others (`generateStaticParams` returns the years, or `undated` as a placeholder when there are none, because cacheComponents needs one param).
+  - `/life/books/`, `/life/theatre/` and `/life/saved/` are single pages.
+  - Bodies are in `components/life/archive/`; the pure views are in `lib/life/archive.ts`.
+  - Films and Books are captioned month strips (`YearMonths` → `TileRow` → `ArchiveTile`). Film captions are the title plus `Sep 8` (`· ↻` on a rewatch), **never the release year**. Book captions are title · author · day; a series suffix is trimmed, and the full title is in `title`.
+  - Theatre is one strip per year (no months: tiyatrolar only shows relative times), captioned with the company. The oldest year in the file reads "and earlier" (derived, not stored).
+  - Saved is a list (`SavedList`): site and minutes in the label column, a 16:10 image on the right.
+  - Missing images use `TileFallback`: the accent dither plus the initial.
+- **Storage.**
+  - `life_log` (source, key) holds Films (`letterboxd`) and Theatre (`theatre`), read with `readLifeLog(source)` (tag `life:<source>`).
+  - `link_enrichments` holds og: metadata for Saved, read with `readEnrichments()` (tag `enrichments`).
+  - Both have fixture files in `tests/fixtures/`.
+  - Upserts merge `data` (`stored || incoming`) and re-date only with `redate: true`. Both stores first collapse duplicate (source, key) rows in a batch (`lib/life-log/collapse.ts`: data merged in batch order, date from the last occurrence) and run incoming `data` through JSON semantics (undefined fields dropped), so the memory and Drizzle stores behave the same and Postgres never sees a key twice in one statement.
+- **Archive steps.**
+  - A source may define `archive(data, { stores, fetch, now })`. `syncSource` runs it after a successful sync when `ctx.stores` is set (the sync routes and Sync now set it).
+  - The step records `source_snapshots.archive_note`, shown in the admin, and returns tags that `revalidateResults` revalidates.
+  - A thrown archive step never fails the sync.
+- **Films.**
+  - Keys are `<watched date|undated>|<normalised title>|<release year>|<n>`, the same for the CSV export and RSS.
+  - The `letterboxd` snapshot keeps the whole RSS window (no slice); the Life home slices 6.
+  - Each sync fills up to 30 missing posters from film pages (boxd.it Location only). A failed lookup stamps `posterTriedAt` on the row, and `fillPosters` skips rows tried less than 7 days ago, so permanent failures don't block older films. The import script's `--posters` loop stops when a batch has no candidates. **Never fetch a Letterboxd profile page**: they 403 server requests.
+- **Theatre.**
+  - `lib/sources/theatre.ts` POSTs to tiyatrolar's `load_more_user_item_via_ajax` endpoint. `fetch` returns every watch on the pages it crawled (known ones included) and stops at the first page holding a known id (history ids plus `life_log` keys); it throws only when the crawl finds no watches.
+  - `content/theatre-history.ts` is the backfill (Onur-checked years). The archive step re-seeds it every run, so editing a year there corrects it. `andEarlier` is not stored there: `historyRows()` derives it as the oldest year in the file, so a corrected year moves the flag.
+  - New watches get the year of their relative time at sync and are never re-dated. The step tags `life:theatre` whenever the history re-seed or the fresh upsert touched rows.
+- **Books.** `Book.readAt` (read date, may be "") and `addedAt` are separate. The archive groups by `readAt` only; the home orders by `date` (`readAt || addedAt`).
+- **Home caps.** Saved shows 5 and Theatre 6; `tests/sections/home-caps.test.ts` covers both.
+- **Writing** is hidden on `/life/` while it has no posts. A 404 feed is "no posts", not an error.
+
 ## Sources and sync
 
 - A source lives in `lib/sources/<id>.ts`: a zod schema plus a `fetch` that **throws** on any failure, so the previous snapshot is kept. Never fetch upstream during render.
 - `readSource(id)` is the only page-side read: `"use cache"` with one tag, `sourceTag(id)`. Sync revalidates that tag with `"max"`. A database error caches for minutes, anything else for hours.
 - An empty upstream result never overwrites a good snapshot; it is recorded as a failure.
-- Adding a source: add the id to `SOURCE_IDS`; write the module (a throwing `fetch` plus a zod schema); register it in `lib/sources/registry.ts` (the key must match the module's `id`); add a fixture in `tests/fixtures/` with a parser test and a loader in `lib/sources/fixtures.ts`; add a section under `components/sections/<id>/` and list it in `components/sections/life.ts`.
+- Adding a source: add the id to `SOURCE_IDS`; write the module (a throwing `fetch` plus a zod schema); register it in `lib/sources/registry.ts` (the key must match the module's `id`); add a fixture in `tests/fixtures/` with a parser test and a loader in `lib/sources/fixtures.ts`; add a section under `components/sections/<id>/` and list it in `components/sections/life.ts`; add its display name to `SOURCE_LABELS` in `lib/sources/types.ts`; optionally define an `archive` step (see "Life archives (Sprint 10)").
 - Syncing: `curl -X POST -H "Authorization: Bearer $SYNC_SECRET" "$SITE_URL/api/sync/?force=1"` (trailing slash; without `?force=1` only due sources run). One source: `/api/sync/<id>/`. The hourly workflow `.github/workflows/sync.yml` lives on `master`, because GitHub only runs schedules from the default branch.
 
 ## Database
