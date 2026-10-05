@@ -17,6 +17,7 @@
     "images": "tsx scripts/images.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts --force",
+    "import:letterboxd": "tsx scripts/import-letterboxd.ts",
     "screenshots": "tsx scripts/screenshots.ts"
   },
   "dependencies": {

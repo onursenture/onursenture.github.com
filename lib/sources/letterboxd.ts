@@ -1,10 +1,14 @@
 import Parser from "rss-parser";
 import * as cheerio from "cheerio";
 import { z } from "zod";
+import { filmRows, posterCrop } from "../life-log/films";
+import { fillPosters } from "../life-log/posters";
+import { lifeLogTag } from "../life-log/tags";
 import { fetchText, httpUrl, toIso } from "./http";
 import type { SourceDefinition } from "./types";
 
 const FEED_URL = "https://letterboxd.com/onur/rss/";
+const POSTERS_PER_RUN = 30;
 
 export const filmSchema = z.object({
   title: z.string(),
@@ -81,4 +85,28 @@ export const letterboxd: SourceDefinition<Film[], "letterboxd"> = {
   schema: filmsSchema,
   fetch: async ({ fetch }) => parseLetterboxd(await fetchText(fetch, FEED_URL)),
   count: (films) => films.length,
+  // Sprint 10: every dated diary entry in the feed goes into life_log (the
+  // /life/films/ archive), then up to 30 rows without a poster get one.
+  archive: async (films, { stores, fetch, now }) => {
+    const rows = filmRows(
+      films
+        .filter((film) => film.watchedDate)
+        .reverse() // the feed is newest first; filmRows wants oldest first
+        .map((film) => ({
+          title: film.title,
+          year: film.year,
+          link: film.link,
+          poster: posterCrop(film.poster),
+          rewatch: film.rewatch,
+          watchedOn: film.watchedDate,
+        })),
+    );
+    const counts = await stores.lifeLog.upsert(rows, { redate: false, at: now });
+    const posters = await fillPosters(stores.lifeLog, fetch, { limit: POSTERS_PER_RUN, at: now });
+    const failed = posters.failed ? ` · ${posters.failed} failed` : "";
+    return {
+      note: `+${counts.inserted} films · ${posters.filled} posters filled${failed}`,
+      tags: counts.inserted + counts.updated + posters.filled > 0 ? [lifeLogTag("letterboxd")] : [],
+    };
+  },
 };

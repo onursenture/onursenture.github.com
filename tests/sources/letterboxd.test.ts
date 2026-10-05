@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { MemoryEnrichmentStore, MemoryLifeLogStore } from "@/lib/life-log/memory-store";
 import { letterboxd, parseLetterboxd } from "@/lib/sources/letterboxd";
 import { fakeFetch, fixture } from "../helpers/fixtures";
 
@@ -60,5 +61,26 @@ describe("parseLetterboxd rewatch and limit", () => {
     expect(films).toHaveLength(12);
     expect(films[0].rewatch).toBe(true);
     expect(films[1].rewatch).toBe(false);
+  });
+});
+
+describe("letterboxd.archive", () => {
+  it("upserts dated RSS entries with the archive crop, fills posters, and reports its tag", async () => {
+    const lifeLog = new MemoryLifeLogStore();
+    const films = [
+      { title: "Newer", year: 2026, link: "https://letterboxd.com/onur/film/newer/", poster: "https://a.ltrbxd.com/n-0-600-0-900-crop.jpg", ratingValue: null, watchedDate: "2026-09-26", date: "", rewatch: false },
+      { title: "No date", year: 2020, link: "https://letterboxd.com/onur/film/nd/", poster: "", ratingValue: null, watchedDate: "", date: "", rewatch: false },
+      { title: "Older", year: 1995, link: "https://letterboxd.com/onur/film/older/", poster: "https://a.ltrbxd.com/o-0-600-0-900-crop.jpg", ratingValue: null, watchedDate: "2026-05-18", date: "", rewatch: true },
+    ];
+    const fetch = (async () => new Response("", { status: 404 })) as typeof globalThis.fetch;
+    const outcome = await letterboxd.archive!(films, {
+      stores: { lifeLog, enrichments: new MemoryEnrichmentStore() },
+      fetch,
+      now: new Date("2026-10-05T10:00:00Z"),
+    });
+    const rows = await lifeLog.list("letterboxd");
+    expect(rows.map((r) => r.key)).toEqual(["2026-09-26|newer|2026|0", "2026-05-18|older|1995|0"]);
+    expect(rows[1].data).toMatchObject({ rewatch: true, poster: "https://a.ltrbxd.com/o-0-230-0-345-crop.jpg" });
+    expect(outcome).toEqual({ note: "+2 films · 0 posters filled", tags: ["life:letterboxd"] });
   });
 });
