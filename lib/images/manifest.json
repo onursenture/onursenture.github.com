@@ -1,4 +1,37 @@
 {
+  "fixtures/photo-landscape": {
+    "width": 2560,
+    "height": 1707,
+    "widths": [
+      640,
+      1280,
+      2560
+    ],
+    "sourceHash": "9d750fa3be6bd5512bb4d68a553144305f04088b265c17c0b03f750f3eaef01c",
+    "settings": "v1 avif:q60:4:2:0 jpg:q82:progressive:mozjpeg widths:640,1280,2560"
+  },
+  "fixtures/photo-portrait": {
+    "width": 1600,
+    "height": 2000,
+    "widths": [
+      640,
+      1280,
+      1600
+    ],
+    "sourceHash": "2f7510b8017efa8a002d633b5904db517461074c945596658284f86525ead399",
+    "settings": "v1 avif:q60:4:2:0 jpg:q82:progressive:mozjpeg widths:640,1280,2560"
+  },
+  "fixtures/photo-wide": {
+    "width": 2560,
+    "height": 1440,
+    "widths": [
+      640,
+      1280,
+      2560
+    ],
+    "sourceHash": "fb0195f317eeca034b43ea60b87beffd38eaa136fdcb72a82eb0eda5eca5e5a4",
+    "settings": "v1 avif:q60:4:2:0 jpg:q82:progressive:mozjpeg widths:640,1280,2560"
+  },
   "photos/bazi-kotu-aliskanliklarin-politik-tarihi": {
     "width": 2560,
     "height": 1440,

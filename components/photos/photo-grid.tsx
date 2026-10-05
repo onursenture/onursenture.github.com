@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Picture } from "@/components/picture";
+import { PictureView } from "@/components/picture-view";
 import { COVER_GRID } from "@/components/ui/cover";
-import type { Photo } from "@/lib/content/photos";
+import type { Photo } from "@/lib/photos/types";
 
 // `sizes` must describe the grid below: 3 columns (24px gutters) from md, 2
 // columns (16px) on mobile. The shells are full width with 40px side padding
@@ -25,7 +25,7 @@ export function PhotoGrid({
   sizes = PHOTO_GRID_SIZES,
   density = "default",
 }: {
-  photos: Photo[];
+  photos: Pick<Photo, "slug" | "title" | "image">[];
   sizes?: string;
   density?: "default" | "compact";
 }) {
@@ -35,8 +35,9 @@ export function PhotoGrid({
       {photos.map((photo) => (
         <li key={photo.slug}>
           <Link href={`/life/photos/${photo.slug}/`} className={compact ? "group flex flex-col gap-1" : "group flex flex-col gap-2"}>
-            <Picture
-              image={photo.image}
+            <PictureView
+              image={photo.image.key}
+              entry={photo.image}
               alt=""
               sizes={sizes}
               className={compact ? "mb-1 aspect-[3/2] w-full object-cover" : "aspect-[3/2] w-full object-cover"}

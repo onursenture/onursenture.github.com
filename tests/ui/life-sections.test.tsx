@@ -74,7 +74,7 @@ describe("Life covers and photos are compact", () => {
   });
 
   it("the compact photo grid is 4 / 10 columns with a truncated title", () => {
-    const photos = [{ slug: "bold-vakif-building", title: "Bold Vakif Building", date: "2026-01-01", image: "photos/bold-vakif-building" }];
+    const photos = [{ slug: "bold-vakif-building", title: "Bold Vakif Building", image: { key: "photos/bold-vakif-building", width: 2560, height: 1440, widths: [640, 1280, 2560] } }];
     const html = renderToStaticMarkup(<PhotoGrid photos={photos} density="compact" sizes={PHOTO_GRID_COMPACT_SIZES} />);
     expect(html).toContain("grid grid-cols-4 gap-x-3 gap-y-4 md:grid-cols-10 md:gap-x-4");
     expect(html).toMatch(/<span class="type-label[^"]*truncate/);
@@ -82,7 +82,7 @@ describe("Life covers and photos are compact", () => {
   });
 
   it("the default photo grid keeps its density", () => {
-    const photos = [{ slug: "bold-vakif-building", title: "Bold Vakif Building", date: "2026-01-01", image: "photos/bold-vakif-building" }];
+    const photos = [{ slug: "bold-vakif-building", title: "Bold Vakif Building", image: { key: "photos/bold-vakif-building", width: 2560, height: 1440, widths: [640, 1280, 2560] } }];
     const html = renderToStaticMarkup(<PhotoGrid photos={photos} />);
     expect(html).toContain("grid-cols-2");
     expect(html).toContain("md:grid-cols-3");

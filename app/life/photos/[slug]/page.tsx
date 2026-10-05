@@ -1,34 +1,36 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { PictureView } from "@/components/picture-view";
 import { ItemLink } from "@/components/sections/item-link";
-import { Picture } from "@/components/picture";
 import { MetaLabel } from "@/components/ui/meta-label";
 import { TextLink } from "@/components/ui/text-link";
 import { type Photo, adjacentPhotos, getPhoto, getPhotos } from "@/lib/content/photos";
 import { formatDate } from "@/lib/format";
-import { getImage } from "@/lib/images/manifest";
 import { renditionUrl } from "@/lib/images/plan";
 import { pageMetadata } from "@/lib/metadata";
+import { PLACEHOLDER_PHOTO_SLUG } from "@/lib/photos/slug";
+import { photoAlt, photoDay } from "@/lib/photos/types";
 
 // The picture spans the full-width shell: 40px side padding from md, 16px below.
 const SIZES = "(min-width: 768px) calc(100vw - 80px), calc(100vw - 32px)";
 
+// generateStaticParams must return one param under cacheComponents. "_" is
+// never a slug, so with no photos its page is a 404. A photo published after
+// the build renders on demand and is cached under PHOTOS_TAG, like a new note.
 export async function generateStaticParams() {
-  return (await getPhotos()).map((photo) => ({ slug: photo.slug }));
+  const slugs = (await getPhotos()).map((photo) => ({ slug: photo.slug }));
+  return slugs.length > 0 ? slugs : [{ slug: PLACEHOLDER_PHOTO_SLUG }];
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/life/photos/[slug]">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/life/photos/[slug]">): Promise<Metadata> {
   const photo = await getPhoto((await params).slug);
   if (!photo) return {};
-  const image = getImage(photo.image);
   // Social crawlers don't reliably render AVIF: always the largest JPEG.
   const ogImage = {
-    url: renditionUrl(photo.image, image.width, "jpg"),
-    width: image.width,
-    height: image.height,
-    alt: photo.title,
+    url: renditionUrl(photo.image.key, photo.image.width, "jpg", photo.image.baseUrl),
+    width: photo.image.width,
+    height: photo.image.height,
+    alt: photoAlt(photo),
   };
   return pageMetadata(photo.title, {
     description: photo.title,
@@ -58,11 +60,11 @@ export default async function PhotoPage({ params }: PageProps<"/life/photos/[slu
 
   return (
     <main className="flex flex-col gap-8 px-4 pt-8 pb-16 md:px-10 md:pt-12">
-      <Picture image={photo.image} alt={photo.title} sizes={SIZES} priority />
+      <PictureView image={photo.image.key} entry={photo.image} alt={photoAlt(photo)} sizes={SIZES} priority />
       <div className="flex flex-col gap-3">
         <h1 className="type-name uppercase">{photo.title}</h1>
         <p className="type-meta text-fg-muted">
-          <time dateTime={photo.date}>{formatDate(photo.date)}</time>
+          <time dateTime={photoDay(photo)}>{formatDate(photoDay(photo))}</time>
           {photo.camera ? ` · ${photo.camera}` : null}
         </p>
         <p className="type-meta">

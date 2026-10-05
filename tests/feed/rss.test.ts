@@ -22,8 +22,11 @@ function note(patch: Partial<PublishedNote> = {}): PublishedNote {
 }
 
 const photo = {
-  photo: { slug: "stabilo", title: "Stabilo & co", date: "2026-02-10", image: "photos/stabilo" },
-  entry: { width: 2560, height: 1707, widths: [640, 1280, 2560] },
+  slug: "stabilo",
+  title: "Stabilo & co",
+  alt: "",
+  takenAt: "2026-02-10T09:30:00",
+  image: { key: "photos/stabilo", width: 2560, height: 1707, widths: [640, 1280, 2560] },
 };
 
 describe("escapeXml", () => {
@@ -66,6 +69,14 @@ describe("buildFeed", () => {
     expect(items[1]).toContain("<link>https://onursenture.com/life/photos/stabilo/</link>");
     expect(items[1]).toContain('<guid isPermaLink="true">https://onursenture.com/life/photos/stabilo/</guid>');
     expect(items[1]).toContain("https://onursenture.com/images/photos/stabilo-1280.jpg");
+  });
+
+  it("gives a photo its alt text and its Blob rendition", () => {
+    const blob = { ...photo, alt: "A pen", image: { ...photo.image, key: "media/photos/a", baseUrl: "https://b.public.blob.vercel-storage.com/media/photos/a" } };
+    const xml = buildFeed({ siteUrl: SITE, title: "T", notes: [], photos: [blob] });
+    expect(xml).toContain("https://b.public.blob.vercel-storage.com/media/photos/a-1280.jpg");
+    expect(xml).toContain("alt=&quot;A pen&quot;");
+    expect(xml).toContain("<pubDate>Tue, 10 Feb 2026 00:00:00 GMT</pubDate>");
   });
 
   it("keeps a note's guid when its side changes", () => {

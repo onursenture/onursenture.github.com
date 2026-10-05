@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { ArchiveTile } from "@/components/life/archive/archive-tile";
 import { SelectedWorkItem } from "@/components/home/selected-work";
 import { LifeSwitch } from "@/components/life-switch";
-import { Picture } from "@/components/picture";
+import { PictureView } from "@/components/picture-view";
 import { Empty } from "@/components/sections/empty";
 import { SourcesTable } from "@/components/sources/sources-table";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ import { TextLink } from "@/components/ui/text-link";
 import { MediaFigure } from "@/components/work/media-figure";
 import { ORGS, type OrgId } from "@/content/orgs";
 import { type Photo, getPhotos } from "@/lib/content/photos";
+import { photoAlt, photoDay } from "@/lib/photos/types";
 import { formatDate } from "@/lib/format";
 import { readSourceStatuses } from "@/lib/sources/status";
 import { pageMetadata } from "@/lib/metadata";
@@ -102,8 +103,8 @@ function Specimen({ name, children }: { name: string; children: ReactNode }) {
 
 const photoColumns = [
   { header: "Title", cell: (photo: Photo) => photo.title },
-  { header: "Camera", cell: (photo: Photo) => photo.camera ?? "", mono: true },
-  { header: "Date", cell: (photo: Photo) => formatDate(photo.date), mono: true, align: "right" as const },
+  { header: "Camera", cell: (photo: Photo) => photo.camera, mono: true },
+  { header: "Date", cell: (photo: Photo) => formatDate(photoDay(photo)), mono: true, align: "right" as const },
 ];
 
 export default async function SystemPage() {
@@ -217,7 +218,7 @@ export default async function SystemPage() {
         </Specimen>
         <Specimen name="RelativeTime">
           <span className="type-meta">
-            {photo ? <RelativeTime iso={`${photo.date}T00:00:00.000Z`} /> : null}
+            {photo ? <RelativeTime iso={`${photoDay(photo)}T00:00:00.000Z`} /> : null}
           </span>
         </Specimen>
         <Specimen name="LiveClock">
@@ -248,7 +249,7 @@ export default async function SystemPage() {
         <Specimen name="Picture">
           {photo ? (
             <div className="w-full max-w-sm">
-              <Picture image={photo.image} alt={photo.title} sizes="384px" />
+              <PictureView image={photo.image.key} entry={photo.image} alt={photoAlt(photo)} sizes="384px" />
             </div>
           ) : null}
         </Specimen>
