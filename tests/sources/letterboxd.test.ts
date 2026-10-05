@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { exportRows } from "@/lib/life-log/letterboxd-csv";
 import { MemoryEnrichmentStore, MemoryLifeLogStore } from "@/lib/life-log/memory-store";
 import { letterboxd, parseLetterboxd } from "@/lib/sources/letterboxd";
 import { fakeFetch, fixture } from "../helpers/fixtures";
@@ -83,5 +84,42 @@ describe("letterboxd.archive", () => {
     expect(rows.map((r) => r.key)).toEqual(["2026-09-26|newer|2026|0", "2026-05-18|older|1995|0"]);
     expect(rows[1].data).toMatchObject({ rewatch: true, poster: "https://a.ltrbxd.com/o-0-230-0-345-crop.jpg" });
     expect(outcome).toEqual({ note: "+2 films · 0 posters filled", tags: ["life:letterboxd"] });
+  });
+});
+
+// Spec §5 "RSS–CSV key agreement": the same diary entry, seen by the import
+// (CSV) and by the sync (RSS), must land on one row, not two.
+describe("RSS and CSV keys", () => {
+  it("agree for the same diary entry", async () => {
+    const xml = `<?xml version="1.0"?><rss version="2.0" xmlns:letterboxd="https://letterboxd.com"><channel><title>x</title>
+      <item>
+        <title>Amélie, 2001 - ★★★★½</title>
+        <link>https://letterboxd.com/onur/film/amelie/</link>
+        <pubDate>Mon, 18 May 2026 22:10:00 +1200</pubDate>
+        <letterboxd:watchedDate>2026-05-18</letterboxd:watchedDate>
+        <letterboxd:rewatch>Yes</letterboxd:rewatch>
+        <letterboxd:filmTitle>Amélie</letterboxd:filmTitle>
+        <letterboxd:filmYear>2001</letterboxd:filmYear>
+        <letterboxd:memberRating>4.5</letterboxd:memberRating>
+        <description><![CDATA[<p><img src="https://a.ltrbxd.com/am-0-600-0-900-crop.jpg"/></p>]]></description>
+      </item></channel></rss>`;
+    const lifeLog = new MemoryLifeLogStore();
+    const fetch = (async () => new Response("", { status: 404 })) as typeof globalThis.fetch;
+    await letterboxd.archive!(await parseLetterboxd(xml), {
+      stores: { lifeLog, enrichments: new MemoryEnrichmentStore() },
+      fetch,
+      now: new Date("2026-10-05T10:00:00Z"),
+      deadline: Number.POSITIVE_INFINITY,
+    });
+    // The export spells the title in decomposed form (NFD) to check the
+    // normalisation too.
+    const csv = [
+      "Date,Name,Year,Letterboxd URI,Rating,Rewatch,Tags,Watched Date",
+      `2026-05-19,${"Amélie".normalize("NFD")},2001,https://boxd.it/am01,4.5,Yes,,2026-05-18`,
+    ].join("\n");
+    const fromCsv = exportRows(csv, "Date,Name,Year,Letterboxd URI\n");
+    const fromRss = await lifeLog.list("letterboxd");
+    expect(fromCsv.map((row) => row.key)).toEqual(["2026-05-18|amélie|2001|0"]);
+    expect(fromRss.map((row) => row.key)).toEqual(fromCsv.map((row) => row.key));
   });
 });
