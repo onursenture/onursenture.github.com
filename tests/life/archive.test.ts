@@ -49,6 +49,24 @@ describe("filmArchive", () => {
     expect(archive.undated.map((i) => i.title)).toEqual(["Amélie", "The Matrix"]);
   });
 
+  it("drops an undated row once the same film has a dated row", () => {
+    const film = (key: string, occurredOn: string | null, title: string, year: number | null): LifeLogRow => ({
+      source: "letterboxd",
+      key,
+      occurredOn,
+      precision: occurredOn ? "day" : "none",
+      data: { title, year, link: "", rewatch: false },
+    });
+    const archive = filmArchive([
+      film("2026-05-18|heat|1995|0", "2026-05-18", "Heat", 1995),
+      film("undated|heat|1995|0", null, "  HEAT ", 1995),
+      film("undated|heat|1986|0", null, "Heat", 1986),
+      film("undated|alien|1979|0", null, "Alien", 1979),
+    ]);
+    expect(archive.years[0].months[0].items.map((i) => i.title)).toEqual(["Heat"]);
+    expect(archive.undated.map((i) => i.key)).toEqual(["undated|alien|1979|0", "undated|heat|1986|0"]);
+  });
+
   it("skips rows from other sources and rows whose data doesn't parse", () => {
     const broken: LifeLogRow = { source: "letterboxd", key: "x", occurredOn: "2026-01-01", precision: "day", data: { nope: 1 } };
     expect(filmArchive([...rows, broken]).years[0].months).toHaveLength(2);
@@ -121,6 +139,12 @@ describe("savedItems", () => {
     const [, mozilla] = savedItems(articles, enrichments);
     expect(mozilla.image).toBe("");
     expect(mozilla.description).toMatch(/^After more than 15 years/);
+  });
+
+  it("drops an article whose link isn't http(s), e.g. from an older snapshot", () => {
+    const unsafe = { ...articles[0], link: "javascript:alert(1)" };
+    const items = savedItems([unsafe, articles[1]], enrichments);
+    expect(items.map((i) => i.title)).toEqual([articles[1].title]);
   });
 
   it("works with no enrichments at all", () => {

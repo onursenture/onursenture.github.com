@@ -1,4 +1,4 @@
-import { filmDataSchema } from "../life-log/films";
+import { filmDataSchema, normaliseTitle } from "../life-log/films";
 import type { Enrichment, LifeLogRow } from "../life-log/types";
 import { httpUrl } from "../sources/http";
 import type { Book, Books } from "../sources/goodreads";
@@ -85,19 +85,26 @@ export function groupByMonth(entries: { date: string; item: ArchiveItem }[]): Ye
 
 export function filmArchive(rows: LifeLogRow[]): { years: YearGroup[]; undated: ArchiveItem[] } {
   const dated: { date: string; item: ArchiveItem }[] = [];
-  const undated: ArchiveItem[] = [];
+  const undatedFilms: { film: string; item: ArchiveItem }[] = [];
+  // Films with a diary date. An undated row (imported from watched.csv)
+  // stays in the table after Onur logs that film in the diary; it mustn't
+  // show the film twice.
+  const inDiary = new Set<string>();
   for (const row of rows) {
     if (row.source !== "letterboxd") continue;
     const parsed = filmDataSchema.safeParse(row.data);
     if (!parsed.success) continue;
     const film = parsed.data;
+    const id = `${normaliseTitle(film.title)}|${film.year ?? ""}`;
     const base = { key: row.key, title: film.title, href: httpUrl(film.link), image: httpUrl(film.poster) };
     if (row.occurredOn) {
+      inDiary.add(id);
       dated.push({ date: row.occurredOn, item: { ...base, meta: [`${monthDay(row.occurredOn)}${film.rewatch ? " · ↻" : ""}`] } });
     } else {
-      undated.push({ ...base, meta: [] });
+      undatedFilms.push({ film: id, item: { ...base, meta: [] } });
     }
   }
+  const undated = undatedFilms.filter(({ film }) => !inDiary.has(film)).map(({ item }) => item);
   undated.sort((a, b) => a.title.localeCompare(b.title, "en"));
   return { years: groupByMonth(dated), undated };
 }
@@ -197,10 +204,14 @@ function usableDescription(candidates: (string | null | undefined)[], title: str
 
 export function savedItems(articles: Article[], enrichments: Enrichment[]): SavedItem[] {
   const byUrl = new Map(enrichments.map((enrichment) => [enrichment.url, enrichment]));
-  return articles.map((article) => {
+  // The link is re-checked like every other view's: a snapshot stored before
+  // the parse-time check could still hold a non-http link.
+  return articles.flatMap((article) => {
+    const link = httpUrl(article.link);
+    if (!link) return [];
     const enrichment = byUrl.get(article.link);
     return {
-      link: article.link,
+      link,
       title: article.title,
       site: article.domain,
       minutes: article.minutes,
