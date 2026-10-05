@@ -1,5 +1,4 @@
 import { COVER_GRID, Cover } from "@/components/ui/cover";
-import { profile } from "@/content/profile";
 import type { Film } from "@/lib/sources/letterboxd";
 import { readSource } from "@/lib/sources/read";
 import { Empty } from "../empty";
@@ -28,8 +27,13 @@ function Render({ data }: { data: Film[] }) {
 export const films: SectionDefinition<Film[]> = {
   id: "films",
   title: "Films",
-  load: () => readSource("letterboxd"),
+  // The snapshot keeps the whole RSS window (it feeds the archive); the home
+  // row shows the latest six.
+  load: async () => {
+    const view = await readSource("letterboxd");
+    return { ...view, data: view.data.slice(0, 6) };
+  },
   Render,
   source: "Letterboxd",
-  href: `https://letterboxd.com/${profile.social.letterboxd}/`,
+  href: "/life/films/",
 };

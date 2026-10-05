@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "../db/client";
+import { archiveStores } from "../life-log/drizzle-store";
 import type { SourceContext } from "../sources/types";
 import { isAuthorized } from "./auth";
 import { DrizzleSnapshotStore } from "./drizzle-store";
@@ -18,6 +19,6 @@ export function prepareSync(
   }
   return {
     store: new DrizzleSnapshotStore(db),
-    ctx: { fetch: globalThis.fetch, env: process.env },
+    ctx: { fetch: globalThis.fetch, env: process.env, stores: archiveStores(db) },
   };
 }

@@ -2,6 +2,7 @@ import { github } from "./github";
 import { goodreads } from "./goodreads";
 import { instapaper } from "./instapaper";
 import { letterboxd } from "./letterboxd";
+import { theatre } from "./theatre";
 import type { SourceDefinition, SourceId, SourceRegistry } from "./types";
 import { writing } from "./writing";
 
@@ -13,6 +14,7 @@ export const sources = {
   instapaper,
   writing,
   github,
+  theatre,
 } satisfies SourceRegistry;
 
 export type SourceData<K extends SourceId> =

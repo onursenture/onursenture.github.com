@@ -1,13 +1,13 @@
 import Parser from "rss-parser";
 import * as cheerio from "cheerio";
 import { z } from "zod";
-import { fetchText, toIso } from "./http";
+import { fetchText, httpUrl, toIso } from "./http";
 import type { SourceDefinition } from "./types";
 
 // Goodreads RSS needs the numeric user ID; this is goodreads.com/onur.
 const DEFAULT_USER_ID = "8143905";
 const CURRENTLY_READING_LIMIT = 10;
-const READ_LIMIT = 5;
+const MAX_READ_PAGES = 10;
 
 export const bookSchema = z.object({
   title: z.string(),
@@ -16,8 +16,14 @@ export const bookSchema = z.object({
   numRating: z.number(),
   review: z.string(),
   link: z.string(),
-  // ISO timestamp: the read date when known, else the shelf-add date.
+  // ISO timestamp: the read date when known, else the shelf-add date (the
+  // Life home orders by this).
   date: z.string(),
+  // ISO read date, "" when the shelf has none (the archive's "Undated").
+  // Defaults keep snapshots stored before Sprint 10 parsing.
+  readAt: z.string().default(""),
+  // ISO shelf-add date.
+  addedAt: z.string().default(""),
 });
 export const booksSchema = z.object({
   currentlyReading: z.array(bookSchema),
@@ -48,10 +54,7 @@ function dateValue(iso: string): number {
   return Number.isNaN(time) ? -Infinity : time;
 }
 
-export async function parseGoodreadsShelf(
-  xml: string,
-  limit: number,
-): Promise<Book[]> {
+export async function parseGoodreadsShelf(xml: string, limit = Infinity): Promise<Book[]> {
   const parser = new Parser<Record<string, never>, GoodreadsItem>({
     customFields: {
       item: [
@@ -71,22 +74,42 @@ export async function parseGoodreadsShelf(
       item.bookImageUrl ||
       cheerio.load(item.content ?? "")("img").attr("src") ||
       "";
+    const readAt = toIso(item.userReadAt);
+    const addedAt = toIso(item.pubDate);
+    // <br> would otherwise glue paragraphs together in .text().
+    const review = item.userReview
+      ? cheerio.load(item.userReview.replace(/<br\s*\/?>/gi, "\n")).text().trim()
+      : "";
     return {
       title: (item.title ?? "").trim(),
       author: (item.authorName ?? "").trim(),
-      cover: rawCover ? upgradeCover(rawCover) : "",
+      cover: rawCover ? httpUrl(upgradeCover(rawCover)) : "",
       numRating,
       // Only the explicit review field; the old description-scraping
       // fallback picked up book blurbs and is intentionally gone.
-      review: item.userReview ? cheerio.load(item.userReview).text().trim() : "",
-      link: item.link ?? "",
-      date: toIso(item.userReadAt) || toIso(item.pubDate),
+      review,
+      link: httpUrl(item.link),
+      date: readAt || addedAt,
+      readAt,
+      addedAt,
     };
   });
 
   // The feed is ordered by shelf-add date; rank by the date shown instead.
   books.sort((a, b) => dateValue(b.date) - dateValue(a.date));
   return books.slice(0, limit);
+}
+
+// Every page of the read shelf (100 books each) until an empty page.
+async function readShelf(fetchImpl: typeof globalThis.fetch, userId: string): Promise<Book[]> {
+  const books: Book[] = [];
+  for (let page = 1; page <= MAX_READ_PAGES; page++) {
+    const batch = await parseGoodreadsShelf(await fetchText(fetchImpl, `${shelfUrl(userId, "read")}&page=${page}`));
+    if (batch.length === 0) break;
+    books.push(...batch);
+  }
+  books.sort((a, b) => dateValue(b.date) - dateValue(a.date));
+  return books;
 }
 
 export const goodreads: SourceDefinition<Books, "goodreads"> = {
@@ -96,19 +119,15 @@ export const goodreads: SourceDefinition<Books, "goodreads"> = {
   schema: booksSchema,
   fetch: async ({ fetch, env }) => {
     const userId = env.GOODREADS_USER_ID || DEFAULT_USER_ID;
-    const [currentlyXml, readXml] = await Promise.all([
+    const [currentlyXml, read] = await Promise.all([
       fetchText(fetch, shelfUrl(userId, "currently-reading")),
-      fetchText(fetch, shelfUrl(userId, "read")),
+      readShelf(fetch, userId),
     ]);
-    const read = await parseGoodreadsShelf(readXml, READ_LIMIT);
     // The read shelf is never legitimately empty for this account, so an
     // empty one means a bad response. (Currently-reading may well be empty.)
     if (read.length === 0) throw new Error("goodreads read shelf returned no books");
     return {
-      currentlyReading: await parseGoodreadsShelf(
-        currentlyXml,
-        CURRENTLY_READING_LIMIT,
-      ),
+      currentlyReading: await parseGoodreadsShelf(currentlyXml, CURRENTLY_READING_LIMIT),
       read,
     };
   },

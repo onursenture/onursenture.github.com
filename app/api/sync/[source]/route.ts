@@ -1,8 +1,8 @@
 import { getSource } from "@/lib/sources/registry";
 import { isSourceId } from "@/lib/sources/types";
 import { prepareSync } from "@/lib/sync/context";
-import { syncResponse } from "@/lib/sync/respond";
-import { syncSource } from "@/lib/sync/run";
+import { revalidateResults, syncResponse } from "@/lib/sync/respond";
+import { SYNC_BUDGET_MS, syncSource } from "@/lib/sync/run";
 
 // A slow upstream shouldn't be cut off by the platform's default limit.
 export const maxDuration = 60;
@@ -22,6 +22,8 @@ export async function POST(request: Request, { params }: RouteContext<"/api/sync
     prepared.ctx,
     new Date(),
     previous,
+    Date.now() + SYNC_BUDGET_MS,
   );
+  revalidateResults([result]);
   return syncResponse([result]);
 }

@@ -27,6 +27,17 @@ test("Life rows show real items from every source", async ({ page }) => {
   await expect(page.locator('[data-section="sync-status"]')).toHaveCount(0);
 });
 
+test("the Theatre row and the readout's last play come from the theatre archive", async ({ page }) => {
+  await page.goto("/life/");
+  const theatre = page.locator('[data-section="theatre"]');
+  await expect(theatre.locator("li")).toHaveCount(4);
+  await expect(theatre.locator("li").first()).toContainText("Adel Seni Seçti");
+  await expect(theatre.locator("li").first()).toContainText("Ankara Devlet Tiyatrosu");
+  const order = await page.locator("[data-section]").evaluateAll((els) => els.map((el) => el.getAttribute("data-section")));
+  expect(order.slice(0, 4)).toEqual(["films", "books", "theatre", "articles"]);
+  await expect(page.getByRole("region", { name: "Now" }).locator("li", { hasText: "last play:" })).toContainText("Adel Seni Seçti");
+});
+
 test("Books Reading lists every book being read, in compact covers", async ({ page }) => {
   await page.goto("/life/");
   const titles = [

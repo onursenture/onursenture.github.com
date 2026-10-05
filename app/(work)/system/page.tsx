@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { ArchiveTile } from "@/components/life/archive/archive-tile";
 import { SelectedWorkItem } from "@/components/home/selected-work";
 import { LifeSwitch } from "@/components/life-switch";
 import { Picture } from "@/components/picture";
@@ -228,6 +229,12 @@ export default async function SystemPage() {
           <div className="w-24">
             <Cover src="" alt="" />
           </div>
+        </Specimen>
+        <Specimen name="ArchiveTile">
+          <ul className="grid w-48 grid-cols-2 gap-x-2.5">
+            <ArchiveTile item={{ key: "a", title: "A film title that wraps", meta: ["Sep 8 · ↻"], href: "", image: "" }} />
+            <ArchiveTile item={{ key: "b", title: "İki", meta: ["Ankara Devlet Tiyatrosu"], href: "", image: "" }} />
+          </ul>
         </Specimen>
         <Specimen name="DataTable">
           <div className="grid w-full gap-4 md:grid-cols-2">

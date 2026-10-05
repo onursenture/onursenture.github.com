@@ -17,6 +17,7 @@ const film: Film = {
   ratingValue: 3.5,
   watchedDate: "2026-01-01",
   date: "2026-01-01T00:00:00.000Z",
+  rewatch: false,
 };
 const book: Book = {
   title: "Bozkır",
@@ -26,6 +27,8 @@ const book: Book = {
   numRating: 3,
   review: "",
   date: "2026-01-01T00:00:00.000Z",
+  readAt: "2026-01-01T00:00:00.000Z",
+  addedAt: "2025-12-01T00:00:00.000Z",
 };
 
 describe("Life sections render no ratings", () => {

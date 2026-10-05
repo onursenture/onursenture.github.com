@@ -1,4 +1,5 @@
 import type { z } from "zod";
+import type { ArchiveStores } from "../life-log/types";
 
 export const SOURCE_IDS = [
   "letterboxd",
@@ -6,6 +7,7 @@ export const SOURCE_IDS = [
   "instapaper",
   "writing",
   "github",
+  "theatre",
 ] as const;
 
 export type SourceId = (typeof SOURCE_IDS)[number];
@@ -17,6 +19,7 @@ export const SOURCE_LABELS: Record<SourceId, string> = {
   instapaper: "Instapaper",
   writing: "w00f.org",
   github: "GitHub",
+  theatre: "tiyatrolar.com.tr",
 };
 
 export function isSourceId(value: string): value is SourceId {
@@ -24,10 +27,29 @@ export function isSourceId(value: string): value is SourceId {
 }
 
 // What a source's fetch receives. Injected so tests can pass a fake fetch
-// and env instead of hitting the network.
+// and env instead of hitting the network. `stores` is set by the sync
+// routes (and the admin's Sync now) when a database is available.
 export interface SourceContext {
   fetch: typeof globalThis.fetch;
   env: Record<string, string | undefined>;
+  stores?: ArchiveStores;
+}
+
+export interface ArchiveArgs {
+  stores: ArchiveStores;
+  fetch: typeof globalThis.fetch;
+  now: Date;
+  // Epoch ms the run must finish by (the sync routes allow 45 s of their
+  // 60 s limit). Slow per-item work (posters, enrichment) stops before an
+  // item that might not finish in time; the rest waits for the next run.
+  deadline: number;
+}
+
+// What an archive step reports: a one-line summary for the admin and the
+// cache tags it made stale.
+export interface ArchiveOutcome {
+  note: string;
+  tags: string[];
 }
 
 // `I` is the source's own id. It defaults to the whole union, so generic code
@@ -46,6 +68,10 @@ export interface SourceDefinition<T, I extends SourceId = SourceId> {
   fetch: (ctx: SourceContext) => Promise<T>;
   // Number of items, recorded for the source-health panel.
   count: (data: T) => number;
+  // Optional (Sprint 10): runs after a successful sync, with the stored
+  // data, to write archive rows (life_log, link_enrichments). Must not throw
+  // for one bad item; a thrown error is recorded as the note.
+  archive?: (data: T, args: ArchiveArgs) => Promise<ArchiveOutcome>;
 }
 
 // Heterogeneous collections of sources (the registry, syncAll) need to

@@ -21,6 +21,7 @@ export class MemorySnapshotStore implements SnapshotStore {
       lastSuccessAt: at,
       lastAttemptAt: at,
       lastError: null,
+      archiveNote: this.rows.get(source)?.archiveNote ?? null,
     });
   }
 
@@ -33,6 +34,12 @@ export class MemorySnapshotStore implements SnapshotStore {
       lastSuccessAt: existing?.lastSuccessAt ?? null,
       lastAttemptAt: at,
       lastError: error,
+      archiveNote: existing?.archiveNote ?? null,
     });
+  }
+
+  async recordArchive(source: SourceId, note: string): Promise<void> {
+    const existing = this.rows.get(source);
+    if (existing) this.rows.set(source, { ...existing, archiveNote: note });
   }
 }

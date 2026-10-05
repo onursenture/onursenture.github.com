@@ -1,4 +1,4 @@
-import { integer, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { date, integer, jsonb, pgTable, primaryKey, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 // One row per external source. Written by the sync job, read by pages.
 export const sourceSnapshots = pgTable("source_snapshots", {
@@ -8,6 +8,8 @@ export const sourceSnapshots = pgTable("source_snapshots", {
   lastAttemptAt: timestamp("last_attempt_at", { withTimezone: true }),
   lastError: text("last_error"),
   itemCount: integer("item_count").notNull().default(0),
+  // The last archive step's summary (Sprint 10), shown in the admin.
+  archiveNote: text("archive_note"),
 });
 
 // Admin documents (Sprint 7): one row per editable unit (lib/content/keys.ts).
@@ -48,4 +50,34 @@ export const notes = pgTable("notes", {
   publishedAt: timestamp("published_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
+});
+
+// Life archives that must outlive their upstream windows (Sprint 10): Films
+// (Letterboxd CSV import + RSS) and Theatre (history file + activity feed).
+// occurred_on is the watch date, or Jan 1 of the year when precision is
+// "year"; null when undated. Expand-only migration.
+export const lifeLog = pgTable(
+  "life_log",
+  {
+    source: text("source").notNull(),
+    key: text("key").notNull(),
+    occurredOn: date("occurred_on", { mode: "string" }),
+    precision: text("precision").notNull(),
+    data: jsonb("data").$type<Record<string, unknown>>().notNull(),
+    firstSeenAt: timestamp("first_seen_at", { withTimezone: true }).notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.source, table.key] })],
+);
+
+// og: metadata for Saved articles (Sprint 10), fetched once per URL.
+export const linkEnrichments = pgTable("link_enrichments", {
+  url: text("url").primaryKey(),
+  title: text("title"),
+  description: text("description"),
+  imageUrl: text("image_url"),
+  imageWidth: integer("image_width"),
+  siteName: text("site_name"),
+  fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull(),
+  error: text("error"),
 });

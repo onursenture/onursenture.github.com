@@ -1,4 +1,3 @@
-import { profile } from "@/content/profile";
 import type { Article } from "@/lib/sources/instapaper";
 import { readSource } from "@/lib/sources/read";
 import { Empty } from "../empty";
@@ -30,8 +29,12 @@ function Render({ data }: { data: Article[] }) {
 export const articles: SectionDefinition<Article[]> = {
   id: "articles",
   title: "Saved",
-  load: () => readSource("instapaper"),
+  // Every liked article is on /life/saved/; the home lists the latest five.
+  load: async () => {
+    const view = await readSource("instapaper");
+    return { ...view, data: view.data.slice(0, 5) };
+  },
   Render,
   source: "Instapaper",
-  href: `https://www.instapaper.com/p/${profile.social.instapaper}`,
+  href: "/life/saved/",
 };
