@@ -15,6 +15,7 @@ describe("parseLetterboxd", () => {
       ratingValue: 3.5,
       watchedDate: "2026-09-26",
       date: "2026-09-26T14:18:59.000Z",
+      rewatch: false,
     });
   });
 
@@ -35,5 +36,29 @@ describe("letterboxd.fetch", () => {
       "https://letterboxd.com/onur/rss/": { status: 503, body: "down" },
     });
     await expect(letterboxd.fetch({ fetch, env: {} })).rejects.toThrow("503");
+  });
+});
+
+describe("parseLetterboxd rewatch and limit", () => {
+  const entry = (n: number, rewatch: "Yes" | "No") => `
+    <item>
+      <title>Film ${n}, 2020</title>
+      <link>https://letterboxd.com/onur/film/film-${n}/</link>
+      <pubDate>Sat, 26 Sep 2026 10:00:00 +1200</pubDate>
+      <letterboxd:watchedDate>2026-09-${String(n).padStart(2, "0")}</letterboxd:watchedDate>
+      <letterboxd:rewatch>${rewatch}</letterboxd:rewatch>
+      <letterboxd:filmTitle>Film ${n}</letterboxd:filmTitle>
+      <letterboxd:filmYear>2020</letterboxd:filmYear>
+      <description><![CDATA[<p><img src="https://a.ltrbxd.com/p-${n}-0-600-0-900-crop.jpg"/></p>]]></description>
+    </item>`;
+  const feed = (items: string) =>
+    `<?xml version="1.0"?><rss version="2.0" xmlns:letterboxd="https://letterboxd.com"><channel><title>x</title>${items}</channel></rss>`;
+
+  it("keeps every feed item and reads the rewatch flag", async () => {
+    const items = Array.from({ length: 12 }, (_, i) => entry(i + 1, i === 0 ? "Yes" : "No")).join("");
+    const films = await parseLetterboxd(feed(items));
+    expect(films).toHaveLength(12);
+    expect(films[0].rewatch).toBe(true);
+    expect(films[1].rewatch).toBe(false);
   });
 });

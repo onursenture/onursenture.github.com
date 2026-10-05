@@ -30,7 +30,11 @@ function Render({ data }: { data: Article[] }) {
 export const articles: SectionDefinition<Article[]> = {
   id: "articles",
   title: "Saved",
-  load: () => readSource("instapaper"),
+  // Every liked article is on /life/saved/; the home lists the latest five.
+  load: async () => {
+    const view = await readSource("instapaper");
+    return { ...view, data: view.data.slice(0, 5) };
+  },
   Render,
   source: "Instapaper",
   href: `https://www.instapaper.com/p/${profile.social.instapaper}`,

@@ -61,7 +61,12 @@ function Render({ data }: { data: Books }) {
 export const books: SectionDefinition<Books> = {
   id: "books",
   title: "Books",
-  load: () => readSource("goodreads"),
+  // The snapshot keeps the whole read shelf (the archive page); the home
+  // lists the latest five.
+  load: async () => {
+    const view = await readSource("goodreads");
+    return { ...view, data: { ...view.data, read: view.data.read.slice(0, 5) } };
+  },
   Render,
   source: "Goodreads",
   href: `https://www.goodreads.com/${profile.social.goodreads}`,

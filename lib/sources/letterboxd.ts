@@ -1,11 +1,10 @@
 import Parser from "rss-parser";
 import * as cheerio from "cheerio";
 import { z } from "zod";
-import { fetchText, toIso } from "./http";
+import { fetchText, httpUrl, toIso } from "./http";
 import type { SourceDefinition } from "./types";
 
 const FEED_URL = "https://letterboxd.com/onur/rss/";
-const LIMIT = 6;
 
 export const filmSchema = z.object({
   title: z.string(),
@@ -18,6 +17,8 @@ export const filmSchema = z.object({
   watchedDate: z.string(),
   // ISO timestamp of the diary entry.
   date: z.string(),
+  // A rewatch diary entry. Defaults keep older snapshots parsing.
+  rewatch: z.boolean().default(false),
 });
 export const filmsSchema = z.array(filmSchema);
 export type Film = z.infer<typeof filmSchema>;
@@ -27,6 +28,7 @@ type LetterboxdItem = {
   filmYear?: string;
   memberRating?: string;
   watchedDate?: string;
+  rewatch?: string;
 };
 
 // The star suffix at the end of the feed title (U+2605 and U+00BD).
@@ -40,12 +42,13 @@ export async function parseLetterboxd(xml: string): Promise<Film[]> {
         ["letterboxd:filmYear", "filmYear"],
         ["letterboxd:memberRating", "memberRating"],
         ["letterboxd:watchedDate", "watchedDate"],
+        ["letterboxd:rewatch", "rewatch"],
       ],
     },
   });
   const feed = await parser.parseString(xml);
 
-  return feed.items.slice(0, LIMIT).map((item) => {
+  return feed.items.map((item) => {
     const $ = cheerio.load(item.content ?? "");
     const titleRaw = item.title ?? "";
     // Prefer the structured field; fall back to stripping the star suffix and
@@ -61,11 +64,12 @@ export async function parseLetterboxd(xml: string): Promise<Film[]> {
     return {
       title,
       year: Number.isNaN(year) ? null : year,
-      link: item.link ?? "",
-      poster: $("img").attr("src") ?? "",
+      link: httpUrl(item.link),
+      poster: httpUrl($("img").attr("src")),
       ratingValue: Number.isNaN(ratingValue) ? null : ratingValue,
       watchedDate: item.watchedDate ?? "",
       date: toIso(item.pubDate),
+      rewatch: item.rewatch === "Yes",
     };
   });
 }

@@ -28,13 +28,13 @@ describe("toSourceView", () => {
 
   it("returns validated data with an ISO sync time", () => {
     expect(toSourceView(letterboxd, snapshot([film]))).toEqual({
-      data: [film],
+      data: [{ ...film, rewatch: false }],
       lastSuccessAt: "2026-10-02T12:00:00.000Z",
     });
   });
 
   it("still reads snapshots stored with the dropped star-string rating", () => {
-    expect(toSourceView(letterboxd, snapshot([{ ...film, rating: "★★★" }])).data).toEqual([film]);
+    expect(toSourceView(letterboxd, snapshot([{ ...film, rating: "★★★" }])).data).toEqual([{ ...film, rewatch: false }]);
   });
 
   it("fails soft when the payload no longer matches the schema", () => {

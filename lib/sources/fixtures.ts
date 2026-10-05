@@ -16,7 +16,6 @@ import { parseWriting } from "./writing";
 
 // Same limits as goodreads.fetch.
 const CURRENTLY_READING_LIMIT = 10;
-const READ_LIMIT = 5;
 
 function readFixture(name: string): Promise<string> {
   return readFile(join(process.cwd(), "tests", "fixtures", name), "utf8");
@@ -29,7 +28,7 @@ const loaders: { [K in SourceId]: () => Promise<SourceData<K>> } = {
       await readFixture("goodreads-currently-reading.xml"),
       CURRENTLY_READING_LIMIT,
     ),
-    read: await parseGoodreadsShelf(await readFixture("goodreads-read.xml"), READ_LIMIT),
+    read: await parseGoodreadsShelf(await readFixture("goodreads-read.xml")),
   }),
   instapaper: async () => parseInstapaper(JSON.parse(await readFixture("instapaper.json"))),
   writing: async () => parseWriting(await readFixture("writing.xml")),
