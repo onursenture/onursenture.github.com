@@ -54,7 +54,13 @@ async function runArchive<T>(
   } catch (e) {
     outcome = { note: `archive failed: ${e instanceof Error ? e.message : String(e)}`, tags: [] };
   }
-  await store.recordArchive(definition.id, outcome.note, now);
+  // The note is for the admin only: failing to write it mustn't turn a good
+  // sync into an error.
+  try {
+    await store.recordArchive(definition.id, outcome.note, now);
+  } catch (e) {
+    console.warn(`[sync] ${definition.id}: archive note not saved:`, e instanceof Error ? e.message : e);
+  }
   return outcome;
 }
 

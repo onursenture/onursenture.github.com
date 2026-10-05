@@ -295,4 +295,18 @@ describe("syncSource archive step", () => {
     const result = await syncSource(def, store, { ...ctx, stores: stores() }, t0, null, FAR);
     expect(result).toEqual({ source: "writing", status: "ok", itemCount: 1, archive: { note: "archive failed: db gone", tags: [] } });
   });
+
+  it("keeps a good sync ok when the archive note can't be written", async () => {
+    const store = new MemorySnapshotStore();
+    store.recordArchive = async () => {
+      throw new Error("note write failed");
+    };
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const def = { ...source(async () => ["a"]), archive: async () => ({ note: "+1", tags: ["life:letterboxd"] }) };
+    const result = await syncSource(def, store, { ...ctx, stores: stores() }, t0, null, FAR);
+    expect(result).toEqual({ source: "writing", status: "ok", itemCount: 1, archive: { note: "+1", tags: ["life:letterboxd"] } });
+    expect((await store.get("writing"))?.lastError).toBeNull();
+    expect(warn).toHaveBeenCalled();
+    warn.mockRestore();
+  });
 });
