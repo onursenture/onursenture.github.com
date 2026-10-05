@@ -70,4 +70,46 @@ describe("fillPosters", () => {
     const byKey = Object.fromEntries((await store.list("letterboxd")).map((r) => [r.key, r.data.poster]));
     expect(byKey).toEqual({ has: "https://p/has.jpg", new: "https://a.ltrbxd.com/n-0-230-0-345-crop.jpg", mid: undefined, old: undefined });
   });
+
+  const filmRow = (key: string, occurredOn: string, slug: string, extra: Record<string, unknown> = {}) => ({
+    source: "letterboxd" as const,
+    key,
+    occurredOn,
+    precision: "day" as const,
+    data: { title: key, year: null, link: `https://letterboxd.com/onur/film/${slug}/`, rewatch: false, ...extra },
+  });
+
+  it("records a failed attempt and moves on to older rows on the next call", async () => {
+    const store = new MemoryLifeLogStore();
+    const at = new Date("2026-10-05T10:00:00Z");
+    await store.upsert([filmRow("old", "2020-01-01", "old"), filmRow("gone", "2026-01-01", "gone")], { redate: false, at });
+    const fetch = routes({
+      "https://letterboxd.com/film/old/": new Response(filmPage("https://a.ltrbxd.com/o-0-600-0-900-crop.jpg")),
+    });
+    expect(await fillPosters(store, fetch, { limit: 1, at })).toEqual({ filled: 0, failed: 1 });
+    const rows = Object.fromEntries((await store.list("letterboxd")).map((r) => [r.key, r.data]));
+    expect(rows.gone.posterTriedAt).toBe(at.toISOString());
+    expect(rows.old.posterTriedAt).toBeUndefined();
+    expect(await fillPosters(store, fetch, { limit: 1, at })).toEqual({ filled: 1, failed: 0 });
+    expect(await fillPosters(store, fetch, { limit: 1, at })).toEqual({ filled: 0, failed: 0 });
+  });
+
+  it("retries a row last tried more than 7 days ago", async () => {
+    const store = new MemoryLifeLogStore();
+    const at = new Date("2026-10-05T10:00:00Z");
+    const tried = new Date(at.getTime() - 8 * 24 * 60 * 60 * 1000).toISOString();
+    const recent = new Date(at.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString();
+    await store.upsert(
+      [filmRow("stale", "2026-02-01", "stale", { posterTriedAt: tried }), filmRow("fresh", "2026-03-01", "fresh", { posterTriedAt: recent })],
+      { redate: false, at },
+    );
+    const fetch = routes({
+      "https://letterboxd.com/film/stale/": new Response(filmPage("https://a.ltrbxd.com/s-0-600-0-900-crop.jpg")),
+      "https://letterboxd.com/film/fresh/": new Response(filmPage("https://a.ltrbxd.com/f-0-600-0-900-crop.jpg")),
+    });
+    expect(await fillPosters(store, fetch, { limit: 5, at })).toEqual({ filled: 1, failed: 0 });
+    const byKey = Object.fromEntries((await store.list("letterboxd")).map((r) => [r.key, r.data.poster]));
+    expect(byKey.stale).toBe("https://a.ltrbxd.com/s-0-230-0-345-crop.jpg");
+    expect(byKey.fresh).toBeUndefined();
+  });
 });

@@ -34,17 +34,27 @@ export async function resolvePoster(fetchImpl: typeof globalThis.fetch, link: st
   }
 }
 
+// A failed lookup is not retried for a week, so permanent failures stop
+// crowding the newest-first window.
+const RETRY_AFTER_MS = 7 * 24 * 60 * 60 * 1000;
+
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Fills posters on the newest film rows that have none, one request chain at
-// a time. A row that fails stays empty and is tried again next run.
+// a time. A row that fails stays empty, is stamped with posterTriedAt and is
+// tried again after a week.
 export async function fillPosters(
   store: LifeLogStore,
   fetchImpl: typeof globalThis.fetch,
   { limit, delayMs = 0, at }: { limit: number; delayMs?: number; at: Date },
 ): Promise<{ filled: number; failed: number }> {
   const missing = (await store.list("letterboxd"))
-    .filter((row) => !filmDataSchema.safeParse(row.data).data?.poster)
+    .filter((row) => {
+      const film = filmDataSchema.safeParse(row.data).data;
+      if (film?.poster) return false;
+      const tried = film?.posterTriedAt ? Date.parse(film.posterTriedAt) : Number.NaN;
+      return Number.isNaN(tried) || at.getTime() - tried >= RETRY_AFTER_MS;
+    })
     .slice(0, limit);
   let filled = 0;
   let failed = 0;
@@ -53,6 +63,7 @@ export async function fillPosters(
     const poster = await resolvePoster(fetchImpl, String(row.data.link ?? ""));
     if (!poster) {
       failed++;
+      await store.upsert([{ ...row, data: { posterTriedAt: at.toISOString() } }], { redate: false, at });
       continue;
     }
     await store.upsert([{ ...row, data: { poster } }], { redate: false, at });

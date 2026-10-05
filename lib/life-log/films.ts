@@ -8,6 +8,8 @@ export const filmDataSchema = z.object({
   link: z.string(),
   poster: z.string().default(""),
   rewatch: z.boolean().default(false),
+  // ISO time of the last failed poster lookup; fillPosters skips the row for a week.
+  posterTriedAt: z.string().optional(),
 });
 export type FilmData = z.infer<typeof filmDataSchema>;
 

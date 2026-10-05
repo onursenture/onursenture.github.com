@@ -37,7 +37,7 @@ async function main() {
       const batch = await fillPosters(store, globalThis.fetch, { limit: 50, delayMs: 1000, at: new Date() });
       total += batch.filled;
       console.log(`[letterboxd] posters: +${batch.filled} (${batch.failed} failed), ${total} so far`);
-      if (batch.filled === 0) break;
+      if (batch.filled + batch.failed === 0) break; // no candidates left
     }
   }
 }
