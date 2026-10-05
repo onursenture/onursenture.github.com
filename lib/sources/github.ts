@@ -8,7 +8,7 @@ const QUERY = `query {
     contributionsCollection {
       contributionCalendar {
         totalContributions
-        weeks { contributionDays { contributionCount date color } }
+        weeks { contributionDays { contributionCount date contributionLevel } }
       }
     }
   }
@@ -30,15 +30,17 @@ export const contributionsSchema = z.object({
 });
 export type Contributions = z.infer<typeof contributionsSchema>;
 
-// GitHub encodes each day's level as one of five colors; map them to 0–4 so
-// the distribution matches github.com exactly.
-const COLOR_TO_LEVEL: Record<string, number> = {
-  "#ebedf0": 0,
-  "#9be9a8": 1,
-  "#40c463": 2,
-  "#30a14e": 3,
-  "#216e39": 4,
+// GitHub's own quartile for each day (ContributionLevel enum), mapped to 0–4
+// so the heatmap matches github.com. An unknown value counts as 0.
+const LEVELS: Record<string, number> = {
+  NONE: 0,
+  FIRST_QUARTILE: 1,
+  SECOND_QUARTILE: 2,
+  THIRD_QUARTILE: 3,
+  FOURTH_QUARTILE: 4,
 };
+
+const errorsSchema = z.object({ errors: z.array(z.object({ message: z.string() })).min(1) });
 
 const responseSchema = z.object({
   data: z.object({
@@ -52,7 +54,7 @@ const responseSchema = z.object({
                 z.object({
                   contributionCount: z.number(),
                   date: z.string(),
-                  color: z.string().nullish(),
+                  contributionLevel: z.string().nullish(),
                 }),
               ),
             }),
@@ -64,6 +66,8 @@ const responseSchema = z.object({
 });
 
 export function parseGithub(json: unknown): Contributions {
+  const failed = errorsSchema.safeParse(json);
+  if (failed.success) throw new Error(`GitHub GraphQL: ${failed.data.errors[0].message}`);
   const calendar =
     responseSchema.parse(json).data.user.contributionsCollection
       .contributionCalendar;
@@ -73,7 +77,7 @@ export function parseGithub(json: unknown): Contributions {
       days: week.contributionDays.map((day) => ({
         count: day.contributionCount,
         date: day.date,
-        level: COLOR_TO_LEVEL[(day.color ?? "").toLowerCase()] ?? 0,
+        level: LEVELS[day.contributionLevel ?? ""] ?? 0,
       })),
     })),
   };

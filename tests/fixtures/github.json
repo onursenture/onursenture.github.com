@@ -6,13 +6,13 @@
           "totalContributions": 7,
           "weeks": [
             { "contributionDays": [
-              { "contributionCount": 0, "date": "2026-09-27", "color": "#ebedf0" },
-              { "contributionCount": 1, "date": "2026-09-28", "color": "#9BE9A8" },
-              { "contributionCount": 2, "date": "2026-09-29", "color": "#40c463" }
+              { "contributionCount": 0, "date": "2026-09-27", "contributionLevel": "NONE" },
+              { "contributionCount": 1, "date": "2026-09-28", "contributionLevel": "FIRST_QUARTILE" },
+              { "contributionCount": 2, "date": "2026-09-29", "contributionLevel": "SECOND_QUARTILE" }
             ] },
             { "contributionDays": [
-              { "contributionCount": 4, "date": "2026-09-30", "color": "#216e39" },
-              { "contributionCount": 0, "date": "2026-10-01", "color": "#123456" }
+              { "contributionCount": 4, "date": "2026-09-30", "contributionLevel": "FOURTH_QUARTILE" },
+              { "contributionCount": 0, "date": "2026-10-01", "contributionLevel": "SOMETHING_NEW" }
             ] }
           ]
         }
