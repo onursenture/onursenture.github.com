@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { cacheLife, cacheTag } from "next/cache";
 import { getDb } from "../db/client";
+import { mergeTheatreHistory } from "../sources/theatre";
 import { DrizzleEnrichmentStore, DrizzleLifeLogStore } from "./drizzle-store";
 import { ENRICHMENTS_TAG, lifeLogTag } from "./tags";
 import type { Enrichment, LifeLogRow, LifeLogSource } from "./types";
@@ -16,6 +17,13 @@ async function fixtureJson<T>(name: string): Promise<T> {
   return JSON.parse(await readFile(join(process.cwd(), "tests", "fixtures", name), "utf8")) as T;
 }
 
+// Theatre's committed history is merged in at read time (not in fixture
+// mode, whose rows are the e2e's exact counts), so the archive shows it even
+// before the first successful tiyatrolar sync, with no database, or when the
+// read fails.
+const withHistory = (source: LifeLogSource, rows: LifeLogRow[]) =>
+  source === "theatre" ? mergeTheatreHistory(rows) : rows;
+
 export async function readLifeLog(source: LifeLogSource): Promise<LifeLogRow[]> {
   "use cache";
   cacheTag(lifeLogTag(source));
@@ -26,16 +34,16 @@ export async function readLifeLog(source: LifeLogSource): Promise<LifeLogRow[]> 
   const db = getDb();
   if (!db) {
     cacheLife("hours");
-    return [];
+    return withHistory(source, []);
   }
   try {
     const rows = await new DrizzleLifeLogStore(db).list(source);
     cacheLife("hours");
-    return rows;
+    return withHistory(source, rows);
   } catch (e) {
     console.warn(`[life-log] reading ${source} failed:`, e instanceof Error ? e.message : e);
     cacheLife("minutes");
-    return [];
+    return withHistory(source, []);
   }
 }
 

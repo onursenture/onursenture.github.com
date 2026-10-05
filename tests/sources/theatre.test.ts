@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MemoryEnrichmentStore, MemoryLifeLogStore } from "@/lib/life-log/memory-store";
-import { historyRows, parseActivity, theatre } from "@/lib/sources/theatre";
+import { historyRows, mergeTheatreHistory, parseActivity, theatre } from "@/lib/sources/theatre";
 import { theatreHistory } from "@/content/theatre-history";
 import { fixture } from "../helpers/fixtures";
 
@@ -162,5 +162,53 @@ describe("theatre.archive", () => {
       expect(row.occurredOn).toBe(`${source.year}-01-01`);
       expect(row.data.andEarlier).toBe(source.year === oldest);
     }
+  });
+});
+
+describe("mergeTheatreHistory", () => {
+  const history = historyRows();
+  const oldest = history.find((row) => row.data.andEarlier === true)!;
+  const newest = history[0];
+
+  it("gives the committed history with no database rows", () => {
+    const merged = mergeTheatreHistory([]);
+    expect(merged).toHaveLength(theatreHistory.length);
+    expect(new Set(merged.map((row) => row.key))).toEqual(new Set(theatreHistory.map((row) => row.id)));
+    expect(merged.find((row) => row.key === oldest.key)).toEqual(oldest);
+  });
+
+  it("keeps rows only the database has", () => {
+    const fresh = {
+      source: "theatre" as const,
+      key: "9999999",
+      occurredOn: "2026-01-01",
+      precision: "year" as const,
+      data: { title: "New Play", slug: "new-play", company: "Co", poster: "", link: "https://tiyatrolar.com.tr/tiyatro/new-play", andEarlier: false },
+    };
+    const merged = mergeTheatreHistory([fresh]);
+    expect(merged).toHaveLength(theatreHistory.length + 1);
+    expect(merged.find((row) => row.key === "9999999")).toEqual(fresh);
+  });
+
+  it("lets the file's year and andEarlier win over a database row for a history id", () => {
+    const stale = {
+      ...newest,
+      occurredOn: "1999-01-01",
+      precision: "year" as const,
+      data: { ...newest.data, poster: "https://p/db.jpg", andEarlier: true },
+    };
+    const merged = mergeTheatreHistory([stale]);
+    expect(merged).toHaveLength(theatreHistory.length);
+    const row = merged.find((r) => r.key === newest.key)!;
+    expect(row.occurredOn).toBe(newest.occurredOn);
+    expect(row.precision).toBe("year");
+    expect(row.data.andEarlier).toBe(false);
+    expect(row.data.poster).toBe("https://p/db.jpg");
+  });
+
+  it("orders newest first, like the store", () => {
+    const merged = mergeTheatreHistory([]);
+    const dates = merged.map((row) => row.occurredOn ?? "");
+    expect(dates).toEqual([...dates].sort().reverse());
   });
 });

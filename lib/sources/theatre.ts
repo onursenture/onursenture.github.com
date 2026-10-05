@@ -127,6 +127,38 @@ export function historyRows(): LifeLogRow[] {
   }));
 }
 
+// The read side's view of the archive: the committed history merged into
+// the database rows, so /life/theatre/ and the home row never depend on a
+// successful tiyatrolar fetch (the archive step that seeds the history runs
+// only after one). Database rows are kept by key; for a history id the
+// file's year (occurredOn, precision) and andEarlier win, the same rule the
+// re-seed applies. Newest first, like the store's list().
+export function mergeTheatreHistory(rows: LifeLogRow[]): LifeLogRow[] {
+  const merged = new Map(rows.map((row) => [row.key, row]));
+  for (const history of historyRows()) {
+    const stored = merged.get(history.key);
+    merged.set(
+      history.key,
+      stored
+        ? {
+            ...stored,
+            occurredOn: history.occurredOn,
+            precision: history.precision,
+            data: { ...stored.data, andEarlier: history.data.andEarlier },
+          }
+        : history,
+    );
+  }
+  return [...merged.values()].sort((a, b) => {
+    if (a.occurredOn !== b.occurredOn) {
+      if (a.occurredOn === null) return 1;
+      if (b.occurredOn === null) return -1;
+      return a.occurredOn < b.occurredOn ? 1 : -1;
+    }
+    return a.key < b.key ? 1 : a.key > b.key ? -1 : 0;
+  });
+}
+
 export const theatre: SourceDefinition<TheatreWatch[], "theatre"> = {
   id: "theatre",
   intervalMinutes: 24 * 60,
