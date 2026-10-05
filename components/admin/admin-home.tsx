@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { buttonClass } from "@/components/ui/button";
 import { noteCounts } from "@/lib/admin/notes";
 import { docRows } from "@/lib/admin/overview";
+import { photoCounts } from "@/lib/admin/photos";
 import { loadPinsEditor } from "@/lib/admin/load";
 import { readSourceRows } from "@/lib/admin/sources";
 import { getContentStore } from "@/lib/content/get-store";
@@ -34,7 +35,7 @@ async function loadDocs(): Promise<ContentDoc[] | null> {
 
 // The admin home (spec §2.2).
 export async function AdminHome() {
-  const [docs, sources, pins, counts] = await Promise.all([loadDocs(), readSourceRows(), loadPinsEditor(), noteCounts()]);
+  const [docs, sources, pins, counts, photos] = await Promise.all([loadDocs(), readSourceRows(), loadPinsEditor(), noteCounts(), photoCounts()]);
   const { pages, home } = docRows(docs ?? []);
   const list = (rows: typeof pages) => (
     <ul className="type-body">
@@ -85,6 +86,23 @@ export async function AdminHome() {
           </Link>{" "}
           <span className="type-meta text-fg-muted">
             {counts ? `· ${counts.drafts} drafts · ${counts.scheduled} scheduled · ${counts.published} published` : "· database unavailable"}
+          </span>
+        </p>
+      </Section>
+      <Section
+        title="Photos"
+        action={
+          <Link href="/admin/photos/" className={buttonClass("ghost")}>
+            Add photo
+          </Link>
+        }
+      >
+        <p className="type-body">
+          <Link href="/admin/photos/" className="text-accent hover:underline">
+            All photos
+          </Link>{" "}
+          <span className="type-meta text-fg-muted">
+            {photos ? `· ${photos.published} ${photos.published === 1 ? "photo" : "photos"} · ${photos.drafts} ${photos.drafts === 1 ? "draft" : "drafts"}` : "· database unavailable"}
           </span>
         </p>
       </Section>
