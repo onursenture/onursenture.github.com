@@ -175,3 +175,12 @@ Still open:
 - Shooting settings (lens, aperture, shutter, ISO).
 - Bluesky cross-posting of photos.
 - Sprint 11b: changelog, paddle effect, Konami easter egg, performance and accessibility.
+
+## Errata (implementation)
+
+- **Uploads are redrawn.** Every photo upload is redrawn on a canvas to JPEG (q 0.92, at most 4096px on the long side) before it leaves the browser, PNGs included. Notes keep PNGs as they are and redraw everything else. This keeps a GPS-bearing JPEG original out of the public `uploads/` area, so "no location data is stored anywhere" also holds for the few seconds before the server deletes the original. EXIF is still read from the untouched file first.
+- **The import names its target.** Every run, dry runs included, prints the database host and the storage mode. It refuses `--local` unless the database is localhost.
+- **Editor state.**
+  - Edits are ignored while a save or upload runs.
+  - A refused upload reads "Can't upload:"; a refused write reads "Can't publish yet:".
+- **The file input waits for hydration.** "+ Add photo" renders its file input only after hydration, so a file picked before React attaches can't be lost.
