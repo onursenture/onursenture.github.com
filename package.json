@@ -18,6 +18,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts --force",
     "import:letterboxd": "tsx scripts/import-letterboxd.ts",
+    "import:photos": "tsx scripts/import-photos.ts",
     "screenshots": "tsx scripts/screenshots.ts"
   },
   "dependencies": {
@@ -33,6 +34,7 @@
     "d3-scale": "4.0.2",
     "d3-shape": "3.2.0",
     "drizzle-orm": "0.45.3",
+    "exifr": "7.1.3",
     "gray-matter": "4.0.3",
     "jose": "6.2.12",
     "motion": "14.0.0",

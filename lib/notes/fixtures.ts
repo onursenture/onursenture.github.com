@@ -35,9 +35,9 @@ export function fixtureNotes(): PublishedNote[] {
     note(1, "2026-10-04T11:00:00.000Z", "work", "Shipped /resume.pdf. It's rendered on the server from the same data as the page, so the paper copy can't drift from the site."),
     note(2, "2026-10-03T11:15:00.000Z", "both", "Notes editor, first pass. The counter counts graphemes, not characters: 👍🏽 is one.", {
       kind: "images",
-      images: [image("photos/kizilcikli", "A fixture photo"), image("photos/bold-vakif-building", "Another fixture photo")],
+      images: [image("fixtures/photo-landscape", "A fixture photo"), image("fixtures/photo-wide", "Another fixture photo")],
     }),
-    note(3, "2026-10-02T16:30:00.000Z", "life", "Yui found the one sunny square on the balcony again.", { kind: "images", images: [image("photos/kizilcikli", "A fixture photo")] }),
+    note(3, "2026-10-02T16:30:00.000Z", "life", "Yui found the one sunny square on the balcony again.", { kind: "images", images: [image("fixtures/photo-landscape", "A fixture photo")] }),
     note(4, "2026-09-30T08:00:00.000Z", "work", "Good walkthrough of publishing a personal site to the AT Protocol, via @w00f.org #atproto", {
       kind: "link",
       url: "https://stevedylan.dev/posts/using-atproto-for-posse/",

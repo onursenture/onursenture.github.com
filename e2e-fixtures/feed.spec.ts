@@ -10,3 +10,9 @@ test("/feed.xml carries the notes, newest first, before older photos", async ({ 
   // The note HTML is escaped once as HTML (the apostrophe becomes &apos;) and again as XML text.
   expect(xml).toContain("Bugün Ankara&amp;apos;da ilk yağmur.");
 });
+
+test("/feed.xml carries the fixture photos with their JPEG renditions", async ({ request }) => {
+  const xml = await (await request.get("/feed.xml")).text();
+  expect(xml).toContain("<link>https://onursenture.com/life/photos/night-boulevard/</link>");
+  expect(xml).toContain("https://onursenture.com/images/fixtures/photo-wide-1280.jpg");
+});

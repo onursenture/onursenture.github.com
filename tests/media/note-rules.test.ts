@@ -22,6 +22,7 @@ function memory(): MediaStorage & { files: Map<string, Buffer> } {
       files.set(pathname, body);
       return `https://cdn.test/${pathname}`;
     },
+    async deleteRenditions() {},
     resolveLocal() {
       return null;
     },

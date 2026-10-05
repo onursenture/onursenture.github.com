@@ -1,5 +1,5 @@
-import type { Photo } from "@/lib/content/photos";
 import { type ImageEntry, renditionUrl } from "@/lib/images/plan";
+import { type Photo, photoAlt, photoDay } from "@/lib/photos/types";
 import { noteSegments } from "@/lib/notes/facets";
 import type { PublishedNote } from "@/lib/notes/types";
 import { canonicalPath } from "@/lib/notes/views";
@@ -61,7 +61,7 @@ export interface FeedInput {
   siteUrl: string;
   title: string;
   notes: PublishedNote[];
-  photos: { photo: Pick<Photo, "slug" | "title" | "date" | "image">; entry: ImageEntry }[];
+  photos: Pick<Photo, "slug" | "title" | "alt" | "takenAt" | "image">[];
 }
 
 export function buildFeed({ siteUrl, title, notes, photos }: FeedInput): string {
@@ -75,13 +75,13 @@ export function buildFeed({ siteUrl, title, notes, photos }: FeedInput): string 
       description: noteHtml(note, siteUrl),
       date: note.publishedAt,
     })),
-    ...photos.map(({ photo, entry }) => ({
+    ...photos.map((photo) => ({
       title: photo.title,
       link: `${siteUrl}/life/photos/${photo.slug}/`,
       guid: `${siteUrl}/life/photos/${photo.slug}/`,
       guidIsPermaLink: true,
-      description: `<p><img src="${escapeXml(feedImage(siteUrl, photo.image, entry))}" alt="${escapeXml(photo.title)}"></p>`,
-      date: `${photo.date}T00:00:00.000Z`,
+      description: `<p><img src="${escapeXml(feedImage(siteUrl, photo.image.key, photo.image))}" alt="${escapeXml(photoAlt(photo))}"></p>`,
+      date: `${photoDay(photo)}T00:00:00.000Z`,
     })),
   ]
     .sort((a, b) => b.date.localeCompare(a.date))

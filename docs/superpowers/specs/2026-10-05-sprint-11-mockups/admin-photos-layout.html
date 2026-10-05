@@ -1,0 +1,106 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@500;600&display=swap" rel="stylesheet">
+
+<h2>/admin/photos/: hangi düzende olsun?</h2>
+<p class="subtitle">İkisinde de parçalar aynı: <b>+ Add photo</b> (telefonda galeri ya da kamera, HEIC olur), önizleme (her oran), <b>Title</b>, isteğe bağlı <b>Alt text</b> (boşsa başlık kullanılır), EXIF'ten dolan <b>Date</b> ve <b>Camera</b> (ikisi de düzenlenebilir), Save draft, Publish ve Delete. Slug ilk yayında donar. Admin ana sayfasına bir "Photos" bölümü eklenir. Fark yerleşimde. Telefon genişliğinde (360px) gösteriyorum, çünkü asıl kullanım orada.</p>
+
+<style>
+  .ph { display:flex; gap:14px; flex-wrap:wrap; }
+  .fr { width:300px; background:#FAFAF8; color:#1F1F22; font-family:"IBM Plex Mono", ui-monospace, Menlo, monospace; font-size:11px; line-height:16px; border:1px solid #E6E6E1; border-radius:14px; overflow:hidden; }
+  .fr .cap { font-size:9.5px; color:#6E6E73; text-align:center; padding:4px 0; border-bottom:1px solid #E6E6E1; background:#F3F3EF; }
+  .fr .mut { color:#6E6E73; }
+  .fr .bar { display:flex; align-items:center; gap:8px; padding:8px 12px; border-bottom:1px solid #E6E6E1; }
+  .fr .bar .sp { margin-left:auto; }
+  .fr .btn { border:1px solid #E6E6E1; background:#FAFAF8; padding:3px 8px; border-radius:3px; white-space:nowrap; }
+  .fr .btn.p { background:#2F55F5; color:#fff; border-color:#2F55F5; }
+  .fr .btn.d { border-color:transparent; color:#D92D20; padding-left:0; }
+  .fr .add { margin:12px; border:1px dashed #C9C9C3; border-radius:4px; padding:14px; text-align:center; color:#2F55F5; }
+  .fr .lab { font-size:9.5px; letter-spacing:.05em; text-transform:uppercase; color:#6E6E73; margin:10px 0 3px; display:flex; justify-content:space-between; }
+  .fr .lab i { font-style:normal; text-transform:none; letter-spacing:0; color:#2F55F5; }
+  .fr .in { border:1px solid #E6E6E1; background:#fff; padding:5px 7px; border-radius:3px; }
+  .fr .in.ph2 { color:#A1A1A6; }
+  .fr .pad { padding:10px 12px 14px; }
+  .fr .img { background:repeating-linear-gradient(135deg,#E9E9E4 0 6px,#F1F1EC 6px 12px); border:1px solid #E6E6E1; }
+  .fr .two { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .fr .acts { display:flex; gap:6px; align-items:center; margin-top:14px; }
+  .fr .acts .sp { margin-left:auto; }
+  .fr .row { display:grid; grid-template-columns:44px 1fr auto; gap:10px; align-items:center; padding:8px 12px; border-top:1px solid #E6E6E1; }
+  .fr .row .t { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .fr .pill { font-size:9.5px; border:1px solid #E6E6E1; padding:0 5px; color:#6E6E73; }
+  .fr .pill.dr { color:#C27C0E; border-color:#F0D9B5; }
+  .fr .sec { font-size:9.5px; letter-spacing:.05em; text-transform:uppercase; color:#6E6E73; padding:10px 12px 4px; display:flex; justify-content:space-between; }
+  .fr .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:3px; padding:0 12px 12px; }
+  .fr .grid .img { aspect-ratio:1; position:relative; }
+  .fr .grid .img b { position:absolute; left:3px; top:3px; font-weight:400; font-size:8.5px; background:#FAFAF8; color:#C27C0E; padding:0 3px; border:1px solid #F0D9B5; }
+  .fr .open { background:#EEF1FE; }
+</style>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Notes gibi: üstte yükleme ve form, altta liste (önerim)</h3>
+      <p>Notes admin'iyle aynı mantık. Üstte her zaman "+ Add photo" var; bir foto seçince form o alanda açılır. Altta bütün fotoğraflar küçük resim, başlık ve tarihle tek liste halinde durur, taslaklar en üstte. Bir satıra dokununca foto yukarıdaki forma yüklenir. Notes'u kullandığın için yeni bir şey öğrenmen gerekmez.</p>
+      <div class="ph">
+        <div class="fr">
+          <div class="cap">liste</div>
+          <div class="bar"><span class="mut">Admin / <b style="color:#1F1F22;font-weight:500">Photos</b></span></div>
+          <div class="add">+ Add photo</div>
+          <div class="row"><div class="img" style="aspect-ratio:1"></div><div><div class="t">Moda sahili, akşam</div><small class="mut">Oct 4, 2026</small></div><span class="pill dr">Draft</span></div>
+          <div class="row"><div class="img" style="aspect-ratio:1"></div><div><div class="t">Kızılcıklı</div><small class="mut">Aug 17, 2026</small></div><span class="pill">Live</span></div>
+          <div class="row"><div class="img" style="aspect-ratio:1"></div><div><div class="t">Night boulevard</div><small class="mut">Jun 2, 2026</small></div><span class="pill">Live</span></div>
+          <div class="row"><div class="img" style="aspect-ratio:1"></div><div><div class="t">Stabilo</div><small class="mut">Apr 11, 2026</small></div><span class="pill">Live</span></div>
+        </div>
+        <div class="fr">
+          <div class="cap">bir foto seçildi</div>
+          <div class="bar"><span class="mut">Admin / <b style="color:#1F1F22;font-weight:500">Photos</b></span><span class="sp mut">Draft saved 14:02</span></div>
+          <div class="pad">
+            <div class="img" style="aspect-ratio:4/5"></div>
+            <div class="lab">Title</div><div class="in">Moda sahili, akşam</div>
+            <div class="lab">Alt text <span>optional</span></div><div class="in ph2">Falls back to the title</div>
+            <div class="two">
+              <div><div class="lab">Date <i>EXIF</i></div><div class="in">Oct 4, 2026</div></div>
+              <div><div class="lab">Camera <i>EXIF</i></div><div class="in">iPhone 17 Pro</div></div>
+            </div>
+            <div class="acts"><span class="btn d">Delete</span><span class="sp"></span><span class="btn">Save draft</span><span class="btn p">Publish</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Grid, düzenleme ayrı sayfada</h3>
+      <p>Admin'de de sitedeki gibi bir kare grid olur; taslaklar köşelerinde etiketle en üstte durur. Bir kareye ya da "+ Add photo"ya dokununca ayrı bir düzenleme sayfası açılır (/admin/photos/&lt;id&gt;/), işin bitince grid'e dönersin. Daha görsel, ama Notes'tan farklı çalışır ve her düzenleme bir sayfa geçişi demek.</p>
+      <div class="ph">
+        <div class="fr">
+          <div class="cap">grid</div>
+          <div class="bar"><span class="mut">Admin / <b style="color:#1F1F22;font-weight:500">Photos</b></span><span class="sp btn p">+ Add photo</span></div>
+          <div class="sec"><span>6 photos</span><span>1 draft</span></div>
+          <div class="grid">
+            <div class="img"><b>Draft</b></div><div class="img"></div><div class="img"></div>
+            <div class="img"></div><div class="img"></div><div class="img"></div>
+          </div>
+        </div>
+        <div class="fr">
+          <div class="cap">/admin/photos/&lt;id&gt;/</div>
+          <div class="bar"><span style="color:#2F55F5">← Photos</span><span class="sp mut">Draft saved 14:02</span></div>
+          <div class="pad">
+            <div class="img" style="aspect-ratio:4/5"></div>
+            <div class="lab">Title</div><div class="in">Moda sahili, akşam</div>
+            <div class="lab">Alt text <span>optional</span></div><div class="in ph2">Falls back to the title</div>
+            <div class="two">
+              <div><div class="lab">Date <i>EXIF</i></div><div class="in">Oct 4, 2026</div></div>
+              <div><div class="lab">Camera <i>EXIF</i></div><div class="in">iPhone 17 Pro</div></div>
+            </div>
+            <div class="acts"><span class="btn d">Delete</span><span class="sp"></span><span class="btn">Save draft</span><span class="btn p">Publish</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
