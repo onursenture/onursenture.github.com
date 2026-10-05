@@ -4,6 +4,10 @@ import { dirname, resolve, sep } from "node:path";
 import { del, put } from "@vercel/blob";
 import { MAX_BYTES } from "./rules";
 
+export function renditionNames(key: string, widths: number[]): string[] {
+  return widths.flatMap((width) => [`${key}-${width}.avif`, `${key}-${width}.jpg`]);
+}
+
 // Where uploads and renditions live (spec §3.3): Vercel Blob in production,
 // a local folder served by /api/media-dev/ in development and the admin e2e.
 export interface MediaStorage {
@@ -14,6 +18,9 @@ export interface MediaStorage {
   deleteSource(source: string): Promise<void>;
   // Stores a rendition and returns its public URL.
   putFile(pathname: string, body: Buffer, contentType: string): Promise<string>;
+  // Removes an uploaded image's renditions (every width, AVIF and JPEG).
+  // Repo images (no baseUrl) and keys outside media/ are never touched.
+  deleteRenditions(image: { key: string; widths: number[]; baseUrl?: string }): Promise<void>;
   // Local only: the absolute file for a path inside the folder, else null.
   resolveLocal(pathname: string): string | null;
 }
@@ -61,6 +68,14 @@ export class LocalMediaStorage implements MediaStorage {
     writeFileSync(file, body);
     return `/api/media-dev/${pathname}`;
   }
+
+  async deleteRenditions(image: { key: string; widths: number[]; baseUrl?: string }): Promise<void> {
+    if (!image.baseUrl || !image.key.startsWith("media/")) return;
+    for (const name of renditionNames(image.key, image.widths)) {
+      const file = this.resolveLocal(name);
+      if (file && existsSync(file)) rmSync(file);
+    }
+  }
 }
 
 export class BlobMediaStorage implements MediaStorage {
@@ -107,6 +122,13 @@ export class BlobMediaStorage implements MediaStorage {
   async putFile(pathname: string, body: Buffer, contentType: string): Promise<string> {
     const blob = await put(pathname, body, { access: "public", addRandomSuffix: false, allowOverwrite: true, contentType, cacheControlMaxAge: 31_536_000 });
     return blob.url;
+  }
+
+  async deleteRenditions(image: { key: string; widths: number[]; baseUrl?: string }): Promise<void> {
+    if (!image.baseUrl || !image.key.startsWith("media/")) return;
+    const base = new URL(image.baseUrl);
+    if (base.protocol !== "https:" || !base.hostname.endsWith(".public.blob.vercel-storage.com")) return;
+    await del(image.widths.flatMap((width) => [`${image.baseUrl}-${width}.avif`, `${image.baseUrl}-${width}.jpg`]));
   }
 
   resolveLocal(): string | null {
