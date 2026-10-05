@@ -5,7 +5,7 @@ import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import { LocalMediaStorage } from "@/lib/media/storage";
 import { FilePhotoStore } from "@/lib/photos/file-store";
-import { importPhotos, parseRepoPhoto } from "@/lib/photos/import";
+import { databaseHost, importPhotos, localImportAllowed, parseRepoPhoto } from "@/lib/photos/import";
 
 const now = new Date("2026-10-06T09:00:00.000Z");
 
@@ -57,5 +57,26 @@ describe("importPhotos", () => {
     expect(await importPhotos(store, storage, items, now, { dryRun: true })).toEqual({ imported: ["stabilo"], skipped: [] });
     expect(await store.list()).toEqual([]);
     expect(readdirSync(dir)).not.toContain("media");
+  });
+});
+
+describe("databaseHost and localImportAllowed", () => {
+  it("allows --local for localhost, 127.0.0.1 and ::1", () => {
+    for (const url of ["postgres://u:p@localhost:5432/db", "postgres://127.0.0.1/db", "postgres://u@[::1]:5432/db"]) {
+      expect(localImportAllowed(url)).toBe(true);
+    }
+  });
+
+  it("refuses --local for a remote host or an unparseable URL", () => {
+    expect(localImportAllowed("postgres://u:p@ep-xyz.eu-central-1.aws.neon.tech/db?sslmode=require")).toBe(false);
+    expect(localImportAllowed("postgres://localhost.evil.example/db")).toBe(false);
+    expect(localImportAllowed("not a url")).toBe(false);
+    expect(localImportAllowed("")).toBe(false);
+  });
+
+  it("names the host only, without credentials, path or query", () => {
+    expect(databaseHost("postgres://user:secret@ep-xyz.eu-central-1.aws.neon.tech:5432/neondb?sslmode=require")).toBe("ep-xyz.eu-central-1.aws.neon.tech");
+    expect(databaseHost("postgres://u@[::1]:5432/db")).toBe("::1");
+    expect(databaseHost("garbage")).toBeNull();
   });
 });

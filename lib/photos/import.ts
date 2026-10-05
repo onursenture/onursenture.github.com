@@ -81,3 +81,25 @@ export async function importPhotos(
   }
   return result;
 }
+
+// Guards for scripts/import-photos.ts: which database it is about to write to.
+const LOCAL_HOSTS = ["localhost", "127.0.0.1", "::1"];
+
+// The host of a database URL, never its credentials, path or query. Null when
+// the URL does not parse.
+export function databaseHost(url: string): string | null {
+  try {
+    const host = new URL(url).hostname;
+    // WHATWG URL keeps the brackets on IPv6 hosts.
+    return host.replace(/^\[|\]$/g, "") || null;
+  } catch {
+    return null;
+  }
+}
+
+// --local writes renditions to disk, so it only makes sense against a local
+// database; a production URL with --local is refused.
+export function localImportAllowed(url: string): boolean {
+  const host = databaseHost(url);
+  return host !== null && LOCAL_HOSTS.includes(host);
+}
