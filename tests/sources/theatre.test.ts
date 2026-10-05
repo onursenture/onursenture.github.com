@@ -74,7 +74,7 @@ describe("theatre.fetch", () => {
     return { impl, offsets };
   }
 
-  it("stops at the first page holding a known post id", async () => {
+  it("returns every watch up to the first page holding a known post id", async () => {
     const lifeLog = new MemoryLifeLogStore();
     await lifeLog.upsert(
       [{ source: "theatre", key: "50", occurredOn: "2026-01-01", precision: "year", data: {} }],
@@ -82,12 +82,27 @@ describe("theatre.fetch", () => {
     );
     const { impl, offsets } = pagedFetch([
       page([watchLi("90", "3 gün önce", "a", "A", "X"), otherLi("89")], true, 5),
-      page([watchLi("70", "1 hafta önce", "b", "B", "Y"), otherLi("50")], true, 10),
+      page([watchLi("70", "1 hafta önce", "b", "B", "Y"), watchLi("50", "2 hafta önce", "d", "D", "W")], true, 10),
       page([watchLi("40", "1 ay önce", "c", "C", "Z")], false, 15),
     ]);
     const watches = await theatre.fetch({ fetch: impl, env: {}, stores: { lifeLog, enrichments: new MemoryEnrichmentStore() } });
     expect(offsets).toEqual([0, 5]);
-    expect(watches.map((w) => w.id)).toEqual(["90", "70"]);
+    expect(watches.map((w) => w.id)).toEqual(["90", "70", "50"]);
+  });
+
+  it("does not throw when page 0 has only other activity and a later page holds a known watch", async () => {
+    const lifeLog = new MemoryLifeLogStore();
+    await lifeLog.upsert(
+      [{ source: "theatre", key: "50", occurredOn: "2026-01-01", precision: "year", data: {} }],
+      { redate: false, at: new Date() },
+    );
+    const { impl, offsets } = pagedFetch([
+      page([otherLi("90"), otherLi("89")], true, 5),
+      page([watchLi("50", "2 hafta önce", "d", "D", "W")], true, 10),
+    ]);
+    const watches = await theatre.fetch({ fetch: impl, env: {}, stores: { lifeLog, enrichments: new MemoryEnrichmentStore() } });
+    expect(offsets).toEqual([0, 5]);
+    expect(watches.map((w) => w.id)).toEqual(["50"]);
   });
 
   it("throws when no watch post was found", async () => {
@@ -109,8 +124,32 @@ describe("theatre.archive", () => {
     const rows = await lifeLog.list("theatre");
     expect(rows).toHaveLength(theatreHistory.length + 1);
     expect(rows.find((r) => r.key === "9999999")).toMatchObject({ occurredOn: "2026-01-01", precision: "year", data: { title: "New Play", andEarlier: false } });
-    expect(outcome.note).toBe("+1 plays");
+    expect(outcome.note).toBe(`+${theatreHistory.length + 1} plays`);
     expect(outcome.tags).toEqual(["life:theatre"]);
+  });
+
+  it("a history-only run seeds an empty store and reports the seeded rows", async () => {
+    const lifeLog = new MemoryLifeLogStore();
+    const outcome = await theatre.archive!([], {
+      stores: { lifeLog, enrichments: new MemoryEnrichmentStore() },
+      fetch: globalThis.fetch,
+      now: new Date("2026-10-05T09:00:00Z"),
+    });
+    expect(outcome.note).toBe(`+${theatreHistory.length} plays`);
+    expect(outcome.tags).toEqual(["life:theatre"]);
+  });
+
+  it("revalidates the tag when only a corrected year was re-seeded", async () => {
+    const lifeLog = new MemoryLifeLogStore();
+    const stores = { lifeLog, enrichments: new MemoryEnrichmentStore() };
+    const now = new Date("2026-10-05T09:00:00Z");
+    await theatre.archive!([], { stores, fetch: globalThis.fetch, now });
+    const first = theatreHistory[0];
+    await lifeLog.upsert([{ ...historyRows()[0], occurredOn: "1999-01-01" }], { redate: true, at: now });
+    const outcome = await theatre.archive!([], { stores, fetch: globalThis.fetch, now });
+    expect(outcome.note).toBe("+0 plays");
+    expect(outcome.tags).toEqual(["life:theatre"]);
+    expect((await lifeLog.list("theatre")).find((r) => r.key === first.id)?.occurredOn).toBe(`${first.year}-01-01`);
   });
 
   it("history rows carry the file's year and the and-earlier flag", () => {

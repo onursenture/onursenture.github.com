@@ -1,9 +1,10 @@
 // The 77 theatre watches before the theatre source started (Sprint 10), with
 // the year each was logged, read once from tiyatrolar.com.tr's relative
-// times by scripts/theatre-history.ts. Onur checked the years; edit a year
-// here to correct it (the theatre archive step re-seeds every run). The
-// oldest year carries andEarlier: it is the 2015 bulk entry made when the
-// account was set up, which also holds plays seen before 2015.
+// times by scripts/theatre-history.ts. The years are still to be checked by
+// Onur: edit a year here to correct it (the theatre archive step re-seeds
+// every run). The oldest year is shown as "and earlier": it is the bulk
+// entry made when the account was set up, which also holds plays seen
+// before then.
 //
 // Generated file: re-run `npx tsx scripts/theatre-history.ts` only to
 // rebuild it from scratch, then re-apply Onur's corrections.
@@ -17,7 +18,6 @@ export interface TheatreHistoryRow {
   poster: string;
   link: string;
   year: number;
-  andEarlier?: true;
 }
 
 export const theatreHistory: TheatreHistoryRow[] = [
@@ -81,21 +81,21 @@ export const theatreHistory: TheatreHistoryRow[] = [
   {"id":"166443","title":"Japon Kuklası","slug":"japon-kuklasi","company":"Bilkent Tiyatro","poster":"https://tiyatrolar.com.tr/files/activity/j/japon-kuklasi/image/japon-kuklasi.jpg","link":"https://tiyatrolar.com.tr/tiyatro/japon-kuklasi","year":2016}, // 10 yıl önce
   {"id":"150735","title":"1806 Laveyn","slug":"1806-laveyn","company":"Tatbikat Sahnesi","poster":"https://tiyatrolar.com.tr/files/activity/1/1806-laveyn/image/1806-laveyn.jpg","link":"https://tiyatrolar.com.tr/tiyatro/1806-laveyn","year":2016}, // 10 yıl önce
   {"id":"147389","title":"Gidion'un Düğümü","slug":"gidionun-dugumu","company":"Tatbikat Sahnesi","poster":"https://tiyatrolar.com.tr/files/activity/g/gidionun-dugumu/image/gidionun-dugumu.jpg","link":"https://tiyatrolar.com.tr/tiyatro/gidionun-dugumu","year":2016}, // 10 yıl önce
-  {"id":"103205","title":"Moby Dick - Beyaz Balina","slug":"moby-dick-beyaz-balina","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/m/moby-dick-beyaz-balina/image/moby-dick-beyaz-balina.jpg","link":"https://tiyatrolar.com.tr/tiyatro/moby-dick-beyaz-balina","year":2015,"andEarlier":true}, // 11 yıl önce
-  {"id":"97888","title":"Lefty'i Beklerken","slug":"lefty-i-beklerken","company":"Bilkent Tiyatro","poster":"https://tiyatrolar.com.tr/files/activity/l/lefty-i-beklerken/image/lefty-i-beklerken.jpg","link":"https://tiyatrolar.com.tr/tiyatro/lefty-i-beklerken","year":2015,"andEarlier":true}, // 11 yıl önce
-  {"id":"94869","title":"Ramiz İle Jülide","slug":"ramiz-ile-julide","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/r/ramiz-ile-julide/image/ramiz-ile-julide.jpg","link":"https://tiyatrolar.com.tr/tiyatro/ramiz-ile-julide","year":2015,"andEarlier":true}, // 11 yıl önce
-  {"id":"94868","title":"Kurnaz Aşıklar","slug":"kurnaz-asiklar","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/k/kurnaz-asiklar/image/kurnaz-asiklar.jpg","link":"https://tiyatrolar.com.tr/tiyatro/kurnaz-asiklar","year":2015,"andEarlier":true}, // 11 yıl önce
-  {"id":"94844","title":"Vanya Dayı","slug":"vanya-dayi2","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/v/vanya-dayi2/image/vanya-dayi2.jpg","link":"https://tiyatrolar.com.tr/tiyatro/vanya-dayi2","year":2015,"andEarlier":true}, // 11 yıl önce
-  {"id":"94843","title":"Çamaşırhane","slug":"camasirhane","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/c/camasirhane/image/camasirhane.jpg","link":"https://tiyatrolar.com.tr/tiyatro/camasirhane","year":2015,"andEarlier":true}, // 11 yıl önce
-  {"id":"94838","title":"Kontrabas","slug":"kontrabas","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/k/kontrabas/image/kontrabas.jpg","link":"https://tiyatrolar.com.tr/tiyatro/kontrabas","year":2015,"andEarlier":true}, // 11 yıl önce
-  {"id":"94835","title":"Euridice'nin Elleri","slug":"euridice-nin-elleri","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/e/euridice-nin-elleri/image/euridice-nin-elleri.jpg","link":"https://tiyatrolar.com.tr/tiyatro/euridice-nin-elleri","year":2015,"andEarlier":true}, // 11 yıl önce
-  {"id":"94830","title":"Gözlerimi Kaparım Vazifemi Yaparım","slug":"gozlerimi-kaparim-vazifemi-yaparim","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/g/gozlerimi-kaparim-vazifemi-yaparim/image/gozlerimi-kaparim-vazifemi-yaparim.jpg","link":"https://tiyatrolar.com.tr/tiyatro/gozlerimi-kaparim-vazifemi-yaparim","year":2015,"andEarlier":true}, // 11 yıl önce
-  {"id":"94820","title":"Shakespeare Zorda","slug":"shakespere-zorda","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/s/shakespere-zorda/image/shakespere-zorda.jpg","link":"https://tiyatrolar.com.tr/tiyatro/shakespere-zorda","year":2015,"andEarlier":true}, // 11 yıl önce
-  {"id":"94818","title":"Grönholm Metodu","slug":"gronholm-metodu","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/g/gronholm-metodu/image/gronholm-metodu.jpg","link":"https://tiyatrolar.com.tr/tiyatro/gronholm-metodu","year":2015,"andEarlier":true}, // 11 yıl önce
-  {"id":"94815","title":"Son Tango","slug":"son-tango","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/s/son-tango/image/son-tango.jpg","link":"https://tiyatrolar.com.tr/tiyatro/son-tango","year":2015,"andEarlier":true}, // 11 yıl önce
-  {"id":"94811","title":"Yarasa","slug":"yarasa","company":"Ankara Devlet Opera ve Balesi","poster":"https://tiyatrolar.com.tr/files/activity/y/yarasa/image/yarasa.jpg","link":"https://tiyatrolar.com.tr/tiyatro/yarasa","year":2015,"andEarlier":true}, // 11 yıl önce
-  {"id":"94803","title":"Felatun Bey ile Rakım Efendi","slug":"felatun-bey-ile-rakim-efendi","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/f/felatun-bey-ile-rakim-efendi/image/felatun-bey-ile-rakim-efendi.jpg","link":"https://tiyatrolar.com.tr/tiyatro/felatun-bey-ile-rakim-efendi","year":2015,"andEarlier":true}, // 11 yıl önce
-  {"id":"94791","title":"Woyzeck Masalı","slug":"woyzeck-masali","company":"Tatbikat Sahnesi","poster":"https://tiyatrolar.com.tr/files/activity/w/woyzeck-masali/image/woyzeck-masali.jpg","link":"https://tiyatrolar.com.tr/tiyatro/woyzeck-masali","year":2015,"andEarlier":true}, // 11 yıl önce
-  {"id":"94782","title":"Gizli Oturum","slug":"gizli-oturum","company":"Bilkent Tiyatro","poster":"https://tiyatrolar.com.tr/files/activity/g/gizli-oturum/image/gizli-oturum.jpg","link":"https://tiyatrolar.com.tr/tiyatro/gizli-oturum","year":2015,"andEarlier":true}, // 11 yıl önce
-  {"id":"94778","title":"Söylentiler","slug":"soylentiler","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/s/soylentiler/image/soylentiler.jpg","link":"https://tiyatrolar.com.tr/tiyatro/soylentiler","year":2015,"andEarlier":true}, // 11 yıl önce
+  {"id":"103205","title":"Moby Dick - Beyaz Balina","slug":"moby-dick-beyaz-balina","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/m/moby-dick-beyaz-balina/image/moby-dick-beyaz-balina.jpg","link":"https://tiyatrolar.com.tr/tiyatro/moby-dick-beyaz-balina","year":2015}, // 11 yıl önce
+  {"id":"97888","title":"Lefty'i Beklerken","slug":"lefty-i-beklerken","company":"Bilkent Tiyatro","poster":"https://tiyatrolar.com.tr/files/activity/l/lefty-i-beklerken/image/lefty-i-beklerken.jpg","link":"https://tiyatrolar.com.tr/tiyatro/lefty-i-beklerken","year":2015}, // 11 yıl önce
+  {"id":"94869","title":"Ramiz İle Jülide","slug":"ramiz-ile-julide","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/r/ramiz-ile-julide/image/ramiz-ile-julide.jpg","link":"https://tiyatrolar.com.tr/tiyatro/ramiz-ile-julide","year":2015}, // 11 yıl önce
+  {"id":"94868","title":"Kurnaz Aşıklar","slug":"kurnaz-asiklar","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/k/kurnaz-asiklar/image/kurnaz-asiklar.jpg","link":"https://tiyatrolar.com.tr/tiyatro/kurnaz-asiklar","year":2015}, // 11 yıl önce
+  {"id":"94844","title":"Vanya Dayı","slug":"vanya-dayi2","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/v/vanya-dayi2/image/vanya-dayi2.jpg","link":"https://tiyatrolar.com.tr/tiyatro/vanya-dayi2","year":2015}, // 11 yıl önce
+  {"id":"94843","title":"Çamaşırhane","slug":"camasirhane","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/c/camasirhane/image/camasirhane.jpg","link":"https://tiyatrolar.com.tr/tiyatro/camasirhane","year":2015}, // 11 yıl önce
+  {"id":"94838","title":"Kontrabas","slug":"kontrabas","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/k/kontrabas/image/kontrabas.jpg","link":"https://tiyatrolar.com.tr/tiyatro/kontrabas","year":2015}, // 11 yıl önce
+  {"id":"94835","title":"Euridice'nin Elleri","slug":"euridice-nin-elleri","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/e/euridice-nin-elleri/image/euridice-nin-elleri.jpg","link":"https://tiyatrolar.com.tr/tiyatro/euridice-nin-elleri","year":2015}, // 11 yıl önce
+  {"id":"94830","title":"Gözlerimi Kaparım Vazifemi Yaparım","slug":"gozlerimi-kaparim-vazifemi-yaparim","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/g/gozlerimi-kaparim-vazifemi-yaparim/image/gozlerimi-kaparim-vazifemi-yaparim.jpg","link":"https://tiyatrolar.com.tr/tiyatro/gozlerimi-kaparim-vazifemi-yaparim","year":2015}, // 11 yıl önce
+  {"id":"94820","title":"Shakespeare Zorda","slug":"shakespere-zorda","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/s/shakespere-zorda/image/shakespere-zorda.jpg","link":"https://tiyatrolar.com.tr/tiyatro/shakespere-zorda","year":2015}, // 11 yıl önce
+  {"id":"94818","title":"Grönholm Metodu","slug":"gronholm-metodu","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/g/gronholm-metodu/image/gronholm-metodu.jpg","link":"https://tiyatrolar.com.tr/tiyatro/gronholm-metodu","year":2015}, // 11 yıl önce
+  {"id":"94815","title":"Son Tango","slug":"son-tango","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/s/son-tango/image/son-tango.jpg","link":"https://tiyatrolar.com.tr/tiyatro/son-tango","year":2015}, // 11 yıl önce
+  {"id":"94811","title":"Yarasa","slug":"yarasa","company":"Ankara Devlet Opera ve Balesi","poster":"https://tiyatrolar.com.tr/files/activity/y/yarasa/image/yarasa.jpg","link":"https://tiyatrolar.com.tr/tiyatro/yarasa","year":2015}, // 11 yıl önce
+  {"id":"94803","title":"Felatun Bey ile Rakım Efendi","slug":"felatun-bey-ile-rakim-efendi","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/f/felatun-bey-ile-rakim-efendi/image/felatun-bey-ile-rakim-efendi.jpg","link":"https://tiyatrolar.com.tr/tiyatro/felatun-bey-ile-rakim-efendi","year":2015}, // 11 yıl önce
+  {"id":"94791","title":"Woyzeck Masalı","slug":"woyzeck-masali","company":"Tatbikat Sahnesi","poster":"https://tiyatrolar.com.tr/files/activity/w/woyzeck-masali/image/woyzeck-masali.jpg","link":"https://tiyatrolar.com.tr/tiyatro/woyzeck-masali","year":2015}, // 11 yıl önce
+  {"id":"94782","title":"Gizli Oturum","slug":"gizli-oturum","company":"Bilkent Tiyatro","poster":"https://tiyatrolar.com.tr/files/activity/g/gizli-oturum/image/gizli-oturum.jpg","link":"https://tiyatrolar.com.tr/tiyatro/gizli-oturum","year":2015}, // 11 yıl önce
+  {"id":"94778","title":"Söylentiler","slug":"soylentiler","company":"Ankara Devlet Tiyatrosu","poster":"https://tiyatrolar.com.tr/files/activity/s/soylentiler/image/soylentiler.jpg","link":"https://tiyatrolar.com.tr/tiyatro/soylentiler","year":2015}, // 11 yıl önce
 ];

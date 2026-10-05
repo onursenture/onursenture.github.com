@@ -35,14 +35,15 @@ async function main() {
         poster: row.poster,
         link: row.link,
         year: row.year,
-        ...(row.year === oldest ? { andEarlier: true as const } : {}),
       };
       return `  ${JSON.stringify(fields)}, // ${row.ago}`;
     })
     .join("\n");
   const path = join(process.cwd(), "content", "theatre-history.ts");
   const source = readFileSync(path, "utf8");
-  const head = source.slice(0, source.indexOf("export const theatreHistory"));
+  const marker = source.indexOf("export const theatreHistory");
+  if (marker === -1) throw new Error(`no "export const theatreHistory" in ${path}`);
+  const head = source.slice(0, marker);
   writeFileSync(path, `${head}export const theatreHistory: TheatreHistoryRow[] = [\n${body}\n];\n`);
   console.log(`[theatre] ${rows.length} watches, ${oldest}–${Math.max(...rows.map((r) => r.year))}`);
 }

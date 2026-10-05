@@ -105,8 +105,10 @@ export async function fetchActivityPage(
   return { ids, watches, more: Boolean(json.html_btn) && ids.length > 0, next };
 }
 
-// The committed history as life_log rows; the oldest year is "and earlier".
+// The committed history as life_log rows. The oldest year is "and earlier":
+// it is the bulk entry made when the account was set up.
 export function historyRows(): LifeLogRow[] {
+  const oldest = Math.min(...theatreHistory.map((row) => row.year));
   return theatreHistory.map((row) => ({
     source: "theatre",
     key: row.id,
@@ -118,7 +120,7 @@ export function historyRows(): LifeLogRow[] {
       company: row.company,
       poster: row.poster,
       link: row.link,
-      andEarlier: row.andEarlier === true,
+      andEarlier: row.year === oldest,
     },
   }));
 }
@@ -129,7 +131,10 @@ export const theatre: SourceDefinition<TheatreWatch[], "theatre"> = {
   empty: [],
   schema: watchesSchema,
   // Newest activity first, stopping at the first page that holds a post the
-  // archive already has (from the history file or an earlier sync).
+  // archive already has (from the history file or an earlier sync). Returns
+  // every watch on the pages crawled, known ones included: a known post is a
+  // watch, so the snapshot is never empty on a healthy feed. archive() skips
+  // what it already has.
   fetch: async ({ fetch, stores }) => {
     const known = new Set(theatreHistory.map((row) => row.id));
     for (const key of (await stores?.lifeLog.keys("theatre")) ?? []) known.add(key);
@@ -137,17 +142,11 @@ export const theatre: SourceDefinition<TheatreWatch[], "theatre"> = {
     let offset = 0;
     for (let page = 0; page < MAX_PAGES; page++) {
       const result = await fetchActivityPage(fetch, offset);
-      watches.push(...result.watches.filter((watch) => !known.has(watch.id)));
+      watches.push(...result.watches);
       if (!result.more || result.ids.some((id) => known.has(id))) break;
       offset = result.next;
     }
-    if (watches.length === 0) {
-      // Nothing new is the normal case once the archive is current; report the
-      // newest known watch on the first page so the snapshot isn't empty.
-      const first = await fetchActivityPage(fetch, 0);
-      if (first.watches.length === 0) throw new Error("tiyatrolar activity returned no watches");
-      return first.watches;
-    }
+    if (watches.length === 0) throw new Error("tiyatrolar activity returned no watches");
     return watches;
   },
   count: (watches) => watches.length,
@@ -155,7 +154,7 @@ export const theatre: SourceDefinition<TheatreWatch[], "theatre"> = {
   // effect), then adds watches the history doesn't have, dated by the year of
   // their relative time. A row added by an earlier sync is never re-dated.
   archive: async (watches, { stores, now }) => {
-    await stores.lifeLog.upsert(historyRows(), { redate: true, at: now });
+    const seeded = await stores.lifeLog.upsert(historyRows(), { redate: true, at: now });
     const historyIds = new Set(theatreHistory.map((row) => row.id));
     const fresh: LifeLogRow[] = [];
     for (const watch of watches) {
@@ -171,6 +170,10 @@ export const theatre: SourceDefinition<TheatreWatch[], "theatre"> = {
       });
     }
     const added = await stores.lifeLog.upsert(fresh, { redate: false, at: now });
-    return { note: `+${added.inserted} plays`, tags: added.inserted > 0 ? [lifeLogTag("theatre")] : [] };
+    const touched = seeded.inserted + seeded.updated + added.inserted + added.updated;
+    return {
+      note: `+${seeded.inserted + added.inserted} plays`,
+      tags: touched > 0 ? [lifeLogTag("theatre")] : [],
+    };
   },
 };
