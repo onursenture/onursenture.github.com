@@ -38,9 +38,10 @@ The decisions come from a brainstorm with Onur on 2026-10-05, held in Turkish. T
 | `slug` | text, unique, nullable | Null while a draft that was never published. Set at first publish and never changed afterwards. |
 | `title` | text | Required to publish. May be empty on a draft. |
 | `alt` | text | Empty string means "use the title". |
-| `takenAt` | timestamp without time zone | The **wall-clock** time the photo was taken (EXIF `DateTimeOriginal` is local time). Only the date part is shown. |
+| `takenAt` | text, `YYYY-MM-DDTHH:mm:ss` | The **wall-clock** time the photo was taken (EXIF `DateTimeOriginal` is local time, with no zone). Fixed-width text sorts correctly and needs no time-zone conversion. Only the date part is shown. |
 | `camera` | text | Empty string allowed. |
-| `image` | text | A `media` key (`media/photos/<hash16>`). |
+| `image` | jsonb | The renditions, self-contained like a Notes image: `{ key, width, height, widths, baseUrl }`. A photo renders without a media lookup. |
+| `exif` | jsonb | What EXIF gave at upload, `{ takenAt, camera }` (each null when missing), so the form can show the "EXIF" hint. |
 | `status` | text | `draft` or `published`. |
 | `publishedAt` | timestamptz, nullable | Set at first publish. |
 | `createdAt`, `updatedAt` | timestamptz | `updatedAt` drives optimistic updates (`expected=updatedAt`), as in Notes. |
@@ -53,9 +54,7 @@ A `PhotoStore` interface in `lib/photos/store.ts`, chosen by `lib/photos/get-sto
 - `FilePhotoStore` when `CONTENT_STORE_FILE` is set (dev and e2e; refused on Vercel);
 - `DrizzlePhotoStore` otherwise; its tests run on PGlite.
 
-Operations: `list()` (all, for the admin), `listPublished()`, `getBySlug(slug)`, `get(id)`, `create(draft)`, `update(id, patch, expected)`, `publish(id, expected)`, `delete(id)`.
-
-`publish` validates the row (title non-empty, `takenAt` set, image present) and, on first publish, assigns the slug. Slug rules live in `lib/photos/slug.ts`:
+Store methods: `list()`, `listPublished()`, `get(id)`, `slugs()`, `create(fields)`, `update(id, fields, expected)` and `remove(id, expected)`. The rules live in `lib/photos/operations.ts`, as with Notes: creating a draft from an upload, saving, publishing and deleting. Publishing needs a non-empty title and, on first publish, assigns the slug. Slug rules live in `lib/photos/slug.ts`:
 - lowercase, with Turkish characters transliterated (`ç→c`, `ğ→g`, `ı→i`, `İ→i`, `ö→o`, `ş→s`, `ü→u`);
 - anything else non-alphanumeric collapses to `-`, trimmed at both ends;
 - an empty result (a title of only symbols or emoji) falls back to `photo`;
@@ -65,9 +64,9 @@ Operations: `list()` (all, for the admin), `listPublished()`, `getBySlug(slug)`,
 
 `lib/content/photos.ts` keeps its public API (`getPhotos`, `getPhoto`, `adjacentPhotos`) but reads the store:
 - `getPhotos()` returns published photos only, ordered by `takenAt` descending, then `id` (a stable tie-break). It uses `"use cache"` with `cacheTag(PHOTOS_TAG)`. `PHOTOS_TAG` lives in `lib/photos/tags.ts`.
-- Each `Photo` carries a resolved image entry from `lookupWith(media)`. Rendering uses `PictureView` with that entry, because `Picture` throws on keys that are not in the repo manifest.
+- Each `Photo` carries its own image entry. Rendering uses `PictureView` with that entry, because `Picture` throws on keys that are not in the repo manifest.
 - Admin writes (save on a published photo, publish, delete) call `updateTag(PHOTOS_TAG)`.
-- `/feed.xml` adds `cacheTag(PHOTOS_TAG)` beside `NOTES_TAG`, and builds photo items from the resolved entry instead of `getImage`. The item date is the `takenAt` date at `T00:00:00Z`, as today.
+- `/feed.xml` adds `cacheTag(PHOTOS_TAG)` beside `NOTES_TAG`, and builds photo items from the photo's own entry instead of `getImage`. The item date is the `takenAt` date at `T00:00:00Z`, as today.
 
 ## 2. Upload pipeline
 
@@ -77,10 +76,10 @@ Operations: `list()` (all, for the admin), `listPublished()`, `getBySlug(slug)`,
    - Missing EXIF (a screenshot, an exported file) gives today's date at the current time and an empty camera. The form then shows no "EXIF" hint on those fields.
 2. The client checks the file: any ratio, **long side at least 1280px**, at most 25 MB. Non-PNG/JPEG files (HEIC, WebP) are redrawn to JPEG on a canvas, reusing the Notes code in `components/admin/notes/note-upload.ts` (moved to a shared module, not copied).
 3. The original goes to Blob through the existing admin upload route, under `uploads/photos/`. Locally it goes through `upload-dev`.
-4. A server action runs `processImageWith`: 640/1280/2560 AVIF and JPEG renditions (plus the source width when smaller) at `media/photos/<hash16>-<w>.{avif,jpg}`, with a `media` row. sharp strips all metadata; the original is deleted in `finally`. **No location data is stored anywhere.**
+4. A server action runs `processImageWith`: 640/1280/2560 AVIF and JPEG renditions (plus the source width when smaller) at `media/photos/<hash16>-<rand8>-<w>.{avif,jpg}`. The random part keeps two uploads of the same file apart, so deleting one never removes the other's files. No `media` row is written: the photo row holds the entry, and delete removes the files itself. sharp strips all metadata; the original is deleted in `finally`. **No location data is stored anywhere.**
 5. The action creates the draft row with the image key and the EXIF fields, and returns it to the form.
 
-**Delete** removes the row and deletes that photo's renditions from Blob (local files in dev), then its `media` row. Like Notes, it leaves no trace. A published photo's page returns 404 afterwards.
+**Delete** removes the row and deletes that photo's renditions from Blob (local files in dev) through a new `MediaStorage.deleteRenditions`. Like Notes, it leaves no trace. A published photo's page returns 404 afterwards.
 
 ## 3. Admin
 
@@ -109,16 +108,16 @@ Saving is manual, as in Notes: Save draft, Cmd/Ctrl+S, a leave warning when the 
 
 The look does not change. The 3:2-cropped grid, the photo page and the Life row stay as they are. The changes:
 - every consumer reads the store: `/life/photos/`, `/life/photos/<slug>/`, the Life section, the Life readout's "last photo", `/system/` and the feed;
-- `/life/photos/<slug>/` drops `generateStaticParams` in favour of on-demand rendering cached under `PHOTOS_TAG`, so a new photo needs no deploy;
+- `/life/photos/<slug>/` keeps `generateStaticParams`, with the Notes placeholder pattern: when there are no photos it returns one placeholder slug (`_`, which a slug can never be), because `cacheComponents` requires one param. A slug published later renders on demand and is cached under `PHOTOS_TAG`, as new notes are, so a new photo needs no deploy;
 - `alt` (or the title when empty) feeds the photo page `<img>` and `og:image:alt`. The grid keeps `alt=""`, because the title names the link;
 - the `/photos/` → `/life/photos/` redirects stay.
 
 ## 5. Migration
 
-`npm run import:photos` (`scripts/import-photos.ts`):
-- reads `content/photos/*.mdx` and `images-src/photos/<slug>.jpeg`;
+`npm run import:photos -- <checkout>` (`scripts/import-photos.ts`):
+- reads `content/photos/*.mdx` and `images-src/photos/<slug>.jpeg` from `<checkout>`, a checkout that still has them (the `v2` worktree before the merge), because this branch deletes them;
 - runs each image through the same `processImageWith` path into Blob (or `.media-dev` locally);
-- inserts a `published` row with the **current slug**, the title, `takenAt` = the frontmatter date at 00:00, the camera, an empty alt and `publishedAt` = now;
+- inserts a `published` row with the **current slug**, the title, `takenAt` = the frontmatter date at 00:00, the camera, an empty alt, an all-null `exif` and `publishedAt` = now;
 - is idempotent: a slug that already exists is skipped;
 - takes `--dry-run`.
 
@@ -159,11 +158,16 @@ The repo copies are gone after the merge, so the database must be filled first. 
 
 **Controller visual check:** the admin at desktop and 390px, the photo pages, and the Life row.
 
-## 7. Risks and spikes (plan Task 1)
+## 7. Risks and spikes
 
-- **iOS file picker.** With `accept="image/*"`, iOS Safari may hand over a JPEG transcode instead of the HEIC. Spike: check on a real iPhone that `DateTimeOriginal` and `Model` survive in both cases.
-- **`exifr` in the browser.** Confirm the HEIC parse with `pick` on a real iPhone file, and the bundle cost on the admin route only.
-- **Dynamic photo pages.** Confirm that dropping `generateStaticParams` keeps `/life/photos/<slug>/` CDN-cached under `cacheComponents`, and that `updateTag(PHOTOS_TAG)` refreshes it (prove by reproducing, per the Sprint 9 lesson).
+Spikes run during planning (2026-10-05):
+- **`exifr` 7.1.3** reads `Make`, `Model` and the raw `DateTimeOriginal` string (`reviveValues: false`) from a JPEG and from a HEIC written by ImageIO. With `pick` it returns only those three tags, even when the file carries GPS. The fixtures `tests/fixtures/photos/exif.heic` and `exif-gps.jpg` (both with GPS) come from `make-fixtures.swift`.
+- **sharp** output carries no EXIF (`metadata().exif` is undefined), and sharp cannot write GPS, which is why the fixtures come from ImageIO.
+- **tsx** resolves the `@/` aliases in `lib/media/process.ts`, so the import script can reuse the pipeline.
+
+Still open:
+- **iOS file picker.** With `accept="image/*"`, iOS Safari may hand over a JPEG transcode instead of the HEIC. Either way EXIF is read before the canvas step. This is checked on Onur's phone in rollout step 5.
+- **On-demand photo pages.** A slug published after the build must render, be CDN-cached, and refresh on `updateTag(PHOTOS_TAG)`. The admin e2e covers render and refresh; the CDN is checked on production.
 
 ## 8. Out of scope
 
