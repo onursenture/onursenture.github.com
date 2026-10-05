@@ -25,4 +25,20 @@ From the final review (the fix wave took I1–I4, M1, M3, M4, M6, M7, M8):
 - M2: same-day films are ordered by key, not diary order (store a sequence in `data`).
 - M5: archive tags fire on every run (`updated` counts unchanged rows); count real changes and warm the four archive pages in `sync.yml`.
 - An import `--prune` for film rows no longer in the CSV (re-dated or deleted diary entries).
-- The deferred minors listed per task in the final review (`.superpowers/sdd/2026-10-05-sprint-10-life-archives/final-review.md`, local notes).
+- `RemoteImage`'s pre-hydration check (`complete && naturalWidth === 0`) was verified in Chromium and WebKit only. Check the archive pages in Firefox on production; if below-the-fold tiles fall back wrongly, confirm with `img.decode()` before switching.
+- Poster lookups that error (timeout, network) aren't stamped, so a row that errors every time keeps a slot in the 15-row window. A non-2xx answer such as a Cloudflare 403/429 is stamped as "missing" for a week. Separate transient failures from real misses.
+- Deferred minors from the task reviews:
+  - The Instapaper and Goodreads page caps (10) truncate silently.
+  - Enrichment:
+    - no content-type check, so a PDF or JSON link is stored as an empty success;
+    - always decodes as UTF-8;
+    - no URL dedupe.
+  - Archive tiles:
+    - meta lines truncate with no tooltip;
+    - one dither canvas per missing-image tile (cost on a large Undated grid).
+  - `/life/films/` serves the same content as the newest year's page (no canonical).
+  - Test gaps:
+    - the e2e empty-state text isn't asserted;
+    - the 404 test doesn't assert the Life shell;
+    - no test for the Goodreads/Letterboxd `httpUrl` sanitising;
+    - the theatre history re-date isn't tested across runs.
