@@ -249,3 +249,67 @@ describe("PhotoEditorState: one thing at a time", () => {
     expect(editor.getSnapshot()).not.toBe(before);
   });
 });
+
+describe("PhotoEditorState: fix round 1", () => {
+  it("edits are ignored while a save is in flight (value unchanged, dirty unchanged)", async () => {
+    const pending = deferred();
+    const a = actions({ save: vi.fn(() => pending.promise) });
+    const editor = make([stored()], a);
+    editor.open("p1");
+    editor.edit({ title: "first" });
+    const saving = editor.save();
+    const beforeEdit = editor.getSnapshot().value.title;
+    editor.edit({ title: "second" });
+    expect(editor.getSnapshot().value.title).toBe(beforeEdit);
+    pending.resolve({ status: "ok", photo: stored({ title: "first", updatedAt: "2026-10-05T10:02:00.000Z" }) });
+    await saving;
+  });
+
+  it("edits are ignored while an upload is running (value unchanged, dirty unchanged)", async () => {
+    const editor = make([live()]);
+    editor.open("p2");
+    editor.uploadStarted();
+    const beforeEdit = editor.getSnapshot().value.alt;
+    editor.edit({ alt: "new alt" });
+    expect(editor.getSnapshot().value.alt).toBe(beforeEdit);
+    editor.uploadFinished({ status: "ok", photo: stored({ id: "new" }) });
+  });
+
+  it("a second save after a successful save sends the new updatedAt as expected", async () => {
+    const a = actions();
+    const editor = make([stored()], a);
+    editor.open("p1");
+    editor.edit({ title: "first" });
+    await editor.save();
+    expect(a.save).toHaveBeenNthCalledWith(1, expect.objectContaining({ expected: "2026-10-05T10:00:00.000Z" }));
+    editor.edit({ title: "second" });
+    await editor.save();
+    expect(a.save).toHaveBeenNthCalledWith(2, expect.objectContaining({ expected: "2026-10-05T10:01:00.000Z" }));
+  });
+
+  it("a refused upload while a photo is open shows 'Can't upload:' and keeps that photo open, and the next edit clears the issues", () => {
+    const editor = make([stored()]);
+    editor.open("p1");
+    editor.uploadStarted();
+    editor.uploadFinished({ status: "invalid", issues: [{ at: "image", message: "too small" }] });
+    const snap = editor.getSnapshot();
+    expect([snap.editing?.id, statusText(snap), snap.issues.length]).toEqual(["p1", "Can't upload:", 1]);
+    editor.edit({ title: "x" });
+    expect(editor.getSnapshot().issues).toEqual([]);
+  });
+
+  it("an invalid write result on a draft shows 'Can't publish yet:'", async () => {
+    const editor = make([stored()], actions({ publish: vi.fn(async () => ({ status: "invalid" as const, issues: [{ at: "title", message: "required" }] })) }));
+    editor.open("p1");
+    editor.edit({ title: "x" });
+    await editor.primaryAction();
+    expect(statusText(editor.getSnapshot())).toBe("Can't publish yet:");
+  });
+
+  it("uploadFinished without uploadStarted changes nothing (same snapshot object)", () => {
+    const editor = make([]);
+    const before = editor.getSnapshot();
+    editor.uploadFinished({ status: "ok", photo: stored() });
+    expect(editor.getSnapshot()).toBe(before);
+  });
+});

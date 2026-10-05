@@ -14,7 +14,7 @@ export interface PhotoActions {
   remove(ref: PhotoRef): Promise<PhotoActionResult>;
 }
 
-export type EditorStatus = "idle" | "uploaded" | "saved" | "published" | "deleted" | "invalid" | "conflict" | "missing" | "unauthorized" | "unavailable";
+export type EditorStatus = "idle" | "uploaded" | "saved" | "published" | "deleted" | "invalid" | "refused" | "conflict" | "missing" | "unauthorized" | "unavailable";
 
 export interface EditorSnapshot {
   photos: StoredPhoto[];
@@ -150,7 +150,7 @@ export class PhotoEditorState {
   }
 
   edit(patch: Partial<PhotoContent>) {
-    if (!this.editing) return;
+    if (!this.editing || this.switching) return;
     this.value = { ...this.value, ...patch };
     this.changed();
   }
@@ -188,12 +188,16 @@ export class PhotoEditorState {
 
   // The result of uploadPhoto: the new draft opens in the form.
   uploadFinished(result: PhotoActionResult) {
+    if (!this.uploading) return;
     this.uploading = false;
     if (result.status === "ok") {
       this.remember(result.photo);
       this.load(result.photo);
       this.status = "uploaded";
       this.issues = [];
+    } else if (result.status === "invalid") {
+      this.status = "refused";
+      this.issues = result.issues;
     } else {
       this.fail(result);
     }
@@ -294,7 +298,8 @@ export function statusText(snap: EditorSnapshot): string {
     case "unavailable":
       return "Database unavailable — try again.";
   }
-  if (snap.status === "invalid") return snap.editing ? "Can't publish yet:" : "Can't upload:";
+  if (snap.status === "refused") return "Can't upload:";
+  if (snap.status === "invalid") return "Can't publish yet:";
   if (snap.dirty) return "Unsaved changes";
   if (snap.blocked) return "Database unavailable: photos can't be saved.";
   switch (snap.status) {
