@@ -77,6 +77,7 @@ describe("letterboxd.archive", () => {
       stores: { lifeLog, enrichments: new MemoryEnrichmentStore() },
       fetch,
       now: new Date("2026-10-05T10:00:00Z"),
+      deadline: Number.POSITIVE_INFINITY,
     });
     const rows = await lifeLog.list("letterboxd");
     expect(rows.map((r) => r.key)).toEqual(["2026-09-26|newer|2026|0", "2026-05-18|older|1995|0"]);

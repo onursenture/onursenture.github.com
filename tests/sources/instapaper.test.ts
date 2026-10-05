@@ -74,8 +74,23 @@ describe("instapaper.archive", () => {
       stores: { lifeLog: new MemoryLifeLogStore(), enrichments },
       fetch,
       now: new Date("2026-10-05T10:00:00Z"),
+      deadline: Number.POSITIVE_INFINITY,
     });
     expect(outcome).toEqual({ note: "2 links enriched", tags: ["enrichments"] });
     expect(await enrichments.all()).toHaveLength(2);
+  });
+
+  it("enriches at most five new links a run", async () => {
+    const enrichments = new MemoryEnrichmentStore();
+    const fetch = (async () => new Response('<meta property="og:title" content="T">')) as typeof globalThis.fetch;
+    const articles = parseInstapaper({ bookmarks: [1, 2, 3, 4, 5, 6, 7].map((n) => bookmark(n)) });
+    const outcome = await instapaper.archive!(articles, {
+      stores: { lifeLog: new MemoryLifeLogStore(), enrichments },
+      fetch,
+      now: new Date("2026-10-05T10:00:00Z"),
+      deadline: Number.POSITIVE_INFINITY,
+    });
+    expect(outcome.note).toBe("5 links enriched");
+    expect(await enrichments.all()).toHaveLength(5);
   });
 });

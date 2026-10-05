@@ -16,7 +16,7 @@ import { getMediaStorage } from "@/lib/media/storage";
 import { sources } from "@/lib/sources/registry";
 import { DrizzleSnapshotStore } from "@/lib/sync/drizzle-store";
 import { revalidateResults } from "@/lib/sync/respond";
-import { type SyncResult, syncAll } from "@/lib/sync/run";
+import { SYNC_BUDGET_MS, type SyncResult, syncAll } from "@/lib/sync/run";
 
 // Server actions for the admin UI. Each checks the session first, then the
 // store; a store error reads as "unavailable" so the editor can say so.
@@ -120,8 +120,8 @@ export async function processUploadAction(input: { source: string; slug: string;
   });
 }
 
-// "Sync now" on the admin home: every source, regardless of schedule, then the
-// same stale-while-revalidate as the sync route.
+// "Sync now" on the admin home: every source, regardless of schedule, with the
+// sync route's time budget and its per-source stale-while-revalidate.
 export async function syncNowAction(): Promise<ActionResult<{ results: SyncResult[] }>> {
   if (!(await isAdmin())) return { status: "unauthorized" };
   try {
@@ -129,8 +129,9 @@ export async function syncNowAction(): Promise<ActionResult<{ results: SyncResul
     if (!db) return { status: "unavailable" };
     const results = await syncAll(Object.values(sources), new DrizzleSnapshotStore(db), { fetch: globalThis.fetch, env: process.env, stores: archiveStores(db) }, new Date(), {
       force: true,
+      deadline: Date.now() + SYNC_BUDGET_MS,
+      onResult: (result) => revalidateResults([result]),
     });
-    revalidateResults(results);
     return { status: "ok", results };
   } catch (e) {
     console.warn("[admin] sync now failed:", e instanceof Error ? e.message : e);

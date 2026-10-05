@@ -119,7 +119,7 @@ describe("theatre.archive", () => {
       [
         { id: "9999999", title: "New Play", slug: "new-play", company: "Co", poster: "https://p/x.jpg", link: "https://tiyatrolar.com.tr/tiyatro/new-play", ago: "2 gün önce" },
       ],
-      { stores: { lifeLog, enrichments: new MemoryEnrichmentStore() }, fetch: globalThis.fetch, now },
+      { stores: { lifeLog, enrichments: new MemoryEnrichmentStore() }, fetch: globalThis.fetch, now, deadline: Number.POSITIVE_INFINITY },
     );
     const rows = await lifeLog.list("theatre");
     expect(rows).toHaveLength(theatreHistory.length + 1);
@@ -134,6 +134,7 @@ describe("theatre.archive", () => {
       stores: { lifeLog, enrichments: new MemoryEnrichmentStore() },
       fetch: globalThis.fetch,
       now: new Date("2026-10-05T09:00:00Z"),
+      deadline: Number.POSITIVE_INFINITY,
     });
     expect(outcome.note).toBe(`+${theatreHistory.length} plays`);
     expect(outcome.tags).toEqual(["life:theatre"]);
@@ -143,10 +144,10 @@ describe("theatre.archive", () => {
     const lifeLog = new MemoryLifeLogStore();
     const stores = { lifeLog, enrichments: new MemoryEnrichmentStore() };
     const now = new Date("2026-10-05T09:00:00Z");
-    await theatre.archive!([], { stores, fetch: globalThis.fetch, now });
+    await theatre.archive!([], { stores, fetch: globalThis.fetch, now, deadline: Number.POSITIVE_INFINITY });
     const first = theatreHistory[0];
     await lifeLog.upsert([{ ...historyRows()[0], occurredOn: "1999-01-01" }], { redate: true, at: now });
-    const outcome = await theatre.archive!([], { stores, fetch: globalThis.fetch, now });
+    const outcome = await theatre.archive!([], { stores, fetch: globalThis.fetch, now, deadline: Number.POSITIVE_INFINITY });
     expect(outcome.note).toBe("+0 plays");
     expect(outcome.tags).toEqual(["life:theatre"]);
     expect((await lifeLog.list("theatre")).find((r) => r.key === first.id)?.occurredOn).toBe(`${first.year}-01-01`);

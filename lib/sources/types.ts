@@ -39,6 +39,10 @@ export interface ArchiveArgs {
   stores: ArchiveStores;
   fetch: typeof globalThis.fetch;
   now: Date;
+  // Epoch ms the run must finish by (the sync routes allow 45 s of their
+  // 60 s limit). Slow per-item work (posters, enrichment) stops before an
+  // item that might not finish in time; the rest waits for the next run.
+  deadline: number;
 }
 
 // What an archive step reports: a one-line summary for the admin and the

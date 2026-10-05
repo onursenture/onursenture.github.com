@@ -22,7 +22,12 @@ export function SourcesPanel({ rows }: { rows: SourceRow[] | null }) {
         const result = await syncNowAction();
         if (result.status === "ok") {
           const failed = result.results.filter((r) => r.status === "error").length;
-          setMessage(failed ? `${failed} source${failed > 1 ? "s" : ""} failed` : "All sources synced");
+          const left = result.results.filter((r) => r.status === "skipped" && r.reason === "deadline").length;
+          const parts = [
+            failed ? `${failed} source${failed > 1 ? "s" : ""} failed` : "",
+            left ? `${left} left for the next run` : "",
+          ].filter(Boolean);
+          setMessage(parts.length ? parts.join(" · ") : "All sources synced");
           router.refresh();
         } else setMessage(result.status === "unauthorized" ? "Signed out — sign in again" : "Database unavailable");
       } catch {

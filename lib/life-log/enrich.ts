@@ -63,12 +63,17 @@ async function readCapped(response: Response): Promise<string> {
 
 const blank = { title: null, description: null, imageUrl: null, imageWidth: null, siteName: null };
 
-export async function enrichUrl(fetchImpl: typeof globalThis.fetch, url: string, now: Date): Promise<Enrichment> {
+export async function enrichUrl(
+  fetchImpl: typeof globalThis.fetch,
+  url: string,
+  now: Date,
+  timeoutMs = TIMEOUT_MS,
+): Promise<Enrichment> {
   const fetchedAt = now.toISOString();
   try {
     const response = await fetchImpl(url, {
       headers: { "User-Agent": USER_AGENT, Accept: "text/html" },
-      signal: AbortSignal.timeout(TIMEOUT_MS),
+      signal: AbortSignal.timeout(Math.max(0, timeoutMs)),
     });
     if (!response.ok) throw new HttpError(url, response.status);
     return { url, ...parseMeta(await readCapped(response), response.url || url), fetchedAt, error: null };
@@ -77,13 +82,15 @@ export async function enrichUrl(fetchImpl: typeof globalThis.fetch, url: string,
   }
 }
 
-// URLs with no row, or whose row errored more than 7 days ago, up to `limit`.
+// URLs with no row, or whose row errored more than 7 days ago, up to `limit`
+// (five a run: the sync's time budget). Stops before a URL that might not
+// finish by `deadline` (epoch ms); the rest stays pending for the next run.
 export async function enrichPending(
   store: EnrichmentStore,
   fetchImpl: typeof globalThis.fetch,
   urls: string[],
   now: Date,
-  limit = 10,
+  { limit = 5, deadline }: { limit?: number; deadline: number },
 ): Promise<{ fetched: number; failed: number }> {
   const known = new Map((await store.all()).map((row) => [row.url, row]));
   const pending = urls
@@ -95,7 +102,8 @@ export async function enrichPending(
   let fetched = 0;
   let failed = 0;
   for (const url of pending) {
-    const enrichment = await enrichUrl(fetchImpl, url, now);
+    if (Date.now() + TIMEOUT_MS > deadline) break;
+    const enrichment = await enrichUrl(fetchImpl, url, now, Math.min(TIMEOUT_MS, deadline - Date.now()));
     await store.put(enrichment);
     if (enrichment.error) failed++;
     else fetched++;

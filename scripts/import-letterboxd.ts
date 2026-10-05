@@ -34,10 +34,18 @@ async function main() {
   if (process.argv.includes("--posters")) {
     let total = 0;
     for (;;) {
-      const batch = await fillPosters(store, globalThis.fetch, { limit: 50, delayMs: 1000, at: new Date() });
+      // No deadline: the import isn't a function with a time limit.
+      const batch = await fillPosters(store, globalThis.fetch, {
+        limit: 50,
+        delayMs: 1000,
+        at: new Date(),
+        deadline: Number.POSITIVE_INFINITY,
+      });
       total += batch.filled;
-      console.log(`[letterboxd] posters: +${batch.filled} (${batch.failed} failed), ${total} so far`);
-      if (batch.filled + batch.failed === 0) break; // no candidates left
+      console.log(`[letterboxd] posters: +${batch.filled} (${batch.failed} failed, ${batch.errors} errored), ${total} so far`);
+      // No candidates left, or only rows whose lookups errored (network
+      // trouble; they aren't stamped, so the next run tries them again).
+      if (batch.filled + batch.failed === 0) break;
     }
   }
 }

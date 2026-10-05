@@ -18,7 +18,8 @@ export function revalidateResults(results: SyncResult[]): void {
   }
 }
 
+// Only the JSON and its status: the routes revalidate each result as it
+// comes in (revalidateResults), so a run killed later keeps what it did.
 export function syncResponse(results: SyncResult[]): Response {
-  revalidateResults(results);
   return Response.json({ results }, { status: syncStatusCode(results) });
 }

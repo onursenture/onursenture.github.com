@@ -8,7 +8,9 @@ import { fetchText, httpUrl, toIso } from "./http";
 import type { SourceDefinition } from "./types";
 
 const FEED_URL = "https://letterboxd.com/onur/rss/";
-const POSTERS_PER_RUN = 30;
+// Small enough to fit the sync's time budget; the import's --posters does
+// the bulk, and fillPosters stops early when the deadline is near anyway.
+const POSTERS_PER_RUN = 15;
 
 export const filmSchema = z.object({
   title: z.string(),
@@ -86,8 +88,8 @@ export const letterboxd: SourceDefinition<Film[], "letterboxd"> = {
   fetch: async ({ fetch }) => parseLetterboxd(await fetchText(fetch, FEED_URL)),
   count: (films) => films.length,
   // Sprint 10: every dated diary entry in the feed goes into life_log (the
-  // /life/films/ archive), then up to 30 rows without a poster get one.
-  archive: async (films, { stores, fetch, now }) => {
+  // /life/films/ archive), then up to 15 rows without a poster get one.
+  archive: async (films, { stores, fetch, now, deadline }) => {
     const rows = filmRows(
       films
         .filter((film) => film.watchedDate)
@@ -102,10 +104,11 @@ export const letterboxd: SourceDefinition<Film[], "letterboxd"> = {
         })),
     );
     const counts = await stores.lifeLog.upsert(rows, { redate: false, at: now });
-    const posters = await fillPosters(stores.lifeLog, fetch, { limit: POSTERS_PER_RUN, at: now });
+    const posters = await fillPosters(stores.lifeLog, fetch, { limit: POSTERS_PER_RUN, at: now, deadline });
     const failed = posters.failed ? ` · ${posters.failed} failed` : "";
+    const errors = posters.errors ? ` · ${posters.errors} errored` : "";
     return {
-      note: `+${counts.inserted} films · ${posters.filled} posters filled${failed}`,
+      note: `+${counts.inserted} films · ${posters.filled} posters filled${failed}${errors}`,
       tags: counts.inserted + counts.updated + posters.filled > 0 ? [lifeLogTag("letterboxd")] : [],
     };
   },

@@ -85,9 +85,10 @@ export const instapaper: SourceDefinition<Article[], "instapaper"> = {
   schema: articlesSchema,
   fetch: ({ fetch }) => fetchAll(fetch),
   count: (articles) => articles.length,
-  // Sprint 10: og: image and description for /life/saved/, ten new links a run.
-  archive: async (articles, { stores, fetch, now }) => {
-    const { fetched, failed } = await enrichPending(stores.enrichments, fetch, articles.map((a) => a.link), now);
+  // Sprint 10: og: image and description for /life/saved/, five new links a
+  // run, within the run's deadline.
+  archive: async (articles, { stores, fetch, now, deadline }) => {
+    const { fetched, failed } = await enrichPending(stores.enrichments, fetch, articles.map((a) => a.link), now, { deadline });
     return {
       note: `${fetched} links enriched${failed ? ` · ${failed} failed` : ""}`,
       tags: fetched + failed > 0 ? [ENRICHMENTS_TAG] : [],
