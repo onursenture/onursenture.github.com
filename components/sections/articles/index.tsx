@@ -1,4 +1,3 @@
-import { profile } from "@/content/profile";
 import type { Article } from "@/lib/sources/instapaper";
 import { readSource } from "@/lib/sources/read";
 import { Empty } from "../empty";
@@ -37,5 +36,5 @@ export const articles: SectionDefinition<Article[]> = {
   },
   Render,
   source: "Instapaper",
-  href: `https://www.instapaper.com/p/${profile.social.instapaper}`,
+  href: "/life/saved/",
 };

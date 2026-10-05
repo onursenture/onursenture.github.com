@@ -1,6 +1,5 @@
 import { COVER_GRID, Cover } from "@/components/ui/cover";
 import { MetaLabel } from "@/components/ui/meta-label";
-import { profile } from "@/content/profile";
 import type { Book, Books } from "@/lib/sources/goodreads";
 import { readSource } from "@/lib/sources/read";
 import { Empty } from "../empty";
@@ -69,5 +68,5 @@ export const books: SectionDefinition<Books> = {
   },
   Render,
   source: "Goodreads",
-  href: `https://www.goodreads.com/${profile.social.goodreads}`,
+  href: "/life/books/",
 };

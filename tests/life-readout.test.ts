@@ -22,6 +22,16 @@ describe("buildReadout", () => {
     expect(lines.find((l) => l.key === "photo")!.href).toBe("/life/photos/night-boulevard/");
   });
 
+  it("puts last play right after last watched", () => {
+    const lines = buildReadout({
+      film: { title: "Pickled", link: "https://letterboxd.com/onur/film/pickled/" },
+      play: { title: "Adel Seni Seçti", link: "https://tiyatrolar.com.tr/tiyatro/adel-seni-secti-1" },
+      photo: { title: "Stabilo", slug: "stabilo" },
+    });
+    expect(lines.map((l) => l.key)).toEqual(["film", "play", "photo"]);
+    expect(lines[1]).toEqual({ key: "play", label: "last play", value: "Adel Seni Seçti", href: "https://tiyatrolar.com.tr/tiyatro/adel-seni-secti-1" });
+  });
+
   it("adds the latest Life note on one line, after the photo", () => {
     const lines = buildReadout({
       photo: { title: "Night Boulevard", slug: "night-boulevard" },

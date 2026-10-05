@@ -1,5 +1,4 @@
 import { COVER_GRID, Cover } from "@/components/ui/cover";
-import { profile } from "@/content/profile";
 import type { Film } from "@/lib/sources/letterboxd";
 import { readSource } from "@/lib/sources/read";
 import { Empty } from "../empty";
@@ -36,5 +35,5 @@ export const films: SectionDefinition<Film[]> = {
   },
   Render,
   source: "Letterboxd",
-  href: `https://letterboxd.com/${profile.social.letterboxd}/`,
+  href: "/life/films/",
 };

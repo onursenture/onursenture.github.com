@@ -2,7 +2,7 @@ import { SectionRow } from "@/components/ui/section-row";
 import { TextLink } from "@/components/ui/text-link";
 import type { AnySectionDefinition } from "./types";
 
-const WIDE = new Set(["films", "books", "photos"]);
+const WIDE = new Set(["films", "books", "theatre", "photos"]);
 
 export async function SectionBlock({ section }: { section: AnySectionDefinition }) {
   const { data } = await section.load();

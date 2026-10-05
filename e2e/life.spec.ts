@@ -6,11 +6,24 @@ test("/life/ is the boot readout, then a row for every section, with empty state
   await expect(now).toContainText("Booting w00f...");
   await expect(now).toContainText("Human detected.");
   await expect(now).toContainText("idle");
-  for (const id of ["films", "books", "articles", "writing", "photos"]) {
+  for (const id of ["films", "books", "theatre", "articles", "photos"]) {
     await expect(page.locator(`[data-section="${id}"]`)).toBeVisible();
   }
   await expect(page.locator('[data-section="github"]')).toHaveCount(0);
   await expect(page.locator('[data-section="films"]')).toContainText("Nothing here yet.");
+});
+
+test("the archive sections link their All to the archive pages", async ({ page }) => {
+  await page.goto("/life/");
+  for (const [section, href] of [
+    ["films", "/life/films/"],
+    ["books", "/life/books/"],
+    ["theatre", "/life/theatre/"],
+    ["articles", "/life/saved/"],
+  ] as const) {
+    await expect(page.locator(`[data-section="${section}"]`).getByRole("link", { name: "All", exact: true })).toHaveAttribute("href", href);
+  }
+  await expect(page.locator('[data-section="writing"]')).toHaveCount(0);
 });
 
 test("the server HTML of a direct load has the readout complete, with no typing", async ({ page }) => {
