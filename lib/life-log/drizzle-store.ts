@@ -1,5 +1,6 @@
 import { asc, desc, eq, sql } from "drizzle-orm";
 import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
+import { collapseBatch } from "./collapse";
 import { lifeLog, linkEnrichments } from "../db/schema";
 import type {
   ArchiveStores,
@@ -44,8 +45,10 @@ export class DrizzleLifeLogStore implements LifeLogStore {
 
   async upsert(rows: LifeLogRow[], { redate, at }: { redate: boolean; at: Date }): Promise<UpsertCounts> {
     const counts = { inserted: 0, updated: 0 };
-    for (let i = 0; i < rows.length; i += CHUNK) {
-      const chunk = rows.slice(i, i + CHUNK);
+    // Collapse before chunking so a repeated key can't land in two chunks.
+    const distinct = collapseBatch(rows);
+    for (let i = 0; i < distinct.length; i += CHUNK) {
+      const chunk = distinct.slice(i, i + CHUNK);
       const result = await this.db
         .insert(lifeLog)
         .values(

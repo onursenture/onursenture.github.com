@@ -1,3 +1,4 @@
+import { collapseBatch } from "./collapse";
 import type { Enrichment, EnrichmentStore, LifeLogRow, LifeLogSource, LifeLogStore, UpsertCounts } from "./types";
 
 // In-memory stores for unit tests; same semantics as the Drizzle ones.
@@ -24,17 +25,17 @@ export class MemoryLifeLogStore implements LifeLogStore {
 
   async upsert(rows: LifeLogRow[], { redate }: { redate: boolean; at: Date }): Promise<UpsertCounts> {
     const counts = { inserted: 0, updated: 0 };
-    for (const row of rows) {
+    for (const row of collapseBatch(rows)) {
       const id = `${row.source}\u0000${row.key}`;
       const stored = this.rows.get(id);
       if (!stored) {
-        this.rows.set(id, structuredClone(row));
+        this.rows.set(id, row);
         counts.inserted++;
         continue;
       }
       this.rows.set(id, {
         ...stored,
-        data: { ...stored.data, ...structuredClone(row.data) },
+        data: { ...stored.data, ...row.data },
         ...(redate ? { occurredOn: row.occurredOn, precision: row.precision } : {}),
       });
       counts.updated++;

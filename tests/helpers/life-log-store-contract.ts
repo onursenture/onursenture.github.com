@@ -43,6 +43,25 @@ export function lifeLogStoreContract(name: string, make: () => Promise<{ log: Li
       expect(redated.data).toEqual({ title: "A2", poster: "p1" });
     });
 
+    it("collapses a duplicate key within one batch: merged data, last date, counted once", async () => {
+      const counts = await log.upsert(
+        [row("a", "2026-09-01", { title: "A", extra: 1 }), row("a", "2026-09-05", { title: "A2" }), row("b", "2026-09-02", { title: "B" })],
+        { redate: false, at: t0 },
+      );
+      expect(counts).toEqual({ inserted: 2, updated: 0 });
+      expect(await log.list("letterboxd")).toEqual([
+        row("a", "2026-09-05", { title: "A2", extra: 1 }),
+        row("b", "2026-09-02", { title: "B" }),
+      ].sort((x, y) => (x.occurredOn! < y.occurredOn! ? 1 : -1)));
+    });
+
+    it("lets an incoming undefined leave the stored value alone (JSON semantics)", async () => {
+      await log.upsert([row("a", "2026-09-01", { title: "A", poster: "p1" })], { redate: false, at: t0 });
+      await log.upsert([row("a", "2026-09-01", { title: "A", poster: undefined })], { redate: false, at: t1 });
+      const [stored] = await log.list("letterboxd");
+      expect(stored.data).toEqual({ title: "A", poster: "p1" });
+    });
+
     it("upserts nothing for an empty batch", async () => {
       expect(await log.upsert([], { redate: false, at: t0 })).toEqual({ inserted: 0, updated: 0 });
     });
