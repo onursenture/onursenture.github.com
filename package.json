@@ -18,6 +18,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts --force",
     "import:letterboxd": "tsx scripts/import-letterboxd.ts",
+    "import:photos": "tsx scripts/import-photos.ts",
     "screenshots": "tsx scripts/screenshots.ts"
   },
   "dependencies": {
