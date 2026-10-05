@@ -26,3 +26,11 @@ export function checkNoteDimensions(width: number, height: number): string | nul
   if (width < NOTE_MIN_WIDTH) return `The image is ${width}px wide; it needs at least ${NOTE_MIN_WIDTH}px.`;
   return null;
 }
+
+// Photos (Sprint 11 spec §2): any ratio, at least 1280px on the long side.
+export const PHOTO_MIN_LONG_SIDE = 1280;
+
+export function checkPhotoDimensions(width: number, height: number): string | null {
+  if (Math.max(width, height) >= PHOTO_MIN_LONG_SIDE) return null;
+  return `The image is ${width}×${height}; photos need at least ${PHOTO_MIN_LONG_SIDE}px on the long side.`;
+}

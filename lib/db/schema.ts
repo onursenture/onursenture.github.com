@@ -1,4 +1,5 @@
 import { date, integer, jsonb, pgTable, primaryKey, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import type { PhotoExif, PhotoImage } from "../photos/types";
 
 // One row per external source. Written by the sync job, read by pages.
 export const sourceSnapshots = pgTable("source_snapshots", {
@@ -80,4 +81,22 @@ export const linkEnrichments = pgTable("link_enrichments", {
   siteName: text("site_name"),
   fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull(),
   error: text("error"),
+});
+
+// Photos (Sprint 11): one row per photo, any status. slug is set at first
+// publish and never changes (its URL). taken_at is wall-clock text
+// "YYYY-MM-DDTHH:mm:ss". Expand-only migration.
+export const photos = pgTable("photos", {
+  id: uuid("id").primaryKey(),
+  slug: text("slug").unique(),
+  title: text("title").notNull(),
+  alt: text("alt").notNull().default(""),
+  takenAt: text("taken_at").notNull(),
+  camera: text("camera").notNull().default(""),
+  image: jsonb("image").$type<PhotoImage>().notNull(),
+  exif: jsonb("exif").$type<PhotoExif>().notNull(),
+  status: text("status").notNull(),
+  publishedAt: timestamp("published_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
 });
