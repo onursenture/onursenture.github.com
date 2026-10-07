@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { cx } from "@/lib/cx";
 import { isExternal } from "./text-link";
 
@@ -26,7 +26,7 @@ export function Button({
   className,
   type = "button",
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant }) {
+}: ComponentProps<"button"> & { variant?: ButtonVariant }) {
   return <button type={type} className={buttonClass(variant, className)} {...props} />;
 }
 

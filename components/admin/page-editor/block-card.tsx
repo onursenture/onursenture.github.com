@@ -9,6 +9,7 @@ import type { DocKey } from "@/lib/content/keys";
 import type { ImageEntry } from "@/lib/images/plan";
 import { imageKey } from "@/lib/work/derive";
 import { AddButton, IssueText, PairsField, ParagraphsField, RemoveButton, TextField } from "../fields";
+import { useConfirm } from "../confirm-dialog";
 import { SortableList } from "../sortable-list";
 import { useKeyedList } from "../use-keyed-list";
 import { ImageCard } from "./image-card";
@@ -142,6 +143,7 @@ function ImagesField(props: BlockCardProps & { block: Extract<Block, { kind: "im
   // Ids to avoid: the page's own, and every published one (even if deleted).
   const reserved = [...pageImageIds, ...lockedImages];
   const list = useKeyedList(block.images, (images) => onChange({ ...block, images }));
+  const confirm = useConfirm();
   return (
     <div className="flex flex-col gap-2">
       <fieldset className="flex items-center gap-2">
@@ -171,9 +173,9 @@ function ImagesField(props: BlockCardProps & { block: Extract<Block, { kind: "im
               issues={[...issuesAt(issues, docKey, `${block.id}/${image.id}`), ...issuesAt(issues, docKey, `blocks/${blockIndex}/images/${index}`)]}
               uploadSlot={props.renderUpload?.(image, update)}
               onChange={update}
-              onRemove={() => {
+              onRemove={async () => {
                 const question = image.pin ? `Remove ${image.caption || image.id}? It leaves Selected work.` : `Remove ${image.caption || image.id}?`;
-                if (window.confirm(question)) list.remove(index);
+                if (await confirm({ question, confirmLabel: "Remove" })) list.remove(index);
               }}
             />
           );

@@ -7,6 +7,7 @@ import { Button, buttonClass } from "@/components/ui/button";
 import type { ComposerSnapshot, NoteComposerState } from "@/lib/admin/note-composer";
 import { cx } from "@/lib/cx";
 import { MAX_IMAGES } from "@/lib/notes/types";
+import { useConfirm } from "../confirm-dialog";
 import { CONTROL } from "../fields";
 import { uploadNoteImage } from "./note-upload";
 
@@ -29,14 +30,17 @@ export function Attachments({
   const [error, setError] = useState<string | null>(null);
   const showLink = linkOpen || embed?.kind === "link";
   const altId = useId();
+  const confirm = useConfirm();
 
-  async function pick(list: FileList | null) {
-    if (!list || !uploadMode) return;
-    if (composer.getSnapshot().value.embed?.kind === "link" && !window.confirm("Replace the link card with images?")) return;
+  // The files are copied out of the input before the first await: the input is
+  // cleared right after its change event, which empties its live FileList.
+  async function pick(files: File[]) {
+    if (files.length === 0 || !uploadMode) return;
+    if (composer.getSnapshot().value.embed?.kind === "link" && !(await confirm({ question: "Replace the link card with images?", confirmLabel: "Replace" }))) return;
     setLinkOpen(false);
     setError(null);
     const room = MAX_IMAGES - images.length;
-    for (const file of Array.from(list).slice(0, room)) {
+    for (const file of files.slice(0, room)) {
       composer.uploadStarted();
       try {
         const result = await uploadNoteImage(file, uploadMode);
@@ -51,8 +55,8 @@ export function Attachments({
     }
   }
 
-  function openLink() {
-    if (images.length > 0 && !window.confirm("Replace the images with a link card?")) return;
+  async function openLink() {
+    if (images.length > 0 && !(await confirm({ question: "Replace the images with a link card?", confirmLabel: "Replace" }))) return;
     if (images.length > 0) composer.setLink(null);
     setLinkOpen(true);
   }
@@ -72,8 +76,9 @@ export function Attachments({
               disabled={disabled || full}
               className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
               onChange={(event) => {
-                void pick(event.target.files);
+                const files = Array.from(event.target.files ?? []);
                 event.target.value = "";
+                void pick(files);
               }}
             />
           </label>

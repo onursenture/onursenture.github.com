@@ -5,6 +5,7 @@ import { ORGS, type OrgId } from "@/content/orgs";
 import { optional } from "@/lib/admin/list";
 import type { DocEditorInit } from "@/lib/admin/results";
 import { type Issue, issuesAt } from "@/lib/content/issues";
+import { useConfirm } from "./confirm-dialog";
 import { EditorFrame } from "./editor-frame";
 import { AddButton, CONTROL, Field, IssueText, RemoveButton, SelectField, TextField } from "./fields";
 import { SortableList } from "./sortable-list";
@@ -80,6 +81,7 @@ function Products({
 // The home's Experience (spec §2.4): roles and their product rows, both reorderable.
 export function ExperienceEditor({ init, pages }: { init: DocEditorInit<ExperienceEntry[]>; pages: PageOption[] }) {
   const editor = useDocEditor(init);
+  const confirm = useConfirm();
   const roles = editor.value;
   const list = useKeyedList(roles, (next) => editor.setValue(() => next));
   // Field messages go away with the first edit; the banner keeps the list.
@@ -100,8 +102,8 @@ export function ExperienceEditor({ init, pages }: { init: DocEditorInit<Experien
                   </span>
                   <RemoveButton
                     label={`Remove ${ORGS[role.org].name}`}
-                    onClick={() => {
-                      if (window.confirm(`Remove the ${ORGS[role.org].name} role and its products?`)) list.remove(index);
+                    onClick={async () => {
+                      if (await confirm({ question: `Remove the ${ORGS[role.org].name} role and its products?`, confirmLabel: "Remove" })) list.remove(index);
                     }}
                   />
                 </div>

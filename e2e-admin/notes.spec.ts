@@ -21,6 +21,8 @@ const status = (page: Page) => page.locator('p[role="status"]:visible').first();
 // A role locator: the Timeline section is also labelled "Notes".
 const box = (page: Page) => page.getByRole("textbox", { name: "Note", exact: true });
 const row = (page: Page, text: string) => page.getByTestId("note-row").filter({ hasText: text });
+// The admin's in-page confirmation (a native modal <dialog>, not window.confirm).
+const ask = (page: Page) => page.getByRole("dialog");
 
 async function publishDue(page: Page): Promise<number> {
   const response = await page.request.post("/api/notes/publish-due/", { headers: { Authorization: `Bearer ${SECRET}` } });
@@ -73,8 +75,9 @@ test("editing a published note keeps its URL; deleting it makes the URL a 404", 
 
   await signIn(page, "/admin/notes/");
   await row(page, "E2E edited note").click();
-  page.once("dialog", (dialog) => void dialog.accept());
   await page.getByRole("button", { name: "Delete", exact: true }).click();
+  await expect(ask(page)).toHaveAccessibleName("Delete this note? This can't be undone.");
+  await ask(page).getByRole("button", { name: "Delete", exact: true }).click();
   await expect(status(page)).toHaveText("Deleted");
   expect((await page.goto(url))?.status()).toBe(404);
 });
@@ -122,15 +125,17 @@ test("an image needs alt text to publish; a link card replaces images after a co
   await expect(status(page)).toHaveText("Can't publish yet:");
   await expect(page.getByText("Image 1 needs alt text.")).toBeVisible();
 
-  page.once("dialog", (dialog) => void dialog.accept());
   await page.getByRole("button", { name: "Link", exact: true }).click();
+  await expect(ask(page)).toHaveAccessibleName("Replace the images with a link card?");
+  await ask(page).getByRole("button", { name: "Replace" }).click();
   await expect(page.getByLabel("Alt text 1")).toHaveCount(0);
   await page.getByLabel("Link URL").fill("https://example.com/");
   await page.getByRole("button", { name: "Fetch card" }).click();
   await expect(page.getByRole("button", { name: "Remove link" })).toBeVisible({ timeout: 15_000 });
 
-  page.once("dialog", (dialog) => void dialog.accept());
   await page.getByLabel("Add images").setInputFiles(".e2e-admin/fixtures/four-three.png");
+  await expect(ask(page)).toHaveAccessibleName("Replace the link card with images?");
+  await ask(page).getByRole("button", { name: "Replace" }).click();
   await page.getByLabel("Alt text 1").fill("A blue square");
   await page.getByRole("button", { name: "Publish", exact: true }).click();
   await expect(status(page)).toHaveText("Published");
@@ -141,13 +146,10 @@ test("an image needs alt text to publish; a link card replaces images after a co
 test("leaving with an unsaved note asks first", async ({ page }) => {
   await signIn(page, "/admin/notes/");
   await box(page).fill("E2E unsaved");
-  const asked = page.waitForEvent("dialog").then(async (dialog) => {
-    const message = dialog.message();
-    await dialog.dismiss();
-    return message;
-  });
   await page.getByRole("navigation", { name: "Breadcrumb" }).getByRole("link", { name: "Admin" }).click();
-  expect(await asked).toBe(LEAVE_QUESTION);
+  await expect(ask(page)).toHaveAccessibleName(LEAVE_QUESTION);
+  await ask(page).getByRole("button", { name: "Cancel" }).click();
+  await expect(ask(page)).toHaveCount(0);
   await expect(page).toHaveURL(/\/admin\/notes\/$/);
   await expect(box(page)).toHaveValue("E2E unsaved");
 });
