@@ -10,6 +10,7 @@ import { uniqueId } from "@/lib/content/ids";
 import type { IssueTarget } from "@/lib/content/issue-labels";
 import type { ImageEntry } from "@/lib/images/plan";
 import { pageImages } from "@/lib/work/derive";
+import { useConfirm } from "../confirm-dialog";
 import { EditorFrame } from "../editor-frame";
 import { SortableList } from "../sortable-list";
 import { useDocEditor } from "../use-doc-editor";
@@ -50,6 +51,7 @@ function deleteMessage(result: Exclude<Awaited<ReturnType<typeof deletePageActio
 export function PageEditor({ init, locked, entries: initialEntries, live, hasRepo, uploadMode }: PageEditorProps) {
   const router = useRouter();
   const editor = useDocEditor(init);
+  const confirm = useConfirm();
   const page = editor.value;
   const [entries, setEntries] = useState(initialEntries);
   const [openKey, setOpenKey] = useState<string | null>(null);
@@ -117,18 +119,18 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
     }));
   }
 
-  function removeBlock(index: number) {
+  async function removeBlock(index: number) {
     const block = page.blocks[index];
     const pinned = block.kind === "images" && block.images.some((image) => image.pin);
     const question = pinned ? `Delete "${blockLabel(block)}"? Its pinned image leaves Selected work.` : `Delete "${blockLabel(block)}"?`;
-    if (window.confirm(question)) blocks.remove(index);
+    if (await confirm({ question, confirmLabel: "Remove" })) blocks.remove(index);
   }
 
   // Delete problems get their own line: they are not publish issues, so they
   // leave the editor's status (and Publish) alone.
   async function deletePage() {
     const question = live ? `Delete ${page.title || page.slug}? It leaves the site at once.` : "Delete this draft page?";
-    if (!window.confirm(question)) return;
+    if (!(await confirm({ question, confirmLabel: "Delete page" }))) return;
     setDeleteError(null);
     // Let the requests in flight land, but write no unsaved edit: the page is
     // going. The edit is dropped only once the delete succeeded.

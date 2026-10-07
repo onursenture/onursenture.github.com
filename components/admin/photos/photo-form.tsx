@@ -4,6 +4,7 @@ import { type ReactNode, useId } from "react";
 import { PictureView } from "@/components/picture-view";
 import { Button } from "@/components/ui/button";
 import type { EditorSnapshot, PhotoEditorState } from "@/lib/admin/photo-editor";
+import { useConfirm } from "../confirm-dialog";
 import { CONTROL } from "../fields";
 
 // The preview fills the 720px column (688px inside its padding) or the phone width.
@@ -28,6 +29,7 @@ const Exif = ({ on }: { on: boolean }) => (on ? <span className="type-label text
 // Mockup A's form: the open photo, its four fields and the actions.
 export function PhotoForm({ editor, snap, onClose }: { editor: PhotoEditorState; snap: EditorSnapshot; onClose: () => void }) {
   const ids = { title: useId(), alt: useId(), date: useId(), camera: useId() };
+  const confirm = useConfirm();
   const editing = snap.editing;
   if (!editing) return null;
   const disabled = snap.busy || snap.uploading || snap.blocked;
@@ -72,8 +74,8 @@ export function PhotoForm({ editor, snap, onClose }: { editor: PhotoEditorState;
         <Button
           variant="text"
           disabled={disabled}
-          onClick={() => {
-            if (window.confirm("Delete this photo? This can't be undone.")) void editor.remove();
+          onClick={async () => {
+            if (await confirm({ question: "Delete this photo? This can't be undone.", confirmLabel: "Delete" })) void editor.remove();
           }}
           className="mr-auto"
         >

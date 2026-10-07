@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { deleteNoteAction, publishNoteAction, saveNoteAction, scheduleNoteAction, unscheduleNoteAction } from "@/app/admin/notes-actions";
-import { LEAVE_QUESTION, isSaveShortcut, leavesPage } from "@/lib/admin/leave-guard";
+import { LEAVE_QUESTION, isSaveShortcut } from "@/lib/admin/leave-guard";
 import { type NoteActions, NoteComposerState } from "@/lib/admin/note-composer";
 import type { NotesConsoleInit } from "@/lib/admin/notes";
 import type { NoteSide } from "@/lib/notes/types";
+import { useConfirm } from "../confirm-dialog";
+import { useLeaveGuard } from "../use-leave-guard";
 import { ComposeBox } from "./compose-box";
 import { type Filter, Timeline } from "./timeline";
 
@@ -31,12 +33,16 @@ function readSide(): NoteSide {
 }
 
 // /admin/notes/ (mockup B): the compose box on top, the timeline below. Leaving
-// with an unsaved note asks first and never saves (Sprint 7 rule); Cmd/Ctrl+S
-// saves; closing the tab asks too.
+// with an unsaved note asks first (in-page dialog) and never saves (Sprint 7
+// rule); Cmd/Ctrl+S saves; closing the tab asks too.
 export function NotesConsole({ init }: { init: NotesConsoleInit }) {
   const [composer] = useState(() => new NoteComposerState({ notes: init.notes, available: init.available, side: "work" }, ACTIONS));
   const snap = useSyncExternalStore(composer.subscribe, composer.getSnapshot, composer.getSnapshot);
   const [filter, setFilter] = useState<Filter>("all");
+  const confirm = useConfirm();
+  // True once a link click was answered "Leave": the navigation may become a
+  // full page load, and the browser must not ask again then.
+  const isLeaving = useLeaveGuard(() => composer.hasUnsaved);
 
   useEffect(() => {
     composer.setDefaultSide(readSide());
@@ -52,17 +58,7 @@ export function NotesConsole({ init }: { init: NotesConsoleInit }) {
 
   useEffect(() => {
     function onBeforeUnload(event: BeforeUnloadEvent) {
-      if (composer.hasUnsaved) event.preventDefault();
-    }
-    function onClick(event: MouseEvent) {
-      if (!composer.hasUnsaved || !(event.target instanceof Element)) return;
-      const anchor = event.target.closest("a[href]");
-      if (!(anchor instanceof HTMLAnchorElement)) return;
-      const target = { href: anchor.href, target: anchor.target, download: anchor.hasAttribute("download") };
-      if (!leavesPage(event, target, window.location.href)) return;
-      if (window.confirm(LEAVE_QUESTION)) return;
-      event.preventDefault();
-      event.stopPropagation();
+      if (composer.hasUnsaved && !isLeaving()) event.preventDefault();
     }
     function onKeyDown(event: KeyboardEvent) {
       if (!isSaveShortcut(event)) return;
@@ -70,17 +66,15 @@ export function NotesConsole({ init }: { init: NotesConsoleInit }) {
       void composer.save();
     }
     window.addEventListener("beforeunload", onBeforeUnload);
-    window.addEventListener("click", onClick, true);
     window.addEventListener("keydown", onKeyDown);
     return () => {
       window.removeEventListener("beforeunload", onBeforeUnload);
-      window.removeEventListener("click", onClick, true);
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [composer]);
+  }, [composer, isLeaving]);
 
-  function leaveCurrent(): boolean {
-    return !composer.hasUnsaved || window.confirm(LEAVE_QUESTION);
+  async function leaveCurrent(): Promise<boolean> {
+    return !composer.hasUnsaved || confirm({ question: LEAVE_QUESTION, confirmLabel: "Leave" });
   }
 
   return (
@@ -95,8 +89,8 @@ export function NotesConsole({ init }: { init: NotesConsoleInit }) {
         composer={composer}
         snap={snap}
         uploadMode={init.uploadMode}
-        onNew={() => {
-          if (leaveCurrent()) composer.startNew();
+        onNew={async () => {
+          if (await leaveCurrent()) composer.startNew();
         }}
       />
       <Timeline
@@ -105,8 +99,8 @@ export function NotesConsole({ init }: { init: NotesConsoleInit }) {
         onFilter={setFilter}
         activeId={snap.editing?.id ?? null}
         disabled={snap.busy || snap.uploads > 0}
-        onOpen={(id) => {
-          if (!leaveCurrent()) return;
+        onOpen={async (id) => {
+          if (!(await leaveCurrent())) return;
           composer.open(id);
           window.scrollTo({ top: 0 });
         }}

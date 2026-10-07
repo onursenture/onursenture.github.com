@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import type { ComposerSnapshot, NoteComposerState } from "@/lib/admin/note-composer";
 import { cx } from "@/lib/cx";
 import { MAX_GRAPHEMES, type NoteLang, type NoteSide } from "@/lib/notes/types";
+import { useConfirm } from "../confirm-dialog";
 import { CONTROL } from "../fields";
 import { Attachments } from "./attachments";
 import { ScheduleField } from "./schedule-field";
@@ -96,6 +97,7 @@ export function ComposeBox({
   // A published note's side only widens, to Both (the server enforces it too).
   const storedSide = snap.editing?.status === "published" ? snap.editing.side : null;
   const textId = useId();
+  const confirm = useConfirm();
   return (
     <section aria-label="Compose" className="flex flex-col gap-3">
       {snap.editing ? (
@@ -159,8 +161,8 @@ export function ComposeBox({
           <Button
             variant="text"
             disabled={disabled || snap.uploads > 0}
-            onClick={() => {
-              if (window.confirm("Delete this note? This can't be undone.")) void composer.remove();
+            onClick={async () => {
+              if (await confirm({ question: "Delete this note? This can't be undone.", confirmLabel: "Delete" })) void composer.remove();
             }}
           >
             Delete

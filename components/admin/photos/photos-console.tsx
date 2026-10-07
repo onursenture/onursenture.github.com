@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { deletePhotoAction, publishPhotoAction, savePhotoAction } from "@/app/admin/photos-actions";
-import { LEAVE_QUESTION, isSaveShortcut, leavesPage } from "@/lib/admin/leave-guard";
+import { LEAVE_QUESTION, isSaveShortcut } from "@/lib/admin/leave-guard";
 import { type PhotoActions, PhotoEditorState, statusText } from "@/lib/admin/photo-editor";
 import type { PhotosConsoleInit } from "@/lib/admin/photos";
 import { cx } from "@/lib/cx";
 import type { PhotoActionResult } from "@/lib/photos/operations";
+import { useConfirm } from "../confirm-dialog";
+import { useLeaveGuard } from "../use-leave-guard";
 import { PhotoForm } from "./photo-form";
 import { PhotoList } from "./photo-list";
 import { uploadPhoto } from "./photo-upload";
@@ -30,29 +32,19 @@ const ACTIONS: PhotoActions = {
 
 // /admin/photos/ (mockup A, phone-first): "+ Add photo" on top, the open
 // photo's form under it, every photo below. Leaving with unsaved changes asks
-// first and never saves (Sprint 7 rule); Cmd/Ctrl+S saves; closing the tab
-// asks too.
+// first (in-page dialog) and never saves (Sprint 7 rule); Cmd/Ctrl+S saves;
+// closing the tab asks too.
 export function PhotosConsole({ init }: { init: PhotosConsoleInit }) {
   const [editor] = useState(() => new PhotoEditorState({ photos: init.photos, available: init.available }, ACTIONS));
   const snap = useSyncExternalStore(editor.subscribe, editor.getSnapshot, editor.getSnapshot);
+  const confirm = useConfirm();
+  // True once a link click was answered "Leave": the navigation may become a
+  // full page load, and the browser must not ask again then.
+  const isLeaving = useLeaveGuard(() => editor.hasUnsaved);
 
   useEffect(() => {
     function onBeforeUnload(event: BeforeUnloadEvent) {
-      if (editor.hasUnsaved) event.preventDefault();
-    }
-    function onClick(event: MouseEvent) {
-      if (!editor.hasUnsaved || !(event.target instanceof Element)) return;
-      const anchor = event.target.closest("a[href]");
-      if (!(anchor instanceof HTMLAnchorElement)) return;
-      const target = {
-        href: anchor.href,
-        target: anchor.target,
-        download: anchor.hasAttribute("download"),
-      };
-      if (!leavesPage(event, target, window.location.href)) return;
-      if (window.confirm(LEAVE_QUESTION)) return;
-      event.preventDefault();
-      event.stopPropagation();
+      if (editor.hasUnsaved && !isLeaving()) event.preventDefault();
     }
     function onKeyDown(event: KeyboardEvent) {
       if (!isSaveShortcut(event)) return;
@@ -61,21 +53,19 @@ export function PhotosConsole({ init }: { init: PhotosConsoleInit }) {
       void (editor.getSnapshot().editing?.status === "published" ? editor.primaryAction() : editor.save());
     }
     window.addEventListener("beforeunload", onBeforeUnload);
-    window.addEventListener("click", onClick, true);
     window.addEventListener("keydown", onKeyDown);
     return () => {
       window.removeEventListener("beforeunload", onBeforeUnload);
-      window.removeEventListener("click", onClick, true);
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [editor]);
+  }, [editor, isLeaving]);
 
-  function leaveCurrent(): boolean {
-    return !editor.hasUnsaved || window.confirm(LEAVE_QUESTION);
+  async function leaveCurrent(): Promise<boolean> {
+    return !editor.hasUnsaved || confirm({ question: LEAVE_QUESTION, confirmLabel: "Leave" });
   }
 
   async function pick(file: File | undefined) {
-    if (!file || !init.uploadMode || !leaveCurrent()) return;
+    if (!file || !init.uploadMode || !(await leaveCurrent())) return;
     if (!editor.uploadStarted()) return;
     let result: PhotoActionResult;
     try {
@@ -139,16 +129,16 @@ export function PhotosConsole({ init }: { init: PhotosConsoleInit }) {
         key={snap.generation}
         editor={editor}
         snap={snap}
-        onClose={() => {
-          if (leaveCurrent()) editor.close();
+        onClose={async () => {
+          if (await leaveCurrent()) editor.close();
         }}
       />
       <PhotoList
         photos={snap.photos}
         activeId={snap.editing?.id ?? null}
         disabled={snap.busy || snap.uploading}
-        onOpen={(id) => {
-          if (!leaveCurrent()) return;
+        onOpen={async (id) => {
+          if (!(await leaveCurrent())) return;
           editor.open(id);
           window.scrollTo({ top: 0 });
         }}

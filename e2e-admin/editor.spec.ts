@@ -12,6 +12,8 @@ async function signIn(page: Page, next: string) {
 // selector names the paragraph; Next keeps a route it left mounted but hidden,
 // hence :visible.
 const status = (page: Page) => page.locator('p[role="status"]:visible').first();
+// The admin's in-page confirmation (a native modal <dialog>, not window.confirm).
+const ask = (page: Page) => page.getByRole("dialog");
 
 // Drafts are saved only by hand: Save draft (or Cmd/Ctrl+S). Publish saves an
 // unsaved edit first, so a test that publishes needs no save of its own.
@@ -59,20 +61,18 @@ test("Lab: edits stay unsaved until saved by hand, leaving warns, publish to the
   // Leaving with an unsaved edit asks first; Cancel stays on the page.
   await row.getByLabel("Description").fill("Edited again by the admin e2e.");
   await expect(status(page)).toHaveText("Unsaved changes");
-  const asked = page.waitForEvent("dialog").then(async (dialog) => {
-    const message = dialog.message();
-    await dialog.dismiss();
-    return message;
-  });
   await page.getByRole("navigation", { name: "Breadcrumb" }).getByRole("link", { name: "Admin" }).click();
-  expect(await asked).toBe("You have unsaved changes. Leave without saving?");
+  await expect(ask(page)).toHaveAccessibleName("You have unsaved changes. Leave without saving?");
+  await ask(page).getByRole("button", { name: "Cancel" }).click();
+  await expect(ask(page)).toHaveCount(0);
   await expect(page).toHaveURL(/\/admin\/lab\/$/);
   await expect(row.getByLabel("Description")).toHaveValue("Edited again by the admin e2e.");
 
   // Accepting leaves and drops the edit: coming back (in-app, then after a
   // reload) shows the saved draft, with nothing unsaved.
-  page.once("dialog", (dialog) => void dialog.accept());
   await page.getByRole("navigation", { name: "Breadcrumb" }).getByRole("link", { name: "Admin" }).click();
+  await expect(ask(page)).toHaveAccessibleName("You have unsaved changes. Leave without saving?");
+  await ask(page).getByRole("button", { name: "Leave" }).click();
   await expect(page).toHaveURL(/\/admin\/$/);
   await page.getByRole("link", { name: "Lab", exact: true }).click();
   await expect(page).toHaveURL(/\/admin\/lab\/$/);
@@ -97,7 +97,6 @@ test("Lab: edits stay unsaved until saved by hand, leaving warns, publish to the
 });
 
 test("Nebuu: add, move and delete blocks, upload an image, publish", async ({ page }) => {
-  page.on("dialog", (dialog) => void dialog.accept());
   await signIn(page, "/admin/work/nebuu/");
 
   await page.getByRole("button", { name: "+ Text" }).click();
@@ -106,6 +105,8 @@ test("Nebuu: add, move and delete blocks, upload an image, publish", async ({ pa
   const notes = page.locator("li", { has: page.locator('[data-block="e2e-notes"]') });
   await notes.getByRole("button", { name: "Move up" }).first().click();
   await page.getByRole("button", { name: "Delete block Editions" }).click();
+  await expect(ask(page)).toHaveAccessibleName('Delete "Editions"?');
+  await ask(page).getByRole("button", { name: "Remove" }).click();
 
   // Each card's toggle is its only button with aria-expanded (the remove
   // buttons also carry the card's name).
@@ -167,7 +168,6 @@ test("Selected work: move Nebuu up one place", async ({ page }) => {
 });
 
 test("New page: create, publish, see it live, then delete it", async ({ page }) => {
-  page.on("dialog", (dialog) => void dialog.accept());
   await signIn(page, "/admin/work/new/");
   await page.getByLabel("Title").fill("E2E Page");
   await page.getByLabel("Kind").fill("test page");
@@ -193,6 +193,8 @@ test("New page: create, publish, see it live, then delete it", async ({ page }) 
 
   await signIn(page, "/admin/work/e2e-page/");
   await page.getByRole("button", { name: "Delete page" }).click();
+  await expect(ask(page)).toHaveAccessibleName("Delete E2E Page? It leaves the site at once.");
+  await ask(page).getByRole("button", { name: "Delete page" }).click();
   await expect(page).toHaveURL(/\/admin\/$/);
   expect((await page.request.get("/work/e2e-page/")).status()).toBe(404);
 });
