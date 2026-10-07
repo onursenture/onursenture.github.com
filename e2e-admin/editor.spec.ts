@@ -106,7 +106,7 @@ test("Nebuu: add, move and delete blocks, upload an image, publish", async ({ pa
   await notes.getByRole("button", { name: "Move up" }).first().click();
   await page.getByRole("button", { name: "Delete block Editions" }).click();
   await expect(ask(page)).toHaveAccessibleName('Delete "Editions"?');
-  await ask(page).getByRole("button", { name: "Remove" }).click();
+  await ask(page).getByRole("button", { name: "Delete", exact: true }).click();
 
   // Each card's toggle is its only button with aria-expanded (the remove
   // buttons also carry the card's name).

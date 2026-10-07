@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useEffectEvent, useRef } from "react";
+import { useCallback, useEffect, useEffectEvent, useRef } from "react";
 import { LEAVE_QUESTION, leavesPage } from "@/lib/admin/leave-guard";
 import { useConfirm } from "./confirm-dialog";
 
@@ -34,7 +34,9 @@ export function useLeaveGuard(hasUnsaved: () => boolean, onLeave?: () => void): 
     leaving.current = true;
     onLeave?.();
     const url = new URL(anchor.href);
-    router.push(`${url.pathname}${url.search}${url.hash}`);
+    // Route handlers (/api/...) are not pages: they need a real navigation.
+    if (url.pathname.startsWith("/api/")) window.location.assign(url.href);
+    else router.push(`${url.pathname}${url.search}${url.hash}`);
   });
 
   useEffect(() => {
@@ -43,5 +45,5 @@ export function useLeaveGuard(hasUnsaved: () => boolean, onLeave?: () => void): 
     return () => window.removeEventListener("click", onClick, true);
   }, []);
 
-  return () => leaving.current;
+  return useCallback(() => leaving.current, []);
 }

@@ -123,7 +123,7 @@ export function PageEditor({ init, locked, entries: initialEntries, live, hasRep
     const block = page.blocks[index];
     const pinned = block.kind === "images" && block.images.some((image) => image.pin);
     const question = pinned ? `Delete "${blockLabel(block)}"? Its pinned image leaves Selected work.` : `Delete "${blockLabel(block)}"?`;
-    if (await confirm({ question, confirmLabel: "Remove" })) blocks.remove(index);
+    if (await confirm({ question, confirmLabel: "Delete" })) blocks.remove(index);
   }
 
   // Delete problems get their own line: they are not publish issues, so they

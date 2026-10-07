@@ -98,12 +98,9 @@ test.describe("on a phone", () => {
     await expect(row(page, "E2E phone photo")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   });
-});
-
-test.describe("on a phone", () => {
-  test.use({ viewport: { width: 375, height: 812 } });
 
   test("the confirmation dialog fits a 375px screen with a 16px gutter", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
     await signIn(page, "/admin/photos/");
     await row(page, "E2E phone photo").click();
     await page.getByRole("button", { name: "Delete", exact: true }).click();
@@ -145,6 +142,58 @@ test("a leave confirmation answered Cancel (button, Esc or backdrop) keeps the p
   await expect(page).toHaveURL(/\/admin\/photos\/$/);
   await expect(page.getByLabel("Title")).toHaveValue("E2E phone photo, edited");
   await expect(status(page)).toHaveText("Unsaved changes");
+});
+
+test("browser Back while a question is open cancels it: the dialog goes and nothing is deleted", async ({ page }) => {
+  await signIn(page, "/admin/");
+  await page.getByRole("link", { name: "All photos" }).click();
+  await expect(page).toHaveURL(/\/admin\/photos\/$/);
+  await row(page, "E2E phone photo").click();
+  await page.getByRole("button", { name: "Delete", exact: true }).click();
+  await expect(ask(page)).toHaveAccessibleName("Delete this photo? This can't be undone.");
+  const before = files().length;
+  expect(before).toBeGreaterThan(0);
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/admin\/$/);
+  await expect(ask(page)).toHaveCount(0);
+  // The hidden photos page must not have deleted anything.
+  await page.goForward();
+  await expect(page).toHaveURL(/\/admin\/photos\/$/);
+  await expect(ask(page)).toHaveCount(0);
+  await expect(row(page, "E2E phone photo")).toBeVisible();
+  expect(files().length).toBe(before);
+});
+
+test("with unsaved changes, opening another photo and picking a file ask first", async ({ page }) => {
+  await signIn(page, "/admin/photos/");
+  await page.getByLabel("Add photo").setInputFiles(".e2e-admin/fixtures/exif-gps.jpg");
+  await expect(status(page)).toHaveText("Draft saved");
+  await page.getByLabel("Title").fill("E2E leave rows");
+  await expect(status(page)).toHaveText("Unsaved changes");
+
+  // Opening another row: Cancel keeps the form and the edit.
+  await row(page, "E2E phone photo").click();
+  await expect(ask(page)).toHaveAccessibleName(LEAVE_QUESTION);
+  await ask(page).getByRole("button", { name: "Cancel" }).click();
+  await expect(ask(page)).toHaveCount(0);
+  await expect(page.getByLabel("Title")).toHaveValue("E2E leave rows");
+  await expect(status(page)).toHaveText("Unsaved changes");
+
+  // Picking a file: Leave drops the edit and the upload goes ahead.
+  await page.getByLabel("Add photo").setInputFiles(".e2e-admin/fixtures/exif-gps.jpg");
+  await expect(ask(page)).toHaveAccessibleName(LEAVE_QUESTION);
+  await ask(page).getByRole("button", { name: "Leave" }).click();
+  await expect(status(page)).toHaveText("Draft saved");
+  await expect(page.getByLabel("Title")).toHaveValue("");
+
+  // Clean up the two drafts.
+  for (let i = 0; i < 2; i++) {
+    if (i > 0) await row(page, "Untitled").first().click();
+    await page.getByRole("button", { name: "Delete", exact: true }).click();
+    await ask(page).getByRole("button", { name: "Delete", exact: true }).click();
+    await expect(status(page)).toHaveText("Deleted");
+  }
 });
 
 // Firefox Focus on iOS answers window.confirm with "no" and shows nothing
