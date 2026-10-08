@@ -25,3 +25,11 @@ test("an unknown photo 404s inside the shell", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Page not found." })).toBeVisible();
   await expect(page.getByRole("link", { name: "Onur Senture" })).toBeVisible();
 });
+
+for (const path of ["/does-not-exist/", "/life/does-not-exist/"]) {
+  test(`${path} is titled "Not found"`, async ({ page }) => {
+    const response = await page.goto(path);
+    expect(response?.status()).toBe(404);
+    await expect(page).toHaveTitle("Not found · Onur Senture");
+  });
+}

@@ -179,3 +179,10 @@ test.describe("at 390px", () => {
     expect(await note.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(true);
   });
 });
+
+test("the home and Life pages carry a meta description", async ({ page }) => {
+  for (const path of ["/", "/notes/", "/life/", "/life/photos/", "/life/films/", "/life/books/", "/life/theatre/", "/life/saved/", "/life/notes/"]) {
+    await page.goto(path);
+    await expect(page.locator('meta[name="description"]'), path).toHaveAttribute("content", /.{50,}/);
+  }
+});

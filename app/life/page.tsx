@@ -6,16 +6,17 @@ import { lifeSections } from "@/components/sections/life";
 import { SectionBlock } from "@/components/sections/section-block";
 import { DitherRule } from "@/components/ui/dither";
 import { ROW_GRID } from "@/components/ui/section-row";
+import { DESCRIPTIONS } from "@/content/descriptions";
 import { getPhotos } from "@/lib/content/photos";
 import { latestPlays } from "@/lib/life/archive";
 import { buildReadout } from "@/lib/life/readout";
 import { readLifeLog } from "@/lib/life-log/read";
-import { pageMetadata } from "@/lib/metadata";
+import { describedMetadata } from "@/lib/metadata";
 import { getPublishedNotes } from "@/lib/notes/read";
 import { notePathOn, noteTitle, onSide } from "@/lib/notes/views";
 import { readSource } from "@/lib/sources/read";
 
-export const metadata: Metadata = pageMetadata("Life");
+export const metadata: Metadata = describedMetadata("Life", DESCRIPTIONS.life);
 
 export default async function LifePage() {
   const [films, books, articles, writing, github, photos, allNotes, theatreRows] = await Promise.all([

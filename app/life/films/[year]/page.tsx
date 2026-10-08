@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { FilmsArchive } from "@/components/life/archive/films-archive";
+import { DESCRIPTIONS } from "@/content/descriptions";
 import { filmArchive } from "@/lib/life/archive";
 import { readLifeLog } from "@/lib/life-log/read";
-import { pageMetadata } from "@/lib/metadata";
+import { describedMetadata } from "@/lib/metadata";
 
 // cacheComponents needs at least one param: with no films yet, "undated"
 // stands in (it 404s until there are undated films). Other years render on
@@ -18,7 +19,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/life/films/[year]">): Promise<Metadata> {
   const { year } = await params;
-  return pageMetadata(year === "undated" ? "Films · Undated" : `Films · ${year}`);
+  return describedMetadata(year === "undated" ? "Films · Undated" : `Films · ${year}`, DESCRIPTIONS.films);
 }
 
 export default async function FilmsYearPage({ params }: PageProps<"/life/films/[year]">) {
