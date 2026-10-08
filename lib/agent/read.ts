@@ -7,7 +7,7 @@ import { safeSpan } from "@/content/experience";
 import { getPublishedContent } from "@/lib/content/read";
 import { site } from "@/lib/site";
 import { experienceViews } from "@/lib/work/views";
-import { type AgentInput, bioPlain } from "./onur-md";
+import { type AgentInput, bioPlain, workSummary } from "./onur-md";
 
 // Everything /onur.md and /llms.txt say, from the published site (admin
 // documents over the repo). `fallback` is true when the repo stands in for an
@@ -17,7 +17,7 @@ export async function agentInput(): Promise<{ input: AgentInput; fallback: boole
   const pinnedSlugs = [...new Set(content.pins.map((pin) => pin.slug))];
   const work = pinnedSlugs.flatMap((slug) => {
     const page = content.pages.find((p) => p.slug === slug);
-    return page ? [{ title: page.title, summary: `${page.lead.strong} ${page.lead.rest}`.trim(), href: `/work/${page.slug}/` }] : [];
+    return page ? [{ title: page.title, summary: workSummary(page.lead), href: `/work/${page.slug}/` }] : [];
   });
   const input: AgentInput = {
     siteUrl: site.url,

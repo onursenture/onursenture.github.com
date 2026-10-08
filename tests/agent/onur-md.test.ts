@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type AgentInput, absoluteUrl, bioPlain, buildOnurMd } from "@/lib/agent/onur-md";
+import { type AgentInput, absoluteUrl, bioPlain, buildOnurMd, workSummary } from "@/lib/agent/onur-md";
 
 const input: AgentInput = {
   siteUrl: "https://onursenture.com",
@@ -64,5 +64,15 @@ describe("buildOnurMd", () => {
 describe("bioPlain", () => {
   it("names the organisations in plain text", () => {
     expect(bioPlain([["At ", { org: "primetek" }, " and ", { org: "orkestra" }, "."]])).toEqual(["At PrimeTek and Orkestra Studios."]);
+  });
+});
+
+describe("workSummary", () => {
+  it("is the lead's continuation, not the name it opens with", () => {
+    expect(workSummary({ strong: "PrimeOne.", rest: " The Figma design system. " })).toBe("The Figma design system.");
+  });
+
+  it("falls back to the opening words when there is no continuation", () => {
+    expect(workSummary({ strong: " Nebuu. ", rest: "  " })).toBe("Nebuu.");
   });
 });

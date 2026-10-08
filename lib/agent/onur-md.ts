@@ -28,6 +28,13 @@ export function bioPlain(bio: BioSegment[][]): string[] {
   return bio.map((paragraph) => paragraph.map((segment) => (typeof segment === "string" ? segment : ORGS[segment.org].name)).join(""));
 }
 
+// A product's summary: the lead's continuation, since the lead's first words
+// are the product name the line already starts with. The first words stand in
+// only when there is no continuation.
+export function workSummary(lead: { strong: string; rest: string }): string {
+  return lead.rest.trim() || lead.strong.trim();
+}
+
 // Link text can't hold an unescaped bracket.
 function text(value: string): string {
   return value.replace(/[[\]]/g, (bracket) => `\\${bracket}`);
