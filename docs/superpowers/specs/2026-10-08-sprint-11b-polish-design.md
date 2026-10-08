@@ -260,3 +260,26 @@ Deliberately not done: a 320w photo rendition (it would need a backfill of every
 - A Lighthouse performance budget in CI.
 - A deep accessibility audit of the admin beyond keyboard, focus and labels.
 - The launch version number (Sprint 12).
+
+## Errata (planning)
+
+- §1.5 / §2.3: both pages open with the `/book/` header pattern (`← Home` and an `h1` lead with a muted continuation) instead of `PageHeader`, like every other Work page.
+- §2.1: notes do not cross-post to Bluesky (only their text format follows Bluesky's, through `@atproto/api` facets); the Data row says that instead.
+- §2.2: versions are read from `dependencies` and `devDependencies` (Tailwind is a dev dependency). A 0.x package shows `major.minor` ("Drizzle 0.45"). Neon, Vercel and GitHub OAuth carry no version.
+- §3.1: the intro is a TS module (`content/agent-intro.ts`), not Markdown, so a runtime regeneration needs no file tracing. It is in the first person, like the home bio, and says nothing about availability (the Profile section adds "Open to work" from the published switch). Booking links go to cal.com directly.
+- §3.3: the `text/markdown` alternate is a `<link>` in the root layout's `<head>`, not `metadata.alternates`, because note pages set their own `alternates` (canonical), which would replace it.
+- §5.2 A5: the figure button keeps an `aria-label`, now starting with its visible text ("FIG. 01 · Marketplace, open in viewer"). Removing it would leave the button nameless: its visible label is `aria-hidden`.
+- §5.2 A8: Experience moves the truncation onto the link; the Life readout lines (text with a link inside) get the `focus-room` utility instead.
+- §5.2 A1: the resume's contact line, products line and Projects, the 404 sentences, and the new colophon and changelog prose use `underline="always"`. Notes already underlined their links.
+- §5.4 P1: four leading images (`EAGER_TILES`, the first phone row) load eagerly; on Saved, one.
+- §5.5: the admin axe pass runs in `e2e-admin/a11y.spec.ts`; `/life/films/[year]` isn't audited separately (same component as `/life/films/`).
+
+### Errata (implementation)
+
+- Task 3: the 404 title comes from `export const metadata = pageMetadata("Not found")` in both `[...missing]/page.tsx` files; the `not-found.tsx` fallback wasn't needed.
+- Task 5: `TextLink` renders a plain `<a>` for an internal href ending in a file extension (route handlers such as `/onur.md`), instead of `next/link`.
+- Task 7: `bioPlain`, `workSummary`, `oneLine` and `selectedWork` live in the pure `lib/agent/onur-md.ts`. Work summaries are the lead's continuation (`lead.rest`, falling back to `lead.strong`), because `lead.strong` is the product name. Selected work is derived with `buildPins` (the same function the home uses), deduped by slug, so stale or unlisted pins match the home. Work summaries and lab descriptions are collapsed to one line. The resume email is `resume.contact.email`.
+- Tasks 7–8: both routes write `cacheLife` as an `if`/`else` (the ternary form failed TS2769), like `lib/resume/pdf/published.ts`.
+- Task 9: the readout `<ul>` is `flex flex-col`, because `focus-room`'s negative margins collapsed between block siblings (a 28px pitch instead of 24); `e2e-fixtures/life.spec.ts` measures the readout line's content box. `focus-room` needs a flex (or grid) parent to stay layout-neutral.
+- Task 10: eager loading applies to the first month's row only on the films and books archives (a newest month with fewer than 4 tiles loads fewer eagerly).
+- Task 11: the fixture a11y spec also checks that a note page (own `alternates`) keeps the `text/markdown` alternate link; no violations needed fixing.

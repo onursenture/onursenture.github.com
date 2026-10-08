@@ -10,6 +10,7 @@ onursenture.com v2: Next.js 16 on Vercel, Postgres (Neon) via Drizzle. A profess
 - Sprint 8 (Resume, Book a call): `docs/superpowers/specs/2026-10-04-sprint-8-resume-book-design.md`
 - Sprint 9 (Notes): `docs/superpowers/specs/2026-10-04-sprint-9-notes-design.md`
 - Sprint 10 (Life archives): `docs/superpowers/specs/2026-10-05-sprint-10-life-archives-design.md`
+- Sprint 11b (changelog, colophon, onur.md, accessibility): `docs/superpowers/specs/2026-10-08-sprint-11b-polish-design.md`
 - Plans: `docs/superpowers/plans/`
 
 ## Commands
@@ -201,6 +202,27 @@ CI runs typecheck, lint, test, build, e2e, `e2e:admin`, then a fixture build and
 - **Home caps.** Saved shows 5 and Theatre 6; `tests/sections/home-caps.test.ts` covers both.
 - **Saved.** Instapaper's archive step enriches up to 5 new links a run, within the deadline. `savedItems` re-checks each article link with `httpUrl` and drops the article when it isn't http(s).
 - **Writing** is hidden on `/life/` while it has no posts. A 404 feed is "no posts", not an error.
+
+## Changelog, colophon and agents (Sprint 11b)
+
+- **Changelog.** `content/changelog.ts` (releases and eras, newest first), rules in `lib/changelog.ts` (`changelogIssues`, tested in `tests/changelog.test.ts`). Every merge into `v2` that changes the site adds a release and bumps `package.json` to it (`npm version <x.y.z> --no-git-tag-version`): a sprint is a minor, a follow-up fix a patch. CI fails when they differ. Items are plain sentences for a visitor, 1–5 per release. `/changelog/` anchors each release at `anchorOf(version)` (`v2-9-0`); the footer's version links there.
+- **Colophon.** `content/colophon.ts` (copy) and `lib/colophon.ts` (`stackItems`: versions from `package.json` at build; a missing package is left out). Only true claims: check one against the code before adding it.
+- **Descriptions.** Pages without a data-derived description use `DESCRIPTIONS` (`content/descriptions.ts`) through `describedMetadata()`. One sentence, 50–160 characters.
+- **404 title.** Both `[...missing]/page.tsx` files (`app/(work)/` and `app/life/`) set the title with `export const metadata = pageMetadata("Not found")`; `not-found.tsx` is only the fallback body.
+- **Agents.** `/onur.md` and `/llms.txt` are route handlers over `agentInput()` (`lib/agent/read.ts`), built by the pure `buildOnurMd` / `buildLlmsTxt`, tagged `content` (minutes on the repo fallback, days otherwise). Never an email address (`resume.contact.email` is the one to keep out). The root layout's `<head>` carries `<link rel="alternate" type="text/markdown" href="/onur.md">` directly (a page's `alternates` would replace a layout-level one; note pages keep it, `e2e-fixtures/a11y.spec.ts` checks). The Life readout's third boot line links `onur.md`.
+  - The pure helpers `bioPlain`, `workSummary`, `oneLine` and `selectedWork` live in `lib/agent/onur-md.ts`. A work summary is the lead's continuation (`lead.rest`, falling back to `lead.strong`, which is the product name). Selected work comes from `buildPins`, the function the home uses, deduped by slug, so a stale or unlisted pin is handled the same as on the home. Work summaries and lab descriptions are collapsed to one line.
+  - Both route handlers set `cacheLife` as an `if`/`else` (a ternary fails TS2769), like `lib/resume/pdf/published.ts`.
+
+## Accessibility (Sprint 11b)
+
+- WCAG 2.2 AA. `e2e/a11y.spec.ts` and `e2e-fixtures/a11y.spec.ts` run axe on every route in `e2e/a11y-routes.ts` at 390 and 1440; `tests/a11y-routes.test.ts` fails when a page route is missing from that list, so add new pages there. `e2e-admin/a11y.spec.ts` checks the admin's names and labels. Never silence a rule.
+- One focus style: `:focus-visible` is a 2px accent outline, 2px off (`app/globals.css`); file-upload labels draw it for their hidden input. Don't wrap a focusable in an `overflow:hidden` / `truncate` box: truncate the link itself, or add `focus-room` to the box. `focus-room` (4px padding, -4px margin) needs a `flex` or `grid` parent to stay layout-neutral: negative margins collapse between block siblings (the Life readout's `<ul>` is `flex flex-col` for this; `e2e-fixtures/life.spec.ts` measures the line's content box).
+- Both shells start with `SkipLink` and wrap the page in `<div id="content" tabIndex={-1}>`.
+- A link inside running text takes `underline="always"` (`TextLink`, `ItemLink`); nav, footer, list rows and actions keep hover-only underlines. `TextLink` renders a plain `<a>` (not `next/link`) for an internal href that ends in a file extension (`/onur.md`, `/resume.pdf`): those are route handlers, not pages.
+- Small interactive text gets a 24px hit area (`inline-block py-[3px]` on an 18px line).
+- A scroller that can overflow is `tabIndex={0} role="region"` with an `aria-label`.
+- `<time>` never carries `aria-label`; put the label in `sr-only` text before it.
+- Life grids load their first `EAGER_TILES` (4) images with `loading="eager"` and `fetchPriority="high"` (`priority` / `eager` props); everything else stays lazy. On the films and books archives only the first month's row of the page is eager, so a newest month with fewer than 4 tiles loads fewer eagerly; Saved loads one.
 
 ## Sources and sync
 
