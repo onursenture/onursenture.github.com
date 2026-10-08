@@ -57,3 +57,15 @@ test.describe("at 390px", () => {
     await expect(page.getByRole("button", { name: "Menu" })).toHaveCount(0);
   });
 });
+
+for (const path of ["/", "/life/"]) {
+  test(`the first Tab on ${path} reaches "Skip to content", which moves focus past the header`, async ({ page }) => {
+    await page.goto(path);
+    await page.keyboard.press("Tab");
+    const skip = page.getByRole("link", { name: "Skip to content" });
+    await expect(skip).toBeFocused();
+    await expect(skip).toBeVisible();
+    await page.keyboard.press("Enter");
+    await expect(page.locator("#content")).toBeFocused();
+  });
+}

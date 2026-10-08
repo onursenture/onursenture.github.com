@@ -15,17 +15,24 @@ export function TextLink({
   children,
   className,
   ariaLabel,
+  underline = "hover",
 }: {
   href: string;
   children: ReactNode;
   className?: string;
   // Replaces the accessible name when several links share the same visible text.
   ariaLabel?: string;
+  // "always" for a link inside running text, where colour alone can't mark it (WCAG 1.4.1).
+  underline?: "hover" | "always";
 }) {
   const external = isExternal(href);
   const content = (
     <>
-      <span className="group-hover:underline group-hover:underline-offset-[0.2em]">{children}</span>
+      <span
+        className={underline === "always" ? "underline decoration-1 underline-offset-[0.2em]" : "group-hover:underline group-hover:underline-offset-[0.2em]"}
+      >
+        {children}
+      </span>
       <span aria-hidden="true">{external ? "\u00a0\u2197" : "\u00a0\u2192"}</span>
     </>
   );

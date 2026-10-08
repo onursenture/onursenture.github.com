@@ -11,7 +11,7 @@ const COLORS = {
   "--color-fg-soft": { light: "#52525A", dark: "#B4B4BA" },
   "--color-line": { light: "#E6E6E1", dark: "#222225" },
   "--color-accent": { light: "#2F55F5", dark: "#6E8BFF" },
-  "--color-danger": { light: "#D92D20", dark: "#F97066" },
+  "--color-danger": { light: "#C9281C", dark: "#F97066" },
   "--color-danger-bg": { light: "#FEF3F2", dark: "#2A0F0C" },
 };
 
