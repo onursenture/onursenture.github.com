@@ -2,7 +2,10 @@
 // agents. Pure: lib/agent/read.ts gathers the input from the published
 // content. An empty section is left out; there is never an email address.
 import { ORGS } from "@/content/orgs";
+import type { PinRef } from "@/content/pins";
 import type { BioSegment } from "@/content/profile";
+import type { ProductPage } from "@/content/work/types";
+import { buildPins } from "@/lib/work/derive";
 
 export interface AgentInput {
   siteUrl: string;
@@ -32,7 +35,23 @@ export function bioPlain(bio: BioSegment[][]): string[] {
 // are the product name the line already starts with. The first words stand in
 // only when there is no continuation.
 export function workSummary(lead: { strong: string; rest: string }): string {
-  return lead.rest.trim() || lead.strong.trim();
+  return oneLine(lead.rest) || oneLine(lead.strong);
+}
+
+// One line of prose: a newline can't break a list item.
+export function oneLine(value: string): string {
+  return value.replace(/\s+/g, " ").trim();
+}
+
+// The home's Selected work, as /onur.md lists it: the pages behind the pins
+// the home shows (buildPins, so a stale ref is left out and a pinned image
+// the order doesn't list is appended), each page once, in pin order.
+export function selectedWork(pages: ProductPage[], order: PinRef[]): AgentInput["work"] {
+  const slugs = [...new Set(buildPins(pages, order, () => undefined).map((pin) => pin.slug))];
+  return slugs.flatMap((slug) => {
+    const page = pages.find((p) => p.slug === slug);
+    return page ? [{ title: page.title, summary: workSummary(page.lead), href: `/work/${page.slug}/` }] : [];
+  });
 }
 
 // Link text can't hold an unescaped bracket.
@@ -56,10 +75,10 @@ export function buildOnurMd(input: AgentInput): string {
     const head = `- **${text(entry.org)}**, ${entry.role}${entry.span ? ` (${entry.span})` : ""}`;
     return products ? `${head}: ${products}` : head;
   });
-  const work = input.work.map((w) => `- ${link(siteUrl, w.title, w.href)}: ${w.summary}`);
+  const work = input.work.map((w) => `- ${link(siteUrl, w.title, w.href)}: ${oneLine(w.summary)}`);
   const lab = input.lab.map((entry) => {
     const name = entry.href ? link(siteUrl, entry.title, entry.href) : text(entry.title);
-    return `- ${name}${entry.year ? ` (${entry.year})` : ""}: ${entry.description}`;
+    return `- ${name}${entry.year ? ` (${entry.year})` : ""}: ${oneLine(entry.description)}`;
   });
   const resume = [`- ${link(siteUrl, "Resume", "/resume/")}`, `- ${link(siteUrl, "Resume (PDF)", "/resume.pdf")}`];
   const contact = [

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { type AgentInput, absoluteUrl, bioPlain, buildOnurMd, workSummary } from "@/lib/agent/onur-md";
+import { type AgentInput, absoluteUrl, bioPlain, buildOnurMd, selectedWork, workSummary } from "@/lib/agent/onur-md";
+import type { ProductPage } from "@/content/work/types";
 
 const input: AgentInput = {
   siteUrl: "https://onursenture.com",
@@ -74,5 +75,55 @@ describe("workSummary", () => {
 
   it("falls back to the opening words when there is no continuation", () => {
     expect(workSummary({ strong: " Nebuu. ", rest: "  " })).toBe("Nebuu.");
+  });
+});
+
+describe("selectedWork", () => {
+  const page = (slug: string, images: ProductPage["blocks"]): ProductPage => ({
+    slug: slug as ProductPage["slug"],
+    org: "primetek",
+    title: slug.toUpperCase(),
+    kind: "design system",
+    lead: { strong: `${slug}.`, rest: ` About ${slug}. ` },
+    intro: "",
+    facts: [],
+    blocks: images,
+  });
+  const pin = { title: "T", note: "N" };
+  const pages = [
+    page("a", [{ kind: "images", id: "x", images: [{ id: "one", pin }, { id: "two", pin }, { id: "off" }] }]),
+    page("b", [{ kind: "images", id: "x", images: [{ id: "one", pin }] }]),
+    page("c", [{ kind: "images", id: "x", images: [{ id: "one", pin }] }]),
+  ];
+
+  it("lists each page once, in pin order, for the pins the home shows", () => {
+    const order = [
+      { slug: "b", imageId: "one" },
+      { slug: "a", imageId: "one" },
+      { slug: "a", imageId: "two" },
+    ];
+    expect(selectedWork(pages, order).map((w) => w.href)).toEqual(["/work/b/", "/work/a/", "/work/c/"]);
+  });
+
+  it("leaves out a ref whose image is no longer pinned and appends an unlisted pinned image", () => {
+    const work = selectedWork(pages, [{ slug: "a", imageId: "off" }, { slug: "gone", imageId: "one" }, { slug: "c", imageId: "one" }]);
+    expect(work.map((w) => w.title)).toEqual(["C", "A", "B"]);
+  });
+
+  it("summarises with the lead's continuation", () => {
+    expect(selectedWork(pages, [])[0]).toEqual({ title: "A", summary: "About a.", href: "/work/a/" });
+  });
+});
+
+describe("one-line prose", () => {
+  it("collapses whitespace in summaries and lab descriptions", () => {
+    expect(workSummary({ strong: "X.", rest: "One\n\n two\t three " })).toBe("One two three");
+    const md = buildOnurMd({
+      ...input,
+      work: [{ title: "W", summary: "A\nB", href: "/work/w/" }],
+      lab: [{ title: "L", description: "C\n  D" }],
+    });
+    expect(md).toContain("- [W](https://onursenture.com/work/w/): A B");
+    expect(md).toContain("- L: C D");
   });
 });
