@@ -222,7 +222,7 @@ CI runs typecheck, lint, test, build, e2e, `e2e:admin`, then a fixture build and
 - Small interactive text gets a 24px hit area (`inline-block py-[3px]` on an 18px line).
 - A scroller that can overflow is `tabIndex={0} role="region"` with an `aria-label`.
 - `<time>` never carries `aria-label`; put the label in `sr-only` text before it.
-- Life grids load their first `EAGER_TILES` (4) images with `loading="eager"` and `fetchPriority="high"` (`priority` / `eager` props); everything else stays lazy. On the films and books archives only the first month's row of the page is eager, so a newest month with fewer than 4 tiles loads fewer eagerly; Saved loads one.
+- Life grids load their first `EAGER_TILES` (4) images with `loading="eager"` and `fetchPriority="high"` (`priority` / `eager` props); everything else stays lazy. The first tile row on each archive page loads eagerly: Reading now on Books when present (else the first month), the first month on a films year page, the undated row on `/life/films/undated/`, the first year on Theatre, the first item on Saved; the first `EAGER_TILES` photos on `/life/photos/` and posters in the `/life/` Films row. A first row with fewer than 4 tiles loads fewer eagerly.
 
 ## Sources and sync
 

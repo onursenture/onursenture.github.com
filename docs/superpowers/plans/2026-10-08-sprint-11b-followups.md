@@ -15,3 +15,6 @@
 - About 40 KiB of shared-chunk and polyfill JavaScript (owned by Next's build).
 - Theatre posters are 382×574 for a 90px tile; tiyatrolar has no size parameter.
 - Goodreads covers already in the snapshot keep `_SY475_` until the next sync rewrites them.
+- Sprint 12: decide whether the changelog eras (v1 end, v2 start) and 2.0.0 move to the cutover date; today they use the git dates of the rebuild.
+- Paginated notes pages and films year pages reuse their index descriptions; add a page/year suffix.
+- The admin axe pass audits each console page in its initial state; open the forms and the confirm dialog in a later pass.
