@@ -1,0 +1,117 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  .pf { --bg:#FAFAF8; --fg:#1F1F22; --muted:#6E6E73; --line:#E6E6E1; --accent:#2F55F5; --wood:#B98A5A;
+        background:var(--bg); color:var(--muted); font:12px/1.5 "IBM Plex Mono", ui-monospace, monospace;
+        border-top:1px solid var(--line); padding:14px 16px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+  .pf.dark { --bg:#0B0B0C; --fg:#EDEDED; --muted:#8A8A90; --line:#222225; --accent:#6E8BFF; --wood:#8C6A48; }
+  .pf .l { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pf a { color:inherit; text-decoration:none; }
+  .wash { height:18px; background-image:radial-gradient(var(--accent) 0.8px, transparent 0.9px); background-size:4px 4px; opacity:.35; }
+  .pf + .wash { --accent:#2F55F5; }
+  .pf.dark + .wash { --accent:#6E8BFF; background-color:#0B0B0C; }
+
+  /* paddle: two faces, 3D flip */
+  .paddle { width:22px; height:32px; perspective:120px; cursor:pointer; flex:none; background:none; border:0; padding:0; }
+  .paddle .spin { position:relative; width:100%; height:100%; transform-style:preserve-3d; }
+  .paddle svg { position:absolute; inset:0; width:100%; height:100%; backface-visibility:hidden; overflow:visible; }
+  .paddle svg.back { transform:rotateY(180deg); }
+  .paddle:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+  .pf .face-a { fill:var(--accent); stroke:var(--accent); }
+  .pf .face-b { fill:var(--fg); stroke:var(--fg); }
+  .pf .wood { fill:var(--wood); stroke:var(--wood); }
+  .demo-row { display:flex; gap:24px; align-items:center; justify-content:center; padding:18px 0 6px; }
+  .demo-row .paddle { width:44px; height:64px; perspective:240px; }
+  .hint { font-size:12px; color:#888; text-align:center; margin:4px 0 10px; }
+  .rows{display:flex;flex-direction:column;gap:16px}
+  .prow{display:grid;grid-template-columns:1fr 260px;border:1px solid #ddd;border-radius:10px;overflow:hidden;cursor:pointer}
+  .prow.selected{outline:3px solid #2F55F5}
+  .pimg{display:flex;flex-direction:column;min-width:0}
+  .pbody{padding:16px}
+  .demo-row{justify-content:center!important;gap:0!important;padding:0!important}
+  .demo-row > .paddle{margin:18px 40px}
+</style>
+
+<h2>Paddle glifi: hangi çizim?</h2>
+<p class="subtitle">Üçü de aynı hareketi yapıyor: hover'da kısa bir yarım tur, tıklayınca 2½ turluk "topspin" ve ters yüzde duruş (ön yüz accent, arka yüz siyah lastik). Büyük örneğin ve footer şeridinin üstüne gel ya da tıkla. Sağdaki küçük raket gerçek footer boyutunda.</p>
+
+<div class="rows">
+
+  <div class="card prow" data-choice="dots" onclick="toggleSelect(this)">
+    <div class="pimg">
+      <div class="demo-row pf" style="border:0" data-kind="dots"></div>
+      <div class="pf" data-kind="dots"><span class="l">v2 · 958412b · built 2h ago</span><span class="l">© 2026 Onur Senture · GitHub · Letterboxd</span><span class="slot"></span></div>
+      <div class="pf dark" data-kind="dots"><span class="l">v2 · 958412b · built 2h ago</span><span class="l">© 2026 Onur Senture · GitHub · Letterboxd</span><span class="slot"></span></div>
+    </div>
+    <div class="pbody"><h3>A · Dot-matrix</h3><p>Doto'daki isimle aynı nokta dili. Raket 11×16'lık bir nokta ızgarası, sap ahşap tonda.</p></div>
+  </div>
+
+  <div class="card prow" data-choice="dither" onclick="toggleSelect(this)">
+    <div class="pimg">
+      <div class="demo-row pf" style="border:0" data-kind="dither"></div>
+      <div class="pf" data-kind="dither"><span class="l">v2 · 958412b · built 2h ago</span><span class="l">© 2026 Onur Senture · GitHub · Letterboxd</span><span class="slot"></span></div>
+      <div class="pf dark" data-kind="dither"><span class="l">v2 · 958412b · built 2h ago</span><span class="l">© 2026 Onur Senture · GitHub · Letterboxd</span><span class="slot"></span></div>
+    </div>
+    <div class="pbody"><h3>B · Dither</h3><p>Footer wash'taki dither dokusu. Kenar dolu, iç kısım 2×2 bayer deseni, yani "lastik" dokusu.</p></div>
+  </div>
+
+  <div class="card prow" data-choice="line" onclick="toggleSelect(this)">
+    <div class="pimg">
+      <div class="demo-row pf" style="border:0" data-kind="line"></div>
+      <div class="pf" data-kind="line"><span class="l">v2 · 958412b · built 2h ago</span><span class="l">© 2026 Onur Senture · GitHub · Letterboxd</span><span class="slot"></span></div>
+      <div class="pf dark" data-kind="line"><span class="l">v2 · 958412b · built 2h ago</span><span class="l">© 2026 Onur Senture · GitHub · Letterboxd</span><span class="slot"></span></div>
+    </div>
+    <div class="pbody"><h3>C · Hairline</h3><p>Tek çizgi kalınlığında kontur, sitenin hairline grid'i gibi. Ön yüz boş, arka yüz dolu.</p></div>
+  </div>
+
+</div>
+<p class="hint">Kartı seçmek için kartın boş bir yerine tıkla; rakete tıklamak sadece döndürür.</p>
+
+<script>
+(function(){
+  const G = [
+    "...XXXXX...","..XXXXXXX..",".XXXXXXXXX.","XXXXXXXXXXX","XXXXXXXXXXX","XXXXXXXXXXX",
+    "XXXXXXXXXXX","XXXXXXXXXXX",".XXXXXXXXX.","..XXXXXXX..","...XXXXX...",
+    "....XXX....","....XXX....","....XXX....","....XXX....","....XXX...."];
+  const NS = "http://www.w3.org/2000/svg";
+  function svg(cls){ const s=document.createElementNS(NS,"svg"); s.setAttribute("viewBox","0 0 11 16"); s.setAttribute("class",cls); return s; }
+  function el(n,a){ const e=document.createElementNS(NS,n); for(const k in a) e.setAttribute(k,a[k]); return e; }
+  function face(kind, faceCls){
+    const s = svg(faceCls === "face-a" ? "front" : "back");
+    if (kind === "dots" || kind === "dither") {
+      G.forEach((row,y)=>[...row].forEach((c,x)=>{
+        if(c!=="X") return;
+        const handle = y>=11;
+        const edge = !handle && (x===0||x===10||y===0||y===10||G[y][x-1]!=="X"||G[y][x+1]!=="X"||(G[y-1]||"")[x]!=="X"||(G[y+1]||"")[x]!=="X");
+        if (kind==="dither" && !handle && !edge && ((x+y)%2===1)) return;
+        const cls = handle ? "wood" : faceCls;
+        if (kind==="dots") s.appendChild(el("circle",{cx:x+.5,cy:y+.5,r:.42,class:cls,"stroke-width":0}));
+        else s.appendChild(el("rect",{x:x+.06,y:y+.06,width:.88,height:.88,class:cls,"stroke-width":0}));
+      }));
+    } else {
+      const filled = faceCls==="face-b";
+      s.appendChild(el("rect",{x:4.25,y:10.4,width:2.5,height:5.2,rx:.6,class:"wood","fill-opacity":filled?1:0,"stroke-width":.35}));
+      s.appendChild(el("circle",{cx:5.5,cy:5.5,r:5.2,class:faceCls,"fill-opacity":filled?1:0,"stroke-width":.35}));
+    }
+    return s;
+  }
+  function paddle(kind){
+    const b=document.createElement("button"); b.className="paddle"; b.type="button"; b.setAttribute("aria-label","Spin the paddle");
+    const sp=document.createElement("div"); sp.className="spin";
+    sp.appendChild(face(kind,"face-a")); sp.appendChild(face(kind,"face-b")); b.appendChild(sp);
+    let angle=0, busy=false;
+    function go(turns, ms){
+      if(busy) return; busy=true; angle += turns*360;
+      const a = sp.animate([{transform:sp.style.transform||"rotateY(0deg)"},{transform:`rotateY(${angle}deg)`}],
+        {duration:ms, easing:"cubic-bezier(.15,.85,.25,1)", fill:"forwards"});
+      a.onfinish=()=>{ sp.style.transform=`rotateY(${angle}deg)`; a.cancel(); busy=false; };
+    }
+    b.addEventListener("mouseenter",()=>go(.5,450));
+    b.addEventListener("click",e=>{ e.stopPropagation(); go(2.5,1400); });
+    return b;
+  }
+  document.querySelectorAll(".demo-row").forEach(r=>{ r.appendChild(paddle(r.dataset.kind)); const d=r.cloneNode(false); });
+  document.querySelectorAll(".pf .slot").forEach(s=>s.appendChild(paddle(s.parentElement.dataset.kind)));
+  document.querySelectorAll(".demo-row").forEach(r=>{ const dark=document.createElement("div"); dark.className="pf dark"; dark.style.cssText="border:0;padding:12px"; dark.appendChild(paddle(r.dataset.kind)); dark.querySelector(".paddle").style.cssText="width:44px;height:64px"; r.appendChild(dark); });
+})();
+</script>
