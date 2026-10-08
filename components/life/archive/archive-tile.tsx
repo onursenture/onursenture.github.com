@@ -11,10 +11,10 @@ export function initialOf(title: string): string {
 
 // A 2:3 poster or cover with up to two caption lines (title) and its meta
 // lines. The whole tile links to the item upstream.
-export function ArchiveTile({ item }: { item: ArchiveItem }) {
+export function ArchiveTile({ item, priority = false }: { item: ArchiveItem; priority?: boolean }) {
   const body = (
     <>
-      <RemoteImage src={item.image} initial={initialOf(item.title)} width={84} className="mb-1" />
+      <RemoteImage src={item.image} initial={initialOf(item.title)} width={84} priority={priority} className="mb-1" />
       <span className="line-clamp-2 type-label text-fg group-hover:underline group-hover:underline-offset-[0.2em]">
         {item.title}
       </span>

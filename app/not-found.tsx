@@ -1,5 +1,9 @@
+import type { Metadata } from "next";
 import { SectionRow } from "@/components/ui/section-row";
 import { TextLink } from "@/components/ui/text-link";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = pageMetadata("Not found");
 
 // Only for requests that match no layout (paths with a dot, for example).
 // Everything else 404s inside the Work or Life layout.
@@ -10,7 +14,7 @@ export default function RootNotFound() {
         <SectionRow label="404" labelAs="div">
           <h1 className="mb-3 type-lead">Page not found.</h1>
           <p className="type-body text-fg-soft">
-            Nothing lives at this address. <TextLink href="/">Back to home</TextLink>
+            Nothing lives at this address. <TextLink href="/" underline="always">Back to home</TextLink>
           </p>
         </SectionRow>
       </main>

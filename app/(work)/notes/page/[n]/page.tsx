@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NotesIndex } from "@/components/notes/notes-index";
-import { pageMetadata } from "@/lib/metadata";
+import { DESCRIPTIONS } from "@/content/descriptions";
+import { describedMetadata } from "@/lib/metadata";
 import { getPublishedNotes } from "@/lib/notes/read";
 import { onSide, pageCount, parsePage } from "@/lib/notes/views";
 
@@ -14,7 +15,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps<"/notes/page/[n]">): Promise<Metadata> {
-  return pageMetadata(`Notes, page ${(await params).n}`);
+  return describedMetadata(`Notes, page ${(await params).n}`, DESCRIPTIONS.notes);
 }
 
 export default async function NotesPageN({ params }: PageProps<"/notes/page/[n]">) {

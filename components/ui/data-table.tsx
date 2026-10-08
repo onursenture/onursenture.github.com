@@ -27,7 +27,8 @@ export function DataTable<T>({
   empty?: string;
 }) {
   return (
-    <div className="overflow-x-auto">
+    // Focusable and named, so keyboard users can scroll a table wider than the screen (axe scrollable-region-focusable).
+    <div tabIndex={0} role="region" aria-label={`${caption ?? "Table"} (scrolls sideways)`} className="overflow-x-auto">
       <table className="w-full border-collapse">
         {caption ? <caption className="sr-only">{caption}</caption> : null}
         <thead>

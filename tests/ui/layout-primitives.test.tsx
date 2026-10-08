@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { Cover } from "@/components/ui/cover";
 import { DataTable } from "@/components/ui/data-table";
+import { Heatmap } from "@/components/ui/heatmap";
 
 const html = renderToStaticMarkup;
 
@@ -25,12 +26,32 @@ describe("DataTable", () => {
   });
 });
 
+describe("scrollable regions", () => {
+  const columns = [{ header: "Title", cell: (row: { title: string }) => row.title }];
+
+  it("DataTable's scroller is a focusable, named region", () => {
+    const markup = html(<DataTable columns={columns} rows={[]} rowKey={(r) => r.title} caption="Films" />);
+    expect(markup).toContain('<div tabindex="0" role="region" aria-label="Films (scrolls sideways)" class="overflow-x-auto"');
+  });
+
+  it("Heatmap's scroller is a focusable, named region", () => {
+    const markup = html(<Heatmap data={{ total: 3, weeks: [{ days: [{ date: "2026-01-04", count: 3, level: 2 }] }] }} />);
+    expect(markup).toContain('tabindex="0" role="region" aria-label="Contributions heatmap (scrolls sideways)"');
+  });
+});
+
 describe("Cover", () => {
   it("renders a lazy 2:3 image with explicit dimensions", () => {
     const markup = html(<Cover src="https://example.com/p.jpg" alt="" width={200} />);
     expect(markup).toContain('width="200" height="300"');
     expect(markup).toContain('loading="lazy"');
     expect(markup).toContain("aspect-[2/3]");
+  });
+
+  it("loads eagerly with high priority when asked", () => {
+    const markup = html(<Cover src="https://example.com/p.jpg" alt="" priority />);
+    expect(markup).toContain('loading="eager"');
+    expect(markup).toContain('fetchPriority="high"');
   });
 
   it("renders a --color-line block without a src", () => {

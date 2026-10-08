@@ -10,6 +10,9 @@ import { runTypewriter } from "@/lib/life/typewriter";
 import { peekBoot, takeBoot } from "./boot-flag";
 
 const BOOT = ["Booting w00f...", "Human detected."];
+// A pointer for agents after the boot lines (Sprint 11b), typed with them.
+const AGENT = { head: "Not human? → ", link: "onur.md", href: "/onur.md" };
+const AGENT_TEXT = AGENT.head + AGENT.link;
 const DURATION = 1500;
 
 function reducedMotion(): boolean {
@@ -17,6 +20,22 @@ function reducedMotion(): boolean {
 }
 
 const noopSubscribe = () => () => {};
+
+// The agent line, cut to the first n characters while typing.
+function agentLine(n: number) {
+  if (n <= 0) return "\u00a0";
+  const linkPart = AGENT.link.slice(0, Math.max(0, n - AGENT.head.length));
+  return (
+    <>
+      {AGENT.head.slice(0, n)}
+      {linkPart ? (
+        <a href={AGENT.href} className="underline decoration-fg-muted underline-offset-[3px] hover:decoration-fg">
+          {linkPart}
+        </a>
+      ) : null}
+    </>
+  );
+}
 
 // Whether a fresh boot flag asks for typing. Hydration uses the server
 // snapshot (false), so a flag left over on a direct load is ignored and the
@@ -36,7 +55,7 @@ function useBootPending(): boolean {
 // the same instance: a fresh flag then restarts the typing. Reduced motion:
 // static, no blink.
 export function BootReadout({ lines }: { lines: ReadoutLine[] }) {
-  const texts = useMemo(() => [...BOOT, ...lines.map(readoutText)], [lines]);
+  const texts = useMemo(() => [...BOOT, AGENT_TEXT, ...lines.map(readoutText)], [lines]);
   const total = texts.reduce((sum, t) => sum + t.length, 0);
   const bootPending = useBootPending();
   // null = show everything. A client navigation (no hydration) starts at 0
@@ -82,17 +101,20 @@ export function BootReadout({ lines }: { lines: ReadoutLine[] }) {
   return (
     <div className="min-w-0 type-boot">
       <p>
-        Local time: [<LiveClock timeZone={profile.location.timeZone} place={profile.location.place} /> GMT+3]{" "}
+        Local time: [<LiveClock timeZone={profile.location.timeZone} place={profile.location.place} label={false} /> GMT+3]{" "}
         {profile.location.place}
       </p>
       <div className="mt-6 text-fg-muted">
         {BOOT.map((t, i) => (
           <p key={t}>{t.slice(0, visible[i]) || "\u00a0"}</p>
         ))}
+        <p>{agentLine(visible[BOOT.length])}</p>
       </div>
-      <ul className="mt-6">
+      {/* A flex column: sibling margins collapse in block flow, which would eat the
+          focus-room offsets and push the lines 4px further apart. */}
+      <ul className="mt-6 flex flex-col">
         {lines.map((line, i) => {
-          const n = visible[BOOT.length + i];
+          const n = visible[BOOT.length + 1 + i];
           const full = readoutText(line);
           const head = `${line.label}: `;
           const value = full.slice(head.length, n).slice(0, line.value.length);
@@ -123,7 +145,7 @@ export function BootReadout({ lines }: { lines: ReadoutLine[] }) {
           // only; the full text stays in the DOM for screen readers.
           if (!typing) {
             return (
-              <li key={line.key} className="truncate">
+              <li key={line.key} className="focus-room truncate">
                 {content}
               </li>
             );
@@ -132,11 +154,11 @@ export function BootReadout({ lines }: { lines: ReadoutLine[] }) {
           // height is reserved (one line, like the final text); the typed text is
           // overlaid on it. No layout jump.
           return (
-            <li key={line.key} className="relative truncate">
+            <li key={line.key} className="focus-room relative truncate">
               <span aria-hidden="true" className="invisible">
                 {full}
               </span>
-              <span className="absolute inset-0 truncate">{content}</span>
+              <span className="absolute inset-1 truncate">{content}</span>
             </li>
           );
         })}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { TITLE_TEMPLATE, fullTitle, pageMetadata } from "@/lib/metadata";
+import { TITLE_TEMPLATE, describedMetadata, fullTitle, pageMetadata } from "@/lib/metadata";
 
 describe("pageMetadata", () => {
   it("keeps the shared Open Graph and Twitter defaults, without an image", () => {
@@ -29,5 +29,14 @@ describe("title format", () => {
     // Replacement patterns in a title are literal text.
     expect(fullTitle("Q&A $& $1 $$")).toBe("Q&A $& $1 $$ · Onur Senture");
     expect(pageMetadata("Life").openGraph).toMatchObject({ title: fullTitle("Life") });
+  });
+});
+
+describe("describedMetadata", () => {
+  it("sets the description on the page and on Open Graph", () => {
+    const meta = describedMetadata("Films", "Films I watched, by year and month, from Letterboxd.");
+    expect(meta.title).toBe("Films");
+    expect(meta.description).toBe("Films I watched, by year and month, from Letterboxd.");
+    expect(meta.openGraph).toMatchObject({ title: "Films · Onur Senture", description: "Films I watched, by year and month, from Letterboxd." });
   });
 });

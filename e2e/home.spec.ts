@@ -11,7 +11,7 @@ test("the home leads with the lead line, the role and a live Ankara clock", asyn
   const h1 = page.getByRole("heading", { level: 1 });
   await expect(h1).toContainText("Designer who builds.");
   await expect(h1).toContainText("From components to complete apps, designed and built end to end.");
-  await expect(page.getByLabel("Local time in Ankara")).toHaveText(/^\d{2}:\d{2}$/);
+  await expect(page.locator("#identity").getByTestId("local-time")).toHaveText(/^\d{2}:\d{2}$/);
   await expect(page.locator("#identity")).toContainText("Open to work");
 });
 
@@ -178,4 +178,11 @@ test.describe("at 390px", () => {
     await expect(note).toHaveText("football card game");
     expect(await note.evaluate((el) => el.scrollWidth > el.clientWidth)).toBe(true);
   });
+});
+
+test("the home and Life pages carry a meta description", async ({ page }) => {
+  for (const path of ["/", "/notes/", "/life/", "/life/photos/", "/life/films/", "/life/books/", "/life/theatre/", "/life/saved/", "/life/notes/"]) {
+    await page.goto(path);
+    await expect(page.locator('meta[name="description"]'), path).toHaveAttribute("content", /.{50,}/);
+  }
 });

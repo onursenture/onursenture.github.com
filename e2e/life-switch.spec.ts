@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 
 test("the Work side has the switch off; it navigates to the always-dark Life side and back", async ({ page }) => {
@@ -40,8 +41,9 @@ test("Space toggles the focused switch", async ({ page }) => {
 });
 
 test("the footer carries the build line", async ({ page }) => {
+  const version = (JSON.parse(readFileSync("package.json", "utf8")) as { version: string }).version;
   await page.goto("/");
-  await expect(page.getByTestId("build-line")).toHaveText(/^v2\.0\.0 · updated [A-Z][a-z]{2} \d{1,2}, \d{4}/);
+  await expect(page.getByTestId("build-line")).toHaveText(new RegExp(`^v${version.replaceAll(".", "\\.")} · updated [A-Z][a-z]{2} \\d{1,2}, \\d{4}.* · Colophon$`));
 });
 
 test("the Life switch sits next to the name, in the same place on both sides", async ({ page }) => {

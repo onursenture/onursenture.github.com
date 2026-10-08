@@ -8,7 +8,7 @@ export default function NotFound() {
       <SectionRow label="404" labelAs="div">
         <h1 className="mb-3 type-lead">Page not found.</h1>
         <p className="type-body text-fg-soft">
-          Nothing here. Not even a film. <TextLink href="/life/">Back to Life</TextLink>
+          Nothing here. Not even a film. <TextLink href="/life/" underline="always">Back to Life</TextLink>
         </p>
       </SectionRow>
     </main>

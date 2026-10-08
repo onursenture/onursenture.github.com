@@ -54,6 +54,17 @@ describe("Life covers and photos are compact", () => {
     expect(COVER_GRID).toBe("grid grid-cols-4 gap-x-3 gap-y-4 md:grid-cols-10 md:gap-x-4");
   });
 
+  it("films load the first four posters eagerly, at the archive's poster size", () => {
+    const Render = films.Render;
+    const poster = "https://a.ltrbxd.com/resized/film-poster/2/1/8/0/1/21801-x-0-600-0-900-crop.jpg?v=1";
+    const data = [1, 2, 3, 4, 5, 6].map((n) => ({ ...film, link: `https://letterboxd.com/onur/film/f${n}/`, poster }));
+    const html = renderToStaticMarkup(<Render data={data} />);
+    expect(html.match(/loading="eager"/g)).toHaveLength(4);
+    expect(html.match(/loading="lazy"/g)).toHaveLength(2);
+    expect(html).toContain("-0-230-0-345-crop");
+    expect(html).not.toContain("-0-600-0-900-crop");
+  });
+
   it("films use the cover grid and one truncated caption line each", () => {
     const Render = films.Render;
     const html = renderToStaticMarkup(<Render data={[{ ...film, poster: "https://example.com/p.jpg" }]} />);

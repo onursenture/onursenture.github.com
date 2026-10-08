@@ -18,12 +18,14 @@ export function RemoteImage({
   initial,
   shape = "poster",
   width,
+  priority = false,
   className,
 }: {
   src: string;
   initial: string;
   shape?: keyof typeof SHAPES;
   width: number;
+  priority?: boolean;
   className?: string;
 }) {
   const [failed, setFailed] = useState(false);
@@ -42,7 +44,8 @@ export function RemoteImage({
       alt=""
       width={width}
       height={Math.round(width * SHAPES[shape].ratio)}
-      loading="lazy"
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : undefined}
       decoding="async"
       referrerPolicy="no-referrer"
       onError={() => setFailed(true)}

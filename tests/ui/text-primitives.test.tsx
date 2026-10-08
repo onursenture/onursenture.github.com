@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { Button, ButtonLink } from "@/components/ui/button";
+import { ItemLink } from "@/components/sections/item-link";
 import { Chip } from "@/components/ui/chip";
 import { EraStamp } from "@/components/ui/era-stamp";
 import { LiveClock } from "@/components/ui/live-clock";
@@ -87,9 +88,37 @@ describe("client times before hydration", () => {
     );
   });
 
-  it("LiveClock prerenders --:--", () => {
+  it("LiveClock prerenders --:-- with a visually hidden label (no aria-label on <time>)", () => {
     expect(html(<LiveClock timeZone="Europe/Istanbul" place="Ankara" />)).toBe(
-      '<time aria-label="Local time in Ankara">--:--</time>',
+      '<span class="sr-only">Local time in Ankara: </span><time data-testid="local-time">--:--</time>',
     );
+  });
+
+  it("LiveClock leaves the hidden label out for label={false}", () => {
+    expect(html(<LiveClock timeZone="Europe/Istanbul" place="Ankara" label={false} />)).toBe('<time data-testid="local-time">--:--</time>');
+  });
+});
+
+describe("links in running text", () => {
+  it("TextLink underlines always when asked, and only on hover by default", () => {
+    expect(html(<TextLink href="/x/">Read</TextLink>)).toContain("group-hover:underline");
+    const always = html(
+      <TextLink href="/x/" underline="always">
+        Read
+      </TextLink>,
+    );
+    expect(always).toContain('class="underline decoration-1 underline-offset-[0.2em]"');
+    expect(always).not.toContain("group-hover:underline");
+  });
+
+  it("ItemLink underlines always when asked", () => {
+    expect(html(<ItemLink href="/x/">PrimeOne</ItemLink>)).toContain("hover:underline");
+    const always = html(
+      <ItemLink href="/x/" underline="always">
+        PrimeOne
+      </ItemLink>,
+    );
+    expect(always).toContain("underline decoration-1 underline-offset-[0.2em]");
+    expect(always).not.toContain("hover:underline");
   });
 });

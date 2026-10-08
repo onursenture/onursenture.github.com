@@ -36,6 +36,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${plexMono.variable} ${plexSans.variable} ${doto.variable}`}>
+      <head>
+        {/* The Markdown profile for agents (Sprint 11b). In <head> directly, not
+            metadata.alternates, which a page's own alternates would replace. */}
+        <link rel="alternate" type="text/markdown" href="/onur.md" title="Onur Senture in Markdown" />
+      </head>
       <body>{children}</body>
     </html>
   );

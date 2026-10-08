@@ -6,6 +6,7 @@ import { profile } from "@/content/profile";
 import { SideFade } from "./side-fade";
 import { SideSync } from "./side-sync";
 import { SiteFooter } from "./site-footer";
+import { SkipLink } from "./skip-link";
 
 // The Life side: always dark (data-side="life" forces the dark tokens). The
 // header matches the Work side: the name, then the Life switch (on).
@@ -13,6 +14,7 @@ export function LifeShell({ children }: { children: ReactNode }) {
   return (
     <SideFade>
       <div data-side="life" className="flex min-h-dvh flex-col bg-bg text-fg">
+        <SkipLink />
         <SideSync side="life" />
         <DitherStrip />
         <header className="flex h-16 items-center justify-between gap-6 px-4 md:px-10">
@@ -23,7 +25,9 @@ export function LifeShell({ children }: { children: ReactNode }) {
             <LifeSwitch on />
           </div>
         </header>
-        <div className="flex-1">{children}</div>
+        <div id="content" tabIndex={-1} className="flex-1 focus:outline-none">
+          {children}
+        </div>
         <SiteFooter />
       </div>
     </SideFade>

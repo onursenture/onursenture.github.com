@@ -26,7 +26,7 @@
   --color-fg-soft: #52525A;
   --color-line: #E6E6E1;
   --color-accent: #2F55F5;
-  --color-danger: #D92D20;
+  --color-danger: #C9281C;
   --color-danger-bg: #FEF3F2;
 
   /* next/font (app/layout.tsx) defines the --font-plex-* and --font-doto
@@ -87,8 +87,16 @@ html[data-side="life"] {
     color: #FFFFFF;
   }
 
+  /* One focus style everywhere: 2px accent, 2px off the element. */
   :focus-visible {
-    outline: 1px solid var(--color-accent);
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* An upload control is a label over a transparent or sr-only file input,
+     so the input's own ring is invisible: draw it on the label. */
+  label:has(input[type="file"]:focus-visible) {
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
   }
 }
@@ -170,6 +178,14 @@ html[data-side="life"] {
   line-height: 1.7143;
   letter-spacing: 0;
   font-weight: 400;
+}
+
+/* A truncate box holding a link: 4px of padding, taken back by a negative
+   margin, so the box's overflow clip no longer cuts the link's focus ring.
+   Layout is unchanged. */
+@utility focus-room {
+  padding: 4px;
+  margin: -4px;
 }
 
 /* Life readout cursor: a 1s step blink; still under reduced motion. */

@@ -31,3 +31,8 @@ export function pageMetadata(title: string, extra: Metadata = {}): Metadata {
     twitter: { ...TWITTER_DEFAULTS, title: fullTitleText, ...extra.twitter },
   };
 }
+
+// pageMetadata with a description on the page and its Open Graph card.
+export function describedMetadata(title: string, description: string): Metadata {
+  return pageMetadata(title, { description, openGraph: { description } });
+}

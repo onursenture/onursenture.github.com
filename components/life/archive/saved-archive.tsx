@@ -18,7 +18,7 @@ export async function SavedArchive() {
       rows={[
         <ArchiveHeader key="header" title="Saved" lede="Articles I liked." source={SOURCE} />,
         items.length > 0 ? (
-          <SavedList key="list" items={items} />
+          <SavedList key="list" items={items} eager={1} />
         ) : (
           <SectionRow key="empty" label={null}>
             <Empty>Nothing saved yet.</Empty>

@@ -16,7 +16,7 @@ export function MediaButton(figure: MediaFigureProps) {
       type="button"
       data-media={media.id}
       onClick={() => open?.(media.id)}
-      aria-label={`Open ${figureLabel(media).replace(" · ", ": ")}`}
+      aria-label={`${figureLabel(media)}, open in viewer`}
       className="block w-full cursor-zoom-in text-left"
     >
       <MediaFigure {...figure} />

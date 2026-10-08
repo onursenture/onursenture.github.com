@@ -104,8 +104,8 @@ describe("ImagesBlock", () => {
     expect(markup).toContain("lg:col-span-2");
     expect(markup).toMatch(/<h2[^>]*>Highlights<\/h2>/);
     expect(markup.match(/data-media="/g)).toHaveLength(3);
-    expect(markup).toContain('aria-label="Open FIG. 02: Tokens"');
-    expect(markup).toContain('aria-label="Open FIG. 03"');
+    expect(markup).toContain('aria-label="FIG. 02 · Tokens, open in viewer"');
+    expect(markup).toContain('aria-label="FIG. 03, open in viewer"');
   });
 
   it("captions an image and credits its designer as plain text", () => {

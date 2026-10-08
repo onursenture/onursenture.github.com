@@ -44,9 +44,12 @@ function shelfUrl(userId: string, shelf: string): string {
   return `https://www.goodreads.com/review/list_rss/${userId}?shelf=${shelf}`;
 }
 
-// Goodreads serves tiny thumbnails (._SY75_ / ._SX50_); ask for 475px.
+// Goodreads serves tiny thumbnails (._SY75_ / ._SX50_); ask for 345px of
+// height, twice the tallest tile (170px at 2:3) and the same size as the film
+// posters. Covers already stored keep their URL until the next sync rewrites
+// the snapshot.
 function upgradeCover(url: string): string {
-  return url.replace(/\._S[XY]\d+_/, "._SY475_").replace(/\/s\/[^/]+\//, "/l/");
+  return url.replace(/\._S[XY]\d+_/, "._SY345_").replace(/\/s\/[^/]+\//, "/l/");
 }
 
 function dateValue(iso: string): number {

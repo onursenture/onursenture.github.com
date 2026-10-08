@@ -101,7 +101,11 @@ test("a long reading line is one visual line but keeps its full text", async ({ 
     await expect(line).toContainText("The Design of Everyday Things, Piranesi");
     const { cut, height, lineHeight } = await line.evaluate((el) => ({
       cut: el.scrollWidth > el.clientWidth,
-      height: el.getBoundingClientRect().height,
+      // The content box: the li's focus-room padding (4px top and bottom) is not a line.
+      height:
+        el.getBoundingClientRect().height -
+        parseFloat(getComputedStyle(el).paddingTop) -
+        parseFloat(getComputedStyle(el).paddingBottom),
       lineHeight: parseFloat(getComputedStyle(el).lineHeight),
     }));
     expect(cut, `${width}px: the line is cut with an ellipsis`).toBe(true);

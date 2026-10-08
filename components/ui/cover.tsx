@@ -4,6 +4,10 @@ import { cx } from "@/lib/cx";
 // 10 from md.
 export const COVER_GRID = "grid grid-cols-4 gap-x-3 gap-y-4 md:grid-cols-10 md:gap-x-4";
 
+// How many leading images of a Life grid load eagerly with high priority:
+// the first row on a phone (4 columns), which holds the page's LCP image.
+export const EAGER_TILES = 4;
+
 // A remote film poster or book cover, always 2:3 and square-cornered. Remote
 // images skip the image pipeline, so the explicit size only reserves space.
 // Without a src it renders a --color-line block of the same shape.
@@ -11,11 +15,13 @@ export function Cover({
   src,
   alt,
   width = 96,
+  priority = false,
   className,
 }: {
   src: string;
   alt: string;
   width?: number;
+  priority?: boolean;
   className?: string;
 }) {
   const classes = cx("block aspect-[2/3] w-full bg-line object-cover", className);
@@ -27,7 +33,8 @@ export function Cover({
       alt={alt}
       width={width}
       height={Math.round(width * 1.5)}
-      loading="lazy"
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : undefined}
       decoding="async"
       className={classes}
     />

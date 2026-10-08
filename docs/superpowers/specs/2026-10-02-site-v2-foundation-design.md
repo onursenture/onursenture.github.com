@@ -227,7 +227,7 @@ Onur and Claude design together, using Mobbin MCP, Figma MCP and reference sites
 | Sprint 9 | Notes — done: see 2026-10-04-sprint-9-notes-design.md |
 | Sprint 10 | Personal layer and Life sub-pages — done: see 2026-10-05-sprint-10-life-archives-design.md |
 | Sprint 11 | Photos in the admin (spec: 2026-10-05-sprint-11-photos-admin-design.md) |
-| Sprint 11b | Polish: changelog, paddle effect, Konami easter egg, performance and accessibility (own brainstorm) |
+| Sprint 11b | Polish: changelog, colophon, onur.md + llms.txt, performance and accessibility. The paddle effect and the Konami easter egg were dropped (2026-10-08). |
 | Sprint 12 | Launch: the launch-readiness fixes from the follow-ups, then the cutover steps above (onursenture.com on Vercel, `v2` into `master`, GitHub Pages off) |
 
 Priority within the roadmap is intentional. The professional core (portfolio, resume, booking) is what the site exists for. Personal touches come last and can always be added later.

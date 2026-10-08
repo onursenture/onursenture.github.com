@@ -1,0 +1,150 @@
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  .ft { --bg:#FAFAF8; --fg:#1F1F22; --muted:#6E6E73; --line:#E6E6E1; --accent:#2F55F5; --wood:#B98A5A; --ball:#1F1F22;
+        position:relative; background:var(--bg); color:var(--muted); font:12px/1.5 "IBM Plex Mono", ui-monospace, monospace;
+        padding:56px 16px 14px; overflow:hidden; }
+  .ft.dark { --bg:#0B0B0C; --fg:#EDEDED; --muted:#8A8A90; --line:#2c2c30; --accent:#6E8BFF; --wood:#8C6A48; --ball:#EDEDED; }
+  .ft .table { position:absolute; left:16px; right:16px; top:44px; height:1px; background:var(--line); }
+  .ft .net { position:absolute; left:50%; top:38px; width:1px; height:6px; background:var(--muted); opacity:.6; }
+  .ft .text { display:flex; justify-content:space-between; gap:16px; white-space:nowrap; }
+  .ft .text span { overflow:hidden; text-overflow:ellipsis; }
+  .ft .score { color:var(--fg); }
+  .pd { position:absolute; top:20px; width:16px; height:24px; background:none; border:0; padding:0; cursor:pointer; transform-origin:50% 100%; }
+  .pd:focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:2px; }
+  .pd svg { width:100%; height:100%; display:block; overflow:visible; }
+  .pd .blade { fill:var(--accent); } .pd .handle { fill:var(--wood); }
+  .pd.me { right:16px; }
+  .pd.ghost { left:16px; opacity:0; cursor:default; transition:opacity .25s; pointer-events:none; }
+  .pd.ghost .blade { fill:none; stroke:var(--muted); stroke-width:1; } .pd.ghost .handle { fill:none; stroke:var(--muted); stroke-width:1; }
+  .ball { position:absolute; left:0; top:0; width:6px; height:6px; margin:-6px 0 0 -3px; border-radius:50%; background:var(--ball); opacity:0; pointer-events:none; }
+  .shadow { position:absolute; top:44px; width:6px; height:1px; margin-left:-3px; background:var(--fg); opacity:0; pointer-events:none; }
+  .rows{display:flex;flex-direction:column;gap:18px}
+  .prow{display:grid;grid-template-columns:1fr 280px;border:1px solid #ddd;border-radius:10px;overflow:hidden;cursor:pointer}
+  .prow.selected{outline:3px solid #2F55F5}
+  .pbody{padding:16px} .pbody p{margin:.4em 0}
+  .replay{font:12px "IBM Plex Mono",monospace;border:1px solid #ccc;background:#fff;border-radius:6px;padding:4px 10px;cursor:pointer;margin-top:6px}
+</style>
+
+<h2>Raket + top: ralli nasıl aksın?</h2>
+<p class="subtitle">Footer'ın üstündeki hairline çizgisi masa. Sağdaki raket tıklanınca top oyuna giriyor. Her satırda açık ve koyu tema var; rakete tıkla ya da "Tekrar oynat"a bas. (Raketin çizimi şimdilik basit; burada bakılacak şey hareket.)</p>
+
+<div class="rows">
+  <div class="prow" data-choice="wall" onclick="toggleSelect(this)">
+    <div><div class="ft" data-mode="wall"></div><div class="ft dark" data-mode="wall"></div></div>
+    <div class="pbody"><h3>A · Duvara karşı</h3><p>Top masada sekerek sol kenara gider, "duvardan" döner, raket karşılar. 3 vuruş sonra top sekip raketin yanında durur.</p><p>Tek kişilik antrenman hissi, sessiz.</p><button class="replay" data-mode="wall">▶ Tekrar oynat</button></div>
+  </div>
+
+  <div class="prow" data-choice="rival" onclick="toggleSelect(this)">
+    <div><div class="ft" data-mode="rival"></div><div class="ft dark" data-mode="rival"></div></div>
+    <div class="pbody"><h3>B · Hayalet rakip</h3><p>Solda silik bir rakip raketi beliriyor, ortada file çizgisi var. Top fileden geçerek 4 vuruşluk bir ralli olur; sonunda rakip kaçırır ve footer'da skor belirir (<code>1–0</code>). Her tıklama yeni bir sayı.</p><button class="replay" data-mode="rival">▶ Tekrar oynat</button></div>
+  </div>
+
+  <div class="prow" data-choice="serve" onclick="toggleSelect(this)">
+    <div><div class="ft" data-mode="serve"></div><div class="ft dark" data-mode="serve"></div></div>
+    <div class="pbody"><h3>C · Tek servis</h3><p>Raket servis atar, top masada gittikçe alçalan sekmelerle sola gider ve kenardan düşer, ardından yukarıdan raketin üstüne geri düşer.</p><p>En kısa ve en sade olanı.</p><button class="replay" data-mode="serve">▶ Tekrar oynat</button></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const PADDLE = '<svg viewBox="0 0 16 24"><rect class="handle" x="6.25" y="14" width="3.5" height="9.5" rx="1"/><circle class="blade" cx="8" cy="8" r="7.5"/></svg>';
+  const TABLE_Y = 44, H_PAD = 16;
+  const sleep = ms => new Promise(r=>setTimeout(r,ms));
+
+  function build(ft){
+    const mode = ft.dataset.mode;
+    ft.innerHTML = '<div class="table"></div>' + (mode==="rival" ? '<div class="net"></div>' : '') +
+      '<button class="pd me" type="button" aria-label="Serve the ball">'+PADDLE+'</button>' +
+      (mode==="rival" ? '<div class="pd ghost" aria-hidden="true">'+PADDLE+'</div>' : '') +
+      '<div class="shadow"></div><div class="ball"></div>' +
+      '<div class="text"><span>v2 · 958412b · built 2h ago</span>' + (mode==="rival" ? '<span class="score" hidden></span>' : '') +
+      '<span>© 2026 Onur Senture · GitHub · Letterboxd · X</span></div>';
+    const st = { ft, mode, busy:false, me:0, them:0,
+      ball: ft.querySelector(".ball"), shadow: ft.querySelector(".shadow"),
+      pd: ft.querySelector(".pd.me"), ghost: ft.querySelector(".pd.ghost"), score: ft.querySelector(".score") };
+    st.pd.addEventListener("click", e => { e.stopPropagation(); play(st); });
+    ft._st = st;
+  }
+
+  // ball position: x in px from footer's left edge, h = height above the table line
+  function put(st, x, h){
+    st.ball.style.transform = `translate(${x}px, ${TABLE_Y - h}px)`;
+    st.shadow.style.left = x + "px";
+    st.shadow.style.opacity = Math.max(0, .35 - h/120);
+  }
+  function hop(st, x0, h0, x1, h1, peak, ms){
+    return new Promise(res => {
+      const t0 = performance.now();
+      (function f(now){
+        const t = Math.min(1, (now - t0)/ms);
+        const x = x0 + (x1-x0)*t;
+        const base = h0 + (h1-h0)*t;
+        put(st, x, base + 4*peak*t*(1-t));
+        t < 1 ? requestAnimationFrame(f) : res();
+      })(t0);
+    });
+  }
+  function swing(el, dir){
+    return el.animate([{transform:"rotate(0)"},{transform:`rotate(${dir*-35}deg)`},{transform:"rotate(0)"}],{duration:260,easing:"cubic-bezier(.3,1.6,.5,1)"});
+  }
+  function geo(st){
+    const W = st.ft.clientWidth;
+    return { W, meX: W - H_PAD - 8, leftX: H_PAD + 8, wallX: H_PAD + 2 };
+  }
+
+  async function play(st){
+    if (st.busy) return; st.busy = true;
+    const g = geo(st); const b = st.ball;
+    b.style.opacity = 1; put(st, g.meX - 10, 14);
+    if (st.mode === "wall") {
+      for (let i = 0; i < 3; i++) {
+        swing(st.pd, 1); await sleep(60);
+        await hop(st, g.meX-10, 14, g.W*.45, 0, 26, 420);
+        await hop(st, g.W*.45, 0, g.wallX, 10, 14, 300);
+        await hop(st, g.wallX, 10, g.W*.62, 0, 16, 340);
+        await hop(st, g.W*.62, 0, g.meX-10, 14, 18, 320);
+      }
+      swing(st.pd, 1); await sleep(60);
+      await hop(st, g.meX-10, 14, g.W*.7, 0, 18, 330);
+      let x = g.W*.7, p = 12;
+      while (p > 1.5) { const nx = x + (g.meX - 26 - x)*.5; await hop(st, x, 0, nx, 0, p, 120 + p*12); x = nx; p *= .5; }
+      await sleep(700); b.style.opacity = 0; st.shadow.style.opacity = 0;
+    }
+    if (st.mode === "rival") {
+      st.ghost.style.opacity = .7; await sleep(200);
+      for (let i = 0; i < 2; i++) {
+        swing(st.pd, 1); await sleep(60);
+        await hop(st, g.meX-10, 14, g.W*.27, 0, 34, 480);
+        await hop(st, g.W*.27, 0, g.leftX+10, 14, 14, 260);
+        swing(st.ghost, -1); await sleep(60);
+        await hop(st, g.leftX+10, 14, g.W*.73, 0, 34, 480);
+        await hop(st, g.W*.73, 0, g.meX-10, 14, 14, 260);
+      }
+      swing(st.pd, 1); await sleep(60);
+      await hop(st, g.meX-10, 14, g.W*.2, 0, 30, 420);
+      await hop(st, g.W*.2, 0, -20, 16, 16, 300);   // rival misses
+      st.ghost.animate([{transform:"translateY(0)"},{transform:"translateY(3px)"},{transform:"translateY(0)"}],{duration:300});
+      b.style.opacity = 0; st.shadow.style.opacity = 0;
+      st.me++; st.score.hidden = false; st.score.textContent = `w00f ${st.me}–${st.them} ghost`;
+      await sleep(600); st.ghost.style.opacity = 0;
+    }
+    if (st.mode === "serve") {
+      swing(st.pd, 1); await sleep(60);
+      let x = g.meX - 10, h = 14, p = 30, step = g.W*.26;
+      while (x > g.wallX + 4) { const nx = Math.max(g.wallX, x - step); await hop(st, x, h, nx, 0, p, 200 + p*9); x = nx; h = 0; p *= .62; step *= .78; }
+      await hop(st, x, 0, -10, -30, 4, 260);           // rolls off the edge
+      b.style.opacity = 0; await sleep(500);
+      b.style.opacity = 1; await hop(st, g.meX-10, 60, g.meX-10, 18, 0, 380);
+      await hop(st, g.meX-10, 18, g.meX-10, 18, 8, 260);
+      await sleep(400); b.style.opacity = 0; st.shadow.style.opacity = 0;
+    }
+    st.busy = false;
+  }
+
+  document.querySelectorAll(".ft").forEach(build);
+  document.querySelectorAll(".replay").forEach(btn => btn.addEventListener("click", e => {
+    e.stopPropagation();
+    document.querySelectorAll(`.ft[data-mode="${btn.dataset.mode}"]`).forEach(ft => play(ft._st));
+  }));
+})();
+</script>

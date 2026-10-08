@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { BooksArchive } from "@/components/life/archive/books-archive";
-import { pageMetadata } from "@/lib/metadata";
+import { DESCRIPTIONS } from "@/content/descriptions";
+import { describedMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = pageMetadata("Books");
+export const metadata: Metadata = describedMetadata("Books", DESCRIPTIONS.books);
 
 export default function BooksPage() {
   return <BooksArchive />;

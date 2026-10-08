@@ -14,12 +14,12 @@ import { EmailLink } from "./email-link";
 // List keys carry the index: a draft preview may repeat a title or an org.
 export function ResumeBody({ resume, bookable }: { resume: ResumeView; bookable: boolean }) {
   const contact: ReactNode[] = [
-    resume.email ? <EmailLink key="email" code={encodeEmail(resume.email)} className="text-accent" /> : null,
-    <ItemLink key="site" href="/" className="text-accent">
+    resume.email ? <EmailLink key="email" code={encodeEmail(resume.email)} className="text-accent underline decoration-1 underline-offset-[0.2em]" /> : null,
+    <ItemLink key="site" href="/" className="text-accent" underline="always">
       onursenture.com
     </ItemLink>,
     resume.linkedin ? (
-      <TextLink key="linkedin" href={resume.linkedin.url} className="text-accent">
+      <TextLink key="linkedin" href={resume.linkedin.url} className="text-accent" underline="always">
         LinkedIn
       </TextLink>
     ) : null,
@@ -36,14 +36,15 @@ export function ResumeBody({ resume, bookable }: { resume: ResumeView; bookable:
         </ItemLink>
       }
       action={
-        <span className="flex flex-col gap-1 lg:items-end">
+        <span className="flex flex-col lg:items-end">
           {/* A plain <a>: next/link would try a client navigation to a route handler. */}
-          <a href="/resume.pdf" className="group inline text-accent">
+          {/* py-[3px] on an inline-block makes an 18px line a 24px target (WCAG 2.5.8). */}
+          <a href="/resume.pdf" className="group inline-block py-[3px] text-accent">
             <span className="group-hover:underline group-hover:underline-offset-[0.2em]">Download PDF</span>
             <span aria-hidden="true">{" ↓"}</span>
           </a>
           {bookable ? (
-            <TextLink href="/book/" className="text-accent">
+            <TextLink href="/book/" className="inline-block py-[3px] text-accent">
               Book a call
             </TextLink>
           ) : null}
@@ -95,7 +96,7 @@ export function ResumeBody({ resume, bookable }: { resume: ResumeView; bookable:
                       {/* A title never wraps mid-name ("Harf / Marf"); the list wraps between titles. */}
                       <span className="whitespace-nowrap">
                         {product.href ? (
-                          <ItemLink href={product.href} className="text-accent">
+                          <ItemLink href={product.href} className="text-accent" underline="always">
                             {product.title}
                           </ItemLink>
                         ) : (
@@ -118,7 +119,7 @@ export function ResumeBody({ resume, bookable }: { resume: ResumeView; bookable:
             <li key={`${project.title}-${index}`}>
               {/* Like a Lab row: no arrow inside the site, ↗ when it leaves. */}
               {project.href ? (
-                <ItemLink href={project.href} className="text-accent">
+                <ItemLink href={project.href} className="text-accent" underline="always">
                   {project.title}
                   {isExternal(project.href) ? <span aria-hidden="true"> ↗</span> : null}
                 </ItemLink>
