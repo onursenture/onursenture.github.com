@@ -10,6 +10,9 @@ import { runTypewriter } from "@/lib/life/typewriter";
 import { peekBoot, takeBoot } from "./boot-flag";
 
 const BOOT = ["Booting w00f...", "Human detected."];
+// A pointer for agents after the boot lines (Sprint 11b), typed with them.
+const AGENT = { head: "Not human? → ", link: "onur.md", href: "/onur.md" };
+const AGENT_TEXT = AGENT.head + AGENT.link;
 const DURATION = 1500;
 
 function reducedMotion(): boolean {
@@ -17,6 +20,22 @@ function reducedMotion(): boolean {
 }
 
 const noopSubscribe = () => () => {};
+
+// The agent line, cut to the first n characters while typing.
+function agentLine(n: number) {
+  if (n <= 0) return "\u00a0";
+  const linkPart = AGENT.link.slice(0, Math.max(0, n - AGENT.head.length));
+  return (
+    <>
+      {AGENT.head.slice(0, n)}
+      {linkPart ? (
+        <a href={AGENT.href} className="underline decoration-fg-muted underline-offset-[3px] hover:decoration-fg">
+          {linkPart}
+        </a>
+      ) : null}
+    </>
+  );
+}
 
 // Whether a fresh boot flag asks for typing. Hydration uses the server
 // snapshot (false), so a flag left over on a direct load is ignored and the
@@ -36,7 +55,7 @@ function useBootPending(): boolean {
 // the same instance: a fresh flag then restarts the typing. Reduced motion:
 // static, no blink.
 export function BootReadout({ lines }: { lines: ReadoutLine[] }) {
-  const texts = useMemo(() => [...BOOT, ...lines.map(readoutText)], [lines]);
+  const texts = useMemo(() => [...BOOT, AGENT_TEXT, ...lines.map(readoutText)], [lines]);
   const total = texts.reduce((sum, t) => sum + t.length, 0);
   const bootPending = useBootPending();
   // null = show everything. A client navigation (no hydration) starts at 0
@@ -89,10 +108,11 @@ export function BootReadout({ lines }: { lines: ReadoutLine[] }) {
         {BOOT.map((t, i) => (
           <p key={t}>{t.slice(0, visible[i]) || "\u00a0"}</p>
         ))}
+        <p>{agentLine(visible[BOOT.length])}</p>
       </div>
       <ul className="mt-6">
         {lines.map((line, i) => {
-          const n = visible[BOOT.length + i];
+          const n = visible[BOOT.length + 1 + i];
           const full = readoutText(line);
           const head = `${line.label}: `;
           const value = full.slice(head.length, n).slice(0, line.value.length);

@@ -104,3 +104,10 @@ test("the avatar is the 96px illustration, decorative, at the start of the label
   // The label column starts at the md:px-10 gutter.
   expect(box!.x).toBe(40);
 });
+
+test("the readout points agents to onur.md after the boot lines", async ({ page }) => {
+  await page.goto("/life/");
+  const now = page.getByRole("region", { name: "Now" });
+  await expect(now).toContainText("Not human? → onur.md");
+  await expect(now.getByRole("link", { name: "onur.md" })).toHaveAttribute("href", "/onur.md");
+});
