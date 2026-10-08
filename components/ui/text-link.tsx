@@ -9,7 +9,9 @@ export function isExternal(href: string): boolean {
 // A link with a trailing arrow, underlined on hover: → inside the site, ↗
 // when it leaves (Sprint 4 lifted the S3 ban; Plex has the glyph). A
 // non-breaking space keeps the arrow with the last word. External links
-// never pass the referrer or window.opener.
+// never pass the referrer or window.opener. An internal href that names a
+// file (/onur.md, /resume.pdf) is a route handler, not a page, so it gets a
+// plain <a> instead of next/link's client navigation.
 export function TextLink({
   href,
   children,
@@ -26,6 +28,7 @@ export function TextLink({
   underline?: "hover" | "always";
 }) {
   const external = isExternal(href);
+  const file = !external && /\.[a-z0-9]+$/i.test(href.split("#")[0]);
   const content = (
     <>
       <span
@@ -37,8 +40,8 @@ export function TextLink({
     </>
   );
   const classes = cx("group inline", className);
-  return external ? (
-    <a href={href} rel="noopener noreferrer" aria-label={ariaLabel} className={classes}>
+  return external || file ? (
+    <a href={href} rel={external ? "noopener noreferrer" : undefined} aria-label={ariaLabel} className={classes}>
       {content}
     </a>
   ) : (
