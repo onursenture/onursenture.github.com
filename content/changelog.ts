@@ -65,7 +65,7 @@ export const releases: Release[] = [
     title: "Notes",
     items: [
       "Notes: short posts on the Work side, the Life side or both, with images or a link card.",
-      "The feed at /feed.xml carries every note and photo.",
+      "The feed at /feed.xml carries the latest notes and photos.",
     ],
   },
   {
@@ -73,7 +73,7 @@ export const releases: Release[] = [
     date: "2026-10-04",
     title: "Resume and Book a call",
     items: [
-      "A resume page and a one-page PDF, built from the same data as the home.",
+      "A resume page and a PDF, built from the same data as the home.",
       "Book a call: three kinds of call, booked through cal.com.",
     ],
   },
@@ -126,7 +126,7 @@ export const releases: Release[] = [
     date: "2026-10-03",
     title: "Next.js platform and design system",
     items: [
-      "The site moves from Eleventy on GitHub Pages to Next.js on Vercel, with a database.",
+      "The rebuild begins: Next.js on Vercel, with a database.",
       "Films, books, saved articles and GitHub activity sync on a schedule instead of at build time.",
       "A design system of colour tokens, type and one page grid.",
     ],

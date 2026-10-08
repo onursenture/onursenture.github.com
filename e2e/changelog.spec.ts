@@ -19,6 +19,6 @@ test("/changelog/ lists every release newest first, each at its anchor, then the
 
 test("/changelog/ has a description", async ({ page }) => {
   await page.goto("/changelog/");
-  await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /^Every release of onursenture\.com/);
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /^Every release of the current site/);
   await expect(page).toHaveTitle("Changelog · Onur Senture");
 });

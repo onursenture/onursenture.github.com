@@ -16,7 +16,7 @@ describe("parseGoodreadsShelf", () => {
   it("upgrades cover thumbnails and reads the numeric rating", async () => {
     const [first] = await parseGoodreadsShelf(fixture("goodreads-read.xml"), 5);
     expect(first.cover).toBe(
-      "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347438784l/663561._SY160_.jpg",
+      "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347438784l/663561._SY345_.jpg",
     );
     expect(first).toMatchObject({ numRating: 2, author: "Lars Müller" });
   });
