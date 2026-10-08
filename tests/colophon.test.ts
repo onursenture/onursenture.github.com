@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { STACK, sections } from "@/content/colophon";
+import { booking } from "@/content/booking";
+import { STACK, buildSections, sections } from "@/content/colophon";
 import { shortVersion, stackItems } from "@/lib/colophon";
 
 const pkg = JSON.parse(readFileSync(join(__dirname, "..", "package.json"), "utf8")) as {
@@ -57,5 +58,13 @@ describe("the colophon copy", () => {
     const text = JSON.stringify(sections);
     expect(text).toContain("Dither Kit");
     expect(text).not.toMatch(/cross-?post/i);
+  });
+
+  it("names the cal.com call booking only while booking is on", () => {
+    const data = (all: typeof sections) => JSON.stringify(all.find((s) => s.id === "data"));
+    expect(data(sections)).toContain(`https://cal.com/${booking.calUsername}`);
+    const off = data(buildSections(undefined, { ...booking, calUsername: "" }));
+    expect(off).not.toContain("cal.com");
+    expect(off).toContain("Bluesky");
   });
 });

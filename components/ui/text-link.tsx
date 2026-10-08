@@ -39,7 +39,7 @@ export function TextLink({
       <span aria-hidden="true">{external ? "\u00a0\u2197" : "\u00a0\u2192"}</span>
     </>
   );
-  const classes = cx("group inline", className);
+  const classes = cx("group", className);
   return external || file ? (
     <a href={href} rel={external ? "noopener noreferrer" : undefined} aria-label={ariaLabel} className={classes}>
       {content}

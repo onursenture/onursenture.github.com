@@ -93,6 +93,10 @@ describe("client times before hydration", () => {
       '<span class="sr-only">Local time in Ankara: </span><time data-testid="local-time">--:--</time>',
     );
   });
+
+  it("LiveClock leaves the hidden label out for label={false}", () => {
+    expect(html(<LiveClock timeZone="Europe/Istanbul" place="Ankara" label={false} />)).toBe('<time data-testid="local-time">--:--</time>');
+  });
 });
 
 describe("links in running text", () => {

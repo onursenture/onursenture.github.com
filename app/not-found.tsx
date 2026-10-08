@@ -1,5 +1,9 @@
+import type { Metadata } from "next";
 import { SectionRow } from "@/components/ui/section-row";
 import { TextLink } from "@/components/ui/text-link";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = pageMetadata("Not found");
 
 // Only for requests that match no layout (paths with a dot, for example).
 // Everything else 404s inside the Work or Life layout.

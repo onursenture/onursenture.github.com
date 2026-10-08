@@ -1,4 +1,7 @@
 import type { StackEntry } from "@/lib/colophon";
+import { type Booking, booking, bookingEnabled } from "./booking";
+import { type Profile, profile, socialLinks } from "./profile";
+import { THEATRE_PROFILE_URL } from "./theatre-profile";
 
 // The /colophon/ copy (Sprint 11b spec §2). Draft copy: Onur approves it on
 // production. Only true statements: check a claim against the code before
@@ -25,67 +28,81 @@ export const STACK: StackEntry[] = [
   { name: "GitHub OAuth", href: "https://docs.github.com/en/apps/oauth-apps", note: "the admin sign-in" },
 ];
 
-// The rows after Stack, in order.
-export const sections: ColophonSection[] = [
-  {
-    id: "built",
-    label: "Built",
-    paragraphs: [["Designed and built by Onur, with ", { text: "Claude Code", href: "https://claude.com/claude-code" }, "."]],
-  },
-  {
-    id: "type",
-    label: "Type",
-    paragraphs: [
-      [
-        { text: "IBM Plex Mono", href: "https://fonts.google.com/specimen/IBM+Plex+Mono" },
-        ", ",
-        { text: "IBM Plex Sans", href: "https://fonts.google.com/specimen/IBM+Plex+Sans" },
-        " and ",
-        { text: "Doto", href: "https://fonts.google.com/specimen/Doto" },
-        ", self-hosted.",
+// The rows after Stack, in order. The source links come from the profile, the
+// theatre constant and the booking config, so they follow a change there; the
+// cal.com sentence appears only while booking is on.
+export function buildSections(p: Profile = profile, config: Booking = booking): ColophonSection[] {
+  const social = (label: string) => {
+    const link = socialLinks(p).find((l) => l.label === label);
+    if (!link) throw new Error(`No social link labelled ${label}`);
+    return { text: label, href: link.href };
+  };
+  const calUsername = config.calUsername.trim();
+  return [
+    {
+      id: "built",
+      label: "Built",
+      paragraphs: [["Designed and built by Onur, with ", { text: "Claude Code", href: "https://claude.com/claude-code" }, "."]],
+    },
+    {
+      id: "type",
+      label: "Type",
+      paragraphs: [
+        [
+          { text: "IBM Plex Mono", href: "https://fonts.google.com/specimen/IBM+Plex+Mono" },
+          ", ",
+          { text: "IBM Plex Sans", href: "https://fonts.google.com/specimen/IBM+Plex+Sans" },
+          " and ",
+          { text: "Doto", href: "https://fonts.google.com/specimen/Doto" },
+          ", self-hosted.",
+        ],
       ],
-    ],
-  },
-  {
-    id: "texture",
-    label: "Texture",
-    paragraphs: [["The dithered strips and washes are ", { text: "Dither Kit", href: "https://www.tripwire.sh/dither-kit" }, " by Tripwire (MIT), vendored with small changes."]],
-  },
-  {
-    id: "data",
-    label: "Data",
-    paragraphs: [
-      [
-        "Life reads ",
-        { text: "Letterboxd", href: "https://letterboxd.com/onur/" },
-        ", ",
-        { text: "Goodreads", href: "https://www.goodreads.com/onur" },
-        ", ",
-        { text: "Instapaper", href: "https://www.instapaper.com/p/w00f" },
-        ", ",
-        { text: "tiyatrolar.com.tr", href: "https://tiyatrolar.com.tr/u/onursenture" },
-        " and ",
-        { text: "w00f.org", href: "https://w00f.org" },
-        "; the home reads ",
-        { text: "GitHub", href: "https://github.com/onursenture" },
-        ". A GitHub Actions job checks the sources every hour.",
+    },
+    {
+      id: "texture",
+      label: "Texture",
+      paragraphs: [["The dithered strips and washes are ", { text: "Dither Kit", href: "https://www.tripwire.sh/dither-kit" }, " by Tripwire (MIT), vendored with small changes."]],
+    },
+    {
+      id: "data",
+      label: "Data",
+      paragraphs: [
+        [
+          "Life reads ",
+          social("Letterboxd"),
+          ", ",
+          social("Goodreads"),
+          ", ",
+          { text: "Instapaper", href: `https://www.instapaper.com/p/${p.social.instapaper}` },
+          ", ",
+          { text: "tiyatrolar.com.tr", href: THEATRE_PROFILE_URL },
+          " and ",
+          { text: "w00f.org", href: "https://w00f.org" },
+          "; the home reads ",
+          social("GitHub"),
+          ". A GitHub Actions job checks the sources every hour.",
+        ],
+        bookingEnabled(config)
+          ? ["Calls are booked through ", { text: "cal.com", href: `https://cal.com/${calUsername}` }, ". Notes follow Bluesky's format: 300 characters, with links and mentions."]
+          : ["Notes follow Bluesky's format: 300 characters, with links and mentions."],
       ],
-      ["Calls are booked through ", { text: "cal.com", href: "https://cal.com/onursenture" }, ". Notes follow Bluesky's format: 300 characters, with links and mentions."],
-    ],
-  },
-  {
-    id: "source",
-    label: "Source",
-    paragraphs: [["The code is public on ", { text: "GitHub", href: "https://github.com/onursenture/onursenture.github.com" }, "."]],
-  },
-  {
-    id: "agent",
-    label: "Agent",
-    paragraphs: [["For AI agents: ", { text: "onur.md", href: "/onur.md" }, ", the site as one Markdown profile, and ", { text: "llms.txt", href: "/llms.txt" }, "."]],
-  },
-  {
-    id: "history",
-    label: "History",
-    paragraphs: [["Online since 2011: Jekyll, then Eleventy, now Next.js. Every release is in the ", { text: "changelog", href: "/changelog/" }, "."]],
-  },
-];
+    },
+    {
+      id: "source",
+      label: "Source",
+      paragraphs: [["The code is public on ", { text: "GitHub", href: "https://github.com/onursenture/onursenture.github.com" }, "."]],
+    },
+    {
+      id: "agent",
+      label: "Agent",
+      paragraphs: [["For AI agents: ", { text: "onur.md", href: "/onur.md" }, ", the site as one Markdown profile, and ", { text: "llms.txt", href: "/llms.txt" }, "."]],
+    },
+    {
+      id: "history",
+      label: "History",
+      paragraphs: [["Online since 2011: Jekyll, then Eleventy, now Next.js. Every release is in the ", { text: "changelog", href: "/changelog/" }, "."]],
+    },
+  ];
+}
+
+export const sections: ColophonSection[] = buildSections();

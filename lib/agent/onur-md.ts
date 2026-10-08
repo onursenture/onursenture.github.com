@@ -55,12 +55,12 @@ export function selectedWork(pages: ProductPage[], order: PinRef[]): AgentInput[
 }
 
 // Link text can't hold an unescaped bracket.
-function text(value: string): string {
+export function escapeLinkText(value: string): string {
   return value.replace(/[[\]]/g, (bracket) => `\\${bracket}`);
 }
 
 function link(siteUrl: string, title: string, href: string): string {
-  return `[${text(title)}](${absoluteUrl(siteUrl, href)})`;
+  return `[${escapeLinkText(title)}](${absoluteUrl(siteUrl, href)})`;
 }
 
 function section(heading: string, lines: string[]): string[] {
@@ -71,13 +71,13 @@ export function buildOnurMd(input: AgentInput): string {
   const { siteUrl } = input;
   const profile = [`- Role: ${input.role}`, `- Location: ${input.place}`, ...(input.available ? ["- Open to work"] : [])];
   const experience = input.experience.map((entry) => {
-    const products = entry.products.map((p) => (p.href ? link(siteUrl, p.title, p.href) : text(p.title))).join(", ");
-    const head = `- **${text(entry.org)}**, ${entry.role}${entry.span ? ` (${entry.span})` : ""}`;
+    const products = entry.products.map((p) => (p.href ? link(siteUrl, p.title, p.href) : escapeLinkText(p.title))).join(", ");
+    const head = `- **${escapeLinkText(entry.org)}**, ${entry.role}${entry.span ? ` (${entry.span})` : ""}`;
     return products ? `${head}: ${products}` : head;
   });
   const work = input.work.map((w) => `- ${link(siteUrl, w.title, w.href)}: ${oneLine(w.summary)}`);
   const lab = input.lab.map((entry) => {
-    const name = entry.href ? link(siteUrl, entry.title, entry.href) : text(entry.title);
+    const name = entry.href ? link(siteUrl, entry.title, entry.href) : escapeLinkText(entry.title);
     return `- ${name}${entry.year ? ` (${entry.year})` : ""}: ${oneLine(entry.description)}`;
   });
   const resume = [`- ${link(siteUrl, "Resume", "/resume/")}`, `- ${link(siteUrl, "Resume (PDF)", "/resume.pdf")}`];

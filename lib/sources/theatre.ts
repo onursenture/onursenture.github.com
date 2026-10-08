@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import { z } from "zod";
+import { THEATRE_PROFILE_URL } from "../../content/theatre-profile";
 import { theatreHistory } from "../../content/theatre-history";
 import { yearFromAgo } from "../life-log/relative-year";
 import { lifeLogTag } from "../life-log/tags";
@@ -12,8 +13,8 @@ import type { SourceDefinition } from "./types";
 // izledi" posts are the watches. robots.txt allows everything.
 const ENDPOINT = "https://tiyatrolar.com.tr/posts/load_more_user_item_via_ajax/";
 const PROFILE = { username: "onursenture", user_id: "1702" };
-// Onur's watched list, the Theatre archive's upstream link.
-export const THEATRE_PROFILE_URL = "https://tiyatrolar.com.tr/u/onursenture/izledikleri";
+// Onur's watched list: the Theatre archive's upstream link (content/theatre-profile.ts).
+export { THEATRE_PROFILE_URL };
 const MAX_PAGES = 10;
 
 export const watchSchema = z.object({

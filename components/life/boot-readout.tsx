@@ -101,7 +101,7 @@ export function BootReadout({ lines }: { lines: ReadoutLine[] }) {
   return (
     <div className="min-w-0 type-boot">
       <p>
-        Local time: [<LiveClock timeZone={profile.location.timeZone} place={profile.location.place} /> GMT+3]{" "}
+        Local time: [<LiveClock timeZone={profile.location.timeZone} place={profile.location.place} label={false} /> GMT+3]{" "}
         {profile.location.place}
       </p>
       <div className="mt-6 text-fg-muted">

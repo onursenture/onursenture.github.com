@@ -14,6 +14,14 @@ const data = {
   lifeNotesPage2: onSide(notes, "life").length > NOTES_PAGE_SIZE,
 };
 
+// The route list drops a route whose data is missing, so a fixture change
+// could silently shrink the audit: fail instead.
+test("the fixtures have the data the audit needs", () => {
+  expect(data.workNoteTid).toBeTruthy();
+  expect(data.lifeNoteTid).toBeTruthy();
+  expect(data.photoSlug).toBeTruthy();
+});
+
 // Every public route at phone and desktop width, with the recorded fixture data.
 for (const { route, path } of auditRoutes(data)) {
   if (!path) continue;
