@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { bookingEnabled } from "../content/booking";
 
@@ -14,7 +15,18 @@ test("the Work shell has the top bar, the switch and the footer", async ({ page 
   for (const name of ["GitHub", "Letterboxd", "Goodreads", "X", "Dribbble"]) {
     await expect(footer.getByRole("link", { name, exact: true })).toHaveAttribute("rel", "noopener noreferrer");
   }
-  await expect(footer.locator('[data-slot="paddle"]')).toHaveCount(1);
+  await expect(footer.locator('[data-slot="paddle"]')).toHaveCount(0);
+  const version = (JSON.parse(readFileSync("package.json", "utf8")) as { version: string }).version;
+  await expect(footer.getByRole("link", { name: `v${version}` })).toHaveAttribute("href", `/changelog/#v${version.split(".").join("-")}`);
+  await expect(footer.getByRole("link", { name: "Colophon", exact: true })).toHaveAttribute("href", "/colophon/");
+});
+
+test("the footer's version opens its changelog entry", async ({ page }) => {
+  const version = (JSON.parse(readFileSync("package.json", "utf8")) as { version: string }).version;
+  await page.goto("/");
+  await page.locator("footer").getByRole("link", { name: `v${version}` }).click();
+  await expect(page).toHaveURL(new RegExp(`/changelog/#v${version.split(".").join("-")}$`));
+  await expect(page.locator(`#v${version.split(".").join("-")}`)).toBeInViewport();
 });
 
 test("the Life shell has the name linking to /life/ and no theme control", async ({ page }) => {
