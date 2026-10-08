@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { Empty } from "@/components/sections/empty";
+import { EAGER_TILES } from "@/components/ui/cover";
 import { SectionRow } from "@/components/ui/section-row";
 import { profile } from "@/content/profile";
 import { countLabel, filmArchive } from "@/lib/life/archive";
@@ -37,13 +38,13 @@ export async function FilmsArchive({ year }: { year: string | null }) {
     if (archive.undated.length === 0) notFound();
     body = (
       <div>
-        <TileRow id="undated" as="h2" heading="Undated" lines={[countLabel(archive.undated.length, "film")]} items={archive.undated} />
+        <TileRow id="undated" as="h2" heading="Undated" lines={[countLabel(archive.undated.length, "film")]} items={archive.undated} eager={EAGER_TILES} />
       </div>
     );
   } else {
     const group = /^\d{4}$/.test(current) ? archive.years.find((g) => g.year === Number(current)) : undefined;
     if (!group) notFound();
-    body = <YearMonths group={group} noun="film" />;
+    body = <YearMonths group={group} noun="film" eager={EAGER_TILES} />;
   }
 
   const entries = [

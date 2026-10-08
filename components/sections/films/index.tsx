@@ -1,4 +1,5 @@
-import { COVER_GRID, Cover } from "@/components/ui/cover";
+import { COVER_GRID, Cover, EAGER_TILES } from "@/components/ui/cover";
+import { posterCrop } from "@/lib/life-log/films";
 import type { Film } from "@/lib/sources/letterboxd";
 import { readSource } from "@/lib/sources/read";
 import { Empty } from "../empty";
@@ -9,10 +10,11 @@ function Render({ data }: { data: Film[] }) {
   if (data.length === 0) return <Empty />;
   return (
     <ul className={COVER_GRID}>
-      {data.map((film) => (
+      {data.map((film, index) => (
         <li key={film.link}>
           <a href={film.link} rel="noopener noreferrer" className="group flex flex-col gap-1">
-            <Cover src={film.poster} alt="" width={96} className="mb-1" />
+            {/* The archive's 230×345 crop: the RSS poster is 600×900 for a 96px tile. */}
+            <Cover src={posterCrop(film.poster)} alt="" width={96} priority={index < EAGER_TILES} className="mb-1" />
             <span className="type-label truncate text-fg group-hover:underline group-hover:underline-offset-[0.2em]">
               {film.title}
             </span>

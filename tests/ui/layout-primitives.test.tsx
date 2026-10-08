@@ -48,6 +48,12 @@ describe("Cover", () => {
     expect(markup).toContain("aspect-[2/3]");
   });
 
+  it("loads eagerly with high priority when asked", () => {
+    const markup = html(<Cover src="https://example.com/p.jpg" alt="" priority />);
+    expect(markup).toContain('loading="eager"');
+    expect(markup).toContain('fetchPriority="high"');
+  });
+
   it("renders a --color-line block without a src", () => {
     const markup = html(<Cover src="" alt="" />);
     expect(markup).not.toContain("<img");

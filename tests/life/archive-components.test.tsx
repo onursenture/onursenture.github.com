@@ -8,6 +8,14 @@ import { YearMonths } from "@/components/life/archive/year-months";
 
 const item = { key: "k", title: "Pickled", meta: ["Sep 8"], href: "https://letterboxd.com/onur/film/pickled/", image: "https://a.ltrbxd.com/p.jpg" };
 
+it("TileRow loads only its first `eager` tiles eagerly", () => {
+  const items = [1, 2, 3, 4, 5, 6].map((n) => ({ ...item, key: `k${n}`, image: `https://example.com/${n}.jpg` }));
+  const markup = renderToStaticMarkup(<TileRow heading="Sep" items={items} eager={4} />);
+  expect(markup.match(/loading="eager"/g)).toHaveLength(4);
+  expect(markup.match(/loading="lazy"/g)).toHaveLength(2);
+  expect(renderToStaticMarkup(<TileRow heading="Sep" items={items} />)).not.toContain('loading="eager"');
+});
+
 describe("ArchiveTile", () => {
   it("links the poster and caption upstream, with the meta line", () => {
     const html = renderToStaticMarkup(<ArchiveTile item={item} />);

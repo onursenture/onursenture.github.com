@@ -12,12 +12,15 @@ export function TileRow({
   items,
   as: Heading = "h3",
   id,
+  eager = 0,
 }: {
   heading: ReactNode;
   lines?: string[];
   items: ArchiveItem[];
   as?: "h2" | "h3";
   id?: string;
+  // How many leading tiles load eagerly (the page's first row).
+  eager?: number;
 }) {
   return (
     <section id={id} className="scroll-mt-20 border-t first:border-t-0">
@@ -31,8 +34,8 @@ export function TileRow({
           ))}
         </Heading>
         <ul className={TILE_GRID}>
-          {items.map((item) => (
-            <ArchiveTile key={item.key} item={item} />
+          {items.map((item, index) => (
+            <ArchiveTile key={item.key} item={item} priority={index < eager} />
           ))}
         </ul>
       </div>

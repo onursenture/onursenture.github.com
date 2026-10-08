@@ -1,4 +1,5 @@
 import { Empty } from "@/components/sections/empty";
+import { EAGER_TILES } from "@/components/ui/cover";
 import { SectionRow } from "@/components/ui/section-row";
 import { countLabel, theatreArchive } from "@/lib/life/archive";
 import { readLifeLog } from "@/lib/life-log/read";
@@ -31,7 +32,7 @@ export async function TheatreArchive() {
       rows={[
         header,
         <div key="years">
-          {years.map((group) => (
+          {years.map((group, index) => (
             <TileRow
               key={group.year}
               id={`year-${group.year}`}
@@ -39,6 +40,7 @@ export async function TheatreArchive() {
               heading={<span className="block type-name">{group.year}</span>}
               lines={[countLabel(group.items.length, "play"), ...(group.andEarlier ? ["and earlier"] : [])]}
               items={group.items}
+              eager={index === 0 ? EAGER_TILES : 0}
             />
           ))}
         </div>,

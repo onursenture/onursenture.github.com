@@ -24,15 +24,18 @@ export function PhotoGrid({
   photos,
   sizes = PHOTO_GRID_SIZES,
   density = "default",
+  eager = 0,
 }: {
   photos: Pick<Photo, "slug" | "title" | "image">[];
   sizes?: string;
   density?: "default" | "compact";
+  // How many leading photos load eagerly (the page's first row).
+  eager?: number;
 }) {
   const compact = density === "compact";
   return (
     <ul className={compact ? COVER_GRID : "grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 md:gap-x-6"}>
-      {photos.map((photo) => (
+      {photos.map((photo, index) => (
         <li key={photo.slug}>
           <Link href={`/life/photos/${photo.slug}/`} className={compact ? "group flex flex-col gap-1" : "group flex flex-col gap-2"}>
             <PictureView
@@ -40,6 +43,7 @@ export function PhotoGrid({
               entry={photo.image}
               alt=""
               sizes={sizes}
+              priority={index < eager}
               className={compact ? "mb-1 aspect-[3/2] w-full object-cover" : "aspect-[3/2] w-full object-cover"}
             />
             <span
