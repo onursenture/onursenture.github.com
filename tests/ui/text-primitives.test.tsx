@@ -88,9 +88,9 @@ describe("client times before hydration", () => {
     );
   });
 
-  it("LiveClock prerenders --:--", () => {
+  it("LiveClock prerenders --:-- with a visually hidden label (no aria-label on <time>)", () => {
     expect(html(<LiveClock timeZone="Europe/Istanbul" place="Ankara" />)).toBe(
-      '<time aria-label="Local time in Ankara">--:--</time>',
+      '<span class="sr-only">Local time in Ankara: </span><time data-testid="local-time">--:--</time>',
     );
   });
 });

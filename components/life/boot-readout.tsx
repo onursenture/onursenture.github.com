@@ -110,7 +110,9 @@ export function BootReadout({ lines }: { lines: ReadoutLine[] }) {
         ))}
         <p>{agentLine(visible[BOOT.length])}</p>
       </div>
-      <ul className="mt-6">
+      {/* A flex column: sibling margins collapse in block flow, which would eat the
+          focus-room offsets and push the lines 4px further apart. */}
+      <ul className="mt-6 flex flex-col">
         {lines.map((line, i) => {
           const n = visible[BOOT.length + 1 + i];
           const full = readoutText(line);
@@ -143,7 +145,7 @@ export function BootReadout({ lines }: { lines: ReadoutLine[] }) {
           // only; the full text stays in the DOM for screen readers.
           if (!typing) {
             return (
-              <li key={line.key} className="truncate">
+              <li key={line.key} className="focus-room truncate">
                 {content}
               </li>
             );
@@ -152,11 +154,11 @@ export function BootReadout({ lines }: { lines: ReadoutLine[] }) {
           // height is reserved (one line, like the final text); the typed text is
           // overlaid on it. No layout jump.
           return (
-            <li key={line.key} className="relative truncate">
+            <li key={line.key} className="focus-room relative truncate">
               <span aria-hidden="true" className="invisible">
                 {full}
               </span>
-              <span className="absolute inset-0 truncate">{content}</span>
+              <span className="absolute inset-1 truncate">{content}</span>
             </li>
           );
         })}

@@ -27,13 +27,14 @@ export function ExperienceList({ entries }: { entries: ExperienceView[] }) {
             >
               {entry.children.map((child, childIndex) => (
                 <li key={`${child.title}-${childIndex}`} className="col-span-3 grid grid-cols-subgrid items-baseline border-t border-line py-1.5">
-                  <span className="truncate">
+                  {/* The link truncates itself, so no overflow:hidden wrapper clips its focus ring. */}
+                  <span className="min-w-0">
                     {child.href ? (
-                      <ItemLink href={child.href} className="text-accent">
+                      <ItemLink href={child.href} className="block truncate text-accent">
                         {child.title}
                       </ItemLink>
                     ) : (
-                      <span className="text-fg">{child.title}</span>
+                      <span className="block truncate text-fg">{child.title}</span>
                     )}
                   </span>
                   <span className="truncate text-fg-muted">{child.note}</span>

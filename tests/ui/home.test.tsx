@@ -69,6 +69,11 @@ describe("ExperienceList", () => {
     expect(markup).toMatch(/<span class="[^"]*tabular-nums[^"]*">2022–2026<\/span>/);
     expect(markup).toMatch(/<span class="[^"]*tabular-nums[^"]*">2013–now<\/span>/);
   });
+
+  it("doesn't clip a product link's focus ring: the link truncates itself, not a wrapper", () => {
+    expect(markup).toMatch(/<a [^>]*class="[^"]*\bblock truncate\b/);
+    expect(markup).not.toContain('<span class="truncate"><a');
+  });
 });
 
 const pin: PinView = {

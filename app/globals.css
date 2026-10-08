@@ -180,6 +180,14 @@ html[data-side="life"] {
   font-weight: 400;
 }
 
+/* A truncate box holding a link: 4px of padding, taken back by a negative
+   margin, so the box's overflow clip no longer cuts the link's focus ring.
+   Layout is unchanged. */
+@utility focus-room {
+  padding: 4px;
+  margin: -4px;
+}
+
 /* Life readout cursor: a 1s step blink; still under reduced motion. */
 .boot-cursor {
   animation: boot-blink 1s steps(1, end) infinite;

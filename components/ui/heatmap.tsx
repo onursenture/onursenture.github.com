@@ -24,7 +24,8 @@ export function Heatmap({ data }: { data: Contributions }) {
   const firstDay = data.weeks[0]?.days[0];
   const offset = firstDay ? new Date(`${firstDay.date}T00:00:00Z`).getUTCDay() : 0;
   return (
-    <div className="overflow-x-auto">
+    // Focusable and named: on a phone the year is wider than the screen.
+    <div tabIndex={0} role="region" aria-label="Contributions heatmap (scrolls sideways)" className="overflow-x-auto">
       <div
         role="img"
         aria-label={contributionsLabel(data.total)}

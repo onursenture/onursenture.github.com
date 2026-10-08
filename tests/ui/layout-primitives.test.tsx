@@ -2,6 +2,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { Cover } from "@/components/ui/cover";
 import { DataTable } from "@/components/ui/data-table";
+import { Heatmap } from "@/components/ui/heatmap";
 
 const html = renderToStaticMarkup;
 
@@ -22,6 +23,20 @@ describe("DataTable", () => {
     const markup = html(<DataTable columns={columns} rows={[]} rowKey={(r) => r.title} empty="No films yet." />);
     expect(markup).toContain('<td colSpan="2"');
     expect(markup).toContain("No films yet.");
+  });
+});
+
+describe("scrollable regions", () => {
+  const columns = [{ header: "Title", cell: (row: { title: string }) => row.title }];
+
+  it("DataTable's scroller is a focusable, named region", () => {
+    const markup = html(<DataTable columns={columns} rows={[]} rowKey={(r) => r.title} caption="Films" />);
+    expect(markup).toContain('<div tabindex="0" role="region" aria-label="Films (scrolls sideways)" class="overflow-x-auto"');
+  });
+
+  it("Heatmap's scroller is a focusable, named region", () => {
+    const markup = html(<Heatmap data={{ total: 3, weeks: [{ days: [{ date: "2026-01-04", count: 3, level: 2 }] }] }} />);
+    expect(markup).toContain('tabindex="0" role="region" aria-label="Contributions heatmap (scrolls sideways)"');
   });
 });
 
