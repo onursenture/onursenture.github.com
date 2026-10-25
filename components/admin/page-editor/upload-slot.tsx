@@ -66,9 +66,9 @@ export function UploadSlot({
           over && "border-accent text-accent",
         )}
       >
-        <span>{busy ? "Uploading…" : hasImage ? "Drop a new image to replace it, or pick one" : "Drop a 16:10 PNG or JPEG, or pick one"}</span>
+        <span>{busy ? "Uploading…" : hasImage ? "Drop a new image to replace it, or pick one" : "Drop a 16:10 PNG, JPEG or HEIC, or pick one"}</span>
         <span className="type-label">2560×1600 recommended · at least 1280px wide</span>
-        <input type="file" accept="image/png,image/jpeg" aria-label="Upload image" disabled={busy} className="sr-only" onChange={(event) => void handle(event.target.files?.[0])} />
+        <input type="file" accept="image/png,image/jpeg,image/heic,image/heif,.heic,.heif" aria-label="Upload image" disabled={busy} className="sr-only" onChange={(event) => void handle(event.target.files?.[0])} />
       </label>
       {error ? (
         <p role="alert" className="mt-1 type-meta text-danger">

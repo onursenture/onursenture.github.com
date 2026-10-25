@@ -1,7 +1,8 @@
 "use client";
 
 import { upload } from "@vercel/blob/client";
-import { MAX_BYTES } from "@/lib/media/rules";
+import { MAX_BYTES, TYPE_HINT, isHeic } from "@/lib/media/rules";
+import { HEIC_FAILED, decodeImage } from "./heic";
 
 // The browser half of every admin image upload (notes, photos): check the
 // file, redraw what the server can't read as a JPEG, and put the original
@@ -18,15 +19,16 @@ const MAX_CONVERT_SIDE = 4096;
 // Everything else (JPEG, HEIC from an iPhone, WebP, a PNG without keepPng) is
 // redrawn as a JPEG: the server's sharp can't read HEIC, and the redraw drops
 // all metadata, location data included, so no GPS-bearing original ever lands
-// in the public uploads/ object. createImageBitmap applies EXIF orientation,
-// so the picture stays upright. Read EXIF from the original before calling.
+// in the public uploads/ object. Both decoders (createImageBitmap, libheif for
+// HEIC) apply the orientation, so the picture stays upright. Read EXIF from
+// the original before calling.
 async function prepare(file: File, keepPng: boolean, check: (width: number, height: number) => string | null): Promise<File | string> {
   if (file.size > MAX_BYTES) return "The file is larger than 25 MB.";
   let bitmap: ImageBitmap;
   try {
-    bitmap = await createImageBitmap(file);
+    bitmap = await decodeImage(file);
   } catch {
-    return "This browser can't read the image. Use a PNG or JPEG.";
+    return isHeic(file) ? HEIC_FAILED : `This browser can't read the image. ${TYPE_HINT}`;
   }
   const problem = check(bitmap.width, bitmap.height);
   if (problem) {
@@ -44,7 +46,7 @@ async function prepare(file: File, keepPng: boolean, check: (width: number, heig
   canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
   bitmap.close();
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.92));
-  return blob ? new File([blob], "upload.jpg", { type: "image/jpeg" }) : "The image could not be converted. Use a PNG or JPEG.";
+  return blob ? new File([blob], "upload.jpg", { type: "image/jpeg" }) : `The image could not be converted. ${TYPE_HINT}`;
 }
 
 async function signedOut(): Promise<boolean> {

@@ -3,7 +3,7 @@ import sharp from "sharp";
 import type { MediaRecord } from "@/lib/content/store";
 import { MAX_INPUT_PIXELS, decodeOnce, encodeRendition } from "@/lib/images/encode";
 import { IMAGE_SETTINGS, widthsFor } from "@/lib/images/plan";
-import { checkDimensions } from "./rules";
+import { TYPE_HINT, checkDimensions } from "./rules";
 import type { MediaStorage } from "./storage";
 
 export interface UploadTarget {
@@ -39,7 +39,7 @@ export async function processImageWith(
     return { ok: false, reason: "The file is not a readable image." };
   }
   if (!width || !height) return { ok: false, reason: "The file is not a readable image." };
-  if (format !== "png" && format !== "jpeg") return { ok: false, reason: "Use a PNG or JPEG." };
+  if (format !== "png" && format !== "jpeg") return { ok: false, reason: TYPE_HINT };
   const problem = options.check(width, height);
   if (problem) return { ok: false, reason: problem };
 

@@ -5,6 +5,7 @@ import { processUploadAction } from "@/app/admin/actions";
 import type { ActionResult } from "@/lib/admin/results";
 import type { MediaEntry } from "@/lib/images/lookup";
 import { MAX_BYTES, checkDimensions, checkType } from "@/lib/media/rules";
+import { heicToJpeg } from "../heic";
 
 type UploadResult = ActionResult<{ key: string; entry: MediaEntry }>;
 
@@ -23,8 +24,12 @@ async function signedOut(): Promise<boolean> {
 
 // Checks the file in the browser first (type, size, 16:10), so a wrong file
 // is never uploaded; then uploads the original (Blob, or the local route) and
-// asks the server to render it. The server checks everything again.
-export async function uploadImage(file: File, target: { slug: string; imageId: string }, mode: "blob" | "local"): Promise<UploadResult> {
+// asks the server to render it. The server checks everything again. A HEIC
+// is converted to a JPEG first and goes through the same checks.
+export async function uploadImage(picked: File, target: { slug: string; imageId: string }, mode: "blob" | "local"): Promise<UploadResult> {
+  if (picked.size > MAX_BYTES) return refused("The file is larger than 25 MB.", target.slug, target.imageId);
+  const file = await heicToJpeg(picked);
+  if (typeof file === "string") return refused(file, target.slug, target.imageId);
   const typeProblem = checkType(file.type);
   if (typeProblem) return refused(typeProblem, target.slug, target.imageId);
   if (file.size > MAX_BYTES) return refused("The file is larger than 25 MB.", target.slug, target.imageId);
