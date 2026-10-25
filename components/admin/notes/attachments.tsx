@@ -70,7 +70,7 @@ export function Attachments({
             Images
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,.heic,.heif"
               multiple
               aria-label="Add images"
               disabled={disabled || full}

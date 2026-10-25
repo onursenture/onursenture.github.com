@@ -117,6 +117,11 @@ test("Nebuu: add, move and delete blocks, upload an image, publish", async ({ pa
   await expect(cards.getByRole("alert")).toContainText("must be 16:10");
   await cards.getByLabel("Upload image").setInputFiles(".e2e-admin/fixtures/wide.png");
   await expect(cards.locator("img")).toBeVisible({ timeout: 20_000 });
+  // A HEIC replaces it, converted to a JPEG in the browser.
+  const pngSrc = await cards.locator("img").getAttribute("src");
+  await cards.getByLabel("Upload image").setInputFiles(".e2e-admin/fixtures/wide.heic");
+  await expect(cards.locator("img")).not.toHaveAttribute("src", pngSrc ?? "", { timeout: 30_000 });
+  await expect(cards.getByRole("alert")).toHaveCount(0);
   // Publish saves the unsaved edits first.
   await publish(page);
 

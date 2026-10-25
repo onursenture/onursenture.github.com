@@ -2,11 +2,22 @@
 export const MIN_WIDTH = 1280;
 export const MAX_BYTES = 25 * 1024 * 1024;
 export const UPLOAD_TYPES = ["image/png", "image/jpeg"] as const;
+// What the admin's pickers take. HEIC never reaches the server: sharp's libvips
+// has no HEVC decoder, so the browser turns it into a JPEG first.
+export const TYPE_HINT = "Use a PNG, JPEG or HEIC.";
 const RATIO = 16 / 10;
 const TOLERANCE = 0.01;
 
 export function checkType(type: string): string | null {
-  return (UPLOAD_TYPES as readonly string[]).includes(type) ? null : "Use a PNG or JPEG.";
+  return (UPLOAD_TYPES as readonly string[]).includes(type) ? null : TYPE_HINT;
+}
+
+// iPhone and macOS photos. Chrome may report no type at all for a .heic, so
+// the extension counts too.
+const HEIC_TYPES = ["image/heic", "image/heif", "image/heic-sequence", "image/heif-sequence"];
+
+export function isHeic(file: { name: string; type: string }): boolean {
+  return HEIC_TYPES.includes(file.type.toLowerCase()) || /\.hei[cf]$/i.test(file.name);
 }
 
 export function checkDimensions(width: number, height: number): string | null {

@@ -103,7 +103,7 @@ export function PhotosConsole({ init }: { init: PhotosConsoleInit }) {
           {hydrated ? (
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,.heic,.heif"
               aria-label="Add photo"
               disabled={adding}
               className="absolute inset-0 h-full w-full cursor-pointer opacity-0"

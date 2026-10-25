@@ -77,6 +77,33 @@ test("renaming keeps the URL; deleting makes it a 404 and removes the renditions
   expect((await page.goto("/life/photos/e2e-kizilcikli-aksam/"))?.status()).toBe(404);
 });
 
+// Chromium can't decode HEIC, so this runs the browser-side libheif decode.
+test("an iPhone HEIC uploads like a JPEG: upright, with its EXIF, renditions without metadata", async ({ page }) => {
+  await signIn(page, "/admin/photos/");
+  await page.getByLabel("Add photo").setInputFiles(".e2e-admin/fixtures/rotated.heic");
+  await expect(status(page)).toHaveText("Draft saved", { timeout: 30_000 });
+  await expect(page.getByLabel("Date")).toHaveValue("2026-10-04");
+  await expect(page.getByLabel("Camera")).toHaveValue("iPhone 17 Pro");
+
+  const jpgs = files().filter((file) => file.endsWith(".jpg"));
+  expect(jpgs.length).toBeGreaterThan(0);
+  for (const file of jpgs) {
+    const { width = 0, height = 0, exif } = await sharp(`${MEDIA}/${file}`).metadata();
+    expect(exif, file).toBeUndefined();
+    expect(height, file).toBeGreaterThan(width);
+  }
+  // Upright, the fixture is blue on the left and red on the right.
+  const { data, info } = await sharp(`${MEDIA}/${jpgs[0]}`).raw().toBuffer({ resolveWithObject: true });
+  const redAt = (x: number) => data[(Math.floor(info.height / 2) * info.width + x) * info.channels];
+  expect(redAt(Math.floor(info.width / 4))).toBeLessThan(100);
+  expect(redAt(Math.floor((info.width * 3) / 4))).toBeGreaterThan(180);
+
+  await page.getByRole("button", { name: "Delete", exact: true }).click();
+  await ask(page).getByRole("button", { name: "Delete", exact: true }).click();
+  await expect(status(page)).toHaveText("Deleted");
+  expect(files()).toEqual([]);
+});
+
 test("an image under 1280px on the long side is refused", async ({ page }) => {
   await signIn(page, "/admin/photos/");
   await page.getByLabel("Add photo").setInputFiles(".e2e-admin/fixtures/small.png");
