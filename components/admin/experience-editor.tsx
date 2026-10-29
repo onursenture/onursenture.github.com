@@ -112,7 +112,7 @@ export function ExperienceEditor({ init, pages }: { init: DocEditorInit<Experien
                   <TextField label="Role" value={role.role} onChange={(value) => update({ role: value })} issues={at(`${index}/role`)} />
                   <TextField label="Start" type="month" value={role.start} onChange={(start) => update({ start })} issues={at(`${index}/start`)} />
                   <div className="flex flex-col gap-1">
-                    <TextField label="End" type="month" value={role.end ?? ""} disabled={role.end === null} onChange={(end) => update({ end })} issues={at(`${index}/end`)} />
+                    <TextField label="End" type={role.end === null ? "text" : "month"} value={role.end ?? ""} placeholder={role.end === null ? "now" : undefined} disabled={role.end === null} onChange={(end) => update({ end })} issues={at(`${index}/end`)} />
                     <label className="flex items-center gap-2 type-meta">
                       <input type="checkbox" checked={role.end === null} onChange={(event) => update({ end: event.target.checked ? null : role.start })} />
                       Ongoing

@@ -11,7 +11,7 @@ import { useKeyedList } from "./use-keyed-list";
 // in a <label>, so its visible label is its accessible name.
 
 const CONTROL_BASE =
-  "min-w-0 rounded-control border border-line bg-bg px-2 py-1.5 type-body text-fg focus:border-accent focus:outline-none disabled:text-fg-muted";
+  "min-w-0 rounded-control border border-line bg-bg px-2 py-1.5 type-body text-fg focus:border-accent focus:outline-none disabled:text-fg-muted [&:is(select)]:pr-7";
 export const CONTROL = `w-full ${CONTROL_BASE}`;
 
 // `named`: the text sits under a card or group of several fields, so each
