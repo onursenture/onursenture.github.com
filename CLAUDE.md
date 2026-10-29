@@ -37,7 +37,7 @@ This is the most important file to understand. Each `.js` file becomes a global 
 | `letterboxd.js` | `letterboxd.com/onur/rss/` via rss-parser + cheerio | Last 6 films |
 | `goodreads.js` | Goodreads profile + Year in Books pages (HTML) | The shelf RSS feeds were retired on 2026-10-28. Needs a numeric user ID — pinned in code (`8143905`), overridable via `GOODREADS_USER_ID`. Returns `{ currentlyReading, read }`: up to 3 books from the profile, and the last 5 read from Year in Books (title/author only — no dates, ratings or reviews are public anymore) |
 | `instapaper.js` | `instapaper.com/data/profile/w00f` (JSON) | Last 15 articles. The public profile page is a React SPA with no server-rendered HTML — this is the same endpoint the SPA calls, and it works unauthenticated |
-| `writing.js` | `w00f.org/feed/` (Bear Blog) | Last 10 posts |
+| `writing.js` | `w00f.org/feed/` (Bear Blog, Atom) | Last 10 posts. Bear Blog returns 404 to curl's default user agent but 200 to rss-parser's, so probe with `curl -A rss-parser`. "Fetched 0" with no warning means the blog has no posts (the case as of 2026-10-29), not a broken feed; the widget hides itself when empty |
 | `lab.js` | static | Side projects, maintained inline as an array; sorted newest-first. Entries link out via `url`, which is optional |
 
 Every external fetcher swallows errors with `console.warn` and returns an empty fallback so a flaky upstream never breaks the build. Preserve this behavior when adding new sources.
