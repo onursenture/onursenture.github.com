@@ -104,7 +104,7 @@ test("Lab lists text rows without glyphs or avatars; only linked entries link", 
   const lab = page.locator("#lab");
   await expect(lab).toContainText("onursenture.com");
   await expect(lab).not.toContainText("Project 0");
-  await expect(lab.getByRole("link")).toHaveCount(7);
+  await expect(lab.getByRole("link")).toHaveCount(8);
   await expect(lab.getByRole("img")).toHaveCount(0);
   await expect(lab.locator("canvas")).toHaveCount(0);
 });
