@@ -13,6 +13,12 @@ const projects = [
   //   date: "2026-03-21",
   //   url: "https://example.com",
   // },
+  {
+    name: "Stories for Ekşi Sözlük",
+    description: "Chrome extension: flip through the images in an ekşi sözlük thread like stories.",
+    date: "2026-10-12",
+    url: "https://chromewebstore.google.com/detail/stories-for-ek%C5%9Fi-s%C3%B6zl%C3%BCk/kbbmjkgkpflmemfppocpgnpdebfjlfdn",
+  },
 ];
 
 module.exports = function () {
