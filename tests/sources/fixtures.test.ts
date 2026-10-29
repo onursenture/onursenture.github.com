@@ -16,12 +16,13 @@ describe("loadFixtureData", () => {
 
   it("merges the goodreads recordings into the recorded snapshot", async () => {
     const books = await loadFixtureData("goodreads");
-    // The profile shows three of four; the fourth comes from the snapshot.
+    // The profile shows three of five; the other two come from the snapshot.
     expect(books.currentlyReading.map((b) => b.title)).toEqual([
       "Harry Potter and the Deathly Hallows (Harry Potter, #7)",
       "Educated",
       "Mutluluğun Mimarisi",
       "The Design of Everyday Things",
+      "Piranesi",
     ]);
     expect(books.read.map((b) => b.title)).toContain("Hacı Komünist");
     expect(books.read.find((b) => b.title === "Bonsai")?.readAt).toBe("");

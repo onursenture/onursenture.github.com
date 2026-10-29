@@ -45,7 +45,8 @@ describe("profileDate", () => {
 describe("parseProfile", () => {
   it("reads the shown currently-reading books and the shelf's real size", () => {
     const { visible, count } = parseProfile(fixture("goodreads-profile.html"));
-    expect(count).toBe(4);
+    // Raised from the recorded 4 (see the fixture's comment).
+    expect(count).toBe(5);
     expect(visible.map((b) => b.title)).toEqual([
       "Harry Potter and the Deathly Hallows (Harry Potter, #7)",
       "Educated",
@@ -153,9 +154,15 @@ describe("mergeBooks", () => {
   it("keeps the stored record of each shown book and fills the hidden rest of the shelf", () => {
     const merged = mergeBooks({ profile: profile(), yearBooks: year(), previous: snapshot(), now: NOW });
     const stored = snapshot().currentlyReading;
-    // The profile shows three of four; the newest stored book it hides fills
-    // the fourth place.
-    expect(merged.currentlyReading).toEqual(stored.slice(0, 4));
+    // The profile shows three of five; the two stored books it hides fill
+    // the rest, newest first.
+    expect(merged.currentlyReading).toEqual(stored);
+  });
+
+  it("fills only as many hidden books as the shelf is missing", () => {
+    const merged = mergeBooks({ profile: { ...profile(), count: 4 }, yearBooks: [], previous: snapshot(), now: NOW });
+    expect(merged.currentlyReading.map((b) => b.title).at(-1)).toBe("The Design of Everyday Things");
+    expect(merged.currentlyReading).toHaveLength(4);
   });
 
   it("doesn't fill past the shelf's size", () => {
@@ -222,7 +229,7 @@ describe("goodreads.fetch", () => {
       [yearUrl]: { body: fixture("goodreads-year-2026.html") },
     });
     const books = await goodreads.fetch({ fetch, env: {}, previous: snapshot(), now: NOW });
-    expect(books.currentlyReading).toHaveLength(4);
+    expect(books.currentlyReading).toHaveLength(5);
     expect(books.read).toHaveLength(4);
   });
 
