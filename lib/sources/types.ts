@@ -33,6 +33,11 @@ export interface SourceContext {
   fetch: typeof globalThis.fetch;
   env: Record<string, string | undefined>;
   stores?: ArchiveStores;
+  // Set by syncSource: the stored snapshot's payload (unvalidated; null when
+  // there is none) and the run's clock. Goodreads builds on its previous
+  // snapshot because its public pages no longer list the whole read shelf.
+  previous?: unknown;
+  now?: Date;
 }
 
 export interface ArchiveArgs {

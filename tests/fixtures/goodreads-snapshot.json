@@ -1,0 +1,94 @@
+{
+  "currentlyReading": [
+    {
+      "title": "Harry Potter and the Deathly Hallows (Harry Potter, #7)",
+      "author": "J.K. Rowling",
+      "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1627042661l/58613224._SY345_.jpg",
+      "numRating": 0,
+      "review": "",
+      "link": "https://www.goodreads.com/review/show/8221997918?utm_medium=api&utm_source=rss",
+      "date": "2026-08-14T03:07:23.000Z",
+      "readAt": "",
+      "addedAt": "2026-08-14T03:07:23.000Z"
+    },
+    {
+      "title": "Educated",
+      "author": "Tara Westover",
+      "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1774287363l/35133922._SY345_.jpg",
+      "numRating": 0,
+      "review": "",
+      "link": "https://www.goodreads.com/review/show/8435637909?utm_medium=api&utm_source=rss",
+      "date": "2026-05-15T04:39:26.000Z",
+      "readAt": "",
+      "addedAt": "2026-05-15T04:39:26.000Z"
+    },
+    {
+      "title": "Mutluluğun Mimarisi",
+      "author": "Alain de Botton",
+      "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1729764854l/17193828._SY345_.jpg",
+      "numRating": 0,
+      "review": "",
+      "link": "https://www.goodreads.com/review/show/8152842453?utm_medium=api&utm_source=rss",
+      "date": "2026-05-12T09:34:07.000Z",
+      "readAt": "",
+      "addedAt": "2026-05-12T09:34:07.000Z"
+    },
+    {
+      "title": "The Design of Everyday Things",
+      "author": "Don Norman",
+      "cover": "",
+      "numRating": 0,
+      "review": "",
+      "link": "https://www.goodreads.com/review/show/8100000001?utm_medium=api&utm_source=rss",
+      "date": "2026-05-09T17:00:00.000Z",
+      "readAt": "",
+      "addedAt": "2026-05-09T17:00:00.000Z"
+    },
+    {
+      "title": "Piranesi",
+      "author": "Susanna Clarke",
+      "cover": "",
+      "numRating": 0,
+      "review": "",
+      "link": "https://www.goodreads.com/review/show/8100000002?utm_medium=api&utm_source=rss",
+      "date": "2026-05-06T17:00:00.000Z",
+      "readAt": "",
+      "addedAt": "2026-05-06T17:00:00.000Z"
+    }
+  ],
+  "read": [
+    {
+      "title": "Joseph Müller-Brockman, Pioneer of Swiss Graphic Design",
+      "author": "Lars Müller",
+      "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347438784l/663561._SY345_.jpg",
+      "numRating": 2,
+      "review": "",
+      "link": "https://www.goodreads.com/review/show/8065203117?utm_medium=api&utm_source=rss",
+      "date": "2026-08-11T00:00:00.000Z",
+      "readAt": "2026-08-11T00:00:00.000Z",
+      "addedAt": "2026-08-11T08:01:35.000Z"
+    },
+    {
+      "title": "Hacı Komünist",
+      "author": "Ferhan Şensoy",
+      "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1290294435l/9740107._SY345_.jpg",
+      "numRating": 4,
+      "review": "Funny and sharp satire.",
+      "link": "https://www.goodreads.com/review/show/4102024441?utm_medium=api&utm_source=rss",
+      "date": "2026-07-18T00:00:00.000Z",
+      "readAt": "2026-07-18T00:00:00.000Z",
+      "addedAt": "2026-07-19T06:56:10.000Z"
+    },
+    {
+      "title": "Bozkır: Bir Yolculuk Hikâyesi",
+      "author": "Anton Chekhov",
+      "cover": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1707152758l/43815765._SY345_.jpg",
+      "numRating": 3,
+      "review": "",
+      "link": "https://www.goodreads.com/review/show/4102024511?utm_medium=api&utm_source=rss",
+      "date": "2026-06-21T00:00:00.000Z",
+      "readAt": "2026-06-21T00:00:00.000Z",
+      "addedAt": "2026-07-21T18:58:03.000Z"
+    }
+  ]
+}

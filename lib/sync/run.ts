@@ -78,7 +78,9 @@ export async function syncSource<T>(
   deadline: number,
 ): Promise<SyncResult> {
   try {
-    const data = definition.schema.parse(await definition.fetch(ctx));
+    const data = definition.schema.parse(
+      await definition.fetch({ ...ctx, previous: previous?.payload ?? null, now }),
+    );
     const itemCount = definition.count(data);
     if (itemCount === 0 && previous && previous.itemCount > 0) {
       throw new Error(`upstream returned 0 items; kept previous ${previous.itemCount}`);
