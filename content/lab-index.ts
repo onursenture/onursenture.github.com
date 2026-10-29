@@ -51,4 +51,10 @@ export const labIndex: LabEntry[] = [
     year: "2026",
     href: "https://studio.nebuu.com/",
   },
+  {
+    title: "Stories for Ekşi Sözlük",
+    description: "A Chrome extension that lets you flip through the images in an ekşi sözlük thread like stories.",
+    year: "2026",
+    href: "https://chromewebstore.google.com/detail/stories-for-ek%C5%9Fi-s%C3%B6zl%C3%BCk/kbbmjkgkpflmemfppocpgnpdebfjlfdn",
+  },
 ];

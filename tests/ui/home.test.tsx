@@ -162,7 +162,7 @@ describe("labIndex", () => {
     expect(labIndex.some((entry) => /^Project 0\d$/.test(entry.title))).toBe(false);
   });
 
-  it("lists this site, then Onur's six 2026 projects in his order, each linked over https", () => {
+  it("lists this site, then Onur's seven 2026 projects in his order, each linked over https", () => {
     expect(labIndex.map((entry) => entry.title)).toEqual([
       "onursenture.com",
       "Cehennem Rebirth",
@@ -171,6 +171,7 @@ describe("labIndex", () => {
       "tanerman.com",
       "Dönerverse",
       "Nebuu Deck Studio",
+      "Stories for Ekşi Sözlük",
     ]);
     for (const entry of labIndex) expect(entry.href, entry.title).toMatch(/^https:\/\//);
   });
