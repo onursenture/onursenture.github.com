@@ -2,7 +2,7 @@ import "server-only";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { parseGithub } from "./github";
-import { parseGoodreadsShelf } from "./goodreads";
+import { booksSchema, mergeBooks, parseProfile, parseYearInBooks } from "./goodreads";
 import { parseInstapaper } from "./instapaper";
 import { parseLetterboxd } from "./letterboxd";
 import { parseActivity } from "./theatre";
@@ -15,8 +15,10 @@ import { parseWriting } from "./writing";
 // tests/fixtures/ go through the same parsers the live fetchers use. Dev and
 // CI only; never set this on Vercel.
 
-// Same limits as goodreads.fetch.
-const CURRENTLY_READING_LIMIT = 10;
+// Goodreads builds on its stored snapshot (see goodreads.ts), so its fixture
+// is a recorded RSS-era snapshot plus the two recorded pages, merged at a
+// fixed time so fixture mode is deterministic.
+const GOODREADS_FIXTURE_NOW = new Date("2026-10-29T09:00:00.000Z");
 
 function readFixture(name: string): Promise<string> {
   return readFile(join(process.cwd(), "tests", "fixtures", name), "utf8");
@@ -24,13 +26,13 @@ function readFixture(name: string): Promise<string> {
 
 const loaders: { [K in SourceId]: () => Promise<SourceData<K>> } = {
   letterboxd: async () => parseLetterboxd(await readFixture("letterboxd.xml")),
-  goodreads: async () => ({
-    currentlyReading: await parseGoodreadsShelf(
-      await readFixture("goodreads-currently-reading.xml"),
-      CURRENTLY_READING_LIMIT,
-    ),
-    read: await parseGoodreadsShelf(await readFixture("goodreads-read.xml")),
-  }),
+  goodreads: async () =>
+    mergeBooks({
+      profile: parseProfile(await readFixture("goodreads-profile.html")),
+      yearBooks: parseYearInBooks(await readFixture("goodreads-year-2026.html")),
+      previous: booksSchema.parse(JSON.parse(await readFixture("goodreads-snapshot.json"))),
+      now: GOODREADS_FIXTURE_NOW,
+    }),
   instapaper: async () => parseInstapaper(JSON.parse(await readFixture("instapaper.json"))),
   writing: async () => parseWriting(await readFixture("writing.xml")),
   github: async () => parseGithub(JSON.parse(await readFixture("github.json"))),

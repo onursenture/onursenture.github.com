@@ -1,142 +1,253 @@
 import { describe, expect, it } from "vitest";
-import { goodreads, parseGoodreadsShelf } from "@/lib/sources/goodreads";
+import {
+  type Book,
+  type Books,
+  bookKey,
+  booksSchema,
+  goodreads,
+  mergeBooks,
+  parseProfile,
+  parseYearInBooks,
+  profileDate,
+  yearsToFetch,
+} from "@/lib/sources/goodreads";
 import { fakeFetch, fixture } from "../helpers/fixtures";
 
-describe("parseGoodreadsShelf", () => {
-  it("sorts by read date, not feed (shelf-add) order", async () => {
-    const books = await parseGoodreadsShelf(fixture("goodreads-read.xml"), 5);
-    expect(books.map((b) => b.title)).toEqual([
+const snapshot = (): Books => booksSchema.parse(JSON.parse(fixture("goodreads-snapshot.json")));
+const NOW = new Date("2026-10-29T09:00:00.000Z");
+
+const book = (title: string, fields: Partial<Book> = {}): Book => ({
+  title,
+  author: "Someone",
+  cover: "",
+  numRating: 0,
+  review: "",
+  link: `https://www.goodreads.com/review/show/${title.length}`,
+  date: "2026-01-01T00:00:00.000Z",
+  readAt: "",
+  addedAt: "2026-01-01T00:00:00.000Z",
+  ...fields,
+});
+const cover = (id: number) => `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1600000000l/${id}._SY345_.jpg`;
+
+describe("profileDate", () => {
+  it("reads the profile's Istanbul time", () => {
+    expect(profileDate("Aug 14, 2026 06:07AM")).toBe("2026-08-14T03:07:00.000Z");
+    expect(profileDate("May 12, 2026 12:34PM")).toBe("2026-05-12T09:34:00.000Z");
+    expect(profileDate("Jan 1, 2026 12:05AM")).toBe("2025-12-31T21:05:00.000Z");
+  });
+
+  it("returns empty for anything else", () => {
+    expect(profileDate("yesterday")).toBe("");
+  });
+});
+
+describe("parseProfile", () => {
+  it("reads the shown currently-reading books and the shelf's real size", () => {
+    const { visible, count } = parseProfile(fixture("goodreads-profile.html"));
+    expect(count).toBe(4);
+    expect(visible.map((b) => b.title)).toEqual([
+      "Harry Potter and the Deathly Hallows (Harry Potter, #7)",
+      "Educated",
+      "Mutluluğun Mimarisi",
+    ]);
+    expect(visible[0]).toMatchObject({
+      author: "J.K. Rowling",
+      cover: cover(58613224).replace("1600000000l", "1627042661l"),
+      link: "https://www.goodreads.com/review/show/8221997918",
+      addedAt: "2026-08-14T03:07:00.000Z",
+      readAt: "",
+    });
+  });
+
+  it("throws on a page without shelf counts (a sign-in page)", () => {
+    expect(() => parseProfile("<html><title>Sign in</title></html>")).toThrow("no currently-reading shelf count");
+  });
+
+  it("accepts an empty shelf", () => {
+    const html = '<a href="/review/list/1?shelf=currently-reading">currently-reading&lrm; (0)</a>';
+    expect(parseProfile(html)).toEqual({ visible: [], count: 0 });
+  });
+});
+
+describe("parseYearInBooks", () => {
+  it("reads title, author, cover and book link of every cover", () => {
+    const books = parseYearInBooks(fixture("goodreads-year-2026.html"));
+    expect(books.map((b) => b.title).sort()).toEqual([
+      "Bonsai",
+      "Bozkır",
+      "Hacı Komünist",
+      "Joseph Müller-Brockman, Pioneer of Swiss Graphic Design",
+    ]);
+    const bonsai = books.find((b) => b.title === "Bonsai");
+    expect(bonsai).toEqual({
+      title: "Bonsai",
+      author: "Alejandro Zambra",
+      cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1320559832l/3374076.jpg",
+      link: "https://www.goodreads.com/book/show/3374076-bonsai",
+    });
+  });
+
+  it("returns nothing for a year with no books", () => {
+    expect(parseYearInBooks("<html><head><title>Onur’s Year in Books</title></head></html>")).toEqual([]);
+  });
+
+  it("throws on any other page", () => {
+    expect(() => parseYearInBooks("<html><head><title>Sign in</title></head></html>")).toThrow("unexpected title");
+  });
+});
+
+describe("bookKey", () => {
+  it("matches an RSS-era record and a page entry by the Goodreads book id", () => {
+    const stored = snapshot().read.find((b) => b.title === "Hacı Komünist")!;
+    const page = parseYearInBooks(fixture("goodreads-year-2026.html")).find((b) => b.title === "Hacı Komünist")!;
+    expect(stored.link).toContain("/review/show/");
+    expect(bookKey(stored)).toBe(bookKey(page));
+    expect(bookKey(page)).toBe("id:9740107");
+  });
+
+  it("falls back to title and author without a cover", () => {
+    expect(bookKey(book("Piranesi (Piranesi, #1)", { author: "Susanna Clarke", link: "" }))).toBe(
+      "title:piranesi|susanna clarke",
+    );
+  });
+});
+
+describe("mergeBooks", () => {
+  const profile = () => parseProfile(fixture("goodreads-profile.html"));
+  const year = () => parseYearInBooks(fixture("goodreads-year-2026.html"));
+
+  it("keeps every stored read book with its RSS-era fields", () => {
+    const merged = mergeBooks({ profile: profile(), yearBooks: year(), previous: snapshot(), now: NOW });
+    for (const stored of snapshot().read) expect(merged.read).toContainEqual(stored);
+  });
+
+  it("adds a book new to Year in Books as undated", () => {
+    const merged = mergeBooks({ profile: profile(), yearBooks: year(), previous: snapshot(), now: NOW });
+    expect(merged.read).toHaveLength(4);
+    expect(merged.read.find((b) => b.title === "Bonsai")).toEqual({
+      title: "Bonsai",
+      author: "Alejandro Zambra",
+      cover: "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1320559832l/3374076.jpg",
+      numRating: 0,
+      review: "",
+      link: "https://www.goodreads.com/book/show/3374076-bonsai",
+      date: NOW.toISOString(),
+      readAt: "",
+      addedAt: NOW.toISOString(),
+    });
+  });
+
+  it("dates a book finished since the last sync to this sync, keeping its stored record", () => {
+    const reading = book("Finished", { cover: cover(42), addedAt: "2026-09-01T00:00:00.000Z", date: "2026-09-01T00:00:00.000Z" });
+    const merged = mergeBooks({
+      profile: { visible: [], count: 0 },
+      yearBooks: [{ title: "Finished", author: "Someone", cover: cover(42), link: "https://www.goodreads.com/book/show/42" }],
+      previous: { currentlyReading: [reading], read: [] },
+      now: NOW,
+    });
+    expect(merged.currentlyReading).toEqual([]);
+    expect(merged.read).toEqual([{ ...reading, readAt: NOW.toISOString(), date: NOW.toISOString() }]);
+  });
+
+  it("keeps the stored record of each shown book and fills the hidden rest of the shelf", () => {
+    const merged = mergeBooks({ profile: profile(), yearBooks: year(), previous: snapshot(), now: NOW });
+    const stored = snapshot().currentlyReading;
+    // The profile shows three of four; the newest stored book it hides fills
+    // the fourth place.
+    expect(merged.currentlyReading).toEqual(stored.slice(0, 4));
+  });
+
+  it("doesn't fill past the shelf's size", () => {
+    const merged = mergeBooks({ profile: { ...profile(), count: 3 }, yearBooks: [], previous: snapshot(), now: NOW });
+    expect(merged.currentlyReading.map((b) => b.title)).toEqual([
+      "Harry Potter and the Deathly Hallows (Harry Potter, #7)",
+      "Educated",
+      "Mutluluğun Mimarisi",
+    ]);
+  });
+
+  it("never fills the shelf with a book that has since been read", () => {
+    const shown = book("Shown", { cover: cover(1) });
+    const finished = book("Finished", { cover: cover(2), date: "2026-09-01T00:00:00.000Z" });
+    const merged = mergeBooks({
+      profile: { visible: [shown], count: 2 },
+      yearBooks: [{ title: "Finished", author: "Someone", cover: cover(2), link: "https://www.goodreads.com/book/show/2" }],
+      previous: { currentlyReading: [finished, shown], read: [book("Old", { cover: cover(3) })] },
+      now: NOW,
+    });
+    expect(merged.currentlyReading.map((b) => b.title)).toEqual(["Shown"]);
+  });
+
+  it("dates a newly shown book by its profile date, or this sync without one", () => {
+    const merged = mergeBooks({
+      profile: { visible: [book("New", { cover: cover(7), date: "", addedAt: "" })], count: 1 },
+      yearBooks: [],
+      previous: null,
+      now: NOW,
+    });
+    expect(merged.currentlyReading[0]).toMatchObject({ date: NOW.toISOString(), addedAt: NOW.toISOString() });
+  });
+
+  it("orders the read list newest first", () => {
+    const merged = mergeBooks({ profile: profile(), yearBooks: year(), previous: snapshot(), now: NOW });
+    expect(merged.read.map((b) => b.title)).toEqual([
+      "Bonsai",
       "Joseph Müller-Brockman, Pioneer of Swiss Graphic Design",
       "Hacı Komünist",
       "Bozkır: Bir Yolculuk Hikâyesi",
     ]);
-    expect(books[2].date).toBe("2026-06-21T00:00:00.000Z");
+  });
+});
+
+describe("yearsToFetch", () => {
+  it("reads this year, in Istanbul time", () => {
+    expect(yearsToFetch(NOW)).toEqual([2026]);
+    expect(yearsToFetch(new Date("2026-12-31T21:30:00.000Z"))).toEqual([2027, 2026]);
   });
 
-  it("upgrades cover thumbnails and reads the numeric rating", async () => {
-    const [first] = await parseGoodreadsShelf(fixture("goodreads-read.xml"), 5);
-    expect(first.cover).toBe(
-      "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1347438784l/663561._SY345_.jpg",
-    );
-    expect(first).toMatchObject({ numRating: 2, author: "Lars Müller" });
-  });
-
-  it("extracts review text from user_review only", async () => {
-    const books = await parseGoodreadsShelf(fixture("goodreads-read.xml"), 5);
-    expect(books[1].review).toBe("Funny and sharp satire.");
-    expect(books[0].review).toBe("");
-  });
-
-  it("applies the limit after sorting", async () => {
-    const books = await parseGoodreadsShelf(fixture("goodreads-read.xml"), 1);
-    expect(books.map((b) => b.title)).toEqual([
-      "Joseph Müller-Brockman, Pioneer of Swiss Graphic Design",
-    ]);
+  it("adds last year in January", () => {
+    expect(yearsToFetch(new Date("2027-01-20T12:00:00.000Z"))).toEqual([2027, 2026]);
+    expect(yearsToFetch(new Date("2027-02-01T12:00:00.000Z"))).toEqual([2027]);
   });
 });
 
 describe("goodreads.fetch", () => {
-  const base = "https://www.goodreads.com/review/list_rss/8143905";
-  const emptyPage =
-    '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>read</title></channel></rss>';
+  const profileUrl = "https://www.goodreads.com/user/show/8143905";
+  const yearUrl = "https://www.goodreads.com/user/year_in_books/2026/8143905";
 
-  it("fetches both shelves", async () => {
+  it("merges the profile and Year in Books into the stored snapshot", async () => {
     const fetch = fakeFetch({
-      [`${base}?shelf=currently-reading`]: { body: fixture("goodreads-currently-reading.xml") },
-      [`${base}?shelf=read&page=1`]: { body: fixture("goodreads-read.xml") },
-      [`${base}?shelf=read&page=2`]: { body: emptyPage },
+      [profileUrl]: { body: fixture("goodreads-profile.html") },
+      [yearUrl]: { body: fixture("goodreads-year-2026.html") },
     });
-    const books = await goodreads.fetch({ fetch, env: {} });
-    expect(books.currentlyReading.map((b) => b.title)).toEqual([
-      "Harry Potter and the Deathly Hallows (Harry Potter, #7)",
-      "Educated",
-      "Mutluluğun Mimarisi",
-      "The Design of Everyday Things",
-      "Piranesi",
-    ]);
-    // Nothing on the shelf is rated yet.
-    expect(books.currentlyReading[0]).toMatchObject({ author: "J.K. Rowling", numRating: 0 });
-    expect(books.read).toHaveLength(3);
+    const books = await goodreads.fetch({ fetch, env: {}, previous: snapshot(), now: NOW });
+    expect(books.currentlyReading).toHaveLength(4);
+    expect(books.read).toHaveLength(4);
   });
 
-  it("throws if either shelf fails", async () => {
-    const fetch = fakeFetch({
-      [`${base}?shelf=read&page=1`]: { body: fixture("goodreads-read.xml") },
-      [`${base}?shelf=read&page=2`]: { body: emptyPage },
-    });
-    await expect(goodreads.fetch({ fetch, env: {} })).rejects.toThrow("404");
+  it("throws when a page fails, so the stored snapshot is kept", async () => {
+    const fetch = fakeFetch({ [profileUrl]: { body: fixture("goodreads-profile.html") } });
+    await expect(goodreads.fetch({ fetch, env: {}, previous: snapshot(), now: NOW })).rejects.toThrow("404");
   });
 
-  it("throws when the read shelf comes back empty", async () => {
-    const emptyShelf =
-      '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>read</title></channel></rss>';
+  it("throws when nothing has been read, rather than store an empty shelf", async () => {
     const fetch = fakeFetch({
-      [`${base}?shelf=currently-reading`]: { body: fixture("goodreads-read.xml") },
-      [`${base}?shelf=read&page=1`]: { body: emptyShelf },
+      [profileUrl]: { body: fixture("goodreads-profile.html") },
+      [yearUrl]: { body: "<html><head><title>Onur’s Year in Books</title></head></html>" },
     });
-    await expect(goodreads.fetch({ fetch, env: {} })).rejects.toThrow(
+    await expect(goodreads.fetch({ fetch, env: {}, previous: null, now: NOW })).rejects.toThrow(
       "goodreads read shelf returned no books",
     );
   });
 
-  it("allows an empty currently-reading shelf", async () => {
-    const emptyShelf =
-      '<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>reading</title></channel></rss>';
+  it("ignores a stored payload that doesn't validate", async () => {
     const fetch = fakeFetch({
-      [`${base}?shelf=currently-reading`]: { body: emptyShelf },
-      [`${base}?shelf=read&page=1`]: { body: fixture("goodreads-read.xml") },
-      [`${base}?shelf=read&page=2`]: { body: emptyPage },
+      [profileUrl]: { body: fixture("goodreads-profile.html") },
+      [yearUrl]: { body: fixture("goodreads-year-2026.html") },
     });
-    const books = await goodreads.fetch({ fetch, env: {} });
-    expect(books.currentlyReading).toEqual([]);
-    expect(books.read).toHaveLength(3);
-  });
-});
-
-const item = (title: string, readAt: string, added: string, review = "") => `
-  <item>
-    <title>${title}</title>
-    <link>https://www.goodreads.com/review/show/${title.length}</link>
-    <pubDate>${added}</pubDate>
-    <author_name>Someone</author_name>
-    <book_image_url>https://i.gr-assets.com/x._SY75_.jpg</book_image_url>
-    <user_rating>0</user_rating>
-    <user_read_at>${readAt}</user_read_at>
-    <user_review><![CDATA[${review}]]></user_review>
-  </item>`;
-const shelf = (...items: string[]) => `<?xml version="1.0"?><rss version="2.0"><channel><title>s</title>${items.join("")}</channel></rss>`;
-
-describe("parseGoodreadsShelf dates", () => {
-  it("keeps the read date and the shelf-add date apart", async () => {
-    const [read, undated] = await parseGoodreadsShelf(
-      shelf(
-        item("Read one", "Fri, 25 Sep 2026 00:00:00 -0700", "Sat, 26 Sep 2026 10:00:00 -0700"),
-        item("No date", "", "Mon, 01 Jun 2026 10:00:00 -0700"),
-      ),
-    );
-    expect(read.readAt).toBe("2026-09-25T07:00:00.000Z");
-    expect(read.addedAt).toBe("2026-09-26T17:00:00.000Z");
-    expect(read.date).toBe(read.readAt);
-    expect(undated.readAt).toBe("");
-    expect(undated.date).toBe(undated.addedAt);
-  });
-
-  it("turns <br> in a review into line breaks", async () => {
-    const [book] = await parseGoodreadsShelf(shelf(item("R", "", "Mon, 01 Jun 2026 10:00:00 -0700", "One<br>Two<br/>Three")));
-    expect(book.review).toBe("One\nTwo\nThree");
-  });
-});
-
-describe("goodreads.fetch paging", () => {
-  it("reads every page of the read shelf until an empty one", async () => {
-    const base = "https://www.goodreads.com/review/list_rss/8143905?shelf=";
-    const fetch = fakeFetch({
-      [`${base}currently-reading`]: { body: shelf() },
-      [`${base}read&page=1`]: { body: shelf(item("A", "Fri, 25 Sep 2026 00:00:00 -0700", "Fri, 25 Sep 2026 00:00:00 -0700")) },
-      [`${base}read&page=2`]: { body: shelf(item("Bb", "Fri, 21 Aug 2026 00:00:00 -0700", "Fri, 21 Aug 2026 00:00:00 -0700")) },
-      [`${base}read&page=3`]: { body: shelf() },
-    });
-    const books = await goodreads.fetch({ fetch, env: {} });
-    expect(books.read.map((b) => b.title)).toEqual(["A", "Bb"]);
+    const books = await goodreads.fetch({ fetch, env: {}, previous: { nope: true }, now: NOW });
+    expect(books.read).toHaveLength(4);
+    expect(books.read.every((b) => b.readAt === "")).toBe(true);
   });
 });

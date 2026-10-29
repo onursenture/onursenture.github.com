@@ -62,6 +62,34 @@ describe("syncSource", () => {
     });
   });
 
+  it("hands the fetch the stored payload and the run's clock", async () => {
+    const store = new MemorySnapshotStore();
+    await syncSource(source(async () => ["a"]), store, ctx, t0, null, FAR);
+    const seen: unknown[] = [];
+    const definition: SourceDefinition<string[]> = {
+      ...source(async () => []),
+      fetch: async ({ previous, now }) => {
+        seen.push(previous, now);
+        return ["a", "b"];
+      },
+    };
+    await syncSource(definition, store, ctx, minutes(60), await store.get("writing"), FAR);
+    expect(seen).toEqual([["a"], minutes(60)]);
+  });
+
+  it("hands the fetch null when nothing is stored", async () => {
+    let seen: unknown = "unset";
+    const definition: SourceDefinition<string[]> = {
+      ...source(async () => []),
+      fetch: async ({ previous }) => {
+        seen = previous;
+        return ["a"];
+      },
+    };
+    await syncSource(definition, new MemorySnapshotStore(), ctx, t0, null, FAR);
+    expect(seen).toBeNull();
+  });
+
   it("treats a schema mismatch as a failure", async () => {
     const store = new MemorySnapshotStore();
     const bad = source(async () => [42] as unknown as string[]);
