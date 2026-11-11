@@ -33,7 +33,7 @@ This is the most important file to understand. Each `.js` file becomes a global 
 |---|---|---|
 | `site.json` | static | Site metadata; `social.*` drives footer links |
 | `build.js` | static | `build.hash` for cache-busting `main.css` query string in `head.njk` |
-| `github.js` | GitHub GraphQL | Needs `GH_PAT` / `GITHUB_PAT` env var (set as a secret in CI); returns empty silently if missing. Maps the 5 known GitHub contribution colors to levels 0–4 |
+| `github.js` | `github.com/users/onursenture/contributions` (HTML) | No token. The signed-out page the profile graph loads from; it counts private contributions exactly like the profile and carries GitHub's own `data-level` (0–4) per day, with counts in each day's `<tool-tip>`. Replaced the GraphQL + `GH_PAT` fetch on 2026-11-11, which from 2026-09-14 missed most private contributions (1,455 vs the profile's 3,421) |
 | `letterboxd.js` | `letterboxd.com/onur/rss/` via rss-parser + cheerio | Last 6 films |
 | `goodreads.js` | Goodreads profile + Year in Books pages (HTML) | The shelf RSS feeds were retired on 2026-10-28. Needs a numeric user ID — pinned in code (`8143905`), overridable via `GOODREADS_USER_ID`. Returns `{ currentlyReading, read }`: up to 3 books from the profile, and the last 5 read from Year in Books (title/author only — no dates, ratings or reviews are public anymore) |
 | `instapaper.js` | `instapaper.com/data/profile/w00f` (JSON) | Last 15 articles. The public profile page is a React SPA with no server-rendered HTML — this is the same endpoint the SPA calls, and it works unauthenticated |
