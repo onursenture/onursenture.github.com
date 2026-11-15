@@ -9,8 +9,9 @@ import type { SourceDefinition } from "./types";
 //   - the profile, which shows up to three currently-reading books (with
 //     their review links and dates) and every shelf's size;
 //   - Year in Books, which lists each book read in a year (title, author,
-//     cover, book link) but no read dates.
-// Neither lists the whole read shelf, so the read list grows from the stored
+//     cover, book link) but no read dates, and only short titles;
+//   - the read shelf's embeddable widget, read only for full titles.
+// None lists the whole read shelf, so the read list grows from the stored
 // snapshot: books already synced keep their RSS-era fields, and each book
 // newly seen in Year in Books is added to them.
 
@@ -169,6 +170,44 @@ export function parseYearInBooks(html: string): YearBook[] {
   return [...books.values()];
 }
 
+// Year in Books (its cover alt text, which is all it has) names a book by its
+// short title, without the subtitle: "Valve", not "Valve: Handbook for New
+// Employees". The read shelf's embeddable widget is public and has the full
+// title of the last 100 books read, keyed like every other book.
+function shelfWidgetUrl(userId: string, now: Date): string {
+  // Goodreads caches the widget by widget_id (a reused id once returned the
+  // wrong shelf), so each run asks with its own.
+  const params = new URLSearchParams({
+    shelf: "read",
+    num_books: "100",
+    sort: "date_read",
+    order: "d",
+    widget_id: `sync${now.getTime()}`,
+  });
+  return `https://www.goodreads.com/review/custom_widget/${userId}.x?${params}`;
+}
+
+// The widget is a script that assigns its HTML to a single-quoted string;
+// returns full titles by book key.
+export function parseShelfWidget(js: string): Map<string, string> {
+  const literal = js.match(/widget_code\s*=\s*'((?:[^'\\]|\\.)*)'/)?.[1];
+  if (literal === undefined) throw new Error("goodreads shelf widget has no widget_code");
+  const $ = cheerio.load(literal.replace(/\\(.)/g, (_, c: string) => (c === "n" ? "\n" : c)));
+  const titles = new Map<string, string>();
+  $('img[src*="/books/"]').each((_, img) => {
+    const title = ($(img).attr("alt") ?? "").trim();
+    const key = bookKey({ title, author: "", cover: $(img).attr("src") ?? "", link: "" });
+    if (title && key.startsWith("id:")) titles.set(key, title);
+  });
+  return titles;
+}
+
+// The full title for a short one, only when it begins with the short title:
+// the widget can add a subtitle but never rename a book.
+function fullTitle(title: string, full: string | undefined): string {
+  return full && full.length > title.length && full.startsWith(title) ? full : title;
+}
+
 function dateValue(iso: string): number {
   const time = iso ? new Date(iso).getTime() : NaN;
   return Number.isNaN(time) ? -Infinity : time;
@@ -183,12 +222,14 @@ export interface MergeInput {
   // Every Year in Books page fetched this run (this year, and last year in
   // January).
   yearBooks: YearBook[];
+  // Full titles from the shelf widget, by book key; empty when it failed.
+  fullTitles?: Map<string, string>;
   previous: Books | null;
   now: Date;
 }
 
 // Pure: the new snapshot from this run's pages and the stored one.
-export function mergeBooks({ profile, yearBooks, previous, now }: MergeInput): Books {
+export function mergeBooks({ profile, yearBooks, fullTitles = new Map(), previous, now }: MergeInput): Books {
   const nowIso = now.toISOString();
   const previousReading = previous?.currentlyReading ?? [];
   const previousRead = previous?.read ?? [];
@@ -198,8 +239,13 @@ export function mergeBooks({ profile, yearBooks, previous, now }: MergeInput): B
   // before. A book that moved there from currently-reading was finished
   // between two syncs (a few hours apart), so that sync is its read date.
   // Any other new book has no known read date and goes to "Undated".
+  // Stored books get their full title too, which mends the short titles
+  // earlier syncs took from Year in Books.
   const readKeys = new Set(previousRead.map(bookKey));
-  const read = [...previousRead];
+  const read = previousRead.map((book) => {
+    const title = fullTitle(book.title, fullTitles.get(bookKey(book)));
+    return title === book.title ? book : { ...book, title };
+  });
   for (const entry of yearBooks) {
     const key = bookKey(entry);
     if (readKeys.has(key)) continue;
@@ -208,7 +254,7 @@ export function mergeBooks({ profile, yearBooks, previous, now }: MergeInput): B
     const readAt = wasReading ? nowIso : "";
     const addedAt = wasReading?.addedAt || nowIso;
     read.push({
-      title: wasReading?.title || entry.title,
+      title: wasReading?.title || fullTitle(entry.title, fullTitles.get(key)),
       author: wasReading?.author || entry.author,
       cover: wasReading?.cover || entry.cover,
       numRating: 0,
@@ -253,6 +299,11 @@ export const goodreads: SourceDefinition<Books, "goodreads"> = {
   schema: booksSchema,
   fetch: async ({ fetch, env, previous, now = new Date() }) => {
     const userId = env.GOODREADS_USER_ID || DEFAULT_USER_ID;
+    // Titles are a nicety: a failed widget leaves Year in Books' short ones
+    // rather than failing the sync.
+    const titles = fetchText(fetch, shelfWidgetUrl(userId, now))
+      .then(parseShelfWidget)
+      .catch(() => new Map<string, string>());
     const [profileHtml, ...yearPages] = await Promise.all([
       fetchText(fetch, profileUrl(userId)),
       ...yearsToFetch(now).map((year) => fetchText(fetch, yearInBooksUrl(userId, year))),
@@ -261,6 +312,7 @@ export const goodreads: SourceDefinition<Books, "goodreads"> = {
     const books = mergeBooks({
       profile: parseProfile(profileHtml),
       yearBooks: yearPages.flatMap(parseYearInBooks),
+      fullTitles: await titles,
       previous: stored.success ? stored.data : null,
       now,
     });
