@@ -2,7 +2,7 @@ import "server-only";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { parseGithub } from "./github";
-import { booksSchema, mergeBooks, parseProfile, parseYearInBooks } from "./goodreads";
+import { booksSchema, mergeBooks, parseProfile, parseShelfWidget, parseYearInBooks } from "./goodreads";
 import { parseInstapaper } from "./instapaper";
 import { parseLetterboxd } from "./letterboxd";
 import { parseActivity } from "./theatre";
@@ -16,7 +16,7 @@ import { parseWriting } from "./writing";
 // CI only; never set this on Vercel.
 
 // Goodreads builds on its stored snapshot (see goodreads.ts), so its fixture
-// is a recorded RSS-era snapshot plus the two recorded pages, merged at a
+// is a recorded RSS-era snapshot plus the recorded pages, merged at a
 // fixed time so fixture mode is deterministic.
 const GOODREADS_FIXTURE_NOW = new Date("2026-10-29T09:00:00.000Z");
 
@@ -30,6 +30,7 @@ const loaders: { [K in SourceId]: () => Promise<SourceData<K>> } = {
     mergeBooks({
       profile: parseProfile(await readFixture("goodreads-profile.html")),
       yearBooks: parseYearInBooks(await readFixture("goodreads-year-2026.html")),
+      fullTitles: parseShelfWidget(await readFixture("goodreads-widget-read.js")),
       previous: booksSchema.parse(JSON.parse(await readFixture("goodreads-snapshot.json"))),
       now: GOODREADS_FIXTURE_NOW,
     }),

@@ -7,6 +7,7 @@ import {
   goodreads,
   mergeBooks,
   parseProfile,
+  parseShelfWidget,
   parseYearInBooks,
   profileDate,
   yearsToFetch,
@@ -95,6 +96,23 @@ describe("parseYearInBooks", () => {
 
   it("throws on any other page", () => {
     expect(() => parseYearInBooks("<html><head><title>Sign in</title></head></html>")).toThrow("unexpected title");
+  });
+});
+
+describe("parseShelfWidget", () => {
+  it("reads each book's full title by book id", () => {
+    expect(parseShelfWidget(fixture("goodreads-widget-read.js"))).toEqual(
+      new Map([
+        ["id:13626073", "Valve: Handbook for New Employees"],
+        ["id:9740107", "Hacı Komünist"],
+        ["id:43815765", "Bozkır: Bir Yolculuk Hikâyesi"],
+        ["id:61936179", "Nagasaki'nin Çanları"],
+      ]),
+    );
+  });
+
+  it("throws on anything but the widget script", () => {
+    expect(() => parseShelfWidget("<html><title>Sign in</title></html>")).toThrow("no widget_code");
   });
 });
 
@@ -196,6 +214,34 @@ describe("mergeBooks", () => {
     expect(merged.currentlyReading[0]).toMatchObject({ date: NOW.toISOString(), addedAt: NOW.toISOString() });
   });
 
+  it("gives a new book its full title from the shelf widget", () => {
+    const merged = mergeBooks({
+      profile: { visible: [], count: 0 },
+      yearBooks: [{ title: "Valve", author: "Valve", cover: cover(13626073), link: "https://www.goodreads.com/book/show/13626073-valve" }],
+      fullTitles: parseShelfWidget(fixture("goodreads-widget-read.js")),
+      previous: null,
+      now: NOW,
+    });
+    expect(merged.read.map((b) => [b.title, b.author])).toEqual([["Valve: Handbook for New Employees", "Valve"]]);
+  });
+
+  it("mends a stored short title, and never renames a book", () => {
+    const merged = mergeBooks({
+      profile: { visible: [], count: 0 },
+      yearBooks: [],
+      fullTitles: new Map([
+        ["id:13626073", "Valve: Handbook for New Employees"],
+        ["id:2", "Something Else Entirely"],
+      ]),
+      previous: {
+        currentlyReading: [],
+        read: [book("Valve", { cover: cover(13626073) }), book("Kept", { cover: cover(2), date: "2025-01-01T00:00:00.000Z" })],
+      },
+      now: NOW,
+    });
+    expect(merged.read.map((b) => b.title)).toEqual(["Valve: Handbook for New Employees", "Kept"]);
+  });
+
   it("orders the read list newest first", () => {
     const merged = mergeBooks({ profile: profile(), yearBooks: year(), previous: snapshot(), now: NOW });
     expect(merged.read.map((b) => b.title)).toEqual([
@@ -222,6 +268,7 @@ describe("yearsToFetch", () => {
 describe("goodreads.fetch", () => {
   const profileUrl = "https://www.goodreads.com/user/show/8143905";
   const yearUrl = "https://www.goodreads.com/user/year_in_books/2026/8143905";
+  const widgetUrl = `https://www.goodreads.com/review/custom_widget/8143905.x?shelf=read&num_books=100&sort=date_read&order=d&widget_id=sync${NOW.getTime()}`;
 
   it("merges the profile and Year in Books into the stored snapshot", async () => {
     const fetch = fakeFetch({
@@ -231,6 +278,29 @@ describe("goodreads.fetch", () => {
     const books = await goodreads.fetch({ fetch, env: {}, previous: snapshot(), now: NOW });
     expect(books.currentlyReading).toHaveLength(5);
     expect(books.read).toHaveLength(4);
+  });
+
+  it("reads full titles from the shelf widget", async () => {
+    const fetch = fakeFetch({
+      [profileUrl]: { body: fixture("goodreads-profile.html") },
+      [yearUrl]: { body: fixture("goodreads-year-2026.html") },
+      [widgetUrl]: { body: fixture("goodreads-widget-read.js") },
+    });
+    const previous = snapshot();
+    const bozkir = previous.read.find((b) => b.title.startsWith("Bozkır"))!;
+    bozkir.title = "Bozkır";
+    const books = await goodreads.fetch({ fetch, env: {}, previous, now: NOW });
+    expect(books.read.map((b) => b.title)).toContain("Bozkır: Bir Yolculuk Hikâyesi");
+  });
+
+  it("keeps Year in Books' titles when the widget fails", async () => {
+    const fetch = fakeFetch({
+      [profileUrl]: { body: fixture("goodreads-profile.html") },
+      [yearUrl]: { body: fixture("goodreads-year-2026.html") },
+      [widgetUrl]: { status: 500, body: "" },
+    });
+    const books = await goodreads.fetch({ fetch, env: {}, previous: null, now: NOW });
+    expect(books.read.map((b) => b.title)).toContain("Bozkır");
   });
 
   it("throws when a page fails, so the stored snapshot is kept", async () => {
