@@ -85,9 +85,12 @@ export function ThenBlock({ block }: { block: ThenBlockView }) {
   );
 }
 
+// A figure is never drawn wider than the image's own pixels (one CSS px per
+// image px), so an old 1280px image doesn't stretch across a 5K screen: it
+// stops at its width, left-aligned in its cell. Placeholders fill the cell.
 function Figure({ image, sizes }: { image: ImageView; sizes: string }) {
   return (
-    <figure>
+    <figure style={image.image ? { maxWidth: image.image.width } : undefined}>
       <MediaButton media={image} sizes={sizes} />
       {image.caption || image.credits.length > 0 ? (
         <figcaption className="mt-1.5 flex flex-wrap gap-x-3 type-meta">

@@ -126,6 +126,13 @@ describe("ImagesBlock", () => {
     expect(markup).toContain(`sizes="${sizes}"`);
   });
 
+  it("never draws an image wider than its own pixels, and leaves placeholders to fill the cell", () => {
+    const small = buildProductPage(page, (key) => (key === "work/primeone/cover" ? { width: 1280, height: 800, widths: [640, 1280] } : undefined));
+    const markup = html(<ImagesBlock block={{ ...(small.blocks[1] as Extract<BlockView, { kind: "images" }>), columns: 1 }} />);
+    expect(markup.match(/<figure style="max-width:1280px"/g)).toHaveLength(1);
+    expect(markup.match(/<figure>/g)).toHaveLength(2);
+  });
+
   it("defaults to one column", () => {
     expect(html(<ImagesBlock block={images()} />)).toContain('data-columns="1"');
   });
