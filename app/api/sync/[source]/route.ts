@@ -25,5 +25,6 @@ export async function POST(request: Request, { params }: RouteContext<"/api/sync
     Date.now() + SYNC_BUDGET_MS,
   );
   revalidateResults([result]);
-  return syncResponse([result]);
+  // Someone asked for this source by hand: report any failure.
+  return syncResponse([result], "any");
 }

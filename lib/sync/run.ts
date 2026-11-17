@@ -5,6 +5,7 @@ import type {
   SourceDefinition,
   SourceId,
 } from "../sources/types";
+import { sourceHealth } from "../sources/health";
 import type { Snapshot, SnapshotStore } from "./store";
 
 // Cron fires on the hour but GitHub Actions can start a few minutes late or
@@ -21,7 +22,9 @@ export const SYNC_BUDGET_MS = 45_000;
 
 export type SyncResult =
   | { source: SourceId; status: "ok"; itemCount: number; archive?: ArchiveOutcome }
-  | { source: SourceId; status: "error"; error: string }
+  // `stale`: the source has no successful sync within 2× its interval either
+  // (the public "late" state), so the failure is no longer a one-off blip.
+  | { source: SourceId; status: "error"; error: string; stale: boolean }
   // `reason: "deadline"`: due, but the run's time budget ran out first.
   | { source: SourceId; status: "skipped"; reason?: "deadline" };
 
@@ -91,7 +94,9 @@ export async function syncSource<T>(
   } catch (e) {
     const error = e instanceof Error ? e.message : String(e);
     await store.recordFailure(definition.id, error, now);
-    return { source: definition.id, status: "error", error };
+    const lastSuccessAt = previous?.lastSuccessAt?.toISOString() ?? null;
+    const stale = sourceHealth(lastSuccessAt, definition.intervalMinutes, now.getTime()) !== "ok";
+    return { source: definition.id, status: "error", error, stale };
   }
 }
 
