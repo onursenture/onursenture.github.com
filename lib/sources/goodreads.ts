@@ -1,6 +1,6 @@
 import * as cheerio from "cheerio";
 import { z } from "zod";
-import { fetchText, httpUrl } from "./http";
+import { fetchText, fetchTextRetrying, httpUrl } from "./http";
 import type { SourceDefinition } from "./types";
 
 // Goodreads retired its public shelf RSS feeds on 2026-10-28: every
@@ -304,9 +304,11 @@ export const goodreads: SourceDefinition<Books, "goodreads"> = {
     const titles = fetchText(fetch, shelfWidgetUrl(userId, now))
       .then(parseShelfWidget)
       .catch(() => new Map<string, string>());
+    // Goodreads sometimes leaves a request unanswered; one retry turns most
+    // of those into a normal sync. The widget isn't retried: it's optional.
     const [profileHtml, ...yearPages] = await Promise.all([
-      fetchText(fetch, profileUrl(userId)),
-      ...yearsToFetch(now).map((year) => fetchText(fetch, yearInBooksUrl(userId, year))),
+      fetchTextRetrying(fetch, profileUrl(userId)),
+      ...yearsToFetch(now).map((year) => fetchTextRetrying(fetch, yearInBooksUrl(userId, year))),
     ]);
     const stored = booksSchema.safeParse(previous);
     const books = mergeBooks({
