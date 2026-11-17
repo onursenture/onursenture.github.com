@@ -27,6 +27,25 @@ function source(
 }
 
 describe("syncSource", () => {
+  it("marks a failure stale once the last success is older than 2× the interval", async () => {
+    const store = new MemorySnapshotStore();
+    const failing = source(async () => {
+      throw new Error("timeout");
+    });
+    await syncSource(source(async () => ["a"]), store, ctx, t0, null, FAR);
+    const late = await syncSource(failing, store, ctx, minutes(120), await store.get("writing"), FAR);
+    expect(late).toMatchObject({ status: "error", stale: false });
+    const later = await syncSource(failing, store, ctx, minutes(121), await store.get("writing"), FAR);
+    expect(later).toMatchObject({ status: "error", stale: true });
+  });
+
+  it("marks a failure stale when the source never synced", async () => {
+    const failing = source(async () => {
+      throw new Error("timeout");
+    });
+    expect(await syncSource(failing, new MemorySnapshotStore(), ctx, t0, null, FAR)).toMatchObject({ stale: true });
+  });
+
   it("stores the payload on success", async () => {
     const store = new MemorySnapshotStore();
     const result = await syncSource(source(async () => ["a", "b"]), store, ctx, t0, null, FAR);
@@ -52,7 +71,7 @@ describe("syncSource", () => {
       await store.get("writing"),
       FAR,
     );
-    expect(result).toEqual({ source: "writing", status: "error", error: "upstream down" });
+    expect(result).toEqual({ source: "writing", status: "error", error: "upstream down", stale: false });
     expect(await store.get("writing")).toMatchObject({
       payload: ["a"],
       itemCount: 1,
@@ -113,6 +132,7 @@ describe("syncSource", () => {
       source: "writing",
       status: "error",
       error: "upstream returned 0 items; kept previous 2",
+      stale: false,
     });
     expect(await store.get("writing")).toMatchObject({
       payload: ["a", "b"],
@@ -204,7 +224,7 @@ describe("syncAll", () => {
     ];
     expect(await syncAll(defs, store, ctx, t0, { deadline: FAR })).toEqual([
       { source: "letterboxd", status: "ok", itemCount: 1 },
-      { source: "goodreads", status: "error", error: "goodreads down" },
+      { source: "goodreads", status: "error", error: "goodreads down", stale: true },
       { source: "writing", status: "ok", itemCount: 1 },
     ]);
     expect(await store.get("letterboxd")).toMatchObject({ payload: ["film"], lastError: null });
@@ -224,6 +244,7 @@ describe("syncAll", () => {
         source: "writing",
         status: "error",
         error: "upstream returned 0 items; kept previous 1",
+        stale: false,
       },
     ]);
     expect((await store.get("writing"))?.payload).toEqual(["a"]);

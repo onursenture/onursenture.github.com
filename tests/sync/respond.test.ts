@@ -8,14 +8,20 @@ const { revalidateResults, syncResponse, syncStatusCode } = await import("@/lib/
 beforeEach(() => vi.mocked(revalidateTag).mockClear());
 
 describe("syncStatusCode", () => {
-  it("is 200 when nothing failed, 502 otherwise", () => {
+  const blip = { source: "goodreads", status: "error", error: "timeout", stale: false } as const;
+  const stale = { source: "writing", status: "error", error: "x", stale: true } as const;
+
+  it("is 200 when nothing failed", () => {
     expect(syncStatusCode([{ source: "github", status: "skipped" }])).toBe(200);
-    expect(
-      syncStatusCode([
-        { source: "github", status: "ok", itemCount: 1 },
-        { source: "writing", status: "error", error: "x" },
-      ]),
-    ).toBe(502);
+  });
+
+  it("by default fails only on a stale error, so a one-off timeout doesn't email", () => {
+    expect(syncStatusCode([{ source: "github", status: "ok", itemCount: 1 }, blip])).toBe(200);
+    expect(syncStatusCode([{ source: "github", status: "ok", itemCount: 1 }, blip, stale])).toBe(502);
+  });
+
+  it('fails on any error with "any"', () => {
+    expect(syncStatusCode([blip], "any")).toBe(502);
   });
 });
 
@@ -23,7 +29,7 @@ describe("revalidateResults", () => {
   it("revalidates only sources that synced", () => {
     revalidateResults([
       { source: "github", status: "ok", itemCount: 1 },
-      { source: "writing", status: "error", error: "x" },
+      { source: "writing", status: "error", error: "x", stale: true },
       { source: "letterboxd", status: "skipped" },
     ]);
     expect(revalidateTag).toHaveBeenCalledTimes(1);
@@ -43,7 +49,7 @@ describe("syncResponse", () => {
   it("lists every result with the status code and revalidates nothing", async () => {
     const response = syncResponse([
       { source: "github", status: "ok", itemCount: 1 },
-      { source: "writing", status: "error", error: "x" },
+      { source: "writing", status: "error", error: "x", stale: true },
       { source: "letterboxd", status: "skipped", reason: "deadline" },
     ]);
     expect(revalidateTag).not.toHaveBeenCalled();
