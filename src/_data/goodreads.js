@@ -14,6 +14,9 @@ const cheerio = require("cheerio");
 
 const BASE_URL = "https://www.goodreads.com";
 const READ_LIMIT = 5;
+// About one Goodreads request in 40 gets no answer at all; without a timeout
+// Node waits minutes for it.
+const TIMEOUT_MS = 10_000;
 // Turkey has been on UTC+3 all year since 2016; Year in Books is per year in
 // Onur's Goodreads time zone, while CI builds run in UTC.
 const ISTANBUL_OFFSET_MS = 3 * 60 * 60 * 1000;
@@ -49,7 +52,7 @@ module.exports = async function () {
 
 async function fetchCurrentlyReading(userId) {
   try {
-    const $ = cheerio.load(await fetchText(`${BASE_URL}/user/show/${userId}`));
+    const $ = cheerio.load(await fetchTextRetrying(`${BASE_URL}/user/show/${userId}`));
     return $("#currentlyReadingReviews .Updates")
       .map((_, el) => {
         const item = $(el);
@@ -71,7 +74,7 @@ async function fetchCurrentlyReading(userId) {
 // Newest first. A year with no books has no cover grid and comes back empty.
 async function fetchYearInBooks(userId, year) {
   try {
-    const $ = cheerio.load(await fetchText(`${BASE_URL}/user/year_in_books/${year}/${userId}`));
+    const $ = cheerio.load(await fetchTextRetrying(`${BASE_URL}/user/year_in_books/${year}/${userId}`));
     // A sign-in or error page would otherwise read as "no books this year".
     if (!/Year in Books/i.test($("title").text())) {
       throw new Error("unexpected page title");
@@ -130,10 +133,24 @@ function bookId(link) {
   return (link.match(/\/book\/show\/(\d+)/) || [])[1];
 }
 
+class HttpError extends Error {}
+
 async function fetchText(url) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const res = await fetch(url, { signal: AbortSignal.timeout(TIMEOUT_MS) });
+  if (!res.ok) throw new HttpError(`HTTP ${res.status}`);
   return res.text();
+}
+
+// Tried once more when the request never answered (timeout or dropped
+// connection); an HTTP error is an answer and isn't retried. Used for the
+// profile and Year in Books; the widget only adds subtitles and keeps one try.
+async function fetchTextRetrying(url) {
+  try {
+    return await fetchText(url);
+  } catch (e) {
+    if (e instanceof HttpError) throw e;
+    return fetchText(url);
+  }
 }
 
 function absolute(href) {
