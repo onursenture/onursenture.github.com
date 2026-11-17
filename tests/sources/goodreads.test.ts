@@ -280,6 +280,24 @@ describe("goodreads.fetch", () => {
     expect(books.read).toHaveLength(4);
   });
 
+  it("retries a Year in Books page that never answered", async () => {
+    const routes = fakeFetch({
+      [profileUrl]: { body: fixture("goodreads-profile.html") },
+      [yearUrl]: { body: fixture("goodreads-year-2026.html") },
+    });
+    let hung = false;
+    const fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+      if (String(input) === yearUrl && !hung) {
+        hung = true;
+        throw new DOMException("The operation was aborted due to timeout", "TimeoutError");
+      }
+      return routes(input, init);
+    }) as typeof globalThis.fetch;
+    const books = await goodreads.fetch({ fetch, env: {}, previous: snapshot(), now: NOW });
+    expect(hung).toBe(true);
+    expect(books.read).toHaveLength(4);
+  });
+
   it("reads full titles from the shelf widget", async () => {
     const fetch = fakeFetch({
       [profileUrl]: { body: fixture("goodreads-profile.html") },

@@ -39,6 +39,23 @@ export async function fetchText(
   return response.text();
 }
 
+// fetchText, tried once more when the request never answered (it hit the
+// timeout or the connection dropped). An HttpError is an answer, so it isn't
+// retried. For upstreams that sometimes hang: Goodreads leaves about one
+// request in 40 without a response. Worst case is two timeouts in a row.
+export async function fetchTextRetrying(
+  fetchImpl: typeof globalThis.fetch,
+  url: string,
+  init: RequestInit = {},
+): Promise<string> {
+  try {
+    return await fetchText(fetchImpl, url, init);
+  } catch (e) {
+    if (e instanceof HttpError) throw e;
+    return fetchText(fetchImpl, url, init);
+  }
+}
+
 export async function fetchJson(
   fetchImpl: typeof globalThis.fetch,
   url: string,
