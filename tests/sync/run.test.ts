@@ -198,6 +198,25 @@ describe("isDue", () => {
     expect(isDue(def, snapshot, minutes(54))).toBe(false);
     expect(isDue(def, snapshot, minutes(55))).toBe(true);
   });
+
+  it("retries a failed daily source on the next hourly run, not a day later", () => {
+    const daily = source(async () => [], 24 * 60);
+    const failed = {
+      source: "theatre" as const,
+      payload: [],
+      itemCount: 1,
+      lastSuccessAt: t0,
+      lastAttemptAt: minutes(24 * 60),
+      lastError: "The operation was aborted due to timeout",
+      archiveNote: null,
+    };
+    expect(isDue(daily, failed, minutes(24 * 60 + 54))).toBe(false);
+    expect(isDue(daily, failed, minutes(24 * 60 + 55))).toBe(true);
+    // A healthy daily source still waits its full interval.
+    const healthy = { ...failed, lastAttemptAt: t0, lastError: null };
+    expect(isDue(daily, healthy, minutes(60))).toBe(false);
+    expect(isDue(daily, healthy, minutes(24 * 60 - 5))).toBe(true);
+  });
 });
 
 describe("syncAll", () => {

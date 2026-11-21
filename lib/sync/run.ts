@@ -12,6 +12,12 @@ import type { Snapshot, SnapshotStore } from "./store";
 // early; without slack an hourly source would skip every other run.
 const SLACK_MINUTES = 5;
 
+// A source whose last attempt failed is tried again after this long rather
+// than a full interval later. Otherwise a daily source gets only two tries
+// before it turns late (2× its interval): theatre timed out on Nov 18 and
+// again 32 h later on Nov 19, and that second miss failed the run.
+const RETRY_MINUTES = 60;
+
 // A due source isn't started with less than this left before the deadline:
 // it stays due and runs on the next call.
 const MIN_START_MS = 10_000;
@@ -36,7 +42,11 @@ export function isDue(
   if (!snapshot?.lastAttemptAt) return true;
   const elapsedMinutes =
     (now.getTime() - snapshot.lastAttemptAt.getTime()) / 60_000;
-  return elapsedMinutes >= definition.intervalMinutes - SLACK_MINUTES;
+  const waitMinutes =
+    snapshot.lastError === null
+      ? definition.intervalMinutes
+      : Math.min(definition.intervalMinutes, RETRY_MINUTES);
+  return elapsedMinutes >= waitMinutes - SLACK_MINUTES;
 }
 
 // The optional archive step (Sprint 10). It runs only with database stores
